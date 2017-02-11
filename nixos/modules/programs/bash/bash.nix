@@ -138,7 +138,6 @@ in
         set +h
 
         ${cfg.promptInit}
-        ${bashCompletion}
         ${bashAliases}
 
         ${cfge.interactiveShellInit}
@@ -188,6 +187,7 @@ in
 
         # We are not always an interactive shell.
         if [ -n "$PS1" ]; then
+          ${bashCompletion}
           ${cfg.interactiveShellInit}
         fi
 
