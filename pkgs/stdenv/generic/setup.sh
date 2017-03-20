@@ -485,7 +485,7 @@ substituteAllInPlace() {
 # the environment used for building.
 dumpVars() {
     if [ "$noDumpEnvVars" != 1 ]; then
-        export > "$NIX_BUILD_TOP/env-vars" || true
+        export > "$NIX_BUILD_TOP/$1" || true
     fi
 }
 
@@ -863,7 +863,7 @@ genericBuild() {
         fi
 
         showPhaseHeader "$curPhase"
-        dumpVars
+        dumpVars "env-vars-before-$curPhase"
 
         # Evaluate the variable named $curPhase if it exists, otherwise the
         # function named $curPhase.
@@ -872,6 +872,8 @@ genericBuild() {
         if [ "$curPhase" = unpackPhase ]; then
             cd "${sourceRoot:-.}"
         fi
+
+        dumpVars "env-vars-after-$curPhase"
 
         if [ -n "$tracePhases" ]; then
             echo
@@ -893,4 +895,4 @@ runHook postHook
 runHook userHook
 
 
-dumpVars
+dumpVars "env-vars"

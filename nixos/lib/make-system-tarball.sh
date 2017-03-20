@@ -52,7 +52,7 @@ $extraCommands
 
 mkdir -p $out/tarball
 
-rm env-vars
+rm env-vars env-vars-{before,after}-*
 
 tar --sort=name --mtime='@1' --owner=0 --group=0 --numeric-owner -cvJf $out/tarball/$fileName.tar.xz * $extraArgs
 
