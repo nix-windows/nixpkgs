@@ -5943,6 +5943,8 @@ with pkgs;
 
   regina = callPackage ../development/interpreters/regina { };
 
+  inherit (ocamlPackages) reason;
+
   renpy = callPackage ../development/interpreters/renpy {
     ffmpeg = ffmpeg_2;
   };

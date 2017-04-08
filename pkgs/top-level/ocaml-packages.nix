@@ -280,6 +280,8 @@ let
 
     merlin = callPackage ../development/tools/ocaml/merlin { };
 
+    merlin_extend = callPackage ../development/ocaml-modules/merlin_extend { };
+
     mezzo = callPackage ../development/compilers/mezzo { };
 
     mlgmp =  callPackage ../development/ocaml-modules/mlgmp { };
@@ -335,6 +337,8 @@ let
     ocamlify = callPackage ../development/tools/ocaml/ocamlify { };
 
     ocaml_lwt = callPackage ../development/ocaml-modules/lwt { };
+
+    ocaml-migrate-parsetree = callPackage ../development/ocaml-modules/ocaml-migrate-parsetree { };
 
     ocamlmod = callPackage ../development/tools/ocaml/ocamlmod { };
 
@@ -480,6 +484,8 @@ let
       then callPackage ../development/ocaml-modules/ppx_tools {}
       else null;
 
+    ppx_tools_versioned = callPackage ../development/ocaml-modules/ppx_tools_versioned { };
+
     pycaml = callPackage ../development/ocaml-modules/pycaml { };
 
     qcheck = callPackage ../development/ocaml-modules/qcheck {
@@ -489,6 +495,8 @@ let
     qtest = callPackage ../development/ocaml-modules/qtest { };
 
     re = callPackage ../development/ocaml-modules/re { };
+
+    reason = callPackage ../development/compilers/reason { };
 
     safepass = callPackage ../development/ocaml-modules/safepass { };
 
@@ -548,6 +556,8 @@ let
 
     # Jane Street
     js_build_tools = callPackage ../development/ocaml-modules/janestreet/js-build-tools.nix {};
+
+    jbuilder = callPackage ../development/tools/ocaml/jbuilder {};
 
     buildOcamlJane = callPackage ../development/ocaml-modules/janestreet/buildOcamlJane.nix {};
 
