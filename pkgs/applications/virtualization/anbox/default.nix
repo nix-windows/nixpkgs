@@ -1,6 +1,6 @@
 { stdenv, fetchurl, fetchFromGitHub, fetchbzr, cmake, pkgconfig, boost, libxml2, dbus, gtest, gmock
 , lcov, SDL2, mesa_noglu, protobuf, lxc, glm, xorg, linuxPackages, pythonPackages, bash, coreutils
-, kernel ? null }:
+, kernel ? null, systemd }:
 
 let
   properties-cpp = stdenv.mkDerivation rec {
@@ -22,7 +22,7 @@ let
     '';
     cmakeFlags = "-DGMOCK_INSTALL_DIR=../gmocksrc";
   };
-  
+
   process-cpp = stdenv.mkDerivation rec {
     name = "process-cpp-${rev}";
     rev = "3.0.1+16.10.20160616-0ubuntu1";
@@ -104,25 +104,41 @@ in {
   exe = stdenv.mkDerivation {
     name = "anbox-${version}";
     inherit src meta;
-  
+
     nativeBuildInputs = [ cmake pkgconfig ];
     buildInputs = [ boost SDL2 mesa_noglu glm protobuf dbus-cpp lxc gtest xorg.libpthreadstubs xorg.libXdmcp ];
-  
+
     preConfigure = ''
       substituteInPlace CMakeLists.txt --replace 'add_subdirectory(tests)' "" # skip tests, they unable to find libgtest.a
     '';
     cmakeFlags = "-DCMAKE_INSTALL_LIBDIR=lib";
-  
-    postInstall = ''
-      cat > $out/bin/runme <<EOF
-      #!${bash}/bin/bash
 
-      $out/bin/anbox session-manager &
-      ${coreutils}/bin/sleep 2
+    postInstall = ''
+      mkdir -p $out/share/dbus-1/services/
+      cat <<END > $out/share/dbus-1/services/org.anbox.service
+      [D-BUS Service]
+      Name=org.anbox
+      Exec=$out/libexec/anbox-session-manager
+      END
+
+      mkdir $out/libexec
+      cat > $out/libexec/anbox-session-manager <<EOF
+      #!${bash}/bin/bash
+      exec $out/bin/anbox session-manager
+      EOF
+      chmod +x $out/libexec/anbox-session-manager
+
+      cat > $out/bin/anbox-application-manager <<EOF
+      #!${bash}/bin/bash
+      ${systemd}/bin/busctl --user call \
+         org.freedesktop.DBus \
+         /org/freedesktop/DBus \
+         org.freedesktop.DBus \
+         StartServiceByName "su" org.anbox 0
 
       $out/bin/anbox launch --package=org.anbox.appmgr --component=org.anbox.appmgr.AppViewActivity
       EOF
-      chmod +x $out/bin/runme
+      chmod +x $out/bin/anbox-application-manager
     '';
   };
 
