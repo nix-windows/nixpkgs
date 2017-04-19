@@ -11716,6 +11716,8 @@ with pkgs;
 
     amdgpu-pro = callPackage ../os-specific/linux/amdgpu-pro { };
 
+    anbox = callPackage ../applications/virtualization/anbox { };
+
     batman_adv = callPackage ../os-specific/linux/batman-adv {};
 
     bcc = callPackage ../os-specific/linux/bcc { };
@@ -12862,6 +12864,8 @@ with pkgs;
   ams-lv2 = callPackage ../applications/audio/ams-lv2 { };
 
   amsn = callPackage ../applications/networking/instant-messengers/amsn { };
+
+  anbox = callPackage ../applications/virtualization/anbox { };
 
   android-studio = callPackage ../applications/editors/android-studio {
     fontsConf = makeFontsConf {
