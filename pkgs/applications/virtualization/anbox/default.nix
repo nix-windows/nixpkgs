@@ -25,7 +25,7 @@ let
 
   process-cpp = stdenv.mkDerivation rec {
     name = "process-cpp-${rev}";
-    rev = "3.0.1+16.10.20160616-0ubuntu1";
+    rev = "2.0.0+14.10.20140718-0ubuntu1";
     src = fetchbzr {
       url = "http://bazaar.launchpad.net/~phablet-team/process-cpp/trunk";
       inherit rev;
@@ -42,7 +42,7 @@ let
 
   dbus-cpp = stdenv.mkDerivation rec {
     name = "dbus-cpp-${rev}";
-    rev = "5.0.0+17.04.20170406-0ubuntu1";
+    rev = "5.0.0+16.10.20160809-0ubuntu1";
     src = fetchbzr {
       url = "http://bazaar.launchpad.net/~phablet-team/dbus-cpp/trunk";
       inherit rev;
