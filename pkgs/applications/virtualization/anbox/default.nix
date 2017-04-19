@@ -101,7 +101,7 @@ in {
     '';
   };
 
-  exe = stdenv.mkDerivation {
+  anbox = stdenv.mkDerivation {
     name = "anbox-${version}";
     inherit src meta;
 
@@ -142,7 +142,7 @@ in {
     '';
   };
 
-  image = fetchurl {
+  anbox-image = fetchurl {
     url = "http://build.anbox.io/android-images/2017/04/12/android_1_amd64.img";
     sha256 = "1vkbz6gnvjxzxpgfzv6ssxyk877i8dgwrnh53mcg0mr970f8914p";
   };

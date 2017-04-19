@@ -9592,8 +9592,8 @@ with pkgs;
 
     libopenshot-audio = callPackage ../applications/video/openshot-qt/libopenshot-audio.nix { };
 
-    libqtav = callPackage ../development/libraries/libqtav { 
-      libva = libva-full; # also wants libva-x11 
+    libqtav = callPackage ../development/libraries/libqtav {
+      libva = libva-full; # also wants libva-x11
     };
 
     mlt = callPackage ../development/libraries/mlt/qt-5.nix {
@@ -11716,7 +11716,7 @@ with pkgs;
 
     amdgpu-pro = callPackage ../os-specific/linux/amdgpu-pro { };
 
-    anbox = callPackage ../applications/virtualization/anbox { };
+    inherit (callPackage ../applications/virtualization/anbox { }) ashmem binder;
 
     batman_adv = callPackage ../os-specific/linux/batman-adv {};
 
@@ -12865,7 +12865,7 @@ with pkgs;
 
   amsn = callPackage ../applications/networking/instant-messengers/amsn { };
 
-  anbox = callPackage ../applications/virtualization/anbox { };
+  inherit (callPackage ../applications/virtualization/anbox { }) anbox anbox-image;
 
   android-studio = callPackage ../applications/editors/android-studio {
     fontsConf = makeFontsConf {
