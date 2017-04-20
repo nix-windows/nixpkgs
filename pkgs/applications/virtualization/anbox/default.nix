@@ -2,6 +2,8 @@
 , lcov, SDL2, mesa_noglu, protobuf, lxc, glm, xorg, linuxPackages, pythonPackages, bash, coreutils
 , kernel ? null, systemd }:
 
+assert kernel != null -> stdenv.lib.versionAtLeast kernel.version "4.4";
+
 let
   properties-cpp = stdenv.mkDerivation rec {
     name = "properties-cpp-${rev}";
