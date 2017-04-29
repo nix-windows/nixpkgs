@@ -29,7 +29,6 @@ stdenv.mkDerivation {
   nativeBuildInputs = [ pkgconfig ];
   propagatedBuildInputs = [ glib libxml2 gobjectIntrospection ]
     ++ stdenv.lib.optionals gnomeSupport [ libgnome_keyring3 ];
-  passthru.propagatedUserEnvPackages = [ glib_networking.out ];
 
   # glib_networking is a runtime dependency, not a compile-time dependency
   configureFlags = "--disable-tls-check"

@@ -7,7 +7,6 @@ let
   env = {
     buildInputs = [ ibus ] ++ plugins;
     nativeBuildInputs = [ lndir makeWrapper ];
-    propagatedUserEnvPackages = [ hicolor_icon_theme ];
     paths = [ ibus ] ++ plugins;
     inherit (ibus) meta;
   };

@@ -81,7 +81,6 @@ rec {
     in
       runCommand "${module}-${release}"
       ({passthru = attrs // {
-         propagatedUserEnvPackages = list;
          projects = attrs;
        };})
         ''
