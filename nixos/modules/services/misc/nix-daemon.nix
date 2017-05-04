@@ -380,6 +380,7 @@ in
           ++ optionals cfg.distributedBuilds [ pkgs.gzip ];
 
         environment = cfg.envVars
+          // { XDG_CONFIG_HOME = "/root/.config"; } # https://github.com/NixOS/nix/pull/1366
           // { CURL_CA_BUNDLE = "/etc/ssl/certs/ca-certificates.crt"; }
           // config.networking.proxy.envVars;
 
