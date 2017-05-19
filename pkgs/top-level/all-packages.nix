@@ -6020,6 +6020,11 @@ with pkgs;
     hadoop_2_8;
   hadoop = hadoop_2_7;
 
+  inherit (callPackage ../servers/nosql/accumulo { })
+    accumulo_1_7
+    accumulo_1_8;
+  accumulo = accumulo_1_7;
+
   io = callPackage ../development/interpreters/io { };
 
   j = callPackage ../development/interpreters/j {};
