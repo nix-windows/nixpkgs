@@ -11005,7 +11005,8 @@ with pkgs;
 
   heapster = callPackage ../servers/monitoring/heapster { };
 
-  hbase = callPackage ../servers/hbase {};
+  inherit (callPackage ../servers/nosql/hbase {}) hbase_1_2 hbase_1_3;
+  hbase = hbase_1_3;
 
   hiawatha = callPackage ../servers/http/hiawatha {};
 
