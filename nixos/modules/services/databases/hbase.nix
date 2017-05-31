@@ -52,13 +52,9 @@ in {
 
     services.hbase = {
 
-      enable = mkOption {
-        description = "enable configured HBase";
-        type = types.bool;
-        default = cfg.enable-masterserver || cfg.enable-regionserver;
-      };
-      enable-masterserver = mkEnableOption "enable master server daemon";
-      enable-regionserver = mkEnableOption "enable region server daemon";
+      enable             = mkEnableOption "configured HBase";
+      enableMasterserver = mkEnableOption "master server daemon";
+      enableRegionserver = mkEnableOption "region server daemon";
 
       package = mkOption {
         description = "The HBase package to use";
@@ -131,7 +127,8 @@ in {
       environment.systemPackages = [ hbase-configured ];
     })
 
-    (mkIf (cfg.enable-masterserver || cfg.enable-regionserver) {
+    (mkIf (cfg.enableMasterserver || cfg.enableRegionserver) {
+      services.hbase.enable = true;
       users.extraUsers.hbase = {
         name = "hbase";
         group = "hbase";
@@ -141,7 +138,7 @@ in {
       users.extraGroups.hbase.gid = config.ids.gids.hbase;
     })
 
-    (mkIf cfg.enable-masterserver {
+    (mkIf cfg.enableMasterserver {
       systemd.services.hbase-masterserver = {
         description = "HBase master server";
         wantedBy = [ "multi-user.target" ];
@@ -168,7 +165,7 @@ in {
       };
     })
 
-    (mkIf cfg.enable-regionserver {
+    (mkIf cfg.enableRegionserver {
       systemd.services.hbase-regionserver = assert !standalone; {
         description = "HBase region server";
         wantedBy = [ "multi-user.target" ];
