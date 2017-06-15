@@ -9,15 +9,15 @@ let
 
   cfg = config.environment;
 
+  suffixedVariables =
+    flip mapAttrs cfg.profileRelativeEnvVars (envVar: listSuffixes:
+      concatMap (profile: map (suffix: "${profile}${suffix}") listSuffixes) cfg.profiles
+    );
+
   exportedEnvVars =
     let
       absoluteVariables =
         mapAttrs (n: toList) cfg.variables;
-
-      suffixedVariables =
-        flip mapAttrs cfg.profileRelativeEnvVars (envVar: listSuffixes:
-          concatMap (profile: map (suffix: "${profile}${suffix}") listSuffixes) cfg.profiles
-        );
 
       allVariables =
         zipAttrsWith (n: concatLists) [ absoluteVariables suffixedVariables ];
@@ -155,6 +155,9 @@ in
     # effect without restarting the session (e.g. by opening a new
     # terminal instead of logging out of X11).
     environment.variables = config.environment.sessionVariables;
+
+    # do not let sudo make perl disfunctional by stripping $PERL5LIB
+    environment.sessionVariables = { PERL5LIB = suffixedVariables.PERL5LIB; };
 
     environment.etc."shells".text =
       ''
