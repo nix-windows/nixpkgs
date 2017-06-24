@@ -6,7 +6,13 @@
 , # FreeType supports LCD filtering (colloquially referred to as sub-pixel rendering).
   # LCD filtering is also known as ClearType and covered by several Microsoft patents.
   # This option allows it to be disabled. See http://www.freetype.org/patents.html.
-  useEncumberedCode ? true
+  useEncumberedCode ? true,
+  # This option allows to disable subpixel hinting in a way similar to freetyle-2.6.x
+  # or freetype-2.7.x with environment variable "FREETYPE_PROPERTIES=truetype:interpreter-version=35".
+  # This is useful for low-dpi screen and non-screen outputs (for example, legend of rrdtool's graphs).
+  # The setting in environment variable does not work well as the environment variable is not passed
+  # into sudo's child processes, browser sandbox processes and CGI-scripts (collectd, ...).
+  useSubpixelHinting ? true
 }:
 
 let
@@ -53,6 +59,10 @@ in stdenv.mkDerivation {
       ./cve-2017-8287.patch
     ] ++
     optional useEncumberedCode ./enable-subpixel-rendering.patch;
+
+  postPatch = lib.optionalString (!useSubpixelHinting) ''
+    sed -r -i 's/^#define TT_CONFIG_OPTION_SUBPIXEL_HINTING .*$//' devel/ftoption.h include/freetype/config/ftoption.h
+  '';
 
   outputs = [ "out" "dev" ];
 
