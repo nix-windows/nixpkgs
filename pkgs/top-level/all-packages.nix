@@ -11565,6 +11565,8 @@ with pkgs;
 
   cockroachdb = callPackage ../servers/sql/cockroachdb { };
 
+  comdb2 = callPackage ../servers/sql/comdb2 { };
+
   conky = callPackage ../os-specific/linux/conky ({
     lua = lua5_1; # conky can use 5.2, but toluapp can not
   } // config.conky or {});
