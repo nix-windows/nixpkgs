@@ -141,9 +141,10 @@ in
           echo "increasing socket buffer limit (/proc/sys/net/core/wmem_max): $(cat /proc/sys/net/core/wmem_max) -> 5242880"
           echo  5242880 > /proc/sys/net/core/wmem_max
         fi
-        [ -d "${cfg.workDir}/udf/lua" ] || mkdir -p "${cfg.workDir}/udf/lua"
-        [ -d "${cfg.workDir}/smd"     ] || mkdir -p "${cfg.workDir}/smd"
-        chown -R ${serviceConfig.User}:${serviceConfig.Group} "${cfg.workDir}"
+        install -d -m0700 -o ${serviceConfig.User} -g ${serviceConfig.Group} "${cfg.workDir}"
+        install -d -m0700 -o ${serviceConfig.User} -g ${serviceConfig.Group} "${cfg.workDir}/smd"
+        install -d -m0700 -o ${serviceConfig.User} -g ${serviceConfig.Group} "${cfg.workDir}/udf"
+        install -d -m0700 -o ${serviceConfig.User} -g ${serviceConfig.Group} "${cfg.workDir}/udf/lua"
       '';
     };
 
