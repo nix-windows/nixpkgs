@@ -40,8 +40,8 @@ let
     };
 in {
   hbase_1_2 = common {
-    version = "1.2.5";
-    sha256 = "19l61zwb7d8kxjxpqrn88savac2i0lwx27pra62vj8rjzq6cgviq";
+    version = "1.2.6";
+    sha256 = "1sl547xfim32m7nk7rcf1ksrss3y8w9zxnf691kddwm7fciw5yx0";
   };
   hbase_1_3 = common {
     version = "1.3.1";
