@@ -2,12 +2,12 @@
 
 stdenv.mkDerivation rec {
   name = "aerospike-server-${version}";
-  version = "3.14.0.1";
+  version = "3.14.0.2";
 
   src = fetchgit {
     url = https://github.com/aerospike/aerospike-server;
     rev = "refs/tags/${version}";
-    sha256 = "1kzkwvir9j9jdlwp8gi9p3wkv3qhbrn62x1mb1xlnrdc7rk32kyn";
+    sha256 = "1y3zd9xamjcfib78dmgsyqxdnchqfp5yw6cgmbaqvbg1fb868l8m";
     fetchSubmodules = true;
   };
 
