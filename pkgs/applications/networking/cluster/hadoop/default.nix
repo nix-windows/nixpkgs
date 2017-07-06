@@ -21,7 +21,7 @@ let
           name = "hadoop-${version}-maven-deps";
           inherit src nativeBuildInputs buildInputs configurePhase mavenFlags;
           buildPhase = ''
-            while timeout --kill-after=11m 10m mvn package -Dmaven.repo.local=$out/.m2 ${mavenFlags}; [ $? = 124 ]; do
+            while timeout --kill-after=21m 20m mvn package -Dmaven.repo.local=$out/.m2 ${mavenFlags}; [ $? = 124 ]; do
               echo "maven hangs while downloading :("
             done
           '';
