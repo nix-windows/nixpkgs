@@ -1,13 +1,14 @@
-{ stdenv, fetchgit, autoconf, automake, libtool, openssl, zlib }:
+{ stdenv, fetchFromGitHub, autoconf, automake, libtool, openssl, zlib }:
 
 stdenv.mkDerivation rec {
   name = "aerospike-server-${version}";
-  version = "3.14.0.2";
+  version = "3.14.1.1";
 
-  src = fetchgit {
-    url = https://github.com/aerospike/aerospike-server;
-    rev = "refs/tags/${version}";
-    sha256 = "1y3zd9xamjcfib78dmgsyqxdnchqfp5yw6cgmbaqvbg1fb868l8m";
+  src = fetchFromGitHub {
+    owner = "aerospike";
+    repo = "aerospike-server";
+    rev = version;
+    sha256 = "14w3q8qnn4dc8hiwi6n7yifjprnk6rpmx8376nbdcp6pkxk0bmfc";
     fetchSubmodules = true;
   };
 
