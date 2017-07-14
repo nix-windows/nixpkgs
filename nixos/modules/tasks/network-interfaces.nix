@@ -216,6 +216,15 @@ let
         '';
       };
 
+      extraRoutes = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        example = ["55.45.85.0/24" "172.16.5.0/24 via 10.0.0.101"];
+        description = ''
+          Extra static routes besides ''${ip4}/''${prefixLength}
+        '';
+      };
+
       ipv6Address = mkOption {
         default = null;
         example = "2001:1470:fffd:2098::e006";
