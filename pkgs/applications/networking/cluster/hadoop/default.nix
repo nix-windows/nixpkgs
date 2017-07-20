@@ -119,9 +119,9 @@ in {
     tomcat-sha256 = "0942f0ss6w9k23xg94nir2dbbkqrqp5k628jflk51ikm5qr95dxa";
   };
   hadoop_2_8 = common {
-    version = "2.8.0";
+    version = "2.8.1";
     tomcat-version = "6.0.48";
-    src-sha256 = "1m68i01l5jv3bkjwc3sjpav1xpycnkzc6lxdkdm00jijy6jskdkp";
+    src-sha256 = "1haxmzvg8x77ibmjr7k3vzcvir373wzb0hq2sncz50lka7ic0j07";
     maven-dependencies-sha256 = {
       "apache-maven-3.5.0" = "1cpk2jacmxwcq7rm32y7znlx97nwakf5jivx73v0wafir7cf2hvw"; # dependencies include Maven plugins so the hash depends on Maven version
     }.${maven.name};
