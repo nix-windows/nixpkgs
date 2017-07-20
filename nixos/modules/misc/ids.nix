@@ -65,6 +65,7 @@
       foldingathome = 37;
       sabnzbd = 38;
       #kdm = 39; # dropped in 17.03
+      hadoop = 39;
       ghostone = 40;
       git = 41;
       fourstore = 42;
@@ -296,7 +297,6 @@
       clickhouse = 278;
       rslsync = 279;
       minio = 280;
-      hadoop = 281;
 
       # When adding a uid, make sure it doesn't match an existing gid. And don't use uids above 399!
 
@@ -344,6 +344,7 @@
       #foldingathome = 37; # unused
       #sabnzd = 38; # unused
       #kdm = 39; # unused, even before 17.03
+      hadoop = 39;
       ghostone = 40;
       git = 41;
       fourstore = 42;
@@ -562,7 +563,6 @@
       clickhouse = 278;
       rslsync = 279;
       minio = 280;
-      hadoop = 281;
 
       # When adding a gid, make sure it doesn't match an existing
       # uid. Users and groups with the same name should have equal
