@@ -133,10 +133,9 @@ in {
       users.extraUsers.accumulo = {
         name = "accumulo";
         group = "accumulo";
-        uid = config.ids.uids.accumulo;
         description = "Accumulo server user";
       };
-      users.extraGroups.accumulo.gid = config.ids.gids.accumulo;
+      users.extraGroups.accumulo = {};
     })
 
     (mkIf cfg.enableMaster {
