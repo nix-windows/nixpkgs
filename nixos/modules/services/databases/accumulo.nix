@@ -26,8 +26,8 @@ let
       (pkgs.writeTextDir "accumulo-site.xml"          (configurationToXml cfg.accumuloSite))
       (pkgs.writeTextDir "core-site.xml"              (configurationToXml cfg.coreSite))
       (pkgs.writeTextDir "hdfs-site.xml"              (configurationToXml cfg.hdfsSite))
-      (pkgs.writeTextDir "generic_logger.properties"  cfg.logging)
       (pkgs.writeTextDir "log4j.properties"           cfg.logging)
+      (pkgs.writeTextDir "generic_logger.properties"  "${cfg.logging}\n${cfg.genericLogger}")
     ];
   };
 
@@ -95,14 +95,32 @@ in {
     };
 
     logging = mkOption {
-      description = "log4j properties";
+      description = "Content of log4j.properties";
       type = types.lines;
       default = ''
-        log4j.rootLogger=INFO,CONSOLE
-        log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender
-        log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout
-        log4j.appender.CONSOLE.layout.ConversionPattern=[myid:%X{myid}] - %-5p [%t:%C{1}@%L] - %m%n
+        log4j.rootLogger                                = INFO,CONSOLE
+        log4j.appender.CONSOLE                          = org.apache.log4j.ConsoleAppender
+        log4j.appender.CONSOLE.layout                   = org.apache.log4j.PatternLayout
+        log4j.appender.CONSOLE.layout.ConversionPattern = [myid:%X{myid}] - %-5p [%t:%C{1}@%L] - %m%n
       '';
+    };
+
+    genericLogger = mkOption {
+      description = "Content of generic_logger.properties";
+      type = types.lines;
+      default = ''
+        log4j.appender.ASYNC             = org.apache.accumulo.core.util.AsyncSocketAppender
+        log4j.appender.ASYNC.RemoteHost  = ''${org.apache.accumulo.core.host.log}
+        log4j.appender.ASYNC.Port        = ''${org.apache.accumulo.core.host.log.port}
+        log4j.appender.ASYNC.Application = ''${org.apache.accumulo.core.application}:''${org.apache.accumulo.core.ip.localhost.hostname}
+        log4j.appender.ASYNC.Threshold   = WARN
+      '';
+    };
+
+    listenAddress = mkOption {
+      description = "Explicit IP or hostname to listen and to advertise";
+      type = types.str;
+      default = null;
     };
 
     env = mkOption {
@@ -144,7 +162,7 @@ in {
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];
         serviceConfig = {
-          ExecStart = "${accumulo-configured}/bin/accumulo master";
+          ExecStart = "${accumulo-configured}/bin/accumulo master" + (optionalString (cfg.listenAddress!=null) " -a ${cfg.listenAddress}");
           Restart = "always";
           RestartSec = "5";
           User = "accumulo";
@@ -158,8 +176,9 @@ in {
         description = "Accumulo tablet server";
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];
+        restartIfChanged = false; # shutdown it gracefully: "accumulo admin stop $address"
         serviceConfig = {
-          ExecStart = "${accumulo-configured}/bin/accumulo tserver";
+          ExecStart = "${accumulo-configured}/bin/accumulo tserver" + (optionalString (cfg.listenAddress!=null) " -a ${cfg.listenAddress}");
           Restart = "always";
           RestartSec = "5";
           User = "accumulo";
@@ -174,7 +193,7 @@ in {
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];
         serviceConfig = {
-          ExecStart = "${accumulo-configured}/bin/accumulo monitor";
+          ExecStart = "${accumulo-configured}/bin/accumulo monitor" + (optionalString (cfg.listenAddress!=null) " -a ${cfg.listenAddress}");
           Restart = "always";
           RestartSec = "5";
           User = "accumulo";
@@ -189,7 +208,7 @@ in {
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];
         serviceConfig = {
-          ExecStart = "${accumulo-configured}/bin/accumulo monitor";
+          ExecStart = "${accumulo-configured}/bin/accumulo monitor" + (optionalString (cfg.listenAddress!=null) " -a ${cfg.listenAddress}");
           Restart = "always";
           RestartSec = "5";
           User = "accumulo";
