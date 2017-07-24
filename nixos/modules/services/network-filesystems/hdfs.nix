@@ -133,6 +133,7 @@ in {
         description = "HDFS name node";
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];
+        restartIfChanged = false; # do not restart on "nixos-rebuild switch". It is not quick to start (minutes) and its downtime disrupts other services
         serviceConfig = {
           ExecStart = "${hadoop-configured}/bin/hdfs namenode";
           Restart = "always";
@@ -163,6 +164,7 @@ in {
         description = "HDFS data node";
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];
+        restartIfChanged = false; # do not restart on "nixos-rebuild switch". It is not quick to start (minutes) and its downtime disrupts other services
         serviceConfig = {
           ExecStart = "${hadoop-configured}/bin/hdfs datanode";
           Restart = "always";
