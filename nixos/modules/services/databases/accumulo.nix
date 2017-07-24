@@ -230,8 +230,7 @@ in {
         } // cfg.env;
         serviceConfig = {
           ExecStart = "${cfg.package}/bin/accumulo tserver" + (optionalString (cfg.listenAddress!=null) " -a ${cfg.listenAddress}");
-          Restart = "always";
-          RestartSec = "5";
+          Restart = "no";  # start again manually; automatic restart is not desirable if it crashed (it may need more memory) or if it stopped gracefully
           User = "accumulo";
           Group = "accumulo";
         };
