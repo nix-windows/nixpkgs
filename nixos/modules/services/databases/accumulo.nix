@@ -19,26 +19,33 @@ let
       </configuration>
     '';
 
-  configDir = pkgs.buildEnv {
+  mkConfigDir = extra: pkgs.buildEnv {
     name = "accumulo-conf-dir";
-    paths = [
-      (pkgs.writeTextDir "accumulo-env.sh"            "") # unused while we set the env by makeWrapper but must exist
-      (pkgs.writeTextDir "accumulo-site.xml"          (configurationToXml cfg.accumuloSite))
-      (pkgs.writeTextDir "core-site.xml"              (configurationToXml cfg.coreSite))
-      (pkgs.writeTextDir "hdfs-site.xml"              (configurationToXml cfg.hdfsSite))
-      (pkgs.writeTextDir "log4j.properties"           cfg.logging)
-      (pkgs.writeTextDir "generic_logger.properties"  "${cfg.logging}\n${cfg.genericLogger}")
-    ];
+    paths = mapAttrsToList pkgs.writeTextDir ({
+      "accumulo-env.sh"   = ""; # unused while we set the env by makeWrapper but must exist
+      "accumulo-site.xml" = configurationToXml cfg.accumuloSite;
+      "core-site.xml"     = configurationToXml cfg.coreSite;
+      "hdfs-site.xml"     = configurationToXml cfg.hdfsSite;
+    } // extra);
   };
 
-  accumulo-configured = pkgs.stdenv.mkDerivation {
+  defaultLog4j = ''
+    log4j.rootLogger                                = INFO,CONSOLE
+    log4j.appender.CONSOLE                          = org.apache.log4j.ConsoleAppender
+    log4j.appender.CONSOLE.layout                   = org.apache.log4j.PatternLayout
+    log4j.appender.CONSOLE.layout.ConversionPattern = [myid:%X{myid}] - %-5p [%t:%C{1}@%L] - %m%n
+  '';
+
+  accumulo-cli = pkgs.stdenv.mkDerivation {
     name = "${cfg.package.name}-configured";
     buildInputs = [ pkgs.makeWrapper ];
-    buildCommand = ''
+    buildCommand = let
+      configDir = mkConfigDir { "log4j.properties" = defaultLog4j; };
+    in ''
       mkdir -p $out/bin
       for n in ${cfg.package}/bin/*; do
         [[ $n = *config* ]] || makeWrapper $n $out/bin/$(basename $n) \
-          --prefix LD_LIBRARY_PATH : "${with pkgs; stdenv.lib.makeLibraryPath [ openssl snappy zlib bzip2 ] /* libhadoop.so loads them by dlopen() */ }" \
+          --prefix LD_LIBRARY_PATH : "${with pkgs; makeLibraryPath [ openssl snappy zlib bzip2 ] /* libhadoop.so loads them by dlopen() */ }" \
           --set ZOOKEEPER_HOME     "${pkgs.zookeeper}" \
           --set HADOOP_PREFIX      "${cfg.hadoop-package}" \
           --set HADOOP_CONF_DIR    "${configDir}" \
@@ -94,17 +101,6 @@ in {
       };
     };
 
-    logging = mkOption {
-      description = "Content of log4j.properties";
-      type = types.lines;
-      default = ''
-        log4j.rootLogger                                = INFO,CONSOLE
-        log4j.appender.CONSOLE                          = org.apache.log4j.ConsoleAppender
-        log4j.appender.CONSOLE.layout                   = org.apache.log4j.PatternLayout
-        log4j.appender.CONSOLE.layout.ConversionPattern = [myid:%X{myid}] - %-5p [%t:%C{1}@%L] - %m%n
-      '';
-    };
-
     genericLogger = mkOption {
       description = "Content of generic_logger.properties";
       type = types.lines;
@@ -137,13 +133,45 @@ in {
        #ACCUMULO_LOG_DIR      = "/var/log/accumulo";
       };
     };
+
+    master = {
+      logging = mkOption {
+        description = "Content of log4j.properties";
+        type = types.lines;
+        default = defaultLog4j;
+      };
+    };
+
+    tserver = {
+      logging = mkOption {
+        description = "Content of log4j.properties";
+        type = types.lines;
+        default = defaultLog4j;
+      };
+    };
+
+    monitor = {
+      logging = mkOption {
+        description = "Content of log4j.properties";
+        type = types.lines;
+        default = defaultLog4j;
+      };
+    };
+
+    gc = {
+      logging = mkOption {
+        description = "Content of log4j.properties";
+        type = types.lines;
+        default = defaultLog4j;
+      };
+    };
   };
 
 
   config = mkMerge [
     (mkIf cfg.enable {
       # Accumulo CLI utilities with the config on $PATH
-      environment.systemPackages = [ accumulo-configured ];
+      environment.systemPackages = [ accumulo-cli ];
     })
 
     (mkIf (cfg.enableMaster || cfg.enableTserver || cfg.enableGc || cfg.enableMonitor) {
@@ -161,8 +189,20 @@ in {
         description = "Accumulo master";
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];
+        environment = let
+          configDir = mkConfigDir {
+            "log4j.properties" = cfg.master.logging;
+            "generic_logger.properties" = "${cfg.master.logging}\n${cfg.genericLogger}";
+          };
+        in {
+          ZOOKEEPER_HOME    = pkgs.zookeeper;
+          HADOOP_PREFIX     = cfg.hadoop-package;
+          HADOOP_CONF_DIR   = configDir;
+          ACCUMULO_CONF_DIR = configDir;
+          LD_LIBRARY_PATH   = with pkgs; makeLibraryPath [ openssl snappy zlib bzip2 ]; /* libhadoop.so loads them by dlopen() */
+        } // cfg.env;
         serviceConfig = {
-          ExecStart = "${accumulo-configured}/bin/accumulo master" + (optionalString (cfg.listenAddress!=null) " -a ${cfg.listenAddress}");
+          ExecStart = "${cfg.package}/bin/accumulo master" + (optionalString (cfg.listenAddress!=null) " -a ${cfg.listenAddress}");
           Restart = "always";
           RestartSec = "5";
           User = "accumulo";
@@ -176,14 +216,26 @@ in {
         description = "Accumulo tablet server";
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];
-        restartIfChanged = false; # shutdown it gracefully: "accumulo admin stop $address"
+        environment = let
+          configDir = mkConfigDir {
+            "log4j.properties" = cfg.tserver.logging;
+            "generic_logger.properties" = "${cfg.tserver.logging}\n${cfg.genericLogger}";
+          };
+        in {
+          ZOOKEEPER_HOME    = pkgs.zookeeper;
+          HADOOP_PREFIX     = cfg.hadoop-package;
+          HADOOP_CONF_DIR   = configDir;
+          ACCUMULO_CONF_DIR = configDir;
+          LD_LIBRARY_PATH   = with pkgs; makeLibraryPath [ openssl snappy zlib bzip2 ]; /* libhadoop.so loads them by dlopen() */
+        } // cfg.env;
         serviceConfig = {
-          ExecStart = "${accumulo-configured}/bin/accumulo tserver" + (optionalString (cfg.listenAddress!=null) " -a ${cfg.listenAddress}");
+          ExecStart = "${cfg.package}/bin/accumulo tserver" + (optionalString (cfg.listenAddress!=null) " -a ${cfg.listenAddress}");
           Restart = "always";
           RestartSec = "5";
           User = "accumulo";
           Group = "accumulo";
         };
+        restartIfChanged = false; # shutdown it gracefully: "accumulo admin stop $address"
       };
     })
 
@@ -192,8 +244,20 @@ in {
         description = "Accumulo garbage collector";
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];
+        environment = let
+          configDir = mkConfigDir {
+            "log4j.properties" = cfg.gc.logging;
+            "generic_logger.properties" = "${cfg.gc.logging}\n${cfg.genericLogger}";
+          };
+        in {
+          ZOOKEEPER_HOME    = pkgs.zookeeper;
+          HADOOP_PREFIX     = cfg.hadoop-package;
+          HADOOP_CONF_DIR   = configDir;
+          ACCUMULO_CONF_DIR = configDir;
+          LD_LIBRARY_PATH   = with pkgs; makeLibraryPath [ openssl snappy zlib bzip2 ]; /* libhadoop.so loads them by dlopen() */
+        } // cfg.env;
         serviceConfig = {
-          ExecStart = "${accumulo-configured}/bin/accumulo monitor" + (optionalString (cfg.listenAddress!=null) " -a ${cfg.listenAddress}");
+          ExecStart = "${cfg.package}/bin/accumulo gc" + (optionalString (cfg.listenAddress!=null) " -a ${cfg.listenAddress}");
           Restart = "always";
           RestartSec = "5";
           User = "accumulo";
@@ -207,8 +271,19 @@ in {
         description = "Accumulo monitor";
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];
+        environment = let
+          configDir = mkConfigDir {
+            "log4j.properties" = cfg.monitor.logging;
+          };
+        in {
+          ZOOKEEPER_HOME    = pkgs.zookeeper;
+          HADOOP_PREFIX     = cfg.hadoop-package;
+          HADOOP_CONF_DIR   = configDir;
+          ACCUMULO_CONF_DIR = configDir;
+          LD_LIBRARY_PATH   = with pkgs; makeLibraryPath [ openssl snappy zlib bzip2 ]; /* libhadoop.so loads them by dlopen() */
+        } // cfg.env;
         serviceConfig = {
-          ExecStart = "${accumulo-configured}/bin/accumulo monitor" + (optionalString (cfg.listenAddress!=null) " -a ${cfg.listenAddress}");
+          ExecStart = "${cfg.package}/bin/accumulo monitor" + (optionalString (cfg.listenAddress!=null) " -a ${cfg.listenAddress}");
           Restart = "always";
           RestartSec = "5";
           User = "accumulo";
