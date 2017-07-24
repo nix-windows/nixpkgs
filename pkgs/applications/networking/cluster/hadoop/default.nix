@@ -114,7 +114,7 @@ in {
     tomcat-version = "6.0.44";
     src-sha256 = "0m1hps3czp8v1a8h371wf04s4y4hs02v74s3sv7zhviydvf8axr2";
     maven-dependencies-sha256 = {
-      "apache-maven-3.5.0" = "0rkfzc1qka0m61akikg3g6qy53agqchw03vrm1cv6ssxbrmy5686"; # dependencies include Maven plugins so the hash depends on Maven version
+      "apache-maven-3.5.0" = "13bpsrawbrahm9k57w6nj7pxd4aq2cy3xy0vc1rs70qxc5lin92n"; # dependencies include Maven plugins so the hash depends on Maven version
     }.${maven.name};
     tomcat-sha256 = "0942f0ss6w9k23xg94nir2dbbkqrqp5k628jflk51ikm5qr95dxa";
   };
