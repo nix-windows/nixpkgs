@@ -55,22 +55,22 @@ import ./make-test.nix ({ pkgs, ...} : {
         imports = [ ./common/x11.nix ./common/user-account.nix common ];
         services.xserver.displayManager.auto.user = "alice";
         environment.systemPackages = [ pkgs.firefox ];
-        services.hdfs.enableNamenode = true;
-        services.hdfs.enableDatanode = true;
-        services.hdfs.enableJournalnode = true;
+        services.hdfs.namenode.enable = true;
+        services.hdfs.datanode.enable = true;
+        services.hdfs.journalnode.enable = true;
       };
       node2 = { lib, pkgs, ... }: {
         virtualisation.memorySize = 1500;
         imports = [ common ];
-        services.hdfs.enableNamenode = true;
-        services.hdfs.enableDatanode = true;
-        services.hdfs.enableJournalnode = true;
+        services.hdfs.namenode.enable = true;
+        services.hdfs.datanode.enable = true;
+        services.hdfs.journalnode.enable = true;
       };
       node3 = { lib, pkgs, ... }: {
         virtualisation.memorySize = 1500;
         imports = [ common ];
-        services.hdfs.enableDatanode = true;
-        services.hdfs.enableJournalnode = true;
+        services.hdfs.datanode.enable = true;
+        services.hdfs.journalnode.enable = true;
       };
     };
 
