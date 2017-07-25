@@ -37,7 +37,7 @@ let
   '';
 
   accumulo-cli = pkgs.stdenv.mkDerivation {
-    name = "${cfg.package.name}-configured";
+    name = "${cfg.package.name}-cli";
     buildInputs = [ pkgs.makeWrapper ];
     buildCommand = let
       configDir = mkConfigDir { "log4j.properties" = defaultLog4j; };
@@ -50,7 +50,7 @@ let
           --set HADOOP_PREFIX      "${cfg.hadoop-package}" \
           --set HADOOP_CONF_DIR    "${configDir}" \
           --set ACCUMULO_CONF_DIR  "${configDir}" \
-          ${ concatStrings (mapAttrsToList (k: v: " --set '${k}' '${v}'") cfg.env) }
+          ${ concatStrings (mapAttrsToList (k: v: " --set ${escapeShellArg k} ${escapeShellArg v}") cfg.env) }
       done
     '';
   };
@@ -58,12 +58,6 @@ let
 in {
 
   options.services.accumulo = {
-    enable        = mkEnableOption "configured accumulo";
-    enableMaster  = mkEnableOption "master daemon";
-    enableTserver = mkEnableOption "tablet server daemon";
-    enableGc      = mkEnableOption "garbage collect daemon";
-    enableMonitor = mkEnableOption "monitor daemon";
-
     package = mkOption {
       description = "The accumulo package to use";
       type = types.package;
@@ -115,7 +109,7 @@ in {
 
     listenAddress = mkOption {
       description = "Explicit IP or hostname to listen and to advertise";
-      type = types.str;
+      type = types.nullOr types.str;
       default = null;
     };
 
@@ -134,7 +128,12 @@ in {
       };
     };
 
+    cli = {
+      enable = mkEnableOption "configured accumulo cli";
+    };
+
     master = {
+      enable = mkEnableOption "master daemon";
       logging = mkOption {
         description = "Content of log4j.properties";
         type = types.lines;
@@ -143,6 +142,7 @@ in {
     };
 
     tserver = {
+      enable = mkEnableOption "tablet server daemon";
       logging = mkOption {
         description = "Content of log4j.properties";
         type = types.lines;
@@ -151,6 +151,7 @@ in {
     };
 
     monitor = {
+      enable = mkEnableOption "monitor daemon";
       logging = mkOption {
         description = "Content of log4j.properties";
         type = types.lines;
@@ -159,6 +160,7 @@ in {
     };
 
     gc = {
+      enable = mkEnableOption "garbage collect daemon";
       logging = mkOption {
         description = "Content of log4j.properties";
         type = types.lines;
@@ -169,13 +171,13 @@ in {
 
 
   config = mkMerge [
-    (mkIf cfg.enable {
+    (mkIf cfg.cli.enable {
       # Accumulo CLI utilities with the config on $PATH
       environment.systemPackages = [ accumulo-cli ];
     })
 
-    (mkIf (cfg.enableMaster || cfg.enableTserver || cfg.enableGc || cfg.enableMonitor) {
-      services.accumulo.enable = true;
+    (mkIf (cfg.master.enable || cfg.tserver.enable || cfg.gc.enable || cfg.monitor.enable) {
+      services.accumulo.cli.enable = true;
       users.extraUsers.accumulo = {
         name = "accumulo";
         group = "accumulo";
@@ -184,7 +186,7 @@ in {
       users.extraGroups.accumulo = {};
     })
 
-    (mkIf cfg.enableMaster {
+    (mkIf cfg.master.enable {
       systemd.services.accumulo-master = {
         description = "Accumulo master";
         wantedBy = [ "multi-user.target" ];
@@ -211,7 +213,7 @@ in {
       };
     })
 
-    (mkIf cfg.enableTserver {
+    (mkIf cfg.tserver.enable {
       systemd.services.accumulo-tserver = {
         description = "Accumulo tablet server";
         wantedBy = [ "multi-user.target" ];
@@ -238,7 +240,7 @@ in {
       };
     })
 
-    (mkIf cfg.enableGc {
+    (mkIf cfg.gc.enable {
       systemd.services.accumulo-gc = {
         description = "Accumulo garbage collector";
         wantedBy = [ "multi-user.target" ];
@@ -265,7 +267,7 @@ in {
       };
     })
 
-    (mkIf cfg.enableMonitor {
+    (mkIf cfg.monitor.enable {
       systemd.services.accumulo-monitor = {
         description = "Accumulo monitor";
         wantedBy = [ "multi-user.target" ];
