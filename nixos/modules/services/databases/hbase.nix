@@ -20,26 +20,35 @@ let
       </configuration>
     '';
 
-  configDir = pkgs.buildEnv {
+  mkConfigDir = extra: pkgs.buildEnv {
     name = "hbase-conf-dir";
-    paths = [
-      (pkgs.writeTextDir "hbase-site.xml"   (configurationToXml cfg.hbaseSite))
-      (pkgs.writeTextDir "core-site.xml"    (configurationToXml cfg.coreSite))
-      (pkgs.writeTextDir "hdfs-site.xml"    (configurationToXml cfg.hdfsSite))
-      (pkgs.writeTextDir "log4j.properties" cfg.logging)
-    ];
+    paths = mapAttrsToList pkgs.writeTextDir ({
+      "hbase-site.xml"    = configurationToXml cfg.hbaseSite;
+      "core-site.xml"     = configurationToXml cfg.coreSite;
+      "hdfs-site.xml"     = configurationToXml cfg.hdfsSite;
+    } // extra);
   };
 
-  hbase-configured = pkgs.stdenv.mkDerivation {
-    name = "${cfg.package.name}-configured";
+  defaultLog4j = ''
+    zookeeper.root.logger=INFO, CONSOLE
+    log4j.rootLogger=INFO, CONSOLE
+    log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender
+    log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout
+    log4j.appender.CONSOLE.layout.ConversionPattern=[myid:%X{myid}] - %-5p [%t:%C{1}@%L] - %m%n
+  '';
+
+  hbase-cli = pkgs.stdenv.mkDerivation {
+    name = "${cfg.package.name}-cli";
     buildInputs = [ pkgs.makeWrapper ];
-    buildCommand = ''
+    buildCommand = let
+      configDir = mkConfigDir { "log4j.properties" = defaultLog4j; };
+    in ''
       mkdir -p $out/bin
       for n in ${cfg.package}/bin/*; do
         [[ $n = *hbase-config.sh ]] || [[ $n = *hbase-common.sh ]] || makeWrapper $n $out/bin/$(basename $n) \
           --set HADOOP_CONF_DIR    "${configDir}" \
           --set HBASE_CONF_DIR     "${configDir}" \
-          ${ concatStrings (mapAttrsToList (k: v: " --set '${k}' '${v}'") cfg.env) }
+          ${ concatStrings (mapAttrsToList (k: v: " --set ${escapeShellArg k} ${escapeShellArg v}") cfg.env) }
       done
     '';
   };
@@ -51,11 +60,6 @@ in {
   options = {
 
     services.hbase = {
-
-      enable             = mkEnableOption "configured HBase";
-      enableMasterserver = mkEnableOption "master server daemon";
-      enableRegionserver = mkEnableOption "region server daemon";
-
       package = mkOption {
         description = "The HBase package to use";
         type = types.package;
@@ -91,16 +95,26 @@ in {
         };
       };
 
-      logging = mkOption {
-        description = "log4j properties";
-        type = types.lines;
-        default = ''
-          zookeeper.root.logger=INFO, CONSOLE
-          log4j.rootLogger=INFO, CONSOLE
-          log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender
-          log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout
-          log4j.appender.CONSOLE.layout.ConversionPattern=[myid:%X{myid}] - %-5p [%t:%C{1}@%L] - %m%n
-        '';
+      cli = {
+        enable = mkEnableOption "configured HBase CLI";
+      };
+
+      masterserver = {
+        enable = mkEnableOption "master server daemon";
+        logging = mkOption {
+          description = "log4j properties";
+          type = types.lines;
+          default = defaultLog4j;
+        };
+      };
+
+      regionserver = {
+        enable = mkEnableOption "region server daemon";
+        logging = mkOption {
+          description = "log4j properties";
+          type = types.lines;
+          default = defaultLog4j;
+        };
       };
 
       env = mkOption {
@@ -122,13 +136,13 @@ in {
   ###### implementation
 
   config = mkMerge [
-    (mkIf cfg.enable {
+    (mkIf cfg.cli.enable {
       # Hbase CLI utilities with the config on $PATH
-      environment.systemPackages = [ hbase-configured ];
+      environment.systemPackages = [ hbase-cli ];
     })
 
-    (mkIf (cfg.enableMasterserver || cfg.enableRegionserver) {
-      services.hbase.enable = true;
+    (mkIf (cfg.masterserver.enable || cfg.regionserver.enable) {
+      services.hbase.cli.enable = true;
       users.extraUsers.hbase = {
         name = "hbase";
         group = "hbase";
@@ -138,19 +152,25 @@ in {
       users.extraGroups.hbase.gid = config.ids.gids.hbase;
     })
 
-    (mkIf cfg.enableMasterserver {
+    (mkIf cfg.masterserver.enable {
       systemd.services.hbase-masterserver = {
         description = "HBase master server";
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];
         serviceConfig = {
-          ExecStart = "${hbase-configured}/bin/hbase master start";
+          ExecStart = "${cfg.package}/bin/hbase master start";
           Restart = "always";
           RestartSec = "5";
           User = "hbase";
           Group = "hbase";
           PermissionsStartOnly = true;
         };
+        environment = let
+          configDir = mkConfigDir { "log4j.properties" = cfg.masterserver.logging; };
+        in {
+          HADOOP_CONF_DIR = configDir;
+          HBASE_CONF_DIR  = configDir;
+        } // cfg.env;
         preStart = ''
           mkdir -p '${cfg.env.HBASE_LOG_DIR}'
           chown hbase:hbase '${cfg.env.HBASE_LOG_DIR}'
@@ -165,19 +185,25 @@ in {
       };
     })
 
-    (mkIf cfg.enableRegionserver {
+    (mkIf cfg.regionserver.enable {
       systemd.services.hbase-regionserver = assert !standalone; {
         description = "HBase region server";
         wantedBy = [ "multi-user.target" ];
         after = [ "network.target" ];
         serviceConfig = {
-          ExecStart = "${hbase-configured}/bin/hbase regionserver start";
+          ExecStart = "${cfg.package}/bin/hbase regionserver start";
           Restart = "always";
           RestartSec = "5";
           User = "hbase";
           Group = "hbase";
           PermissionsStartOnly = true;
         };
+        environment = let
+          configDir = mkConfigDir { "log4j.properties" = cfg.regionserver.logging; };
+        in {
+          HADOOP_CONF_DIR = configDir;
+          HBASE_CONF_DIR  = configDir;
+        } // cfg.env;
         preStart = ''
           mkdir -p '${cfg.env.HBASE_LOG_DIR}'
           chown hbase:hbase '${cfg.env.HBASE_LOG_DIR}'

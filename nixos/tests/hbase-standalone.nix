@@ -14,7 +14,7 @@ import ./make-test.nix ({ pkgs, ...} : {
         services = {
           xserver.displayManager.auto.user = "alice";
           hbase = {
-            enableMasterserver = true;
+            masterserver.enable = true;
             hbaseSite = {
               "hbase.tmp.dir" = "/var/tmp/hbase";
               "hbase.rootdir" = "file:///var/db/hbase";

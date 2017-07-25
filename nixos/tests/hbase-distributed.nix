@@ -35,13 +35,13 @@ import ./make-test.nix ({ pkgs, ...} : {
           xserver.displayManager.auto.user = "alice";
           zookeeper.enable = true;
           hdfs = {
-            enableNamenode = true;
-            enableDatanode = true;
+            namenode.enable = true;
+            datanode.enable = true;
             inherit coreSite hdfsSite;
           };
           hbase = {
-            enableMasterserver = true;
-            enableRegionserver = true;
+            masterserver.enable = true;
+            regionserver.enable = true;
             inherit coreSite hdfsSite hbaseSite;
           };
         };
@@ -51,11 +51,11 @@ import ./make-test.nix ({ pkgs, ...} : {
         networking.firewall.enable = false;
         services = {
           hdfs = {
-            enableDatanode = true;
+            datanode.enable = true;
             inherit coreSite hdfsSite;
           };
           hbase = {
-            enableRegionserver = true;
+            regionserver.enable = true;
             inherit coreSite hdfsSite hbaseSite;
           };
         };
