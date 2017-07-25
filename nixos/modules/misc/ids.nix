@@ -65,7 +65,6 @@
       foldingathome = 37;
       sabnzbd = 38;
       #kdm = 39; # dropped in 17.03
-      hadoop = 39;
       ghostone = 40;
       git = 41;
       fourstore = 42;
@@ -344,7 +343,6 @@
       #foldingathome = 37; # unused
       #sabnzd = 38; # unused
       #kdm = 39; # unused, even before 17.03
-      hadoop = 39;
       ghostone = 40;
       git = 41;
       fourstore = 42;

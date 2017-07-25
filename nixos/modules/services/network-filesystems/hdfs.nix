@@ -57,6 +57,18 @@ in {
       default = pkgs.hadoop;
     };
 
+    user = mkOption {
+      description = "hdfs user"; # should be the same on all nodes
+      type = types.str;
+      default = "hdfs";
+    };
+
+    group = mkOption {
+      description = "hdfs group"; # should be the same on all nodes
+      type = types.str;
+      default = "hdfs";
+    };
+
     coreSite = mkOption {
       description = "core-site.xml settings";
       type = types.attrsOf types.str;
@@ -153,13 +165,14 @@ in {
 
     (mkIf (cfg.namenode.enable || cfg.datanode.enable || cfg.balancer.enable || cfg.journalnode.enable) {
       services.hdfs.cli.enable = true;
-      users.extraUsers.hadoop = {
-        name = "hadoop";
-        group = "hadoop";
-        uid = config.ids.uids.hadoop;
-        description = "Hadoop server user";
+      users = mkIf (cfg.user != "root") {
+        extraUsers.${cfg.user} = {
+          name = cfg.user;
+          group = cfg.group;
+          description = "HDFS user";
+        };
+        extraGroups.${cfg.group} = {};
       };
-      users.extraGroups.hadoop.gid = config.ids.gids.hadoop;
     })
 
     (mkIf cfg.namenode.enable {
@@ -172,24 +185,22 @@ in {
           ExecStart = "${cfg.package}/bin/hdfs namenode";
           Restart = "always";
           RestartSec = "5";
-          User = "hadoop";
-          Group = "hadoop";
+          User = cfg.user;
+          Group = cfg.group;
           PermissionsStartOnly = true;
         };
         environment = {
           HADOOP_CONF_DIR = mkConfigDir { "log4j.properties" = cfg.namenode.logging; };
         } // cfg.env;
         preStart = ''
-          if [ ! -d '${cfg.hdfsSite."dfs.name.dir"}' ]; then
-            mkdir -m 0700 -p '${cfg.hdfsSite."dfs.name.dir"}'
-            chown hadoop:hadoop '${cfg.hdfsSite."dfs.name.dir"}'
-          fi
+          install -d -m0755 -o ${cfg.user} -g ${cfg.group} ${escapeShellArg cfg.hdfsSite."dfs.name.dir"}
+
           # it may require few failed starts before successfull bootstrap
-          if [ ! -d '${cfg.hdfsSite."dfs.name.dir"}/current' ]; then
+          if [ ! -d ${escapeShellArg cfg.hdfsSite."dfs.name.dir"}/current ]; then
             ${if cfg.hdfsSite?"dfs.nameservices" then
-                "${pkgs.sudo}/bin/sudo -u hadoop ${hadoop-cli}/bin/hdfs namenode -bootstrapStandby" # the namenode is part of HA
+                "${pkgs.sudo}/bin/sudo -u ${cfg.user} ${hadoop-cli}/bin/hdfs namenode -bootstrapStandby" # the namenode is part of HA
               else
-                "${pkgs.sudo}/bin/sudo -u hadoop ${hadoop-cli}/bin/hdfs namenode -format"           # the namenode is standalone
+                "${pkgs.sudo}/bin/sudo -u ${cfg.user} ${hadoop-cli}/bin/hdfs namenode -format"           # the namenode is standalone
              }
           fi
         '';
@@ -206,8 +217,8 @@ in {
           ExecStart = "${cfg.package}/bin/hdfs datanode";
           Restart = "always";
           RestartSec = "5";
-          User = "hadoop";
-          Group = "hadoop";
+          User = cfg.user;
+          Group = cfg.group;
           PermissionsStartOnly = true;
         };
         environment = {
@@ -216,10 +227,7 @@ in {
         preStart = ''
           DATADIRS='${cfg.hdfsSite."dfs.datanode.data.dir"}'
           for f in $(IFS=,; echo $DATADIRS); do
-            if [ ! -d $f ]; then
-              mkdir -m 0700 -p $f
-              chown hadoop:hadoop $f
-            fi
+            install -d -m0755 -o ${cfg.user} -g ${cfg.group} "$f"
           done
         '';
       };
@@ -234,18 +242,15 @@ in {
           ExecStart = "${cfg.package}/bin/hdfs journalnode";
           Restart = "always";
           RestartSec = "5";
-          User = "hadoop";
-          Group = "hadoop";
+          User = cfg.user;
+          Group = cfg.group;
           PermissionsStartOnly = true;
         };
         environment = {
           HADOOP_CONF_DIR = mkConfigDir { "log4j.properties" = cfg.journalnode.logging; };
         } // cfg.env;
         preStart = ''
-          if [ ! -d '${cfg.hdfsSite."dfs.journalnode.edits.dir"}' ]; then
-            mkdir -m 0700 -p '${cfg.hdfsSite."dfs.journalnode.edits.dir"}'
-            chown hadoop:hadoop '${cfg.hdfsSite."dfs.journalnode.edits.dir"}'
-          fi
+          install -d -m0755 -o ${cfg.user} -g ${cfg.group} ${escapeShellArg cfg.hdfsSite."dfs.journalnode.edits.dir"}
         '';
       };
     })
@@ -259,8 +264,8 @@ in {
           ExecStart = "${cfg.package}/bin/hdfs balancer";
           Restart = "always";
           RestartSec = "600"; # it exits when there is no work to do; no need to restart it quickly
-          User = "hadoop";
-          Group = "hadoop";
+          User = cfg.user;
+          Group = cfg.group;
         };
         environment = {
           HADOOP_CONF_DIR = mkConfigDir { "log4j.properties" = cfg.balancer.logging; };
