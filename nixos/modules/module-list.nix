@@ -178,7 +178,6 @@
   ./services/databases/clickhouse.nix
   ./services/databases/couchdb.nix
   ./services/databases/firebird.nix
-  ./services/databases/hbase.nix
   ./services/databases/influxdb.nix
   ./services/databases/memcached.nix
   ./services/databases/mongodb.nix
@@ -411,7 +410,6 @@
   ./services/networking/cjdns.nix
   ./services/networking/cntlm.nix
   ./services/networking/connman.nix
-  ./services/networking/consul.nix
   ./services/networking/coturn.nix
   ./services/networking/dante.nix
   ./services/networking/ddclient.nix
@@ -605,7 +603,6 @@
   ./services/web-servers/shellinabox.nix
   ./services/web-servers/tomcat.nix
   ./services/web-servers/uwsgi.nix
-  ./services/web-servers/varnish/default.nix
   ./services/web-servers/winstone.nix
   ./services/web-servers/zope2.nix
   ./services/x11/colord.nix
@@ -705,7 +702,6 @@
   ./virtualisation/containers.nix
   ./virtualisation/docker.nix
   ./virtualisation/ecs-agent.nix
-  ./virtualisation/libvirtd.nix
   ./virtualisation/lxc.nix
   ./virtualisation/lxcfs.nix
   ./virtualisation/lxd.nix
