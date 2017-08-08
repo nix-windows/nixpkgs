@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, pkgs, lib, ... }:
 
 with lib;
 let
@@ -6,10 +6,7 @@ let
 in {
   options.programs.ccache = {
     # host configuration
-    enable = mkOption {
-      type = types.bool;
-      default = false;
-    };
+    enable = mkEnableOption "CCache";
     cacheDir = mkOption {
       type = types.path;
       description = "CCache directory";
@@ -27,7 +24,34 @@ in {
   config = mkMerge [
     # host configuration
     (mkIf cfg.enable {
+      systemd.tmpfiles.rules = [ "d ${cfg.cacheDir} 0770 root nixbld -" ];
+
+      # "nix-ccache --show-stats" and "nix-ccache --clear"
+      security.wrappers.nix-ccache = {
+        group = "nixbld";
+        setgid = true;
+        source = pkgs.writeScript "nix-ccache.pl" ''
+          #!${pkgs.perl}/bin/perl
+
+          %ENV=( CCACHE_DIR => '${cfg.cacheDir}' );
+          sub untaint {
+            my $v = shift;
+            return '-C' if $v eq '-C' || $v eq '--clear';
+            return '-V' if $v eq '-V' || $v eq '--version';
+            return '-s' if $v eq '-s' || $v eq '--show-stats';
+            return '-z' if $v eq '-z' || $v eq '--zero-stats';
+            exec('${pkgs.ccache}/bin/ccache', '-h');
+          }
+          exec('${pkgs.ccache}/bin/ccache', map { untaint $_ } @ARGV);
+        '';
+      };
+    })
+
+    # target configuration
+    (mkIf (cfg.packageNames != []) {
       nixpkgs.overlays = [
+        (self: super: genAttrs cfg.packageNames (pn: super.${pn}.override { stdenv = builtins.trace "with ccache: ${pn}" self.ccacheStdenv; }))
+
         (self: super: {
           ccacheWrapper = super.ccacheWrapper.override {
             extraConfig = ''
@@ -37,15 +61,6 @@ in {
             '';
           };
         })
-      ];
-
-      systemd.tmpfiles.rules = [ "d ${cfg.cacheDir} 0770 root nixbld -" ];
-    })
-
-    # target configuration
-    (mkIf (cfg.packageNames != []) {
-      nixpkgs.overlays = [
-        (self: super: genAttrs cfg.packageNames (pn: super.${pn}.override { stdenv = builtins.trace "with ccache: ${pn}" self.ccacheStdenv; }))
       ];
     })
   ];
