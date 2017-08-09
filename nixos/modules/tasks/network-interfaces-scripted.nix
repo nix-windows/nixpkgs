@@ -185,11 +185,13 @@ let
                     echo "failed to add ${address}"
                     exit 1
                   fi
-                '');
+                '')
+                 + concatMapStringsSep "\n" (ipnet: "ip route add ${ipnet} dev ${i.name}") i.extraRoutes;
             preStop = ''
               state="/run/nixos/network/addresses/${i.name}"
               while read address; do
                 echo -n "deleting $address..."
+                ${concatMapStringsSep "\n" (ipnet: "ip route del ${ipnet} dev ${i.name}") i.extraRoutes}
                 ip addr del "$address" dev "${i.name}" >/dev/null 2>&1 || echo -n " Failed"
                 echo ""
               done < "$state"
