@@ -1,4 +1,4 @@
-{stdenv, fetchFromGitHub, fontforge}:
+{stdenv, fetchFromGitHub, fontforge, libfaketime}:
 
 stdenv.mkDerivation rec {
   name = "inconsolata-lgc-${version}";
@@ -23,6 +23,12 @@ stdenv.mkDerivation rec {
     mkdir -p "$out/doc/${name}"
     cp -v AUTHORS ChangeLog COPYING License.txt README "$out/doc/${name}" || true
   '';
+
+  LD_PRELOAD = "${libfaketime}/lib/libfaketime.so.1";
+  FAKETIME = "1970-01-01 00:00:01";
+  outputHashAlgo = "sha256";
+  outputHashMode = "recursive";
+  outputHash = "1nq2bg50wfxfv9wwbzlsg65jnmr06lxq6f476d1j6hjpz0wqlpc2";
 
   meta = with stdenv.lib; {
     description = "Fork of Inconsolata font, with proper support of Cyrillic and Greek";

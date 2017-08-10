@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, python2Packages, fontforge }:
+{ stdenv, fetchFromGitHub, python2Packages, libfaketime, fontforge }:
 
 stdenv.mkDerivation rec {
   name = "xits-math-${version}";
@@ -21,6 +21,12 @@ stdenv.mkDerivation rec {
     mkdir -p $out/share/fonts/opentype
     cp *.otf $out/share/fonts/opentype
   '';
+
+  LD_PRELOAD = "${libfaketime}/lib/libfaketime.so.1";
+  FAKETIME = "1970-01-01 00:00:01";
+  outputHashAlgo = "sha256";
+  outputHashMode = "recursive";
+  outputHash = "05j4djz266hhvagqcwkl59hxmy2y4vgcb8vs5w4j8ly2s1l3f3ch";
 
   meta = with stdenv.lib; {
     homepage = https://github.com/khaledhosny/xits-math;

@@ -1,4 +1,4 @@
-{ stdenv, fetchgit, fontforge, pythonFull }:
+{ stdenv, fetchgit, fontforge, libfaketime, pythonFull }:
 
 stdenv.mkDerivation rec {
   name = "rictydiminished-with-firacode-${version}";
@@ -27,6 +27,12 @@ stdenv.mkDerivation rec {
       ps.fonttools
     ]))
   ];
+
+  LD_PRELOAD = "${libfaketime}/lib/libfaketime.so.1";
+  FAKETIME = "1970-01-01 00:00:01";
+  outputHashAlgo = "sha256";
+  outputHashMode = "recursive";
+  outputHash = "022l420c63sz6hmv6q7lmwf1cq2vqk6mxwqmvbmkpliysg45i2dc";
 
   meta = with stdenv.lib; {
     homepage = https://github.com/hakatashi/RictyDiminished-with-FiraCode;

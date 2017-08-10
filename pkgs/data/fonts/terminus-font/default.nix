@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, python3, bdftopcf, mkfontdir, mkfontscale }:
+{ stdenv, fetchurl, python3, bdftopcf, libfaketime, mkfontdir, mkfontscale }:
 
 stdenv.mkDerivation rec {
   name = "terminus-font-4.46";
@@ -21,6 +21,12 @@ stdenv.mkDerivation rec {
   installPhase = ''
     make install fontdir
   '';
+
+  LD_PRELOAD = "${libfaketime}/lib/libfaketime.so.1";
+  FAKETIME = "1970-01-01 00:00:01";
+  outputHashAlgo = "sha256";
+  outputHashMode = "recursive";
+  outputHash = "1i8z9rqd4vdl2cj7ndch2ajbnq9x05zf0pqsqdfq018d6cswxz02";
 
   meta = with stdenv.lib; {
     description = "A clean fixed width font";

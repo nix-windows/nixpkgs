@@ -1,4 +1,4 @@
-{ stdenv, fetchzip, fetchFromGitHub, optipng, cairo, unzip, pythonPackages, pkgconfig, pngquant, which, imagemagick }:
+{ stdenv, fetchzip, fetchFromGitHub, optipng, cairo, unzip, pythonPackages, pkgconfig, pngquant, which, imagemagick, libfaketime }:
 
 rec {
   # 18MB
@@ -100,6 +100,12 @@ rec {
       mkdir -p $out/share/fonts/noto
       cp NotoColorEmoji.ttf fonts/NotoEmoji-Regular.ttf $out/share/fonts/noto
     '';
+
+    LD_PRELOAD = "${libfaketime}/lib/libfaketime.so.1";
+    FAKETIME = "1970-01-01 00:00:01";
+    outputHashAlgo = "sha256";
+    outputHashMode = "recursive";
+    outputHash = "0i6w3076vcczn2nbppxsqdx9089n01yr7irpwvqsn8zvpas0vzi4";
 
     meta = with stdenv.lib; {
       inherit version;
