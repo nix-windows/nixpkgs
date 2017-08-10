@@ -1,20 +1,13 @@
-{ stdenv, fetchurl }:
+{ stdenv, fetchzip }:
 
-stdenv.mkDerivation rec {
-  name = "inconsolata-${version}";
+let
   version = "1.010";
+in fetchzip {
+  name = "inconsolata-${version}";
 
-  src = fetchurl {
-    url = "http://www.levien.com/type/myfonts/Inconsolata.otf";
-    sha256 = "06js6znbcf7swn8y3b8ki416bz96ay7d3yvddqnvi88lqhbfcq8m";
-  };
-
-  phases = [ "installPhase" ];
-
-  installPhase = ''
-    mkdir -p $out/share/fonts/opentype
-    cp -v $src $out/share/fonts/opentype/inconsolata.otf
-  '';
+  url = "http://www.levien.com/type/myfonts/Inconsolata.otf";
+  postFetch = "install -Dm644 $downloadedFile $out/share/fonts/opentype/inconsolata.otf";
+  sha256 = "1yyf7agabfv0ia57c7in0r33x7c8ay445zf7c3dfc83j6w85g3i7";
 
   meta = with stdenv.lib; {
     homepage = http://www.levien.com/type/myfonts/inconsolata.html;

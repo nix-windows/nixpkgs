@@ -24,6 +24,10 @@ stdenv.mkDerivation rec {
     cp -v AUTHORS ChangeLog COPYING License.txt README "$out/doc/${name}" || true
   '';
 
+  outputHashAlgo = "sha256";
+  outputHashMode = "recursive";
+  outputHash = "1r62ds97am7pg7k1lhfrd9jbdns9053gwdf6ag7g1hxjgxk5rw4n";
+
   meta = with stdenv.lib; {
     description = "Fork of Inconsolata font, with proper support of Cyrillic and Greek";
     longDescription = ''

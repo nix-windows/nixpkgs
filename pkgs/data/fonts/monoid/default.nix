@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, python, fontforge }:
+{ stdenv, fetchFromGitHub, python, fontforge, libfaketime }:
 
 stdenv.mkDerivation rec {
   name = "monoid-${version}";
@@ -30,6 +30,12 @@ stdenv.mkDerivation rec {
     cp -va _release/* $out/share/fonts/truetype
     cp -va Readme.md $out/share/doc
   '';
+
+  LD_PRELOAD = "${libfaketime}/lib/libfaketime.so.1";
+  FAKETIME = "1970-01-01 00:00:01";
+  outputHashAlgo = "sha256";
+  outputHashMode = "recursive";
+  outputHash = "09n3d79i4izphniadmrrk2bvaln8g6wwxxzg86c0rzr40s0s5p3p";
 
   meta = with stdenv.lib; {
     homepage = http://larsenwork.com/monoid;

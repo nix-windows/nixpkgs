@@ -1,23 +1,19 @@
-{ stdenv, fetchurl, mkfontdir, mkfontscale }:
+{ stdenv, fetchzip, mkfontdir, mkfontscale }:
 
-stdenv.mkDerivation {
+fetchzip {
   name = "clearlyU-12-1.9";
 
-  src = fetchurl {
-    url = http://www.math.nmsu.edu/~mleisher/Software/cu/cu12-1.9.tgz;
-    sha256 = "1xn14jbv3m1khy7ydvad9ydkn7yygdbhjy9wm1v000jzjwr3lv21";
-  };
-  
-  buildInputs = [ mkfontdir mkfontscale ];
+  url = http://www.math.nmsu.edu/~mleisher/Software/cu/cu12-1.9.tgz;
 
-  installPhase =
-    ''
-      mkdir -p $out/share/fonts
-      cp *.bdf $out/share/fonts
-      cd $out/share/fonts
-      mkfontdir 
-      mkfontscale
-    '';
+  postFetch = ''
+    mkdir -p $out/share/fonts
+    cd $out/share/fonts
+    tar -xzvf $downloadedFile --strip-components=1
+    ${mkfontdir}/bin/mkfontdir
+    ${mkfontscale}/bin/mkfontscale
+  '';
+
+  sha256 = "127zrg65s90ksj99kr9hxny40rbxvpai62mf5nqk853hcd1bzpr6";
 
   meta = {
     description = "A Unicode font";

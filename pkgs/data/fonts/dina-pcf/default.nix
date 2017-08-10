@@ -1,19 +1,17 @@
-{stdenv, fetchurl, unzip, bdftopcf, mkfontdir, mkfontscale}:
+{stdenv, fetchzip, bdftopcf, mkfontdir, mkfontscale}:
 
-stdenv.mkDerivation rec {
+let
   version = "2.92";
+in fetchzip rec {
   name = "dina-font-pcf-${version}";
 
-  src = fetchurl {
-    url = "http://www.donationcoder.com/Software/Jibz/Dina/downloads/Dina.zip";
-    sha256 = "1kq86lbxxgik82aywwhawmj80vsbz3hfhdyhicnlv9km7yjvnl8z";
-  };
+  url = "http://www.donationcoder.com/Software/Jibz/Dina/downloads/Dina.zip";
 
-  buildInputs = [ unzip bdftopcf mkfontdir mkfontscale ];
+  postFetch = ''
+    unzip -j $downloadedFile
 
-  dontBuild = true;
-  patchPhase = "sed -i 's/microsoft-cp1252/ISO8859-1/' *.bdf";
-  installPhase = ''
+    sed -i 's/microsoft-cp1252/ISO8859-1/' *.bdf
+
     _get_font_size() {
       _pt=$\{1%.bdf}
       _pt=$\{_pt#*-}
@@ -21,29 +19,29 @@ stdenv.mkDerivation rec {
     }
 
     for i in Dina_i400-*.bdf; do
-        bdftopcf -t -o DinaItalic$(_get_font_size $i).pcf $i
+        ${bdftopcf}/bin/bdftopcf -t -o DinaItalic$(_get_font_size $i).pcf $i
     done
     for i in Dina_i700-*.bdf; do
-        bdftopcf -t -o DinaBoldItalic$(_get_font_size $i).pcf $i
+        ${bdftopcf}/bin/bdftopcf -t -o DinaBoldItalic$(_get_font_size $i).pcf $i
     done
     for i in Dina_r400-*.bdf; do
-        bdftopcf -t -o DinaMedium$(_get_font_size $i).pcf $i
+        ${bdftopcf}/bin/bdftopcf -t -o DinaMedium$(_get_font_size $i).pcf $i
     done
     for i in Dina_r700-*.bdf; do
-        bdftopcf -t -o DinaBold$(_get_font_size $i).pcf $i
+        ${bdftopcf}/bin/bdftopcf -t -o DinaBold$(_get_font_size $i).pcf $i
     done
-    gzip *.pcf
+    gzip -n *.pcf
 
     fontDir="$out/share/fonts/misc"
     mkdir -p "$fontDir"
     mv *.pcf.gz "$fontDir"
 
     cd "$fontDir"
-    mkfontdir
-    mkfontscale
+    ${mkfontdir}/bin/mkfontdir
+    ${mkfontscale}/bin/mkfontscale
   '';
 
-  preferLocalBuild = true;
+  sha256 = "0v0qn5zwq4j1yx53ypg6w6mqx6dk8l1xix0188b0k4z3ivgnflyb";
 
   meta = with stdenv.lib; {
     description = "A monospace bitmap font aimed at programmers";

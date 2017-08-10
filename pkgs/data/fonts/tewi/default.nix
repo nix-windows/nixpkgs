@@ -1,33 +1,31 @@
-{stdenv, fetchgit, bdftopcf, mkfontdir, mkfontscale}:
+{stdenv, fetchzip, bdftopcf, mkfontdir, mkfontscale}:
 
-stdenv.mkDerivation rec {
+let
   date = "2015-06-07";
+in fetchzip rec {
   name = "tewi-font-${date}";
 
-  src = fetchgit {
-    url = "https://github.com/lucy/tewi-font";
-    rev = "ff930e66ae471da4fdc226ffe65fd1ccd13d4a69";
-    sha256 = "0c7k847cp68w20frzsdknpss2cwv3lp970asyybv65jxyl2jz3iq";
-  };
+  url = "https://github.com/lucy/tewi-font/archive/ff930e66ae471da4fdc226ffe65fd1ccd13d4a69.zip";
 
-  buildInputs = [ bdftopcf mkfontdir mkfontscale ];
-  buildPhase = ''
+  postFetch = ''
+    unzip -j $downloadedFile
+
     for i in *.bdf; do
-        bdftopcf -o ''${i/bdf/pcf} $i
+       ${bdftopcf}/bin/bdftopcf -o ''${i/bdf/pcf} $i
     done
 
-    gzip *.pcf
-  '';
+    gzip -n *.pcf
 
-  installPhase = ''
     fontDir="$out/share/fonts/misc"
     mkdir -p "$fontDir"
     mv *.pcf.gz "$fontDir"
 
     cd "$fontDir"
-    mkfontdir
-    mkfontscale
+    ${mkfontdir}/bin/mkfontdir
+    ${mkfontscale}/bin/mkfontscale
   '';
+
+  sha256 = "14dv3m1svahjyb9c1x1570qrmlnynzg0g36b10bqqs8xvhix34yq";
 
   meta = with stdenv.lib; {
     description = "A nice bitmap font, readable even at small sizes";

@@ -1,4 +1,4 @@
-{stdenv, fetchurl, perl, bdftopcf, perlPackages, fontforge, SDL, SDL_image}:
+{stdenv, fetchurl, perl, bdftopcf, perlPackages, fontforge, libfaketime, SDL, SDL_image}:
 stdenv.mkDerivation rec {
   name = "${pname}-${version}";
   pname = "unscii";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "0qcxcnqz2nlwfzlrn115kkp3n8dd7593h762vxs6vfqm13i39lq1";
   };
   buildInputs = [];
-  nativeBuildInputs = [perl bdftopcf perlPackages.TextCharWidth fontforge 
+  nativeBuildInputs = [perl bdftopcf perlPackages.TextCharWidth fontforge
     SDL SDL_image];
   preConfigure = ''
     patchShebangs .
@@ -23,6 +23,13 @@ stdenv.mkDerivation rec {
     cp *.svg "$out/share/fonts/svg"
     cp *.woff "$out/share/fonts/web"
   '';
+
+  LD_PRELOAD = "${libfaketime}/lib/libfaketime.so.1";
+  FAKETIME = "1970-01-01 00:00:01";
+  outputHashAlgo = "sha256";
+  outputHashMode = "recursive";
+  outputHash = "0r0np9x8qqpzcq7jlk3n8a2advzyq8gpsf0fwfbplmkf0kcrbacv";
+
   meta = {
     inherit version;
     description = ''Bitmapped character-art-friendly Unicode fonts'';

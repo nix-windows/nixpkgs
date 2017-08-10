@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, fontforge }:
+{ stdenv, fetchurl, fontforge, libfaketime }:
 
 stdenv.mkDerivation rec {
   name = "linux-libertine-5.3.0";
@@ -39,6 +39,12 @@ stdenv.mkDerivation rec {
     cp *.enc $out/share/texmf/fonts/enc
     cp *.map $out/share/texmf/fonts/map
   '';
+
+  LD_PRELOAD = "${libfaketime}/lib/libfaketime.so.1";
+  FAKETIME = "1970-01-01 00:00:01";
+  outputHashAlgo = "sha256";
+  outputHashMode = "recursive";
+  outputHash = "1cygix9kig9h3fyxgcjlh9jl8a2cd861ihndvrx2knmxmry358c8";
 
   meta = {
     description = "Linux Libertine Fonts";

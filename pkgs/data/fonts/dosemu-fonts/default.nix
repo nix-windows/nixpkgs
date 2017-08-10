@@ -1,22 +1,20 @@
-{ stdenv, fetchurl, bdftopcf, mkfontdir, mkfontscale }:
+{ stdenv, fetchzip, bdftopcf, mkfontdir, mkfontscale }:
 
-stdenv.mkDerivation rec {
-  name = "dosemu-fonts-${version}";
+let
   version = "1.4.0";
+in fetchzip {
+  name = "dosemu-fonts-${version}";
 
-  src = fetchurl {
-    url = "mirror://sourceforge/dosemu/dosemu-${version}.tgz";
-    sha256 = "0l1zwmw42mpakjrzmbygshcg2qzq9mv8lx42738rz3j9hrqzg4pw";
-  };
+  url = "mirror://sourceforge/dosemu/dosemu-${version}.tgz";
 
-  buildCommand = ''
-    tar xf "$src" --anchored --wildcards '*/etc/*.bdf' '*/etc/dosemu.alias'
+  postFetch = ''
+    tar xf "$downloadedFile" --anchored --wildcards '*/etc/*.bdf' '*/etc/dosemu.alias'
     fontPath="$out/share/fonts/X11/misc/dosemu"
     mkdir -p "$fontPath"
     for i in */etc/*.bdf; do
       fontOut="$out/share/fonts/X11/misc/dosemu/$(basename "$i" .bdf).pcf.gz"
       echo -n "Installing font $fontOut..." >&2
-      ${bdftopcf}/bin/bdftopcf $i | gzip -c -9 > "$fontOut"
+      ${bdftopcf}/bin/bdftopcf $i | gzip -c -9 -n > "$fontOut"
       echo " done." >&2
     done
     cp */etc/dosemu.alias "$fontPath/fonts.alias"
@@ -24,6 +22,8 @@ stdenv.mkDerivation rec {
     ${mkfontdir}/bin/mkfontdir
     ${mkfontscale}/bin/mkfontscale
   '';
+
+  sha256 = "1miqv0ral5vazx721wildjlzvji5r7pbgm39c0cpj5ywafaikxr8";
 
   meta = {
     description = "Various fonts from the DOSEmu project";
