@@ -26,9 +26,9 @@ stdenv.mkDerivation rec {
 
   LD_PRELOAD = "${libfaketime}/lib/libfaketime.so.1";
   FAKETIME = "1970-01-01 00:00:01";
-  outputHashAlgo = "sha256";
-  outputHashMode = "recursive";
-  outputHash = "1nq2bg50wfxfv9wwbzlsg65jnmr06lxq6f476d1j6hjpz0wqlpc2";
+# outputHashAlgo = "sha256";
+# outputHashMode = "recursive";
+# outputHash = "14nf737pbg9lqi99zaa74pb9i6qfill6b83v7lj519k03ppaklrx";
 
   meta = with stdenv.lib; {
     description = "Fork of Inconsolata font, with proper support of Cyrillic and Greek";

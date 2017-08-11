@@ -9,16 +9,25 @@
 
 stdenv.mkDerivation rec {
   name = "fontforge-${version}";
-  version = "20160404";
-  versionModtime = "1459728000"; # unix timestamp of ${version}
-  versionModtimeStr = "00:00 UTC 04-Apr-2016";
+  version = "20170730";
+#  versionModtime = "1459728000"; # unix timestamp of ${version}
+#  versionModtimeStr = "00:00 UTC 04-Apr-2016";
 
+#  src = /etc/nixos/nixpkgs/pkgs/top-level/fontforgesrc;
   src = fetchFromGitHub {
     owner = "fontforge";
     repo = "fontforge";
     rev = version;
-    sha256 = "15nacq84n9gvlzp3slpmfrrbh57kfb6lbdlc46i7aqgci4qv6fg0";
+    sha256 = {
+      "20160404" = "15nacq84n9gvlzp3slpmfrrbh57kfb6lbdlc46i7aqgci4qv6fg0";
+      "20161012" = "08wla17r8rldbax1gkf6093qkwq0q663pzkjrffkc92cn6f2kc1w";
+      "20170730" = "15k6x97383p8l40jvcivalhwgbbcdg5vciyjz6m9r0lrlnjqkv99";
+     }.${version};
   };
+
+#  prePatch = ''
+#    chmod u+w -R *
+#  '';
 
   patches = [(fetchpatch {
     name = "use-system-uthash.patch";
@@ -28,14 +37,14 @@ stdenv.mkDerivation rec {
   })];
   patchFlags = "-p0";
 
-  # fontforge's compilation timestamp leaks to font files it creates
-  # 1970-01-01 won't work here because font build scripts may check if fontforge is too old
-  # (yes, what they actually check is when fontforge was compiled)
-  postPatch = ''
-    sed -i -r 's@^FONTFORGE_VERSIONDATE=.+$@FONTFORGE_VERSIONDATE="${version}"@'           configure.ac
-    sed -i -r 's@^FONTFORGE_MODTIME=.+$@FONTFORGE_MODTIME="${versionModtime}"@'            configure.ac
-    sed -i -r 's@^FONTFORGE_MODTIME_STR=.+$@FONTFORGE_MODTIME_STR="${versionModtimeStr}"@' configure.ac
-  '';
+#  # fontforge's compilation timestamp leaks to font files it creates
+#  # 1970-01-01 won't work here because font build scripts may check if fontforge is too old
+#  # (yes, what they actually check is when fontforge was compiled)
+#  postPatch = ''
+#    sed -i -r 's@^FONTFORGE_VERSIONDATE=.+$@FONTFORGE_VERSIONDATE="${version}"@'           configure.ac
+#    sed -i -r 's@^FONTFORGE_MODTIME=.+$@FONTFORGE_MODTIME="${versionModtime}"@'            configure.ac
+#    sed -i -r 's@^FONTFORGE_MODTIME_STR=.+$@FONTFORGE_MODTIME_STR="${versionModtimeStr}"@' configure.ac
+#  '';
 
   buildInputs = [
     autoconf automake gnum4 libtool perl pkgconfig gettext uthash
