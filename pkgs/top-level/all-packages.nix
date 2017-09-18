@@ -16330,6 +16330,8 @@ with pkgs;
 
   timbreid = callPackage ../applications/audio/pd-plugins/timbreid { };
 
+  timescaledb = callPackage ../servers/sql/postgresql/timescaledb {};
+
   timewarrior = callPackage ../applications/misc/timewarrior { };
 
   timidity = callPackage ../tools/misc/timidity { };
