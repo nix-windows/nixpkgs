@@ -5,10 +5,10 @@
     src = fetchFromGitHub {
       owner = "google";
       repo = "ngx_brotli";
-      rev = "788615eab7c5e0a984278113c55248305620df14";
-      sha256 = "02514bbjdhm9m38vljdh626d3c1783jxsxawv5c6bzblwmb8xgvf";
+      rev = "bfd2885b2da4d763fed18f49216bb935223cd34b";
+      sha256 = "04yx1n0wi3l2x37jd1ynl9951qxkn8xp42yv0mfp1qz9svips81n";
+      fetchSubmodules = true;
     };
-    inputs = [ pkgs.libbrotli ];
   };
 
   rtmp = {
@@ -24,8 +24,8 @@
     src = fetchFromGitHub {
       owner = "arut";
       repo = "nginx-dav-ext-module";
-      rev = "v0.0.3";
-      sha256 = "1qck8jclxddncjad8yv911s9z7lrd58bp96jf13m0iqk54xghx91";
+      rev = "v0.1.0";
+      sha256 = "1ifahd69vz715g3zim618jbmxb7kcmzykc696grskxm0svpy294k";
     };
     inputs = [ pkgs.expat ];
   };
@@ -35,7 +35,7 @@
       owner = "openresty";
       repo = "headers-more-nginx-module";
       rev = "v0.26";
-      sha256 = "01wkqhk8mk8jgmzi7jbzmg5kamffx3lmhj5yfwryvnvs6xqs74wn";
+      sha256 = "0zhr3ai4xf5yghxvlbrwv8n06fgx33f1n1d4a6gmsczdfjzf8g6g";
     };
   };
 
@@ -47,12 +47,22 @@
     '';
   };
 
+  modsecurity-beta = {
+    src = fetchFromGitHub {
+      owner = "SpiderLabs";
+      repo = "ModSecurity-nginx";
+      rev = "abbf2c47f6f3205484a1a9db618e067dce213b89";
+      sha256 = "04ar51bnqjca6g4p2irymgdmc8rh5nsi8ml43srm4krllnkvw8qn";
+    };
+    inputs = [ pkgs.curl pkgs.geoip pkgs.libmodsecurity pkgs.libxml2 pkgs.lmdb pkgs.yajl ];
+  };
+
   echo = {
     src = fetchFromGitHub {
       owner = "openresty";
       repo = "echo-nginx-module";
-      rev = "v0.57";
-      sha256 = "1q0f0zprcn0ypl2qh964cq186l3f40p0z7n7x22m8cxj367vf000";
+      rev = "v0.61";
+      sha256 = "0brjhhphi94ms4gia7za0mfx0png4jbhvq6j0nzjwp537iyiy23k";
     };
   };
 
@@ -69,8 +79,8 @@
     src = fetchFromGitHub {
       owner = "openresty";
       repo = "lua-nginx-module";
-      rev = "v0.10.5";
-      sha256 = "0wz5j4kqa6hk7ar42bkxp0hd74psjy6sfsldh1a6p93z349iz4v5";
+      rev = "v0.10.10";
+      sha256 = "1dlqnlkpn3pnhk2m09jdx3iw3m6xk31pw2m5xrpcmqk3bll68mw6";
     };
     inputs = [ pkgs.luajit ];
     preConfigure = ''
