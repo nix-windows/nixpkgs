@@ -24,31 +24,31 @@ in rec {
 
     ## see http://wiki.winehq.org/Mono
     mono = fetchurl rec {
-      version = "4.7.0";
+      version = "4.7.1";
       url = "http://dl.winehq.org/wine/wine-mono/${version}/wine-mono-${version}.msi";
-      sha256 = "18d5djnsb70740xs475jg1xsjsrq6zzjv0dmjq3vi7nbv56lg63n";
+      sha256 = "1ai9qsrgiwd371pyqr3mjaddaczly5d1z68r4lxl3hrkz2vmv39c";
     };
   };
 
   unstable = fetchurl rec {
     # NOTE: Don't forget to change the SHA256 for staging as well.
-    version = "2.13";
+    version = "2.21";
     url = "https://dl.winehq.org/wine/source/2.x/wine-${version}.tar.xz";
-    sha256 = "1y3yb01lg90pi8a9qjmymg7kikwkmvpkjxi6bbk1q1lvs7fs7g3g";
+    sha256 = "1vxbnikdpsmca3nx064mqrm83xpjsfshy25mdfxmyg5vrzl09yms";
     inherit (stable) mono gecko32 gecko64;
   };
 
   staging = fetchFromGitHub rec {
     inherit (unstable) version;
-    sha256 = "1ivjx5pf0xqqmdc1k5skg9saxgqzh3x01vjgypls7czmnpp3aylb";
+    sha256 = "1qznp4kgss4mhk1vvr91jmszsi47xg312r64l76jkgwijhypmvb7";
     owner = "wine-compholio";
     repo = "wine-staging";
     rev = "v${version}";
   };
 
   winetricks = fetchFromGitHub rec {
-    version = "20170614";
-    sha256 = "1xszflrdmixxr0v7vjby8fpnl8fgc9gldr1gnjpwzq1rnb84idqa";
+    version = "20171018";
+    sha256 = "0qlnxyaydpqx87kfyrkkmwg0jv9dfh3mkq27g224a8v1kf9z3r3h";
     owner = "Winetricks";
     repo = "winetricks";
     rev = version;
