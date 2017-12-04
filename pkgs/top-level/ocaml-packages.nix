@@ -298,9 +298,10 @@ let
       then callPackage ../development/ocaml-modules/lambda-term { }
       else lambdaTerm-1_6;
 
-    llvm = callPackage ../development/ocaml-modules/llvm {
-      llvm = pkgs.llvm_39;
-    };
+    llvm_37 = callPackage ../development/ocaml-modules/llvm { llvm = pkgs.llvm_37; };
+    llvm_38 = callPackage ../development/ocaml-modules/llvm { llvm = pkgs.llvm_38; };
+    llvm_39 = callPackage ../development/ocaml-modules/llvm { llvm = pkgs.llvm_39; };
+    llvm_4 = callPackage ../development/ocaml-modules/llvm { llvm = pkgs.llvm_4; };
 
     logs = callPackage ../development/ocaml-modules/logs {
       lwt = ocaml_lwt;
