@@ -60,7 +60,13 @@ let
     in attrs: concatStringsSep " " (attrValues (mapAttrs toFlag attrs));
 
   gnSystemLibraries = [
-    "ffmpeg" "flac" "harfbuzz-ng" "libwebp" "libxslt" "yasm" "snappy" # "libpng" "libjpeg"
+    "flac" "libwebp" "libxslt" "yasm" "opus" "snappy" "libpng" "zlib"
+    # "libjpeg" # fails with multiple undefined references to chromium_jpeg_*
+    # "re2" # fails with linker errors
+    # "ffmpeg" # https://crbug.com/731766
+  ] ++ optionals (versionRange "62" "63") [
+    "harfbuzz-ng" # in versions over 63 harfbuzz and freetype are being built together
+                  # so we can't build with one from system and other from source
   ];
 
   opusWithCustomModes = libopus.override {
@@ -73,7 +79,10 @@ let
     libpng libcap
     xdg_utils yasm minizip libwebp
     libusb1 re2 zlib
-    ffmpeg harfbuzz libxslt harfbuzz-icu libxml2
+    ffmpeg libxslt libxml2
+  ] ++ optionals (versionRange "62" "63") [
+    harfbuzz-icu # in versions over 63 harfbuzz and freetype are being built together
+                 # so we can't build with one from system and other from source
   ];
 
   # build paths and release info
@@ -86,6 +95,15 @@ let
     url = http://anduin.linuxfromscratch.org/BLFS/other/chromium-freetype.tar.xz;
     sha256 = "1vhslc4xg0d6wzlsi99zpah2xzjziglccrxn55k7qna634wyxg77";
   };
+
+  versionRange = min-version: upto-version:
+    let inherit (upstream-info) version;
+        result = versionAtLeast version min-version && versionOlder version upto-version;
+        stable-version = (import ./upstream-info.nix).stable.version;
+    in if versionAtLeast stable-version upto-version
+       then warn "chromium: stable version ${stable-version} is newer than a patchset bounded at ${upto-version}. You can safely delete it."
+            result
+       else result;
 
   base = rec {
     name = "${packageName}-${version}";
@@ -104,22 +122,35 @@ let
       nspr nss systemd
       utillinux alsaLib
       bison gperf kerberos
-      glib gtk2 dbus_glib
+      glib gtk2 gtk3 dbus_glib
       libXScrnSaver libXcursor libXtst mesa
       pciutils protobuf speechd libXdamage
     ] ++ optional gnomeKeyringSupport libgnome_keyring3
       ++ optionals gnomeSupport [ gnome.GConf libgcrypt ]
       ++ optionals cupsSupport [ libgcrypt cups ]
-      ++ optional pulseSupport libpulseaudio
-      ++ optional (versionAtLeast version "56.0.0.0") gtk3;
+      ++ optional pulseSupport libpulseaudio;
 
     patches = [
       ./patches/nix_plugin_paths_52.patch
       # To enable ChromeCast, go to chrome://flags and set "Load Media Router Component Extension" to Enabled
       # Fixes Chromecast: https://bugs.chromium.org/p/chromium/issues/detail?id=734325
       ./patches/fix_network_api_crash.patch
-      ./patches/chromium-59.0.3071.115-system_ffmpeg-1.patch
-    ] ++ optional (versionOlder version "57.0") ./patches/glibc-2.24.patch
+    ] # As major versions are added, you can trawl the gentoo and arch repos at
+      # https://gitweb.gentoo.org/repo/gentoo.git/plain/www-client/chromium/
+      # https://git.archlinux.org/svntogit/packages.git/tree/trunk?h=packages/chromium
+      # for updated patches and hints about build flags
+      ++ optionals (versionRange "62" "63") [
+      ./patches/chromium-gn-bootstrap-r17.patch
+      ./patches/chromium-gcc5-r3.patch
+      ./patches/chromium-glibc2.26-r1.patch
+    ]
+      ++ optionals (versionRange "63" "64") [
+      ./patches/chromium-gcc5-r4.patch
+      ./patches/include-math-for-round.patch
+    ]
+      ++ optionals (versionAtLeast version "64") [
+      ./patches/gn_bootstrap_observer.patch
+    ]
       ++ optional enableWideVine ./patches/widevine.patch;
 
     postPatch = ''
@@ -128,6 +159,9 @@ let
         --replace \
           'return sandbox_binary;' \
           'return base::FilePath(GetDevelSandboxPath());'
+
+      sed -i -e 's@"\(#!\)\?.*xdg-@"\1${xdg_utils}/bin/xdg-@' \
+        chrome/browser/shell_integration_linux.cc
 
       sed -i -e '/lib_loader.*Load/s!"\(libudev\.so\)!"${systemd.lib}/lib/\1!' \
         device/udev_linux/udev?_loader.cc
@@ -183,9 +217,14 @@ let
       enable_hotwording = enableHotwording;
       enable_widevine = enableWideVine;
       use_cups = cupsSupport;
-    } // {
+
       treat_warnings_as_errors = false;
       is_clang = false;
+      clang_use_chrome_plugins = false;
+      remove_webcore_debug_symbols = true;
+      use_gtk3 = true;
+      enable_swiftshader = false;
+      fieldtrial_testing_like_official_build = true;
 
       # Google API keys, see:
       #   http://www.chromium.org/developers/how-tos/api-keys
@@ -221,12 +260,24 @@ let
     '';
 
     buildPhase = let
+      # Build paralelism: on Hydra the build was frequently running into memory
+      # exhaustion, and even other users might be running into similar issues.
+      # -j is halved to avoid memory problems, and -l is slightly increased
+      # so that the build gets slight preference before others
+      # (it will often be on "critical path" and at risk of timing out)
       buildCommand = target: ''
         ninja -C "${buildPath}"  \
-          -j$NIX_BUILD_CORES -l$NIX_BUILD_CORES \
+          -j$(( ($NIX_BUILD_CORES+1) / 2 )) -l$(( $NIX_BUILD_CORES+1 )) \
           "${target}"
       '' + optionalString (target == "mksnapshot" || target == "chrome") ''
         paxmark m "${buildPath}/${target}"
+      '' + optionalString (versionAtLeast version "63") ''
+        (
+          source chrome/installer/linux/common/installer.include
+          PACKAGE=$packageName
+          MENUNAME="Chromium"
+          process_template chrome/app/resources/manpage.1.in "${buildPath}/chrome.1"
+        )
       '';
       targets = extraAttrs.buildTargets or [];
       commands = map buildCommand targets;
