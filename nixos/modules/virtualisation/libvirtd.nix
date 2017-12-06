@@ -13,9 +13,10 @@ let
     auth_unix_rw = "none"
     ${cfg.extraConfig}
   '';
+    #nvram = ["/run/libvirt/nix-ovmf/OVMF_CODE.fd:/run/libvirt/nix-ovmf/OVMF_VARS.fd"]
   qemuConfigFile = pkgs.writeText "qemu.conf" ''
     ${optionalString cfg.qemuOvmf ''
-      nvram = ["/run/libvirt/nix-ovmf/OVMF_CODE.fd:/run/libvirt/nix-ovmf/OVMF_VARS.fd"]
+      nvram = ["/run/libvirt/nix-ovmf/AAVMF_CODE.fd:/run/libvirt/nix-ovmf/AAVMF_VARS.fd"]
     ''}
     ${cfg.qemuVerbatimConfig}
   '';
@@ -169,10 +170,12 @@ in {
 
         ${optionalString cfg.qemuOvmf ''
             mkdir -p /run/libvirt/nix-ovmf
-            ln -s --force ${pkgs.OVMF.fd}/FV/OVMF_CODE.fd /run/libvirt/nix-ovmf/
-            ln -s --force ${pkgs.OVMF.fd}/FV/OVMF_VARS.fd /run/libvirt/nix-ovmf/
+            ln -s --force ${/etc/nixos/_myrealm_modules/libvirt/AAVMF/AAVMF_CODE.fd} /run/libvirt/nix-ovmf/AAVMF_CODE.fd
+            ln -s --force ${/etc/nixos/_myrealm_modules/libvirt/AAVMF/AAVMF_VARS.fd} /run/libvirt/nix-ovmf/AAVMF_VARS.fd
         ''}
       '';
+            #ln -s --force ${pkgs.OVMF.fd}/FV/OVMF_CODE.fd /run/libvirt/nix-ovmf/
+            #ln -s --force ${pkgs.OVMF.fd}/FV/OVMF_VARS.fd /run/libvirt/nix-ovmf/
 
       serviceConfig = {
         Type = "notify";

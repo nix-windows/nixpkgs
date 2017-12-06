@@ -102,19 +102,13 @@ stdenv.mkDerivation rec {
       done
     '';
 
+  ## Add a ‘qemu-kvm’ wrapper for compatibility with libvirt
   postInstall =
-    let
-      wrapTarget = if stdenv.isx86_64 then "qemu-system-x86_64"
-                   else if stdenv.isi686 then "qemu-system-i386"
-                   else if stdenv.isAarch64 then "qemu-system-aarch64"
-                   else null;
-    in optionalString (wrapTarget != null) ''
-      # Add a ‘qemu-kvm’ wrapper for compatibility with libvirt
-      p="$out/bin/${wrapTarget}"
-      if [ -e "$p" ]; then
-        makeWrapper "$p" $out/bin/qemu-kvm --add-flags "\$([ -e /dev/kvm ] && echo -enable-kvm)"
-      fi
-    '';
+    if stdenv.isx86_64       then ''makeWrapper $out/bin/qemu-system-x86_64  $out/bin/qemu-kvm --add-flags "\$([ -e /dev/kvm ] && echo -enable-kvm)"''
+    else if stdenv.isi686    then ''makeWrapper $out/bin/qemu-system-i386    $out/bin/qemu-kvm --add-flags "\$([ -e /dev/kvm ] && echo -enable-kvm)"''
+    else if stdenv.isArm     then ''makeWrapper $out/bin/qemu-system-arm     $out/bin/qemu-kvm --add-flags "\$([ -e /dev/kvm ] && echo -enable-kvm)"''
+    else if stdenv.isAarch64 then ''makeWrapper $out/bin/qemu-system-aarch64 $out/bin/qemu-kvm --add-flags "\$([ -e /dev/kvm ] && echo -enable-kvm)"''
+    else "";
 
   meta = with stdenv.lib; {
     homepage = http://www.qemu.org/;
