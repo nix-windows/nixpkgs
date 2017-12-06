@@ -5,12 +5,14 @@ let
   version = "0.1.12";
 
   hashes = {
+    aarch64-linux = "00000vcxy374yypfamlkygjg662lhll8j434qcvdawkvlidg5ii5";
     x86_64-linux = "1hxlavcxy374yypfamlkygjg662lhll8j434qcvdawkvlidg5ii5";
     x86_64-darwin = "1jkvhh710gwjnnjx59kaplx2ncfvkx9agfa76rr94sbjqq4igddm";
   };
   hash = hashes. ${system} or (throw "missing bootstrap hash for platform ${system}");
 
   platforms = {
+    aarch64-linux = "aarch64-unknown-linux-gnu";
     x86_64-linux = "x86_64-unknown-linux-musl";
     x86_64-darwin = "x86_64-apple-darwin";
   };
