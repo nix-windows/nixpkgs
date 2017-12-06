@@ -24,10 +24,11 @@ let
     + optionalString pulseSupport "pa,"
     + optionalString sdlSupport "sdl,";
 
-  hostCpuTargets = if stdenv.isi686 || stdenv.isx86_64 then "i386-softmmu,x86_64-softmmu"
-                      else if stdenv.isArm then "arm-softmmu"
-                      else if stdenv.isAarch64 then "aarch64-softmmu"
-                      else throw "Don't know how to build a 'hostCpuOnly = true' QEMU";
+  hostCpuTargets = if stdenv.isx86_64 then "i386-softmmu,x86_64-softmmu"
+                   else if stdenv.isi686 then "i386-softmmu"
+                   else if stdenv.isArm then "arm-softmmu"
+                   else if stdenv.isAarch64 then "aarch64-softmmu"
+                   else throw "Don't know how to build a 'hostCpuOnly = true' QEMU";
 in
 
 stdenv.mkDerivation rec {
@@ -102,9 +103,14 @@ stdenv.mkDerivation rec {
     '';
 
   postInstall =
-    ''
-      # Add a ‘qemu-kvm’ wrapper for compatibility/convenience.
-      p="$out/bin/qemu-system-${if stdenv.system == "x86_64-linux" then "x86_64" else "i386"}"
+    let
+      wrapTarget = if stdenv.isx86_64 then "qemu-system-x86_64"
+                   else if stdenv.isi686 then "qemu-system-i386"
+                   else if stdenv.isAarch64 then "qemu-system-aarch64"
+                   else null;
+    in optionalString (wrapTarget != null) ''
+      # Add a ‘qemu-kvm’ wrapper for compatibility with libvirt
+      p="$out/bin/${wrapTarget}"
       if [ -e "$p" ]; then
         makeWrapper "$p" $out/bin/qemu-kvm --add-flags "\$([ -e /dev/kvm ] && echo -enable-kvm)"
       fi

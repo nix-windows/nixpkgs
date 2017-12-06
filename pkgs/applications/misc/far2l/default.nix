@@ -7,12 +7,13 @@ stdenv.mkDerivation rec {
   build = "unstable-2017-10-08.git${builtins.substring 0 7 rev}";
   name = "far2l-2.1.${build}";
 
-  src = fetchFromGitHub {
-    owner = "elfmz";
-    repo = "far2l";
-    rev = rev;
-    sha256 = "0gmalh5gy8xwc0scry68d01lgp9pwf4mdzpksd0hhrgn313zhbdn";
-  };
+# src = fetchFromGitHub {
+#   owner = "elfmz";
+#   repo = "far2l";
+#   rev = rev;
+#   sha256 = "0gmalh5gy8xwc0scry68d01lgp9pwf4mdzpksd0hhrgn313zhbdn";
+# };
+  src = /etc/nixos/_absalon/git.far2l;
 
   nativeBuildInputs = [ cmake pkgconfig m4 makeWrapper imagemagick ];
 
