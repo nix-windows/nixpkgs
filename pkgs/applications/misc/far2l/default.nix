@@ -3,7 +3,7 @@
 
 with stdenv.lib;
 stdenv.mkDerivation rec {
-  rev = "be2cdc7a806bfcd425d5a77d332fa0412c628f3d";
+  rev = "192dace49c2e5456ca235833ee9877e4b8b491cc";
   build = "unstable-2017-10-08.git${builtins.substring 0 7 rev}";
   name = "far2l-2.1.${build}";
 
@@ -11,7 +11,7 @@ stdenv.mkDerivation rec {
     owner = "elfmz";
     repo = "far2l";
     rev = rev;
-    sha256 = "0gmalh5gy8xwc0scry68d01lgp9pwf4mdzpksd0hhrgn313zhbdn";
+    sha256 = "1l1sf5zlr99xrmjlpzfk3snxqw13xgvnqilw4n7051b8km0snrbl";
   };
 
   nativeBuildInputs = [ cmake pkgconfig m4 makeWrapper imagemagick ];
@@ -19,15 +19,7 @@ stdenv.mkDerivation rec {
   buildInputs = [ wxGTK30 glib pcre ]
     ++ optional stdenv.isDarwin darwin.apple_sdk.frameworks.Cocoa;
 
-  patches = [
-    ./add-nix-syntax-highlighting.patch
-
-    # https://github.com/elfmz/far2l/pull/309
-    (fetchpatch {
-      url = https://github.com/elfmz/far2l/commit/192dace49c2e5456ca235833ee9877e4b8b491cc.patch;
-      sha256 = "0liwcpgj776ir64ackq39cgdnnqcgs5jmhihy2049ci2mcx0mbd6";
-    })
-  ];
+  patches = [ ./add-nix-syntax-highlighting.patch ];
 
   postPatch = optionalString stdenv.isLinux ''
     substituteInPlace far2l/bootstrap/open.sh \
