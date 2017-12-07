@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, makeWrapper, cmake, pkgconfig, wxGTK30, glib, pcre, m4, bash,
+{ stdenv, fetchFromGitHub, fetchpatch, makeWrapper, cmake, pkgconfig, wxGTK30, glib, pcre, m4, bash,
   xdg_utils, gvfs, zip, unzip, gzip, bzip2, gnutar, p7zip, xz, imagemagick, darwin }:
 
 with stdenv.lib;
@@ -21,9 +21,11 @@ stdenv.mkDerivation rec {
 
   patches = [
     ./add-nix-syntax-highlighting.patch
+
+    # https://github.com/elfmz/far2l/pull/309
     (fetchpatch {
       url = https://github.com/elfmz/far2l/commit/192dace49c2e5456ca235833ee9877e4b8b491cc.patch;
-      sha256 = "00000h5gy8xwc0scry68d01lgp9pwf4mdzpksd0hhrgn313zhbdn";
+      sha256 = "0liwcpgj776ir64ackq39cgdnnqcgs5jmhihy2049ci2mcx0mbd6";
     })
   ];
 
