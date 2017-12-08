@@ -1,29 +1,34 @@
-{ stdenv, fetchurl, unzip, jre }:
+{ stdenv, jre, fetchMavenArtifact, makeWrapper, gnugrep }:
 
+let
+  support = (import ./support.nix) fetchMavenArtifact;
+  classpath = stdenv.lib.concatStringsSep ":" (map (dep: dep.jar) support.deps);
+in
 stdenv.mkDerivation rec {
-  version = "0.6.8";
+  version = support.scalafmtVersion;
   baseName = "scalafmt";
   name = "${baseName}-${version}";
 
-  src = fetchurl {
-    url = "https://github.com/scalameta/scalafmt/releases/download/v${version}/${baseName}.tar.gz";
-    sha256 = "1iaanrxk5lhxx1zj9gbxzgqbnyy1azfrab984mga7di5z1hs02s2";
-  };
+  src = support.scalafmt.jar;
 
-  unpackPhase = "tar xvzf $src";
+  buildInputs = [ makeWrapper ] ++ support.deps;
+
+  checkInputs = [ gnugrep ];
+
+  doCheck = true;
+
+  phases = [ "installPhase" "checkPhase" ];
 
   installPhase = ''
     mkdir -p "$out/bin"
     mkdir -p "$out/lib"
+    cp ${src} "$out/lib/${name}.jar"
+    makeWrapper ${jre}/bin/java $out/bin/${baseName} \
+      --add-flags "-cp ${classpath}:$out/lib/${name}.jar org.scalafmt.cli.Cli"
+  '';
 
-    cp cli/target/scala-2.11/scalafmt.jar "$out/lib/${name}.jar"
-
-    cat > "$out/bin/${baseName}" << EOF
-    #!${stdenv.shell}
-    exec ${jre}/bin/java -jar "$out/lib/${name}.jar" "\$@"
-    EOF
-
-    chmod a+x "$out/bin/${baseName}"
+  checkPhase = ''
+    $out/bin/${baseName} --version | grep -q "${version}"
   '';
 
   meta = with stdenv.lib; {
