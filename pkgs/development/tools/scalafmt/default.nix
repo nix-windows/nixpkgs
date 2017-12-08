@@ -1,8 +1,7 @@
-{ stdenv, jre, fetchMavenArtifact, makeWrapper, gnugrep }:
+{ stdenv, jdk, jre, fetchMavenArtifact, makeWrapper, gnugrep }:
 
 let
   support = (import ./support.nix) fetchMavenArtifact;
-  classpath = stdenv.lib.concatStringsSep ":" (map (dep: dep.jar) support.deps);
 in
 stdenv.mkDerivation rec {
   version = support.scalafmtVersion;
@@ -11,7 +10,7 @@ stdenv.mkDerivation rec {
 
   src = support.scalafmt.jar;
 
-  buildInputs = [ makeWrapper ] ++ support.deps;
+  buildInputs = [ jdk makeWrapper ] ++ support.deps;
 
   checkInputs = [ gnugrep ];
 
@@ -24,7 +23,7 @@ stdenv.mkDerivation rec {
     mkdir -p "$out/lib"
     cp ${src} "$out/lib/${name}.jar"
     makeWrapper ${jre}/bin/java $out/bin/${baseName} \
-      --add-flags "-cp ${classpath}:$out/lib/${name}.jar org.scalafmt.cli.Cli"
+      --add-flags "-cp $CLASSPATH:$out/lib/${name}.jar org.scalafmt.cli.Cli"
   '';
 
   checkPhase = ''
