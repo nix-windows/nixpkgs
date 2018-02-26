@@ -1,19 +1,39 @@
-{ fetchurl, stdenv, jre }:
+{ fetchurl, stdenv, jre, makeWrapper }:
 
 stdenv.mkDerivation rec {
-  name = "jmeter-3.3";
+  name = "jmeter-${version}";
+  version = "4.0";
   src = fetchurl {
     url = "http://archive.apache.org/dist/jmeter/binaries/apache-${name}.tgz";
-    sha256 = "190k6yrh5casadphkv4azp4nvf4wf2q85mrfysw67r9d96nb9kk5";
+    sha256 = "1dvngvi6j8qb6nmf5a3gpi5wxck4xisj41qkrj8sjwb1f8jq6nw4";
   };
+
+  nativeBuildInputs = [ makeWrapper ];
 
   buildInputs = [ jre ];
 
+  phases = [ "unpackPhase" "installPhase" "checkPhase" "fixupPhase" ];
+
   installPhase = ''
-    substituteInPlace ./bin/jmeter.sh --replace "java $ARGS" "${jre}/bin/java $ARGS"
-    substituteInPlace ./bin/jmeter --replace "java $ARGS" "${jre}/bin/java $ARGS"
     mkdir $out
+
+    mkdir $out/tools
+
+    # Prefix some scripts with jmeter to avoid clobbering the namespace
+    for i in heapdump.sh mirror-server mirror-server.sh shutdown.sh stoptest.sh create-rmi-keystore.sh; do
+      mv bin/$i bin/jmeter-$i
+    done
+
     cp ./* $out/ -R
+
+    wrapProgram $out/bin/jmeter --set JAVA_HOME "${jre}"
+    wrapProgram $out/bin/jmeter.sh --set JAVA_HOME "${jre}"
+  '';
+
+  doCheck = true;
+
+  checkPhase = ''
+    $out/bin/jmeter --version 2>&1 | grep -q "${version}"
   '';
 
   meta = {
