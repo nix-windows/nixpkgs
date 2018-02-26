@@ -10,29 +10,24 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ makeWrapper ];
 
-  buildInputs = [ jre ];
-
-  phases = [ "unpackPhase" "installPhase" "checkPhase" "fixupPhase" ];
-
   installPhase = ''
     mkdir $out
-
-    mkdir $out/tools
 
     # Prefix some scripts with jmeter to avoid clobbering the namespace
     for i in heapdump.sh mirror-server mirror-server.sh shutdown.sh stoptest.sh create-rmi-keystore.sh; do
       mv bin/$i bin/jmeter-$i
     done
 
-    cp ./* $out/ -R
+    cp -R * $out/
 
     wrapProgram $out/bin/jmeter --set JAVA_HOME "${jre}"
     wrapProgram $out/bin/jmeter.sh --set JAVA_HOME "${jre}"
   '';
 
-  doCheck = true;
+  doInstallCheck = true;
 
-  checkPhase = ''
+  installCheckPhase = ''
+    $out/bin/jmeter --version
     $out/bin/jmeter --version 2>&1 | grep -q "${version}"
   '';
 
