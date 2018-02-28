@@ -1602,10 +1602,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   CGIFast = buildPerlPackage {
-    name = "CGI-Fast-2.10";
+    name = "CGI-Fast-2.13";
     src = fetchurl {
-      url = mirror://cpan/authors/id/L/LE/LEEJO/CGI-Fast-2.10.tar.gz;
-      sha256 = "98263afcc9f5d88c7cbbd39651c5431b434c1c815fe284962d887ed7be3a1dd3";
+      url = "mirror://cpan/authors/id/L/LE/LEEJO/CGI-Fast-2.13.tar.gz";
+      sha256 = "1m5i2cw019xjzz8h040raml1vw7dxh0pkalzr4vhwf4l7gy22bvr";
     };
     propagatedBuildInputs = [ FCGI if_ ];
     doCheck = false;
