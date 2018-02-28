@@ -14146,10 +14146,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   URI = buildPerlPackage rec {
-    name = "URI-1.71";
+    name = "URI-1.73";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/E/ET/ETHER/${name}.tar.gz";
-      sha256 = "9c8eca0d7f39e74bbc14706293e653b699238eeb1a7690cc9c136fb8c2644115";
+      url = "mirror://cpan/authors/id/E/ET/ETHER/URI-1.73.tar.gz";
+      sha256 = "04z4xwiryrbxxi48bwbkgq9q9pwfgqry3wp0ramcrwv3dx5ap9yc";
     };
     meta = {
       description = "Uniform Resource Identifiers (absolute and relative)";
