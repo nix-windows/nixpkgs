@@ -961,10 +961,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   CatalystActionREST = buildPerlPackage rec {
-    name = "Catalyst-Action-REST-1.20";
+    name = "Catalyst-Action-REST-1.21";
     src = fetchurl {
-      url = mirror://cpan/authors/id/J/JJ/JJNAPIORK/Catalyst-Action-REST-1.20.tar.gz;
-      sha256 = "c0470541ec0016b837db3186ed77915813c8b856b941db89b86db8602e31ead6";
+      url = "mirror://cpan/authors/id/J/JJ/JJNAPIORK/Catalyst-Action-REST-1.21.tar.gz";
+      sha256 = "086bykggzalbjfk0islac4b48g9s2ypj7y81d6ns1lq0aax1py6c";
     };
     buildInputs = [ TestRequires ];
     propagatedBuildInputs = [ CatalystRuntime ClassInspector JSONMaybeXS MROCompat ModulePluggable Moose ParamsValidate URIFind namespaceautoclean ];
