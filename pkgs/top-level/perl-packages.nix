@@ -12441,10 +12441,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TestCPANMeta = buildPerlPackage {
-    name = "Test-CPAN-Meta-0.23";
+    name = "Test-CPAN-Meta-0.25";
     src = fetchurl {
-      url = mirror://cpan/authors/id/B/BA/BARBIE/Test-CPAN-Meta-0.23.tar.gz;
-      sha256 = "dda70c5cb61eddc6d3148cb66b6ff5eb4546a065257f4c104112a8a8a3575116";
+      url = "mirror://cpan/authors/id/B/BA/BARBIE/Test-CPAN-Meta-0.25.tar.gz";
+      sha256 = "1dcdbbdwdyhpldkhjzc9rvzlmb5jbil6fwh2x07nsfdwysf4ynzm";
     };
     meta = {
       description = "Validate your CPAN META.yml files";
