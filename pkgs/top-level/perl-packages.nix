@@ -1930,10 +1930,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ClassMix = buildPerlPackage rec {
-    name = "Class-Mix-0.005";
+    name = "Class-Mix-0.006";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/Z/ZE/ZEFRAM/${name}.tar.gz";
-      sha256 = "054d0db62df90f22601f2a18fc84e9ca026d81601f5940b2fcc543e39d69b36b";
+      url = "mirror://cpan/authors/id/Z/ZE/ZEFRAM/Class-Mix-0.006.tar.gz";
+      sha256 = "02vwzzqn1s24g525arbrjh9s9j0y1inp3wbr972gh51ri51zciw7";
     };
     buildInputs = [ ModuleBuild ];
     propagatedBuildInputs = [ ParamsClassify self."if" ];
