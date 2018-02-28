@@ -7427,10 +7427,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   LogAny = buildPerlPackage rec {
-    name = "Log-Any-1.045";
+    name = "Log-Any-1.705";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/P/PR/PREACTION/${name}.tar.gz";
-      sha256 = "d95180c0c2d50d7d3a541e0c79d83ee6b4ad5787e1785b361fed450c2dec8400";
+      url = "mirror://cpan/authors/id/P/PR/PREACTION/Log-Any-1.705.tar.gz";
+      sha256 = "15m6p4zz8hhg6fs00f5wbay98zyp9p84r6w7dzxjzz4bk8ccbiw5";
     };
     meta = {
       homepage = https://github.com/preaction/Log-Any;
