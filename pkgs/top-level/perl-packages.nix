@@ -3127,10 +3127,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DateExtract = buildPerlPackage {
-    name = "Date-Extract-0.05";
+    name = "Date-Extract-0.06";
     src = fetchurl {
-      url = mirror://cpan/authors/id/S/SH/SHARYANTO/Date-Extract-0.05.tar.gz;
-      sha256 = "ef866b4d596e976a6f4e4b266a6ad7fe4513fad9ae761d7a9ef66f672695fe6d";
+      url = "mirror://cpan/authors/id/A/AL/ALEXMV/Date-Extract-0.06.tar.gz";
+      sha256 = "0ays7jaz1j1977x4ghbgq17msbfyllv55dgw1vn2ad8cqpamhxmw";
     };
     buildInputs = [TestMockTime];
     propagatedBuildInputs = [DateTimeFormatNatural ClassDataInheritable];
