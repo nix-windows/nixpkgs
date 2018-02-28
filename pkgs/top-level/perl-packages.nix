@@ -10882,10 +10882,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   RegexpCommon = buildPerlPackage {
-    name = "Regexp-Common-2013031301";
+    name = "Regexp-Common-2017060201";
     src = fetchurl {
-      url = mirror://cpan/authors/id/A/AB/ABIGAIL/Regexp-Common-2013031301.tar.gz;
-      sha256 = "729a8198d264aa64ecbb233ff990507f97fbb66bda746b95f3286f50f5f25c84";
+      url = "mirror://cpan/authors/id/A/AB/ABIGAIL/Regexp-Common-2017060201.tar.gz";
+      sha256 = "16q8d7mx0c4nbjrvj69jdn4q33d1k40imgxn83h11wq6xqx8a1zf";
     };
     meta = with stdenv.lib; {
       description = "Provide commonly requested regular expressions";
