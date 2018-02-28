@@ -11663,11 +11663,11 @@ let self = _self // overrides; _self = with self; {
     };
   };
 
-  StringUtil = let version = "1.24"; in buildPerlPackage {
-    name = "String-Util-${version}";
+  StringUtil = let version = "1.26"; in buildPerlPackage {
+    name = "String-Util-1.26";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/M/MI/MIKO/String-Util-${version}.tar.gz";
-      sha256 = "16c7dbpz87ywq49lnsaml0k28jbkraf1p2njh72jc5xcxys7vykv";
+      url = "mirror://cpan/authors/id/M/MI/MIKO/String-Util-1.26.tar.gz";
+      sha256 = "0bgs6fsc0gcj9qa1k98nwjp4xbkl3ckz71rz3qhmav0lgkrr96pl";
     };
     meta = {
       inherit version;
