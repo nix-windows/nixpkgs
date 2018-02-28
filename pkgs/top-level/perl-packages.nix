@@ -3743,10 +3743,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DBIxSearchBuilder = buildPerlPackage {
-    name = "DBIx-SearchBuilder-1.66";
+    name = "DBIx-SearchBuilder-1.67";
     src = fetchurl {
-      url = mirror://cpan/authors/id/A/AL/ALEXMV/DBIx-SearchBuilder-1.66.tar.gz;
-      sha256 = "e2703c3f4b38cf232dec48be98aeab6d2dbee077dcf059369b825629c4be702e";
+      url = "mirror://cpan/authors/id/B/BP/BPS/DBIx-SearchBuilder-1.67.tar.gz";
+      sha256 = "1nk3slqw7czrj15hjqn1zlys1bldybrrd0rca0z5gbv15b17jca5";
     };
     buildInputs = [ DBDSQLite ];
     propagatedBuildInputs = [ CacheSimpleTimedExpiry ClassAccessor ClassReturnValue Clone DBI DBIxDBSchema Want ];
