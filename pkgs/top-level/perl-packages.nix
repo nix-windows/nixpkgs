@@ -3295,10 +3295,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DateTimeFormatNatural = buildPerlPackage {
-    name = "DateTime-Format-Natural-1.03";
+    name = "DateTime-Format-Natural-1.05";
     src = fetchurl {
-      url = mirror://cpan/authors/id/S/SC/SCHUBIGER/DateTime-Format-Natural-1.03.tar.gz;
-      sha256 = "1m3bmv90kww8xr4dda75isvzigy8y3clgvk58zp0bxc5d7k4qdxi";
+      url = "mirror://cpan/authors/id/S/SC/SCHUBIGER/DateTime-Format-Natural-1.05.tar.gz";
+      sha256 = "10ldrhz5rnpsd8qmqn1a4s0w5hhfbjrr13a93yx7kpp89g85pxqv";
     };
     buildInputs = [ ModuleUtil TestMockTime ];
     propagatedBuildInputs = [ Clone DateTime DateTimeTimeZone ListMoreUtils ParamsValidate boolean ];
