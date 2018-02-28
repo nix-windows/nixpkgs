@@ -12888,10 +12888,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TestPortabilityFiles = buildPerlPackage {
-    name = "Test-Portability-Files-0.06";
+    name = "Test-Portability-Files-0.09";
     src = fetchurl {
-      url = mirror://cpan/authors/id/A/AB/ABRAXXA/Test-Portability-Files-0.06.tar.gz;
-      sha256 = "3e0fd033387ab82df8aedd42a14a8e64200aebd59447ad62a3bc411ff4a808a8";
+      url = "mirror://cpan/authors/id/A/AB/ABRAXXA/Test-Portability-Files-0.09.tar.gz";
+      sha256 = "0732b92rpnnfwg907734vrf246fbh2cf14h1xkx7j6mg86lizlqn";
     };
     meta = {
       description = "Check file names portability";
