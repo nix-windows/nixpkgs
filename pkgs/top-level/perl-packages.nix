@@ -5213,10 +5213,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   FileModified = buildPerlPackage {
-    name = "File-Modified-0.07";
+    name = "File-Modified-0.10";
     src = fetchurl {
-      url = mirror://cpan/authors/id/C/CO/CORION/File-Modified-0.07.tar.gz;
-      sha256 = "11zkg171fa5vdbyrbfcay134hhgyf4yaincjxwspwznrfmkpi49h";
+      url = "mirror://cpan/authors/id/N/NE/NEILB/File-Modified-0.10.tar.gz";
+      sha256 = "0i2iqhzxzdky9l9vv1v1yhf1xg5k6lkkqh7n2yh9hsgcnsmb2l3b";
     };
   };
 
