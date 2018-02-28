@@ -387,10 +387,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ListCompare = buildPerlPackage {
-    name = "List-Compare-1.18";
+    name = "List-Compare-0.53";
     src = fetchurl {
-      url = mirror://cpan/authors/id/J/JK/JKEENAN/List-Compare-0.39.tar.gz;
-      sha256 = "1v4gn176faanzf1kr9axdp1220da7nkvz0d66mnk34nd0skjjxcl";
+      url = "mirror://cpan/authors/id/J/JK/JKEENAN/List-Compare-0.53.tar.gz";
+      sha256 = "0l451yqhx1hlm7f2c3bjsl3n8w6l1jngrxzyfm2d8d9iggv4zgzx";
     };
   };
 
