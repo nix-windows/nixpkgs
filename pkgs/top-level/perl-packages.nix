@@ -8859,10 +8859,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   MooseXLazyRequire = buildPerlPackage {
-    name = "MooseX-LazyRequire-0.10";
+    name = "MooseX-LazyRequire-0.11";
     src = fetchurl {
-      url = mirror://cpan/authors/id/E/ET/ETHER/MooseX-LazyRequire-0.10.tar.gz;
-      sha256 = "a555f80c0e91bc428f040015f00dd98f3c022704ec089516b9b3507f3d437090";
+      url = "mirror://cpan/authors/id/E/ET/ETHER/MooseX-LazyRequire-0.11.tar.gz";
+      sha256 = "1222p700wx79w8xxdg0jncxfk4acm4jkv51sybrrrbwx04g0qqpg";
     };
     buildInputs = [ TestCheckDeps TestFatal ModuleMetadata ];
     propagatedBuildInputs = [ Moose aliased namespaceautoclean ];
