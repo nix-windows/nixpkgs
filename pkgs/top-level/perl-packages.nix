@@ -4285,10 +4285,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DistZillaPluginTestPortability = buildPerlPackage {
-    name = "Dist-Zilla-Plugin-Test-Portability-2.000005";
+    name = "Dist-Zilla-Plugin-Test-Portability-2.001000";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DO/DOHERTY/Dist-Zilla-Plugin-Test-Portability-2.000005.tar.gz;
-      sha256 = "b32d0a4b1d78ba76fabedd299c1a11efed05c3ce9752d7da6babe06d3515242b";
+      url = "mirror://cpan/authors/id/E/ET/ETHER/Dist-Zilla-Plugin-Test-Portability-2.001000.tar.gz";
+      sha256 = "0ydi363n7z5hz2ys4873vyir33c02f4i8c2k0l1rbkr4ksyzb3z0";
     };
     buildInputs = [ CaptureTiny DistZilla MooseAutobox TestOutput ];
     propagatedBuildInputs = [ DistZilla Moose TestPortabilityFiles ];
