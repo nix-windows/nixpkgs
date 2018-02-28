@@ -7129,10 +7129,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   LinguaENInflect = buildPerlPackage rec {
-    name = "Lingua-EN-Inflect-1.899";
+    name = "Lingua-EN-Inflect-1.903";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/D/DC/DCONWAY/${name}.tar.gz";
-      sha256 = "1599a93020a2fdc0de8db14eea721df8fd772f78dedaf81081081fc93aa6a257";
+      url = "mirror://cpan/authors/id/D/DC/DCONWAY/Lingua-EN-Inflect-1.903.tar.gz";
+      sha256 = "0j8d1f1wvmgc11d71pc8xp8fv5a1nb2yfw1dgd19xhscn1klpvzw";
     };
     meta = {
       description = "Convert singular to plural. Select 'a' or 'an'";
