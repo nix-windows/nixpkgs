@@ -13771,10 +13771,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ThreadSemaphore = buildPerlPackage {
-    name = "Thread-Semaphore-2.12";
+    name = "Thread-Semaphore-2.13";
     src = fetchurl {
-      url = mirror://cpan/authors/id/J/JD/JDHEDDEN/Thread-Semaphore-2.12.tar.gz;
-      sha256 = "e0f8e7057b073003e5a96a55b778abb8ee1cc1b279febedce0166526f2988965";
+      url = "mirror://cpan/authors/id/J/JD/JDHEDDEN/Thread-Semaphore-2.13.tar.gz";
+      sha256 = "10dw8mz3xxhyrbzjc64sf8qwjbmbizpqq5jcxb42jmap8z02rzp3";
     };
     meta = {
       description = "Thread-safe semaphores";
