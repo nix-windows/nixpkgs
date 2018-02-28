@@ -2438,10 +2438,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   CPANMetaRequirements = buildPerlPackage {
-    name = "CPAN-Meta-Requirements-2.128";
+    name = "CPAN-Meta-Requirements-2.140";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DA/DAGOLDEN/CPAN-Meta-Requirements-2.128.tar.gz;
-      sha256 = "ff0ae309ed76d8c7381fdb8436659a594e6884eeac1c9a742ba9aa7ee2a1d52d";
+      url = "mirror://cpan/authors/id/D/DA/DAGOLDEN/CPAN-Meta-Requirements-2.140.tar.gz";
+      sha256 = "1a8zflgaayycmn3zvd3n64yypa4jyl1va0h51wpr5w46irg69608";
     };
     meta = {
       homepage = https://github.com/dagolden/CPAN-Meta-Requirements;
