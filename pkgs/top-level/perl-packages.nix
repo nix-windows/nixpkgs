@@ -1305,7 +1305,7 @@ let self = _self // overrides; _self = with self; {
   CatalystPluginHTMLWidget = buildPerlPackage {
     name = "Catalyst-Plugin-HTML-Widget-1.1";
     src = fetchurl {
-      url = mirror://cpan/authors/id/S/SR/SRI/Catalyst-Plugin-HTML-Widget-1.1.tar.gz;
+      url = "mirror://cpan/authors/id/B/BO/BOBTFISH/Catalyst-Plugin-HTML-Widget-1.1.tar.gz";
       sha256 = "1zzyfhmzlqvbwk2w930k3mqk8z1lzhrja9ynx9yfq5gmc8qqg95l";
     };
     propagatedBuildInputs = [CatalystRuntime HTMLWidget];
