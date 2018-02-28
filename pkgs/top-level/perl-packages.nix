@@ -7694,11 +7694,11 @@ let self = _self // overrides; _self = with self; {
   };
 
   MailBox = buildPerlPackage rec {
-    version = "2.118";
-    name = "Mail-Box-${version}";
+    version = "3.004";
+    name = "Mail-Box-3.004";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/M/MA/MARKOV/${name}.tar.gz";
-      sha256 = "1ixi7xpvj8kn2y0l8rxkvdnnl7x5wqg7mi2av0viwdh5l828dcfc";
+      url = "mirror://cpan/authors/id/M/MA/MARKOV/Mail-Box-3.004.tar.gz";
+      sha256 = "1qhckakp4z13s785rx9fxwddzxnr0qgkn7h1wacprylxr2bx3z3d";
     };
 
     doCheck = false;
