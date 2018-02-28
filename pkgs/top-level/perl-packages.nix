@@ -8527,10 +8527,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   Moose = buildPerlPackage {
-    name = "Moose-2.1213";
+    name = "Moose-2.2010";
     src = fetchurl {
-      url = mirror://cpan/authors/id/E/ET/ETHER/Moose-2.1213.tar.gz;
-      sha256 = "0f3b196ae67dc1daaa43c44ae7703f27c4f92c391ad3e252a90e90c50c851e03";
+      url = "mirror://cpan/authors/id/E/ET/ETHER/Moose-2.2010.tar.gz";
+      sha256 = "1i88vvs3lcx8ihz247xyj7nd95g4irvwg6vw2zhpvhhqkyv0a2dg";
     };
     buildInputs = [ CPANMetaCheck CPANMetaRequirements DistCheckConflicts TestCleanNamespaces TestFatal TestRequires ModuleMetadata ];
     propagatedBuildInputs = [ ClassLoad ClassLoadXS DataOptList DevelGlobalDestruction DevelStackTrace DistCheckConflicts EvalClosure ListMoreUtils MROCompat ModuleRuntime ModuleRuntimeConflicts PackageDeprecationManager PackageStash PackageStashXS ParamsUtil SubExporter SubName TaskWeaken TryTiny ];
