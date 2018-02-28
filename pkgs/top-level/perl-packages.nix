@@ -11038,10 +11038,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   RTClientREST = buildPerlPackage {
-    name = "RT-Client-REST-0.49";
+    name = "RT-Client-REST-0.50";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DM/DMITRI/RT-Client-REST-0.49.tar.gz;
-      sha256 = "832c84b4f19e97781e8902f123a659fdcfef68e0ed9cfe09055852e9d68f7afc";
+      url = "mirror://cpan/authors/id/S/SR/SRVSH/RT-Client-REST-0.50.tar.gz";
+      sha256 = "14xb93a5ddkd837aph8j3l8hi0d9hk9q0f8j3c1h90ab2j6gw69d";
     };
     buildInputs = [ TestException ];
     propagatedBuildInputs = [ CGI DateTime DateTimeFormatDateParse Error ExceptionClass HTTPCookies HTTPMessage LWP ParamsValidate URI ];
