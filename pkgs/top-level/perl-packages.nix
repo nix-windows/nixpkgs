@@ -6643,10 +6643,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   IOPrompt = buildPerlPackage {
-    name = "IO-Prompt-0.997002";
+    name = "IO-Prompt-0.997004";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DC/DCONWAY/IO-Prompt-0.997002.tar.gz;
-      sha256 = "08ad24f58335ce9696666e4411b2f3cd9c2e1fb72b306b6018c1a13971361ced";
+      url = "mirror://cpan/authors/id/D/DC/DCONWAY/IO-Prompt-0.997004.tar.gz";
+      sha256 = "05c6ym35y8is7ff73zjbdxnkykqcjkmjdn760frbbj3axq2v6yzi";
     };
     propagatedBuildInputs = [ TermReadKey Want ];
     doCheck = false; # needs access to /dev/tty
