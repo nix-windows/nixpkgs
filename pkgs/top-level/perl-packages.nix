@@ -4694,10 +4694,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ExporterDeclare = buildPerlModule {
-    name = "Exporter-Declare-0.113";
+    name = "Exporter-Declare-0.114";
     src = fetchurl {
-      url = mirror://cpan/authors/id/E/EX/EXODIST/Exporter-Declare-0.113.tar.gz;
-      sha256 = "724de5e982c8477df14a360c82233f9e0c26b4af9191647f750f5e465ea42dce";
+      url = "mirror://cpan/authors/id/E/EX/EXODIST/Exporter-Declare-0.114.tar.gz";
+      sha256 = "1r6ly42g5x8highwng13y5c3lndqjfnd8666wjknnvvglxn0vmsb";
     };
     buildInputs = [ FennecLite TestException ];
     propagatedBuildInputs = [ MetaBuilder aliased ];
