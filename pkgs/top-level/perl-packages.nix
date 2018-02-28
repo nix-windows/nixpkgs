@@ -2181,10 +2181,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ConfigGrammar = buildPerlPackage {
-    name = "Config-Grammar-1.11";
+    name = "Config-Grammar-1.12";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DS/DSCHWEI/Config-Grammar-1.11.tar.gz;
-      sha256 = "dd819f89b19c51e9fac6965360cd9db54436e1328968c802416ac34188ca65ee";
+      url = "mirror://cpan/authors/id/D/DS/DSCHWEI/Config-Grammar-1.12.tar.gz";
+      sha256 = "1c4hjmnjz413qf1571s7bcj6mpgp7gn0kana57sz3rlngmjs6lks";
     };
     meta = {
       description = "A grammar-based, user-friendly config parser";
