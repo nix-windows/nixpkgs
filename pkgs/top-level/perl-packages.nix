@@ -4401,10 +4401,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   EmailMessageID = buildPerlPackage {
-    name = "Email-MessageID-1.404";
+    name = "Email-MessageID-1.406";
     src = fetchurl {
-      url = mirror://cpan/authors/id/R/RJ/RJBS/Email-MessageID-1.404.tar.gz;
-      sha256 = "0lyq9r3x7cs7cncf0yiazbi7aq4c5d4m3wxwgqdd4r5p9gxdjj4n";
+      url = "mirror://cpan/authors/id/R/RJ/RJBS/Email-MessageID-1.406.tar.gz";
+      sha256 = "1f22sdnfq169qw1l0lg7y74pmiam7j9v95bggjnf3q4mygdmshpc";
     };
     propagatedBuildInputs = [ EmailAddress ];
     meta = {
