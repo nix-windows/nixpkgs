@@ -6092,10 +6092,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   HTMLMason = buildPerlPackage {
-    name = "HTML-Mason-1.56";
+    name = "HTML-Mason-1.58";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DR/DROLSKY/HTML-Mason-1.56.tar.gz;
-      sha256 = "84ac24fb1d551f998145435265e5b6fd4a52ec61e4fadd3d7755eb648be2c4b2";
+      url = "mirror://cpan/authors/id/D/DR/DROLSKY/HTML-Mason-1.58.tar.gz";
+      sha256 = "0j7rvw1xq5c6h6iir72f7miwsdcm9gpfp83vr5rk8fqgkwcrpp41";
     };
     buildInputs = [ TestDeep ];
     propagatedBuildInputs = [ CacheCache CGI ClassContainer ExceptionClass HTMLParser LogAny ParamsValidate ];
