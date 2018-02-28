@@ -6043,10 +6043,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   HTMLFormatTextWithLinksAndTables = buildPerlPackage {
-    name = "HTML-FormatText-WithLinks-AndTables-0.06";
+    name = "HTML-FormatText-WithLinks-AndTables-0.07";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DA/DALEEVANS/HTML-FormatText-WithLinks-AndTables-0.06.tar.gz;
-      sha256 = "e5b23f0475fb81fd6fed688bb914295a39542b3e5b43c8517494226a52d868fa";
+      url = "mirror://cpan/authors/id/D/DA/DALEEVANS/HTML-FormatText-WithLinks-AndTables-0.07.tar.gz";
+      sha256 = "1dirmqm70pllrgwdmbpa5f7q6x76pv3va4j3qlrnnw052zqy57l0";
     };
     propagatedBuildInputs = [ HTMLFormatTextWithLinks HTMLFormatter HTMLTree ];
     meta = {
