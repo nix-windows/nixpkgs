@@ -12842,10 +12842,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TestPerlCritic = buildPerlPackage rec {
-    name = "Test-Perl-Critic-1.02";
+    name = "Test-Perl-Critic-1.03";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/T/TH/THALJEF/${name}.tar.gz";
-      sha256 = "89b242ff539034336ed87c11ef3e5ecac47c333a6ab8b46aab4cc449e3739a89";
+      url = "mirror://cpan/authors/id/T/TH/THALJEF/Test-Perl-Critic-1.03.tar.gz";
+      sha256 = "0f90l6pq2vw0c463jim9xmsp3ak4lh82rsc90hcpigqji11s54wg";
     };
     propagatedBuildInputs = [ PerlCritic ];
   };
