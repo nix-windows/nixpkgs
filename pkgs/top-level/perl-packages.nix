@@ -8390,10 +8390,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ModuleSignature = buildPerlPackage {
-    name = "Module-Signature-0.79";
+    name = "Module-Signature-0.81";
     src = fetchurl {
-      url = mirror://cpan/authors/id/A/AU/AUDREYT/Module-Signature-0.79.tar.gz;
-      sha256 = "22df2ce097fb5d176efa951c782633d8debe594924a25ca66666252512ce462c";
+      url = "mirror://cpan/authors/id/A/AU/AUDREYT/Module-Signature-0.81.tar.gz";
+      sha256 = "1infzawa9kkc2hry3x1c3ijdbbls727qc6j8bvvl0pg4p374gxbx";
     };
     buildInputs = [ IPCRun ];
     meta = {
