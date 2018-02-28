@@ -14249,10 +14249,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   VariableMagic = buildPerlPackage rec {
-    name = "Variable-Magic-0.58";
+    name = "Variable-Magic-0.62";
     src = fetchurl {
-      url = "mirror://cpan/modules/by-module/Variable/${name}.tar.gz";
-      sha256 = "1yhh3zbawx68sw93xrnvfnqq5pb2pmbk20rckqxbwkq1n8c6lv83";
+      url = "mirror://cpan/authors/id/V/VP/VPIT/Variable-Magic-0.62.tar.gz";
+      sha256 = "0p31dclnj47k4hj35rzay9pzxasl3gq46kzwqalhdw1kgr8ii6iz";
     };
   };
 
