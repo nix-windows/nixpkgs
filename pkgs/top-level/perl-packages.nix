@@ -8361,10 +8361,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ModuleRuntimeConflicts = buildPerlPackage {
-    name = "Module-Runtime-Conflicts-0.001";
+    name = "Module-Runtime-Conflicts-0.003";
     src = fetchurl {
-      url = mirror://cpan/authors/id/E/ET/ETHER/Module-Runtime-Conflicts-0.001.tar.gz;
-      sha256 = "0f73d03846575dd1492d3760deeb9627afaa1f8b04d4d526b1775174201be25f";
+      url = "mirror://cpan/authors/id/E/ET/ETHER/Module-Runtime-Conflicts-0.003.tar.gz";
+      sha256 = "0x9qfg4pq70v1rl9dfk775fmca7ia308m24vfy8zww4c0dsxqz3h";
     };
     buildInputs = [ ModuleBuildTiny ];
     propagatedBuildInputs = [ DistCheckConflicts ModuleRuntime ];
