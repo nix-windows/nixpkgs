@@ -6951,10 +6951,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   JSONAny = buildPerlPackage {
-    name = "JSON-Any-1.29";
+    name = "JSON-Any-1.39";
     src = fetchurl {
-      url = mirror://cpan/authors/id/P/PE/PERIGRIN/JSON-Any-1.29.tar.gz;
-      sha256 = "15v2j9dh58r7r4s7rnnmgnzzbyz61bhyxwpx1z7r811ixs9bkks2";
+      url = "mirror://cpan/authors/id/E/ET/ETHER/JSON-Any-1.39.tar.gz";
+      sha256 = "1hspg6khjb38syn59cysnapc1q77qgavfym3fqr6l2kiydf7ajdf";
     };
     propagatedBuildInputs = [ JSON ];
     meta = {
