@@ -3408,10 +3408,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DateTimeTimeZone = buildPerlPackage rec {
-    name = "DateTime-TimeZone-1.97";
+    name = "DateTime-TimeZone-2.17";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/D/DR/DROLSKY/${name}.tar.gz";
-      sha256 = "68a5f4b0a77074f9cc96b2c1d2282e2110db74f55e43fbad72926cee0fd434c8";
+      url = "mirror://cpan/authors/id/D/DR/DROLSKY/DateTime-TimeZone-2.17.tar.gz";
+      sha256 = "1ckhjw7h545306b02p6ra60y8zxqnbqr2lsy7c1wib8libf0l2hx";
     };
     buildInputs = [ TestFatal TestRequires ];
     propagatedBuildInputs = [ ClassSingleton ListAllUtils ModuleRuntime ParamsValidate TryTiny ];
