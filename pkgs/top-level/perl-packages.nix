@@ -14037,10 +14037,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   UNIVERSALrequire = buildPerlPackage {
-    name = "UNIVERSAL-require-0.17";
+    name = "UNIVERSAL-require-0.18";
     src = fetchurl {
-      url = mirror://cpan/authors/id/N/NE/NEILB/UNIVERSAL-require-0.17.tar.gz;
-      sha256 = "5dc9f13f2d2bbdf852387e2a63c0753728c2bea9125dd628c313db3ef66ec4c3";
+      url = "mirror://cpan/authors/id/N/NE/NEILB/UNIVERSAL-require-0.18.tar.gz";
+      sha256 = "1v9qdg80ng6dzyzs7cn8sb6mn8ym042i32lcnpd478b7g6l3d9xj";
     };
     meta = {
       description = "Require() modules from a variable";
