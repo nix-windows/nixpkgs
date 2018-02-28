@@ -7457,10 +7457,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   LogDispatch = buildPerlPackage {
-    name = "Log-Dispatch-2.41";
+    name = "Log-Dispatch-2.67";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DR/DROLSKY/Log-Dispatch-2.41.tar.gz;
-      sha256 = "0vsmlkx2g9lc13pl9v96kn575yszfvd79a236b8v0s1di83gm09z";
+      url = "mirror://cpan/authors/id/D/DR/DROLSKY/Log-Dispatch-2.67.tar.gz";
+      sha256 = "017ks3i0k005dqz7fz53w7x35csqqlr4vfb95c0ijdablajs4kd9";
     };
     propagatedBuildInputs = [ ClassLoad ParamsValidate ];
     meta = {
