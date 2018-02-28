@@ -6805,10 +6805,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   IPCSysV = buildPerlPackage {
-    name = "IPC-SysV-2.04";
+    name = "IPC-SysV-2.07";
     src = fetchurl {
-      url = mirror://cpan/authors/id/M/MH/MHX/IPC-SysV-2.04.tar.gz;
-      sha256 = "93248930e667034899bf2b09b9a23348e2b800a5437fbb9b4f34c37316da3fcc";
+      url = "mirror://cpan/authors/id/M/MH/MHX/IPC-SysV-2.07.tar.gz";
+      sha256 = "0b85glavyy5b137w195wij7d5y05cjnnc4x224xmxlviyxx3c6nh";
     };
     meta = {
       description = "System V IPC constants and system calls";
