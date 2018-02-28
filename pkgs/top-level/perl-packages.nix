@@ -241,10 +241,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   AppCmd = buildPerlPackage rec {
-    name = "App-Cmd-0.330";
+    name = "App-Cmd-0.331";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/R/RJ/RJBS/${name}.tar.gz";
-      sha256 = "7a7bfd7196f7551a07509b03ea7abddc1fa9aee19a84e3dd5ba939c619cb6011";
+      url = "mirror://cpan/authors/id/R/RJ/RJBS/App-Cmd-0.331.tar.gz";
+      sha256 = "105nxk1s1yvhvwxfjrlgzs8qyak5m9x9bx011n47ilkb03q3spaa";
     };
     buildInputs = [ TestFatal ];
     propagatedBuildInputs = [ CaptureTiny ClassLoad DataOptList GetoptLongDescriptive IOTieCombine ModulePluggable StringRewritePrefix SubExporter SubInstall ];
