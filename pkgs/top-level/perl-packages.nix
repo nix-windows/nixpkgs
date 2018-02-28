@@ -13329,10 +13329,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TextCSV_XS = buildPerlPackage rec {
-    name = "Text-CSV_XS-1.23";
+    name = "Text-CSV_XS-1.34";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/H/HM/HMBRAND/${name}.tgz";
-      sha256 = "5714e1c275e7715aee44f820f8ca26c976fbb563668de7eba42a4419a05a4b5a";
+      url = "mirror://cpan/authors/id/H/HM/HMBRAND/Text-CSV_XS-1.34.tgz";
+      sha256 = "0d51x01bj5636by4xn30rz3cj4x4zjccwjihyh3rrvz8a3zacfpa";
     };
     meta = {
       homepage = https://metacpan.org/pod/Text::CSV_XS;
