@@ -12146,10 +12146,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TermANSIColor = buildPerlPackage {
-    name = "Term-ANSIColor-4.03";
+    name = "Term-ANSIColor-4.06";
     src = fetchurl {
-      url = mirror://cpan/authors/id/R/RR/RRA/Term-ANSIColor-4.03.tar.gz;
-      sha256 = "e89b6992030fa713f928f653dcdb71d66fa2493f873bacf5653aa121ca862450";
+      url = "mirror://cpan/authors/id/R/RR/RRA/Term-ANSIColor-4.06.tar.gz";
+      sha256 = "1babvqvjbf5h3l8mhk96bp9vcv64hv3j4pypi3jvv10r9d1wfqc1";
     };
     meta = {
       description = "Color output using ANSI escape sequences";
