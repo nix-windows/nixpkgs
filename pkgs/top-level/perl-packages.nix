@@ -10185,10 +10185,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   PerlIOutf8_strict = buildPerlPackage rec {
-    name = "PerlIO-utf8_strict-0.006";
+    name = "PerlIO-utf8_strict-0.007";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/L/LE/LEONT/${name}.tar.gz";
-      sha256 = "980010e624c43be0a2aac8e1fe5db3fe43035940def75ca70401bb1ca98bd562";
+      url = "mirror://cpan/authors/id/L/LE/LEONT/PerlIO-utf8_strict-0.007.tar.gz";
+      sha256 = "1jw1ri8nkm4ck73arbsld1y2qgj2b9ir01y8mzb3mjs6w0pkz8w3";
     };
     buildInputs = [ TestException ];
     meta = {
