@@ -14395,10 +14395,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   Wx = buildPerlPackage rec {
-    name = "Wx-0.9927";
+    name = "Wx-0.9932";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/M/MD/MDOOTSON/${name}.tar.gz";
-      sha256 = "1fr23nn5cvzydl8nxfv0iljn10pvwbny0nvpjx31fn2md8dvsx51";
+      url = "mirror://cpan/authors/id/M/MD/MDOOTSON/Wx-0.9932.tar.gz";
+      sha256 = "0w0vcpk8bmklh16c0z1vxgipnmvdw7cckcmay7k7cihgb99vdz8w";
     };
     propagatedBuildInputs = [ ExtUtilsXSpp AlienWxWidgets ];
     # Testing requires an X server:
