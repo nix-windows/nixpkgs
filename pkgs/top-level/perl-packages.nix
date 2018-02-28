@@ -9529,10 +9529,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   NetDNS = buildPerlPackage rec {
-    name = "Net-DNS-1.05";
+    name = "Net-DNS-1.15";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/N/NL/NLNETLABS/${name}.tar.gz";
-      sha256 = "900198014110af96ebac34af019612dd2ddd6af30178600028c3c940d089d5c8";
+      url = "mirror://cpan/authors/id/N/NL/NLNETLABS/Net-DNS-1.15.tar.gz";
+      sha256 = "1l31kqrgjzq8zgpr86z12x550px5zpn563gmnja6m14b8fk6pm0s";
     };
     propagatedBuildInputs = [ DigestHMAC ];
     makeMakerFlags = "--noonline-tests";
