@@ -10925,10 +10925,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   RegexpParser = buildPerlPackage {
-    name = "Regexp-Parser-0.21";
+    name = "Regexp-Parser-0.22";
     src = fetchurl {
-      url = mirror://cpan/authors/id/T/TO/TODDR/Regexp-Parser-0.21.tar.gz;
-      sha256 = "d70cb66821f1f67a9b1ff53f0fa33c06aec8693791e0a5943be6760c25d2768d";
+      url = "mirror://cpan/authors/id/T/TO/TODDR/Regexp-Parser-0.22.tar.gz";
+      sha256 = "18q9f63hpfv7ksg1hra6ypvjbxr0rnhm92sdn8f0yf3scl8wglyn";
     };
     meta = {
       homepage = http://wiki.github.com/toddr/Regexp-Parser;
