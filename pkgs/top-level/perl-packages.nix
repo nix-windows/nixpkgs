@@ -12587,10 +12587,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TestFileShareDir = buildPerlModule {
-    name = "Test-File-ShareDir-0.3.3";
+    name = "Test-File-ShareDir-1.001002";
     src = fetchurl {
-      url = mirror://cpan/authors/id/K/KE/KENTNL/Test-File-ShareDir-0.3.3.tar.gz;
-      sha256 = "877e14afb6f432bd888ef730c0afd776dd149b14bc520bc2ce842d114e5886a2";
+      url = "mirror://cpan/authors/id/K/KE/KENTNL/Test-File-ShareDir-1.001002.tar.gz";
+      sha256 = "1bbs6cx69wcinq77gif4i4pmrj8a7lwb92sgvvxzrwmjnk5lfdmk";
     };
     buildInputs = [ TestFatal ];
     propagatedBuildInputs = [ FileCopyRecursive FileShareDir PathTiny ];
