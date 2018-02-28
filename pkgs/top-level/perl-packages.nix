@@ -7017,10 +7017,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   JSONXS = buildPerlPackage {
-    name = "JSON-XS-2.34";
+    name = "JSON-XS-3.04";
     src = fetchurl {
-      url = mirror://cpan/authors/id/M/ML/MLEHMANN/JSON-XS-2.34.tar.gz;
-      sha256 = "1sh0i73skxp3rvd9w8phxqncw9m1r5ibnb9qxxm21bmrfwkxybx6";
+      url = "mirror://cpan/authors/id/M/ML/MLEHMANN/JSON-XS-3.04.tar.gz";
+      sha256 = "0b3w14zqjxnm93jjfzjqz8pkxp3a2l9242y7zxxhnvzav1mq7n35";
     };
     propagatedBuildInputs = [ CommonSense ];
     meta = {
