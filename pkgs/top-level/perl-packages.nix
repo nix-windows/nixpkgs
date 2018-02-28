@@ -4529,10 +4529,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   Encode = buildPerlPackage {
-    name = "Encode-2.78";
+    name = "Encode-2.97";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DA/DANKOGAI/Encode-2.78.tar.gz;
-      sha256 = "1fc8d5c0e75ef85beeac71d1fe4a3bfcb8207755a46b32f783a3a6682672762a";
+      url = "mirror://cpan/authors/id/D/DA/DANKOGAI/Encode-2.97.tar.gz";
+      sha256 = "1dzcn93ryypmjkkzsqxfmy6lh7dkmnkigrx0152wxxdx8g3jyk84";
     };
     meta = {
       description = "Unknown";
