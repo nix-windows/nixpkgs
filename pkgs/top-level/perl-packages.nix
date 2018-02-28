@@ -7654,10 +7654,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   LWPUserAgentMockable = buildPerlPackage {
-    name = "LWP-UserAgent-Mockable-1.10";
+    name = "LWP-UserAgent-Mockable-1.18";
     src = fetchurl {
-      url = mirror://cpan/authors/id/M/MM/MMORGAN/LWP-UserAgent-Mockable-1.10.tgz;
-      sha256 = "1z89jszgifvjb8irzd8wrzim7l5m4hypdl9mj4dpkb4jm4189kmn";
+      url = "mirror://cpan/authors/id/M/MJ/MJEMMESON/LWP-UserAgent-Mockable-1.18.tar.gz";
+      sha256 = "0923ahl22c0gdzrihj7dqnrawia9hmcl462asf4ry8d5wd84z1i5";
     };
     propagatedBuildInputs = [ LWP HookLexWrap ];
     meta = {
