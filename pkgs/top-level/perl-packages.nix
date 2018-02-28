@@ -9718,10 +9718,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   NetTwitterLite = buildPerlPackage {
-    name = "Net-Twitter-Lite-0.11002";
+    name = "Net-Twitter-Lite-0.12008";
     src = fetchurl {
-      url = mirror://cpan/authors/id/M/MM/MMIMS/Net-Twitter-Lite-0.11002.tar.gz;
-      sha256 = "032gyn1h3r5d83wvz7nj3k7g50wcf73lbbmjc18466ml90vigys0";
+      url = "mirror://cpan/authors/id/M/MM/MMIMS/Net-Twitter-Lite-0.12008.tar.gz";
+      sha256 = "13j69a6nqq8mh5b4qk021db55rkfnk1ppwk0rpg68b1z58gvxsmj";
     };
     buildInputs = [ ModuleBuild ];
     propagatedBuildInputs = [ CryptSSLeay LWPUserAgent NetOAuth URI ];
