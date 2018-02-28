@@ -10775,10 +10775,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   PodSpell = buildPerlPackage rec {
-    name = "Pod-Spell-1.01";
+    name = "Pod-Spell-1.20";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/S/SB/SBURKE/${name}.tar.gz";
-      sha256 = "938648dca5b62e591783347f9d4d4e2a5239f9629c6adfed9a581b9457ef7d2e";
+      url = "mirror://cpan/authors/id/D/DO/DOLMEN/Pod-Spell-1.20.tar.gz";
+      sha256 = "0g6hdnc98gc3widr7sja313b1606g37a0mw0l0wxih1bwazzg0v3";
     };
   };
 
