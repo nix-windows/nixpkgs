@@ -409,10 +409,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ArchiveExtract = buildPerlPackage rec {
-    name = "Archive-Extract-0.76";
+    name = "Archive-Extract-0.80";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/B/BI/BINGOS/${name}.tar.gz";
-      sha256 = "9ae7080ca70346dd7d9845c581d2e112f4513ec0f7d79c2011c0e0a2ce874cfc";
+      url = "mirror://cpan/authors/id/B/BI/BINGOS/Archive-Extract-0.80.tar.gz";
+      sha256 = "1x15j1q6w6z8hqyqgap0lz4qbq2174wfhksy1fdd653ccbaw5jr5";
     };
     propagatedBuildInputs = [ self."if" ];
     meta = {
