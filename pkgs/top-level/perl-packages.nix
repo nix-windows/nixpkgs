@@ -119,10 +119,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   AnyEvent = buildPerlPackage rec {
-    name = "AnyEvent-7.08";
+    name = "AnyEvent-7.14";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/M/ML/MLEHMANN/${name}.tar.gz";
-      sha256 = "16nnqzxy5baiar6gxnq5w296mmjgijcn1jq8rp867nksph03mxz8";
+      url = "mirror://cpan/authors/id/M/ML/MLEHMANN/AnyEvent-7.14.tar.gz";
+      sha256 = "0akxr9y0q9yjkl614x4clbiiayvh5a67y8gmci54plxs4p95i4sk";
     };
     meta = {
       maintainers = with maintainers; [ ];
