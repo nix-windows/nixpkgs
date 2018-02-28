@@ -9852,10 +9852,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   NetOpenIDConsumer = buildPerlPackage rec {
-    name = "Net-OpenID-Consumer-1.15";
+    name = "Net-OpenID-Consumer-1.18";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/W/WR/WROG/${name}.tar.gz";
-      sha256 = "1nh9988436rmmmd6x2zz1fyrqy2005a1gvqzgvnc1pg2ylg61fqf";
+      url = "mirror://cpan/authors/id/W/WR/WROG/Net-OpenID-Consumer-1.18.tar.gz";
+      sha256 = "0f2g6sczvbpyjmy14pabmrj0d48hlsndqswrvmqk1161wxpkh70f";
     };
     propagatedBuildInputs = [ CGI NetOpenIDCommon JSON LWP ];
   };
