@@ -10161,10 +10161,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   PerlCritic = buildPerlModule rec {
-    name = "Perl-Critic-1.126";
+    name = "Perl-Critic-1.130";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/T/TH/THALJEF/${name}.tar.gz";
-      sha256 = "b1a6151cb3603aef8555195b807e831655c83003b81e2f64fff095ff7114f5af";
+      url = "mirror://cpan/authors/id/P/PE/PETDANCE/Perl-Critic-1.130.tar.gz";
+      sha256 = "1xhxnrn5xqsv075ckvdhw86cfz3a6zsvs0avkpp3k3np5pqfhqh6";
     };
     buildInputs = [ TestDeep ];
     propagatedBuildInputs = [ BKeywords ConfigTiny EmailAddress ExceptionClass FileHomeDir FileWhich IOString ListMoreUtils ModulePluggable PPI PPIxRegexp PPIxUtilities PerlTidy PodSpell Readonly StringFormat TaskWeaken ];
