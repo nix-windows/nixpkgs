@@ -7212,7 +7212,7 @@ let self = _self // overrides; _self = with self; {
   LinguaStem = buildPerlPackage rec {
     name = "Lingua-Stem-0.84";
     src = fetchurl {
-      url = "mirror://cpan/modules/by-module/Lingua/${name}.tar.gz";
+      url = "mirror://cpan/authors/id/S/SN/SNOWHARE/Lingua-Stem-0.84.tar.gz";
       sha256 = "12avh2mnnc7llmmshrr5bgb473fvydxnlqrqbl2815mf2dp4pxcg";
     };
     doCheck = false;
