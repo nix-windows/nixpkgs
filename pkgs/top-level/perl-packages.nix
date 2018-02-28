@@ -13931,10 +13931,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   Tk = buildPerlPackage rec {
-    name = "Tk-804.033";
+    name = "Tk-804.034";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/S/SR/SREZIC/${name}.tar.gz";
-      sha256 = "84756e9b07a2555c8eecf88e63d5cbbba9b1aa97b1e71a3d4aa524a7995a88ad";
+      url = "mirror://cpan/authors/id/S/SR/SREZIC/Tk-804.034.tar.gz";
+      sha256 = "1qiz55dmw7hm1wgpjdzf2jffwcj0hisr3kf80qi8lli3qx2b39py";
     };
     makeMakerFlags = "X11INC=${pkgs.xorg.libX11.dev}/include X11LIB=${pkgs.xorg.libX11.out}/lib";
     buildInputs = with pkgs; [ xorg.libX11 libpng ];
