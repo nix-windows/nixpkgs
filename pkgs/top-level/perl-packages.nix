@@ -10416,10 +10416,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   PPIxRegexp = buildPerlPackage rec {
-    name = "PPIx-Regexp-0.050";
+    name = "PPIx-Regexp-0.055";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/W/WY/WYANT/${name}.tar.gz";
-      sha256 = "fd095fb90826efa3f9b28bf018a099dc51f1d7c7d34ed2f193a28f1087635125";
+      url = "mirror://cpan/authors/id/W/WY/WYANT/PPIx-Regexp-0.055.tar.gz";
+      sha256 = "069r7zij1q0byvg0g09b9q72yq0i1w43shi4gffxx69ndbsngjsk";
     };
     propagatedBuildInputs = [ ListMoreUtils PPI TaskWeaken ];
     meta = {
