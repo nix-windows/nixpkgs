@@ -2287,10 +2287,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   Connector = buildPerlPackage rec {
-    name = "Connector-1.16";
+    name = "Connector-1.25";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/M/MR/MRSCOTTY/${name}.tar.gz";
-      sha256 = "0rbx4n86y5sdkff37w8djw1ahxrg79bsfgbrph3kjhh4jzd20q09";
+      url = "mirror://cpan/authors/id/M/MR/MRSCOTTY/Connector-1.25.tar.gz";
+      sha256 = "08f75abcpn7jzg635j5zd8vxnaa13b2dpdbhxl5hwjj0cv1pwmcx";
     };
     buildInputs = [ Moose ConfigStd YAML PathClass DateTime Log4Perl
       ConfigVersioned TemplateToolkit];
