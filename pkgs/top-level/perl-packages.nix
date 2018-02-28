@@ -5076,15 +5076,15 @@ let self = _self // overrides; _self = with self; {
   };
 
   FileDesktopEntry = buildPerlPackage rec {
-    version = "0.04";
-    name = "File-DesktopEntry-${version}";
+    version = "0.22";
+    name = "File-DesktopEntry-0.22";
     configurePhase = ''
       preConfigure || true
       perl Build.PL PREFIX="$out" prefix="$out"
     '';
     src = fetchurl {
-      url = "mirror://cpan/modules/by-module/File/${name}.tar.gz";
-      sha256 = "d7f80d8bd303651a43dc1810c73740d38a0d2b158fb33cd3b6ca4d3a566da7cb";
+      url = "mirror://cpan/authors/id/M/MI/MICHIELB/File-DesktopEntry-0.22.tar.gz";
+      sha256 = "1f1maqix2kbfg2rf008m7mqnvv6nvcf9y6pcgdv2kxp2vbih370n";
     };
     propagatedBuildInputs = [ FileBaseDir ];
   };
