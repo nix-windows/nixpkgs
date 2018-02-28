@@ -3191,10 +3191,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DateTimeEventRecurrence = buildPerlPackage {
-    name = "DateTime-Event-Recurrence-0.16";
+    name = "DateTime-Event-Recurrence-0.19";
     src = fetchurl {
-      url = mirror://cpan/authors/id/F/FG/FGLOCK/DateTime-Event-Recurrence-0.16.tar.gz;
-      sha256 = "3872e0126cd9527a918d3e537f85342d1fbb1e6a9ae5833262201b31879f8609";
+      url = "mirror://cpan/authors/id/F/FG/FGLOCK/DateTime-Event-Recurrence-0.19.tar.gz";
+      sha256 = "19dms2vg9hvfx80p85m8gkn2ww0yxjrjn8qsr9k7f431lj4qfh7r";
     };
     propagatedBuildInputs = [ DateTime DateTimeSet ];
   };
