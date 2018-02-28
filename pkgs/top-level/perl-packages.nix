@@ -14597,10 +14597,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   XMLXPath = buildPerlPackage rec {
-    name = "XML-XPath-1.37";
+    name = "XML-XPath-1.42";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/M/MA/MANWAR/${name}.tar.gz";
-      sha256 = "b8ae1196184f794528a9727988dce944ecec7155e6ee1c433b17e12737a22725";
+      url = "mirror://cpan/authors/id/M/MA/MANWAR/XML-XPath-1.42.tar.gz";
+      sha256 = "04mm91kxav598ax7nlg81dhnvanwvg6bkf30l0cgkmga5iyccsly";
     };
     buildInputs = [ PathTiny ];
     propagatedBuildInputs = [ XMLParser ];
