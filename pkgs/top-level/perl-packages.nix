@@ -5575,10 +5575,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   GetoptLongDescriptive = buildPerlPackage rec {
-    name = "Getopt-Long-Descriptive-0.100";
+    name = "Getopt-Long-Descriptive-0.102";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/R/RJ/RJBS/${name}.tar.gz";
-      sha256 = "1451e79310d1630de37690e3aba5c38ea5f01a486c5a43f0cd95bef2a02dffb6";
+      url = "mirror://cpan/authors/id/R/RJ/RJBS/Getopt-Long-Descriptive-0.102.tar.gz";
+      sha256 = "0ii8xafvlph5vzcqp3dpc83lg7nkg3l1l2hmqdf5382a567vkm4s";
     };
     buildInputs = [ CPANMetaCheck TestFatal TestWarnings ];
     propagatedBuildInputs = [ ParamsValidate SubExporter ];
