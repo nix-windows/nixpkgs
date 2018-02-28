@@ -6346,10 +6346,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   HTTPHeadersFast = buildPerlModule rec {
-    name = "HTTP-Headers-Fast-0.20";
+    name = "HTTP-Headers-Fast-0.21";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/T/TO/TOKUHIROM/${name}.tar.gz";
-      sha256 = "d2f4c9724618e74f300fc746498fb5849692ef0cfc4af47fe499c4063969e520";
+      url = "mirror://cpan/authors/id/T/TO/TOKUHIROM/HTTP-Headers-Fast-0.21.tar.gz";
+      sha256 = "1m8jdw5519pk90k1lk5rwprdvnp21vywv8n68cfiwlv77s7fss2y";
     };
     buildInputs = [ ModuleBuild TestRequires ];
     propagatedBuildInputs = [ HTTPDate ];
