@@ -6561,10 +6561,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   IOCaptureOutput = buildPerlPackage rec {
-    name = "IO-CaptureOutput-1.1103";
+    name = "IO-CaptureOutput-1.1104";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/D/DA/DAGOLDEN/${name}.tar.gz";
-      sha256 = "1bcl7p87ysbzab6hssq19xn3djzc0yk9l4hk0a2mqbqb8hv6p0m5";
+      url = "mirror://cpan/authors/id/D/DA/DAGOLDEN/IO-CaptureOutput-1.1104.tar.gz";
+      sha256 = "0c437zvzpqi8f0h3nmblwdi2bvsb92b7g30fndr7my9qnky35izw";
     };
   };
 
