@@ -14325,10 +14325,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   WWWMechanize = buildPerlPackage {
-    name = "WWW-Mechanize-1.73";
+    name = "WWW-Mechanize-1.87";
     src = fetchurl {
-      url = mirror://cpan/authors/id/E/ET/ETHER/WWW-Mechanize-1.73.tar.gz;
-      sha256 = "1zrw8aadhwy48q51x2z2rqlkwf17bya4j4h3hy89mw783j96rmg9";
+      url = "mirror://cpan/authors/id/O/OA/OALDERS/WWW-Mechanize-1.87.tar.gz";
+      sha256 = "1kxrydhl7nxlyjv0xvyiyj4igdv4fwnggv0ihlp79bysbjjl54w1";
     };
     propagatedBuildInputs = [ HTMLForm HTMLParser HTMLTree HTTPDaemon HTTPMessage HTTPServerSimple LWP LWPUserAgent TestWarn URI ];
     doCheck = false;
