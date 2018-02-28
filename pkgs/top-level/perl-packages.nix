@@ -1573,10 +1573,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   CGIEmulatePSGI = buildPerlPackage {
-    name = "CGI-Emulate-PSGI-0.21";
+    name = "CGI-Emulate-PSGI-0.23";
     src = fetchurl {
-      url = mirror://cpan/authors/id/M/MI/MIYAGAWA/CGI-Emulate-PSGI-0.21.tar.gz;
-      sha256 = "06b8f1864101de69b2264ad3c3a2b15333e428cf9f5d17a777cfc61f8c64093f";
+      url = "mirror://cpan/authors/id/T/TO/TOKUHIROM/CGI-Emulate-PSGI-0.23.tar.gz";
+      sha256 = "12qmimrasvqk5ixsdxiiilrghwvz9wl096g0v80a3yq87wsnqnyx";
     };
     buildInputs = [ TestRequires ];
     propagatedBuildInputs = [ CGI HTTPMessage ];
