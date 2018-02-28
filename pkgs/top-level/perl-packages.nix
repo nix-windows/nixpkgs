@@ -7628,10 +7628,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   LWPUserAgent = buildPerlPackage {
-    name = "LWP-UserAgent-6.05";
+    name = "libwww-perl-6.32";
     src = fetchurl {
-      url = mirror://cpan/authors/id/G/GA/GAAS/libwww-perl-6.05.tar.gz;
-      sha256 = "08wgwyz7748pv5cyngxia0xl6nragfnhrp4p9s78xhgfyygpj9bv";
+      url = "mirror://cpan/authors/id/O/OA/OALDERS/libwww-perl-6.32.tar.gz";
+      sha256 = "16ir5y7cc3sal985wgmgwxch1bz2ah6b7bs0gh7xhi8z240nc0b9";
     };
     propagatedBuildInputs = [ EncodeLocale FileListing HTMLParser HTTPCookies HTTPDaemon HTTPDate HTTPNegotiate HTTPMessage LWPMediaTypes NetHTTP URI WWWRobotRules ];
     meta = {
