@@ -4579,8 +4579,8 @@ let self = _self // overrides; _self = with self; {
   EncodeLocale = buildPerlPackage rec {
     name = "Encode-Locale-1.05";
     src = fetchurl {
-      url = "mirror://cpan/modules/by-module/Encode/${name}.tar.gz";
-      sha256 = "176fa02771f542a4efb1dbc2a4c928e8f4391bf4078473bd6040d8f11adb0ec1";
+      url = "mirror://cpan/authors/id/G/GA/GAAS/Encode-Locale-1.05.tar.gz";
+      sha256 = "1h8fvcdg3n20c2yp7107yhdkkx78534s9hnvn7ps8hpmf4ks0vqp";
     };
     preCheck = if stdenv.isCygwin then ''
       sed -i"" -e "s@plan tests => 13@plan tests => 10@" t/env.t
