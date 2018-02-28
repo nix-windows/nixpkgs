@@ -2083,10 +2083,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   CompressBzip2 = buildPerlPackage {
-    name = "Compress-Bzip2-2.22";
+    name = "Compress-Bzip2-2.26";
     src = fetchurl {
-      url = mirror://cpan/authors/id/R/RU/RURBAN/Compress-Bzip2-2.22.tar.gz;
-      sha256 = "1603e284e07953415b8eaa132698db8b03f46383f883c0902926f36eecb7e895";
+      url = "mirror://cpan/authors/id/R/RU/RURBAN/Compress-Bzip2-2.26.tar.gz";
+      sha256 = "032gbhpjch4yc7r32b0glhi5qn6f1sm35lrnxrvlv9bpyg2z0cji";
     };
     meta = {
       description = "Interface to Bzip2 compression library";
