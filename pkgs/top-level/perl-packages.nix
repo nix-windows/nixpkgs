@@ -8161,10 +8161,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ModuleBuildXSUtil = buildPerlModule rec {
-    name = "Module-Build-XSUtil-0.10";
+    name = "Module-Build-XSUtil-0.18";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/H/HI/HIDEAKIO/${name}.tar.gz";
-      sha256 = "1323vxp8vf5xdz66lbc1wfciaks93mrbqfsjgb9nz1w9bb21xj36";
+      url = "mirror://cpan/authors/id/H/HI/HIDEAKIO/Module-Build-XSUtil-0.18.tar.gz";
+      sha256 = "1vjl77iwbwr2xhdlyqva3hhma9r1fgr2rappwsimwqjmybdrfd6b";
     };
     buildInputs = [ FileCopyRecursive CwdGuard CaptureTiny ];
     meta = {
