@@ -8084,10 +8084,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ModuleBuild = buildPerlPackage rec {
-    name = "Module-Build-0.4214";
+    name = "Module-Build-0.4224";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/L/LE/LEONT/${name}.tar.gz";
-      sha256 = "0gywap0dfr8sx4wr6wqc23sjag1b4xsw8l55ai4vhkfg324lhyf5";
+      url = "mirror://cpan/authors/id/L/LE/LEONT/Module-Build-0.4224.tar.gz";
+      sha256 = "10n7ggpmicwq1n503pg7kiwslda0bz48azzjvc7vb9s4hbbibjm6";
     };
     buildInputs = [ CPANMeta ExtUtilsCBuilder ];
     meta = {
