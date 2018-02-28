@@ -4225,10 +4225,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DistZillaPluginTestKwalitee = buildPerlPackage {
-    name = "Dist-Zilla-Plugin-Test-Kwalitee-2.06";
+    name = "Dist-Zilla-Plugin-Test-Kwalitee-2.12";
     src = fetchurl {
-      url = mirror://cpan/authors/id/E/ET/ETHER/Dist-Zilla-Plugin-Test-Kwalitee-2.06.tar.gz;
-      sha256 = "1723beb96d4048fd4fb0fea2ed36c0c6f3ea4648ce7f93d4cb73e5d49e274bf6";
+      url = "mirror://cpan/authors/id/E/ET/ETHER/Dist-Zilla-Plugin-Test-Kwalitee-2.12.tar.gz";
+      sha256 = "0bxg618gz4l67di9h1zhy18v1hfd00pma4c6khnjvsz8fp6cznxx";
     };
     buildInputs = [ CaptureTiny DistZilla PathClass perl ];
     propagatedBuildInputs = [ DataSection DistZilla Moose SubExporterForMethods namespaceautoclean ];
