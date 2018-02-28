@@ -9138,10 +9138,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   MooseXTypesLoadableClass = buildPerlPackage {
-    name = "MooseX-Types-LoadableClass-0.012";
+    name = "MooseX-Types-LoadableClass-0.015";
     src = fetchurl {
-      url = mirror://cpan/authors/id/E/ET/ETHER/MooseX-Types-LoadableClass-0.012.tar.gz;
-      sha256 = "a1d2b186c2b69f416bb0c9271dc8692c2287c2f6ce144cc3b9b2c922427060df";
+      url = "mirror://cpan/authors/id/E/ET/ETHER/MooseX-Types-LoadableClass-0.015.tar.gz";
+      sha256 = "1x1vb96hcrd96bzs73w0lb04jr0fvax1ams38qlzkp2kh9vx6dz0";
     };
     buildInputs = [ ModuleBuildTiny Moose TestFatal ];
     propagatedBuildInputs = [ ClassLoad ModuleRuntime Moose MooseXTypes namespaceautoclean ];
