@@ -9945,10 +9945,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ParallelPrefork = buildPerlPackage {
-    name = "Parallel-Prefork-0.17";
+    name = "Parallel-Prefork-0.18";
     src = fetchurl {
-      url = mirror://cpan/authors/id/K/KA/KAZUHO/Parallel-Prefork-0.17.tar.gz;
-      sha256 = "0d81de2632281091bd31297de1906e14cae4e845cf32200953b50406859e763b";
+      url = "mirror://cpan/authors/id/K/KA/KAZUHO/Parallel-Prefork-0.18.tar.gz";
+      sha256 = "0vjrc74xv11h9jyrln0d9km1bfynf3sv574gr25saiz13a7z9hgi";
     };
     buildInputs = [ TestRequires TestSharedFork ];
     propagatedBuildInputs = [ ClassAccessorLite ListMoreUtils ProcWait3 ScopeGuard SignalMask ];
