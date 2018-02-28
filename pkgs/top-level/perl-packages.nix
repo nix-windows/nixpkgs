@@ -2822,10 +2822,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DataDumper = buildPerlPackage {
-    name = "Data-Dumper-2.154";
+    name = "Data-Dumper-2.161";
     src = fetchurl {
-      url = mirror://cpan/authors/id/S/SM/SMUELLER/Data-Dumper-2.154.tar.gz;
-      sha256 = "e30fcb6dea290cda85b67fc46d227a2ea890a8bd36c213557adec9c99ebd212f";
+      url = "mirror://cpan/authors/id/S/SM/SMUELLER/Data-Dumper-2.161.tar.gz";
+      sha256 = "0n05x5731rgdi7kgya4rir55cxyk74hjpyv5h51q0f1b0hdsr91s";
     };
   };
 
