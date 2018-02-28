@@ -3395,10 +3395,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DateTimeSet = buildPerlPackage rec {
-    name = "DateTime-Set-0.3600";
+    name = "DateTime-Set-0.3900";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/F/FG/FGLOCK/${name}.tar.gz";
-      sha256 = "83503960c773efadfe2b0255e61bc1eb531bb6f497463d3b3880d7a516bc2f13";
+      url = "mirror://cpan/authors/id/F/FG/FGLOCK/DateTime-Set-0.3900.tar.gz";
+      sha256 = "0ih9pi6myg5i26hjpmpzqn58s0yljl2qxdd6gzpy9zda4hwirx4l";
     };
     propagatedBuildInputs = [ DateTime SetInfinite ];
     meta = {
