@@ -10395,10 +10395,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   PPI = buildPerlPackage {
-    name = "PPI-1.220";
+    name = "PPI-1.236";
     src = fetchurl {
-      url = mirror://cpan/authors/id/M/MI/MITHALDU/PPI-1.220.tar.gz;
-      sha256 = "1e15be50e7d95a36d351af8bf5074f6695a2c72165e586d93e616183e7602b83";
+      url = "mirror://cpan/authors/id/M/MI/MITHALDU/PPI-1.236.tar.gz";
+      sha256 = "1v4a622h19d2d6m070jcxn47siqma9g9ly4fcrnrlz8bkhs4nry6";
     };
     buildInputs = [ ClassInspector FileRemove TestNoWarnings TestObject TestSubCalls ];
     propagatedBuildInputs = [ Clone IOString ListMoreUtils ParamsUtil TaskWeaken ];
