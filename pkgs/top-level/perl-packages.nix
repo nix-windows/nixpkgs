@@ -12465,10 +12465,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TestDir = buildPerlPackage {
-    name = "Test-Dir-1.014";
+    name = "Test-Dir-1.16";
     src = fetchurl {
-      url = mirror://cpan/authors/id/M/MT/MTHURN/Test-Dir-1.014.tar.gz;
-      sha256 = "b36efc286f8127b04fd7bb0dfdf4bd0a090b175872e35b5ce6d4d80c772c28bf";
+      url = "mirror://cpan/authors/id/M/MT/MTHURN/Test-Dir-1.16.tar.gz";
+      sha256 = "1hpafgr93jjl6s8spskhdxhgich4cccmaiq99mla5diyj4iv6ckk";
     };
     meta = {
       description = "Test directory attributes";
