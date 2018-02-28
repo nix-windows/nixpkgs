@@ -6875,11 +6875,11 @@ let self = _self // overrides; _self = with self; {
   };
 
   InlineC = buildPerlPackage rec {
-    name = "Inline-C-0.76";
+    name = "Inline-C-0.78";
 
     src = fetchurl {
-      url = "mirror://cpan/authors/id/I/IN/INGY/${name}.tar.gz";
-      sha256 = "0dcs39zjiglif3ss8p8yl0jyqk7qvc9g1ad9wi4kq79k9lxp3s92";
+      url = "mirror://cpan/authors/id/T/TI/TINITA/Inline-C-0.78.tar.gz";
+      sha256 = "1izv7vswd17glffh8h83bi63gdk208mmhxi17l3qd8q1bkc08y4s";
     };
 
     postPatch = ''
