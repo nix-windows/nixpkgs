@@ -6056,10 +6056,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   HTMLFormFu = buildPerlPackage rec {
-    name = "HTML-FormFu-2.01";
+    name = "HTML-FormFu-2.05";
     src = fetchurl {
-      url = "mirror://cpan/modules/by-module/HTML/${name}.tar.gz";
-      sha256 = "0fvilng85wc65pna898x7mp4hx73mhahl7j2s10gj76avmxdizsw";
+      url = "mirror://cpan/authors/id/N/NI/NIGELM/HTML-FormFu-2.05.tar.gz";
+      sha256 = "0xz41ap0vyw9yfjci84i5ixc6jshjrd2swhiv8dsy5xx9x71iw1q";
     };
     buildInputs = [ FileShareDirInstall TestAggregate TestException ];
     propagatedBuildInputs = [ CGI Clone ConfigAny DataVisitor DateTime
