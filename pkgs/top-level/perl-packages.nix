@@ -1029,10 +1029,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   CatalystControllerHTMLFormFu = buildPerlPackage rec {
-    name = "Catalyst-Controller-HTML-FormFu-1.00";
+    name = "Catalyst-Controller-HTML-FormFu-2.02";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/C/CF/CFRANKS/${name}.tar.gz";
-      sha256 = "84329b287716cdc6d3c5a9ee185458cd2ce7abd9d902eac1c6240ef17572f12c";
+      url = "mirror://cpan/authors/id/N/NI/NIGELM/Catalyst-Controller-HTML-FormFu-2.02.tar.gz";
+      sha256 = "0l85pqbpf6k390b94342kjl2cfjb4vcv8r69jllp437v7fcd9psx";
     };
     buildInputs = [ CatalystActionRenderView CatalystPluginSession CatalystPluginSessionStateCookie CatalystPluginSessionStoreFile CatalystViewTT TemplateToolkit TestAggregate TestWWWMechanize TestWWWMechanizeCatalyst ];
     propagatedBuildInputs = [ CatalystComponentInstancePerContext CatalystRuntime ConfigAny HTMLFormFu Moose MooseXAttributeChained RegexpAssemble TaskWeaken namespaceautoclean ];
