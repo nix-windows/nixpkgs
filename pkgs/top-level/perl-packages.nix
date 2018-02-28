@@ -9556,10 +9556,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   NetHTTP = buildPerlPackage {
-    name = "Net-HTTP-6.09";
+    name = "Net-HTTP-6.17";
     src = fetchurl {
-      url = mirror://cpan/authors/id/E/ET/ETHER/Net-HTTP-6.09.tar.gz;
-      sha256 = "52762b939d84806908ba544581c5708375f7938c3c0e496c128ca3fbc425e58d";
+      url = "mirror://cpan/authors/id/O/OA/OALDERS/Net-HTTP-6.17.tar.gz";
+      sha256 = "048ndprg58ja2ba8ax2d1y9k7f5rxd1mcm7m0pvggildc6qj91hy";
     };
     propagatedBuildInputs = [ URI ];
     meta = {
