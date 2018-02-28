@@ -10044,10 +10044,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ParseRecDescent = buildPerlPackage rec {
-    name = "Parse-RecDescent-1.967009";
+    name = "Parse-RecDescent-1.967015";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/J/JT/JTBRAUN/${name}.tar.gz";
-      sha256 = "11y6fpz4j6kdimyaz2a6ig0jz0x7csqslhxaipxnjqi5h85hy071";
+      url = "mirror://cpan/authors/id/J/JT/JTBRAUN/Parse-RecDescent-1.967015.tar.gz";
+      sha256 = "0dvfcn2xvj9r4ra5xqgasl847nsm1iy85w1kly41fkxm9im36hqr";
     };
   };
 
