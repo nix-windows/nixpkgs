@@ -6635,10 +6635,10 @@ let self = _self // overrides; _self = with self; {
   };
   
   IOPager = buildPerlPackage {
-    name = "IO-Pager-0.06";
+    name = "IO-Pager-0.39";
     src = fetchurl {
-      url = mirror://cpan/authors/id/J/JP/JPIERCE/IO-Pager-0.06.tgz;
-      sha256 = "0r3af4gyjpy0f7bhs7hy5s7900w0yhbckb2dl3a1x5wpv7hcbkjb";
+      url = "mirror://cpan/authors/id/J/JP/JPIERCE/IO-Pager-0.39.tgz";
+      sha256 = "0ksldcw0hydfy9k70i6q6fm1wgbc54kx0lbwlkrszsbd7q72dlfg";
     };
   };
 
