@@ -13983,10 +13983,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TryTiny = buildPerlPackage {
-    name = "Try-Tiny-0.22";
+    name = "Try-Tiny-0.30";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DO/DOY/Try-Tiny-0.22.tar.gz;
-      sha256 = "60fba46f4693d33d54539104f9001df008dabb400b6837e9605c39a6ee6a1b19";
+      url = "mirror://cpan/authors/id/E/ET/ETHER/Try-Tiny-0.30.tar.gz";
+      sha256 = "0szgvlz19yz3mq1lbzmwh8w5dh6agg5s16xv22zrnl83r7ax0nys";
     };
     buildInputs = [ if_ ];
     meta = {
