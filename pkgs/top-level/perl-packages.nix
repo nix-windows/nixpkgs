@@ -9036,10 +9036,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   MooseXStrictConstructor = buildPerlPackage {
-    name = "MooseX-StrictConstructor-0.19";
+    name = "MooseX-StrictConstructor-0.21";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DR/DROLSKY/MooseX-StrictConstructor-0.19.tar.gz;
-      sha256 = "486573c16901e83c081da3d90a544281af1baa40bbf036337d6fa91994e48a31";
+      url = "mirror://cpan/authors/id/D/DR/DROLSKY/MooseX-StrictConstructor-0.21.tar.gz";
+      sha256 = "03cjla78agb16qadyl5p6rskl0al635ish0xqzgcq1ipb3lmlan7";
     };
     buildInputs = [ Moose TestFatal ];
     propagatedBuildInputs = [ Moose namespaceautoclean ];
