@@ -7317,10 +7317,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   LocaleCodes = buildPerlPackage {
-    name = "Locale-Codes-3.35";
+    name = "Locale-Codes-3.55";
     src = fetchurl {
-      url = mirror://cpan/authors/id/S/SB/SBECK/Locale-Codes-3.35.tar.gz;
-      sha256 = "b1a2f944b03972d2b7282767cf88100e3c0d7daa3f4ca7aef8460c1c5e246480";
+      url = "mirror://cpan/authors/id/S/SB/SBECK/Locale-Codes-3.55.tar.gz";
+      sha256 = "0sixfpxn44dicgzcs1gz0iai58c52vc9bk161h9sxlp4yglkci24";
     };
     meta = {
       description = "A distribution of modules to handle locale codes";
