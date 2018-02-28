@@ -3591,10 +3591,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DBI = buildPerlPackage rec {
-    name = "DBI-1.636";
+    name = "DBI-1.640";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/T/TI/TIMB/${name}.tar.gz";
-      sha256 = "8f7ddce97c04b4b7a000e65e5d05f679c964d62c8b02c94c1a7d815bb2dd676c";
+      url = "mirror://cpan/authors/id/T/TI/TIMB/DBI-1.640.tar.gz";
+      sha256 = "0jm19701p11043aqg6x9gmq5wzjjv74xidh7ncwjbjnq5kcinzij";
     };
     meta = {
       homepage = http://dbi.perl.org/;
