@@ -8513,10 +8513,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   Moo = buildPerlPackage rec {
-    name = "Moo-2.003000";
+    name = "Moo-2.003004";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/H/HA/HAARG/${name}.tar.gz";
-      sha256 = "ccab84b1377e52922026b24b2ed51d83c439757f2b0783fffa73ac22b4fb3dd2";
+      url = "mirror://cpan/authors/id/H/HA/HAARG/Moo-2.003004.tar.gz";
+      sha256 = "1qciprcgb4661g2g4ks0fxkx5gbjvn7h9yfg0nzflqz9z0jvdfzq";
     };
     buildInputs = [ TestFatal ];
     propagatedBuildInputs = [ ClassMethodModifiers DevelGlobalDestruction ModuleRuntime RoleTiny SubQuote ];
