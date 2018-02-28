@@ -5591,10 +5591,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   GitPurePerl = buildPerlPackage {
-    name = "Git-PurePerl-0.51";
+    name = "Git-PurePerl-0.53";
     src = fetchurl {
-      url = mirror://cpan/authors/id/B/BR/BROQ/Git-PurePerl-0.51.tar.gz;
-      sha256 = "3775f385ae566ea392ece0913a06ffec46441a1273c19ba9a6d990574ec34d00";
+      url = "mirror://cpan/authors/id/B/BR/BROQ/Git-PurePerl-0.53.tar.gz";
+      sha256 = "1a6m73jpsq66pywga1r5q64rqdall9grh3q5hkh7xhy4dhv78z4q";
     };
     buildInputs = [ Testutf8 ];
     propagatedBuildInputs = [ ConfigGitLike DataStreamBulk DateTime FileFindRule IODigest Moose MooseXStrictConstructor MooseXTypesPathClass namespaceautoclean ];
