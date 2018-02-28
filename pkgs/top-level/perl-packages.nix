@@ -8544,10 +8544,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   MooXTypesMooseLike = buildPerlPackage rec {
-    name = "MooX-Types-MooseLike-0.27";
+    name = "MooX-Types-MooseLike-0.29";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/M/MA/MATEU/${name}.tar.gz";
-      sha256 = "1489almsam2zcrs5039sh0y88gjicwna8kws8j2jgfs8bpcf4dgf";
+      url = "mirror://cpan/authors/id/M/MA/MATEU/MooX-Types-MooseLike-0.29.tar.gz";
+      sha256 = "1d6jg9x3p7gm2r0xmbcag374a44gf5pcga2swvxhlhzakfm80dqx";
     };
     propagatedBuildInputs = [ Moo TestFatal ];
   };
