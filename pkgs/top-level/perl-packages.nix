@@ -12360,10 +12360,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TestAggregate = buildPerlPackage rec {
-    name = "Test-Aggregate-0.373";
+    name = "Test-Aggregate-0.375";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/R/RW/RWSTAUNER/${name}.tar.gz";
-      sha256 = "00d218daa7ba29d82bcf364b61d391d3a14356cf3bcb4b12144270108a14fd14";
+      url = "mirror://cpan/authors/id/R/RW/RWSTAUNER/Test-Aggregate-0.375.tar.gz";
+      sha256 = "1l970h9whjsy8zba5jml68fq90ak4kn97jmcf59yiz6ls2zhmk66";
     };
     buildInputs = [ TestMost TestTrap ];
     propagatedBuildInputs = [ TestNoWarnings ];
