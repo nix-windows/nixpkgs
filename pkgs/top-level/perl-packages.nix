@@ -7863,10 +7863,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   MathPlanePath = buildPerlPackage rec {
-    name = "Math-PlanePath-123";
+    name = "Math-PlanePath-125";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/K/KR/KRYDE/${name}.tar.gz";
-      sha256 = "13by23pzwfa2f3rxiws7blqxb8lr3mfczdfq6jsi1kb3ml2wnxyc";
+      url = "mirror://cpan/authors/id/K/KR/KRYDE/Math-PlanePath-125.tar.gz";
+      sha256 = "1rwk5w5pwz3k9vz5cb4vmjvildfqih6r5j1f7bshl9vj0l5nc5z3";
     };
     propagatedBuildInputs = [ MathLibm constant-defer ];
   };
