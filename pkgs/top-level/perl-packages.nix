@@ -3794,10 +3794,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DevelDeclare = buildPerlPackage rec {
-    name = "Devel-Declare-0.006018";
+    name = "Devel-Declare-0.006019";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/E/ET/ETHER/${name}.tar.gz";
-      sha256 = "bb3607bc7546bcf8d9ac57acd8de4e4ca5567ace836ab823d5f5b450216f466a";
+      url = "mirror://cpan/authors/id/E/ET/ETHER/Devel-Declare-0.006019.tar.gz";
+      sha256 = "020q2fpqawbgr4ih8j099vr0glm9alxcs3097fxkzxfbi719swdc";
     };
     buildInputs = [ BHooksOPCheck ExtUtilsDepends TestRequires ];
     propagatedBuildInputs = [ BHooksEndOfScope BHooksOPCheck SubName ];
