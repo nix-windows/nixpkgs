@@ -12323,10 +12323,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   Test2Suite = buildPerlPackage rec {
-    name = "Test2-Suite-0.000061";
+    name = "Test2-Suite-0.000100";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/E/EX/EXODIST/${name}.tar.gz";
-      sha256 = "b2ef2a59c8864c79f6c6a64c65e12c93f881361e4d9eb54419fcb4785c08ea75";
+      url = "mirror://cpan/authors/id/E/EX/EXODIST/Test2-Suite-0.000100.tar.gz";
+      sha256 = "1w5c9yzca1jayrxvp3rz1a7ms360cncwc3z2g1h10v5vai3dhlr8";
     };
     propagatedBuildInputs = [ Importer TestSimple13 ];
     meta = {
