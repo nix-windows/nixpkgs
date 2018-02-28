@@ -4064,10 +4064,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DistZillaPluginCheckChangeLog = buildPerlPackage {
-    name = "Dist-Zilla-Plugin-CheckChangeLog-0.01";
+    name = "Dist-Zilla-Plugin-CheckChangeLog-0.05";
     src = fetchurl {
-      url = mirror://cpan/authors/id/F/FA/FAYLAND/Dist-Zilla-Plugin-CheckChangeLog-0.01.tar.gz;
-      sha256 = "153dbe5ff8cb3c060901e003237a0515d7b9b5cc870eebfd417a6c91e28edec2";
+      url = "mirror://cpan/authors/id/F/FA/FAYLAND/Dist-Zilla-Plugin-CheckChangeLog-0.05.tar.gz";
+      sha256 = "0ah55qn6jv0ig9jppl0nr1s49wpnp31hsprws121jvxmf1nlvcxh";
     };
     propagatedBuildInputs = [ DistZilla ];
     meta = {
