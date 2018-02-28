@@ -13050,10 +13050,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TestTime = buildPerlPackage rec {
-    name = "Test-Time-0.04";
+    name = "Test-Time-0.05";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/S/SA/SATOH/${name}.tar.gz";
-      sha256 = "d8c1bc57f9767ae8122fc4ab873bd991cb9ea8e9422c66399acb66770fa5c2ea";
+      url = "mirror://cpan/authors/id/S/SA/SATOH/Test-Time-0.05.tar.gz";
+      sha256 = "045lqi525z417a62z414sszhyl085z1ysrz0pwa02i0im22qivxb";
     };
     buildInputs = [ FileSlurp ];
     meta = {
