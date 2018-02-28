@@ -11085,10 +11085,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ScalarString = buildPerlPackage rec {
-    name = "Scalar-String-0.002";
+    name = "Scalar-String-0.003";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/Z/ZE/ZEFRAM/${name}.tar.gz";
-      sha256 = "d3a45cc137bb9f7d8848d5a10a5142d275a98f8dcfd3adb60593cee9d33fa6ae";
+      url = "mirror://cpan/authors/id/Z/ZE/ZEFRAM/Scalar-String-0.003.tar.gz";
+      sha256 = "0llbsqk7rsg9p7l1f4yk6iv7wij91gvavprsqhnb04w7nz4ifjpm";
     };
     buildInputs = [ ModuleBuild ];
   };
