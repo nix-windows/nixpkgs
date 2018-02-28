@@ -6015,10 +6015,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   HTMLFormatter = buildPerlModule {
-    name = "HTML-Formatter-2.14";
+    name = "HTML-Formatter-2.16";
     src = fetchurl {
-      url = mirror://cpan/authors/id/N/NI/NIGELM/HTML-Formatter-2.14.tar.gz;
-      sha256 = "d28eeeab48ab5f7bfcc73cc106b0f756073d98d48dfdb91ca2951f832f8e035e";
+      url = "mirror://cpan/authors/id/N/NI/NIGELM/HTML-Formatter-2.16.tar.gz";
+      sha256 = "1k2i06rzxnid139yh1z92ffa0fpk9nzm3r2c475ak2symbc0s2nb";
     };
     buildInputs = [ FileSlurper TestCPANMeta TestEOL TestNoTabs perl ];
     propagatedBuildInputs = [ FontAFM HTMLTree ];
