@@ -13592,10 +13592,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TextTemplate = buildPerlPackage {
-    name = "Text-Template-1.46";
+    name = "Text-Template-1.50";
     src = fetchurl {
-      url = mirror://cpan/authors/id/M/MJ/MJD/Text-Template-1.46.tar.gz;
-      sha256 = "77d812cb86e48091bcd59aa8522ef887b33a0ff758f8a269da8c2b733889d580";
+      url = "mirror://cpan/authors/id/M/MS/MSCHOUT/Text-Template-1.50.tar.gz";
+      sha256 = "06jahnw2sdcapdv959vyi6csdzb6vy188n7gklhx2nmfk037jp5h";
     };
     meta = {
       description = "Unknown";
