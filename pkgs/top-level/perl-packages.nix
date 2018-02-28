@@ -9168,10 +9168,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   MooseXTypesPathTiny = buildPerlModule {
-    name = "MooseX-Types-Path-Tiny-0.006";
+    name = "MooseX-Types-Path-Tiny-0.012";
     src = fetchurl {
-      url = mirror://cpan/authors/id/E/ET/ETHER/MooseX-Types-Path-Tiny-0.006.tar.gz;
-      sha256 = "0260c6fbbf84d411b145238ffd92a73f754bd92434448d9f78798fba0a2dfdd6";
+      url = "mirror://cpan/authors/id/E/ET/ETHER/MooseX-Types-Path-Tiny-0.012.tar.gz";
+      sha256 = "0n4izpn1h4z2vcdzzvpgr8xifr9p0vq7mk9l7vvp0kk5vl1dxvhr";
     };
     buildInputs = [ Filepushd ModuleBuildTiny TestCheckDeps TestFatal ModuleMetadata ];
     propagatedBuildInputs = [ Moose MooseXTypes MooseXTypesStringlike PathTiny ];
