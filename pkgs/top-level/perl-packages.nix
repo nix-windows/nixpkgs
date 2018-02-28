@@ -5359,10 +5359,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   FileSlurper = buildPerlPackage rec {
-    name = "File-Slurper-0.009";
+    name = "File-Slurper-0.012";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/L/LE/LEONT/${name}.tar.gz";
-      sha256 = "3eab340deff6ba5456e7d1156b9cfcc387e1243acfc156ff92b75b3f2e120b91";
+      url = "mirror://cpan/authors/id/L/LE/LEONT/File-Slurper-0.012.tar.gz";
+      sha256 = "0y5518ji60yfkx9ggjp309j6g8vfri4ka4zqlsys245i2sj2xysf";
     };
     buildInputs = [ TestWarnings ];
     meta = {
