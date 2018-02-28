@@ -4863,10 +4863,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ExtUtilsLibBuilder = buildPerlModule {
-    name = "ExtUtils-LibBuilder-0.04";
+    name = "ExtUtils-LibBuilder-0.08";
     src = fetchurl {
-      url = mirror://cpan/authors/id/A/AM/AMBS/ExtUtils/ExtUtils-LibBuilder-0.04.tar.gz;
-      sha256 = "0j4rhx3w6nbvmxqjg6q09gm10nnpkcmqmh29cgxsfc9k14d8bb6w";
+      url = "mirror://cpan/authors/id/A/AM/AMBS/ExtUtils-LibBuilder-0.08.tar.gz";
+      sha256 = "1lmmfcjxvsvhn4f3v2lyylgr8dzcf5j7mnd1pkq3jc75dph724f5";
     };
     meta = {
       description = "A tool to build C libraries";
