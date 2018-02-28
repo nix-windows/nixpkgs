@@ -4165,10 +4165,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DistZillaPluginTestCPANMetaJSON = buildPerlPackage {
-    name = "Dist-Zilla-Plugin-Test-CPAN-Meta-JSON-0.003";
+    name = "Dist-Zilla-Plugin-Test-CPAN-Meta-JSON-0.004";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DO/DOHERTY/Dist-Zilla-Plugin-Test-CPAN-Meta-JSON-0.003.tar.gz;
-      sha256 = "c76b9f5745f4626969bb9c60e1330ebd0d8b197f8dd33f9a6e6fce63877b4883";
+      url = "mirror://cpan/authors/id/D/DO/DOHERTY/Dist-Zilla-Plugin-Test-CPAN-Meta-JSON-0.004.tar.gz";
+      sha256 = "08mgw5869yhcwzmdvcsjbpkx8rrw9awlyvfmwip4wds0aqfkwmqa";
     };
     buildInputs = [ DistZilla ];
     propagatedBuildInputs = [ DistZilla Moose MooseAutobox ];
