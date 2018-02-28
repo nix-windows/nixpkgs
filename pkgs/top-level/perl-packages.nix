@@ -3227,10 +3227,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DateTimeFormatFlexible = buildPerlPackage {
-    name = "DateTime-Format-Flexible-0.26";
+    name = "DateTime-Format-Flexible-0.29";
     src = fetchurl {
-      url = mirror://cpan/authors/id/T/TH/THINC/DateTime-Format-Flexible-0.26.tar.gz;
-      sha256 = "436efbc5e87cc385112e1c44336427fea32df670caf2b7d6dbb7a113ac6e693d";
+      url = "mirror://cpan/authors/id/T/TH/THINC/DateTime-Format-Flexible-0.29.tar.gz";
+      sha256 = "0bnbxmhmm23s954r5kfp4cj97cz491dkpq55gws8ab1sbsjji0nx";
     };
     propagatedBuildInputs = [ DateTime DateTimeFormatBuilder DateTimeTimeZone ListMoreUtils ModulePluggable TestMockTime ];
     meta = {
