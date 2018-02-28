@@ -4135,10 +4135,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DistZillaPluginReadmeMarkdownFromPod = buildPerlPackage {
-    name = "Dist-Zilla-Plugin-ReadmeMarkdownFromPod-0.120120";
+    name = "Dist-Zilla-Plugin-ReadmeMarkdownFromPod-0.141140";
     src = fetchurl {
-      url = mirror://cpan/authors/id/R/RT/RTHOMPSON/Dist-Zilla-Plugin-ReadmeMarkdownFromPod-0.120120.tar.gz;
-      sha256 = "5a3346daab4e2bba850ee4a7898467da9f80bc93cc10d2d625f9880a46092160";
+      url = "mirror://cpan/authors/id/R/RT/RTHOMPSON/Dist-Zilla-Plugin-ReadmeMarkdownFromPod-0.141140.tar.gz";
+      sha256 = "00d874bw0fdk53y680dx2njpgy2kvpf9kp9wsyd12ngacsrxgalw";
     };
     buildInputs = [ DistZilla TestMost ];
     propagatedBuildInputs = [ DistZillaPluginReadmeAnyFromPod Moose ];
