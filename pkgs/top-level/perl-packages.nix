@@ -11368,10 +11368,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   PackageVariant = buildPerlPackage {
-    name = "Package-Variant-1.002002";
+    name = "Package-Variant-1.003002";
     src = fetchurl {
-      url = mirror://cpan/authors/id/H/HA/HAARG/Package-Variant-1.002002.tar.gz;
-      sha256 = "826780f19522f42c6b3d9f717ab6b5400f198cec08f4aa15b71aef9aa17e9b13";
+      url = "mirror://cpan/authors/id/M/MS/MSTROUT/Package-Variant-1.003002.tar.gz";
+      sha256 = "1p1n2ny5fb15bcbykyn523w6sv968gqs7nhjfm36dpac5yfq9vdj";
     };
     buildInputs = [ TestFatal ];
     propagatedBuildInputs = [ ImportInto ModuleRuntime strictures ];
