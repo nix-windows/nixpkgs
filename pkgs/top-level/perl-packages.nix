@@ -1549,10 +1549,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   CGI = buildPerlPackage rec {
-    name = "CGI-4.31";
+    name = "CGI-4.38";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/L/LE/LEEJO/${name}.tar.gz";
-      sha256 = "dee34f45525efb698d02c56ba2458a72acc34c4dcb05344706b587840b4e8c99";
+      url = "mirror://cpan/authors/id/L/LE/LEEJO/CGI-4.38.tar.gz";
+      sha256 = "1m779315rzj4mpgscw209a2wk18iwg2n8zibn8aak4mv56jz8n4c";
     };
     buildInputs = [ TestDeep TestWarn ];
     propagatedBuildInputs = [ HTMLParser self."if" ];
