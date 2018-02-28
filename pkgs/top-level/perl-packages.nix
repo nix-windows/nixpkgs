@@ -4906,10 +4906,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ExtUtilsPkgConfig = buildPerlPackage rec {
-    name = "ExtUtils-PkgConfig-1.15";
+    name = "ExtUtils-PkgConfig-1.16";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/X/XA/XAOC/${name}.tar.gz";
-      sha256 = "1cxh6w8vmyqmhl6afys2q6z6jkp1m6zvacpk70196zmk48p1kcv9";
+      url = "mirror://cpan/authors/id/X/XA/XAOC/ExtUtils-PkgConfig-1.16.tar.gz";
+      sha256 = "0vhwh0731rhh1sswmvagq0myn754dnkab8sizh6d3n6pjpcwxsmv";
     };
     propagatedBuildInputs = [ pkgs.pkgconfig ];
     meta = {
