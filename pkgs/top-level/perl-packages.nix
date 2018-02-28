@@ -9873,10 +9873,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   PackageConstants = buildPerlPackage {
-    name = "Package-Constants-0.04";
+    name = "Package-Constants-0.06";
     src = fetchurl {
-      url = mirror://cpan/authors/id/B/BI/BINGOS/Package-Constants-0.04.tar.gz;
-      sha256 = "7e09a88da2c0df24f498eb3a133f7d979404a7bc853f21afa2ba68dfd859a880";
+      url = "mirror://cpan/authors/id/B/BI/BINGOS/Package-Constants-0.06.tar.gz";
+      sha256 = "1xaxpj2iy46yi6a79bfgnbbpyhkhfiv43bdvv55lxk3cf1wbwn0b";
     };
     meta = {
       description = "List constants defined in a package";
