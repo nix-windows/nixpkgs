@@ -3661,10 +3661,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DBIxClassHelpers = buildPerlPackage rec {
-    name = "DBIx-Class-Helpers-2.032001";
+    name = "DBIx-Class-Helpers-2.033004";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/F/FR/FREW/${name}.tar.gz";
-      sha256 = "c7af96d17e11f0957b7187bb6002341a7b130bb79b61f6d91b39178ef000eff5";
+      url = "mirror://cpan/authors/id/F/FR/FREW/DBIx-Class-Helpers-2.033004.tar.gz";
+      sha256 = "0k3qv031jz346cjxqa8j0siyvg1l8lda3yhp2wqnf25klgfpmg0l";
     };
     buildInputs = [ DBDSQLite DateTimeFormatSQLite TestDeep TestFatal TestRoo aliased ];
     propagatedBuildInputs = [ CarpClan DBIxClass DBIxClassCandy DBIxIntrospector LinguaENInflect ModuleRuntime Moo SafeIsa StringCamelCase SubExporterProgressive TextBrew TryTiny namespaceclean ];
