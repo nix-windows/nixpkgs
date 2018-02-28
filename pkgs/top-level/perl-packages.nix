@@ -10308,10 +10308,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   PlackMiddlewareDebug = buildPerlModule rec {
-    name = "Plack-Middleware-Debug-0.16";
+    name = "Plack-Middleware-Debug-0.17";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/M/MI/MIYAGAWA/${name}.tar.gz";
-      sha256 = "e1e4ff6e9b246fe67547ebac8a3e83d4ae77873f889d1f63411c21c8c6bf96d5";
+      url = "mirror://cpan/authors/id/M/MI/MIYAGAWA/Plack-Middleware-Debug-0.17.tar.gz";
+      sha256 = "09ksc53pzcvdnl1l1v1i84xma30lbqrsaphbnvvl3rllpgqn42x3";
     };
     buildInputs = [ ModuleBuildTiny TestRequires ];
     propagatedBuildInputs = [ ClassMethodModifiers DataDump FileShareDir Plack TextMicroTemplate ];
