@@ -2857,10 +2857,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DataFormValidator = buildPerlModule rec {
-    name = "Data-FormValidator-4.81";
+    name = "Data-FormValidator-4.88";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/M/MA/MARKSTOS/${name}.tar.gz";
-      sha256 = "f844056231b2eeb4068cafbcab1ddf5d46cb348bd5cfb1d234421c09ee8a0de3";
+      url = "mirror://cpan/authors/id/D/DF/DFARRELL/Data-FormValidator-4.88.tar.gz";
+      sha256 = "0rh02y4m4xn3h99y352sry6csgv4lz4pwnc3in5cvjwj3kwkk9f1";
     };
     buildInputs = [ CGI ModuleBuild ];
     propagatedBuildInputs = [ DateCalc EmailValid FileMMagic ImageSize MIMETypes Perl6Junction RegexpCommon ];
