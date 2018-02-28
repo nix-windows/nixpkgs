@@ -11806,10 +11806,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   SubName = buildPerlPackage rec {
-    name = "Sub-Name-0.19";
+    name = "Sub-Name-0.21";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/E/ET/ETHER/${name}.tar.gz";
-      sha256 = "b06ba8252ce3b1bb88fa0ea0fe9ec8b572e5ed36c69f55e9e3d9db8a73efe22b";
+      url = "mirror://cpan/authors/id/E/ET/ETHER/Sub-Name-0.21.tar.gz";
+      sha256 = "05viq8scqk29g964fsfvls2rhvlb8myz3jblwh5c2ivhw3gfjcmx";
     };
     buildInputs = [ self."if" ];
     meta = {
