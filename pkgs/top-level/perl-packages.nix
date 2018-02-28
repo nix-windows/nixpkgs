@@ -6848,11 +6848,11 @@ let self = _self // overrides; _self = with self; {
   };
 
   Inline = buildPerlPackage rec {
-    name = "Inline-0.64";
+    name = "Inline-0.80";
 
     src = fetchurl {
-      url = "mirror://cpan/authors/id/E/ET/ETJ/${name}.tar.gz";
-      sha256 = "17n3gbc9jigpfwqfhgmxpvbgr9rkdrij8jayxqpzw611ixcxrplw";
+      url = "mirror://cpan/authors/id/I/IN/INGY/Inline-0.80.tar.gz";
+      sha256 = "1xnf5hykcr54271x5jsnr61bcv1c7x39cy4kdcrkxm7bn62djavy";
     };
 
     buildInputs = [ TestWarn ];
