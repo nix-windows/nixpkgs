@@ -5523,10 +5523,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   GD = buildPerlPackage rec {
-    name = "GD-2.53";
+    name = "GD-2.68";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/L/LD/LDS/${name}.tar.gz";
-      sha256 = "1ampz82kf0ixybncfgpvq2bp9nq5sjsmmw4c8srsv0g5jpz02pfh";
+      url = "mirror://cpan/authors/id/R/RU/RURBAN/GD-2.68.tar.gz";
+      sha256 = "0p2ya641nl5cvcqgw829xgabh835qijfd6vq2ba12862946xx8va";
     };
 
     buildInputs = [ pkgs.gd pkgs.libjpeg pkgs.zlib pkgs.freetype
