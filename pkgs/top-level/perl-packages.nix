@@ -9076,10 +9076,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   MooseXTypes = buildPerlPackage rec {
-    name = "MooseX-Types-0.46";
+    name = "MooseX-Types-0.50";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/E/ET/ETHER/${name}.tar.gz";
-      sha256 = "e9e8c36284cf1adc6563c980c0a4f0a7df720dbaaece0dd6be66b975dde5db7a";
+      url = "mirror://cpan/authors/id/E/ET/ETHER/MooseX-Types-0.50.tar.gz";
+      sha256 = "026b2wdz98xyaik90s8ffxihdhwzvwm7ncgr5nfvxw6bj8s7pn4w";
     };
     buildInputs = [ ModuleBuildTiny Moose TestFatal TestRequires ];
     propagatedBuildInputs = [ CarpClan Moose SubExporterForMethods SubName namespaceautoclean ];
