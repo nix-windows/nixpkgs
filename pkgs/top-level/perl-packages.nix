@@ -4077,10 +4077,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DistZillaPluginMojibakeTests = buildPerlPackage {
-    name = "Dist-Zilla-Plugin-MojibakeTests-0.5";
+    name = "Dist-Zilla-Plugin-MojibakeTests-0.8";
     src = fetchurl {
-      url = mirror://cpan/authors/id/S/SY/SYP/Dist-Zilla-Plugin-MojibakeTests-0.5.tar.gz;
-      sha256 = "0630acc9bcb415feba49b55a1b70da6e49a740673b4a483fc8058d03c6a21676";
+      url = "mirror://cpan/authors/id/S/SY/SYP/Dist-Zilla-Plugin-MojibakeTests-0.8.tar.gz";
+      sha256 = "105kb81bmp82amr67sfsv53dfn20dknp4sj0hfjgga14x93zbzzi";
     };
     propagatedBuildInputs = [ DistZilla Moose TestMojibake UnicodeCheckUTF8 ];
     meta = {
