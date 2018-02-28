@@ -10293,10 +10293,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   Plack = buildPerlPackage rec {
-    name = "Plack-1.0039";
+    name = "Plack-1.0047";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/M/MI/MIYAGAWA/${name}.tar.gz";
-      sha256 = "d24a572e88644c7d39c7e6ff1af005b728dec94a878cf06d9027ab7d1a2fd0a9";
+      url = "mirror://cpan/authors/id/M/MI/MIYAGAWA/Plack-1.0047.tar.gz";
+      sha256 = "0qb50hbp08imwlxdzwd9711w3gbqz64639yl3zhz1860mksr6b1j";
     };
     buildInputs = [ FileShareDirInstall TestRequires ];
     propagatedBuildInputs = [ ApacheLogFormatCompiler CookieBaker DevelStackTrace DevelStackTraceAsHTML FileShareDir FilesysNotifySimple HTTPBody HTTPHeadersFast HTTPMessage HashMultiValue StreamBuffered TestTCP TryTiny URI ];
