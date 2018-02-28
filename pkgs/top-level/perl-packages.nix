@@ -5040,11 +5040,11 @@ let self = _self // overrides; _self = with self; {
   };
 
   FileBaseDir = buildPerlPackage rec {
-    version = "0.03";
-    name = "File-BaseDir-${version}";
+    version = "0.07";
+    name = "File-BaseDir-0.07";
     src = fetchurl {
-      url = "mirror://cpan/modules/by-module/File/${name}.tar.gz";
-      sha256 = "0029cba7a3b5d8aa5f7d03cb1b7ba2bcf2829382f7f26aa3bee06fce8611a886";
+      url = "mirror://cpan/authors/id/K/KI/KIMRYAN/File-BaseDir-0.07.tar.gz";
+      sha256 = "0aq8d4hsaxqibp36f773y6dfck7zd82v85sp8vhi6pjkg3pmf2hj";
     };
     configurePhase = ''
       preConfigure || true
