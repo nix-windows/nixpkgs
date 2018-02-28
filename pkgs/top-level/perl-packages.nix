@@ -11781,10 +11781,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   SubIdentify = buildPerlPackage rec {
-    name = "Sub-Identify-0.12";
+    name = "Sub-Identify-0.14";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/R/RG/RGARCIA/${name}.tar.gz";
-      sha256 = "83bb785a66113b4a966db0a4186fd1dd07987acdacb4502b1e1558f817dde825";
+      url = "mirror://cpan/authors/id/R/RG/RGARCIA/Sub-Identify-0.14.tar.gz";
+      sha256 = "0vxdxyfh6037xy88ic7500wydzmsxldhp95n8bld2kaihqh2g386";
     };
     meta = {
       description = "Retrieve names of code references";
