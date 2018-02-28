@@ -13547,10 +13547,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TextSoundex = buildPerlPackage {
-    name = "Text-Soundex-3.04";
+    name = "Text-Soundex-3.05";
     src = fetchurl {
-      url = mirror://cpan/authors/id/R/RJ/RJBS/Text-Soundex-3.04.tar.gz;
-      sha256 = "2e56bb4324ee0186b908b3bd78463643affe7295624af0628e81491e910283d9";
+      url = "mirror://cpan/authors/id/R/RJ/RJBS/Text-Soundex-3.05.tar.gz";
+      sha256 = "1vb0vg1109gfzaak74ynw5s00ml28f33j612g2lxw98b52s5bpgn";
     };
     propagatedBuildInputs = [ if_ ];
   };
