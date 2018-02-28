@@ -2584,10 +2584,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   CryptPKCS10 = buildPerlPackage {
-    name = "Crypt-PKCS10-1.0";
+    name = "Crypt-PKCS10-1.800201";
     src = fetchurl {
-      url = mirror://cpan/authors/id/G/GK/GKNOCKE/Crypt-PKCS10-1.0.zip;
-      sha256 = "08de199411056df1a1e6374b503574d21089913daa3823ebb21aa399dc59bdb6";
+      url = "mirror://cpan/authors/id/T/TL/TLHACKQUE/Crypt-PKCS10-1.800201.tar.gz";
+      sha256 = "0cjg6av4jm6lbkhciskal9awf51r6vgfz431kpb4zgcbss148vf1";
     };
     buildInputs = [ pkgs.unzip ];
     propagatedBuildInputs = [ ConvertASN1 ];
