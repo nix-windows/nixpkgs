@@ -2424,10 +2424,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   CPANMetaCheck = buildPerlPackage rec {
-    name = "CPAN-Meta-Check-0.012";
+    name = "CPAN-Meta-Check-0.014";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/L/LE/LEONT/${name}.tar.gz";
-      sha256 = "1rymh4l6sdh8l1q2q25lncmi4afbh2il0bpk8gxmd13qmjidjk2b";
+      url = "mirror://cpan/authors/id/L/LE/LEONT/CPAN-Meta-Check-0.014.tar.gz";
+      sha256 = "07rmdbz1rbnb7w33vswn1wixlyh947sqr93xrvcph1hwzhmmg818";
     };
     buildInputs = [ TestDeep ModuleMetadata ];
     propagatedBuildInputs = [ CPANMeta CPANMetaRequirements ];
