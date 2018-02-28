@@ -5162,10 +5162,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   FileLibMagic = buildPerlPackage rec {
-    name = "File-LibMagic-1.15";
+    name = "File-LibMagic-1.16";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/D/DR/DROLSKY/${name}.tar.gz";
-      sha256 = "2c7fb54912caf2c22d06b02d6a88edad970e0f8b017634dc30eec46e53763e84";
+      url = "mirror://cpan/authors/id/D/DR/DROLSKY/File-LibMagic-1.16.tar.gz";
+      sha256 = "0q1xyfjy38wzlvfj6h014rri3ks70r6646rfivhm4ks5q7x9b9n8";
     };
     buildInputs = [ TestFatal pkgs.file ];
     makeMakerFlags = "--lib=${pkgs.file}/lib";
