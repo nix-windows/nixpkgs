@@ -3473,10 +3473,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DevelCheckOS = buildPerlPackage rec {
-    name = "Devel-CheckOS-1.76";
+    name = "Devel-CheckOS-1.81";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/D/DC/DCANTRELL/${name}.tar.gz";
-      sha256 = "f83fb4cb8de060f607214b1e88c98ac6c4e065371e646fe896f16ea887aecb0c";
+      url = "mirror://cpan/authors/id/D/DC/DCANTRELL/Devel-CheckOS-1.81.tar.gz";
+      sha256 = "041vl8a907p2igwmyadapw3dzjddaxnd6f7r2qkbd0wjnxb7phgk";
     };
     propagatedBuildInputs = [ DataCompare FileFindRule ];
   };
