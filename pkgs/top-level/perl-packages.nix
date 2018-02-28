@@ -11978,10 +11978,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   SysVirt = buildPerlPackage rec {
-    name = "Sys-Virt-1.2.19";
+    name = "Sys-Virt-4.0.0";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/D/DA/DANBERR/${name}.tar.gz";
-      sha256 = "18v8x0514in0zpvq1rv78hmvhpij1xjh5xn0wa6wmg2swky54sp4";
+      url = "mirror://cpan/authors/id/D/DA/DANBERR/Sys-Virt-4.0.0.tar.gz";
+      sha256 = "05y7h7mvqhpyalg0i2iq8jz8p0xzv5ps72r06qsdj3iaqmm8ixzk";
     };
     propagatedBuildInputs = [XMLXPath];
     buildInputs = [TestPodCoverage TimeHiRes TestPod pkgs.pkgconfig pkgs.libvirt];
