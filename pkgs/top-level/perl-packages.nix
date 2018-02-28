@@ -8070,10 +8070,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ModernPerl = buildPerlPackage {
-    name = "Modern-Perl-1.20140107";
+    name = "Modern-Perl-1.20170117";
     src = fetchurl {
-      url = mirror://cpan/authors/id/C/CH/CHROMATIC/Modern-Perl-1.20140107.tar.gz;
-      sha256 = "9cf66b2f93340dfe1cd7162262a47e7c4ba82475a52dc2a036c2fdc8a65298b8";
+      url = "mirror://cpan/authors/id/C/CH/CHROMATIC/Modern-Perl-1.20170117.tar.gz";
+      sha256 = "0a1n9c04zhs1a1km1zi0d1hj78d10qv3bhxr4bdi4chnc4saiwjx";
     };
     propagatedBuildInputs = [ perl ];
     meta = {
