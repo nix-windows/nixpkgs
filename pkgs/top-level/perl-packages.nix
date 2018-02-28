@@ -10819,10 +10819,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   POSIXstrftimeCompiler = buildPerlModule rec {
-    name = "POSIX-strftime-Compiler-0.41";
+    name = "POSIX-strftime-Compiler-0.42";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/K/KA/KAZEBURO/${name}.tar.gz";
-      sha256 = "670b89e11500f3808c9e21b1c300089622f68906ff12b1cbfba8e30d3a1c3739";
+      url = "mirror://cpan/authors/id/K/KA/KAZEBURO/POSIX-strftime-Compiler-0.42.tar.gz";
+      sha256 = "04dcn2n4rfkj8p24vj2p17vvis40l87pf2vdqp0vqm5jg3fjnn16";
     };
     # We cannot change timezones on the fly.
     prePatch = "rm t/04_tzset.t";
