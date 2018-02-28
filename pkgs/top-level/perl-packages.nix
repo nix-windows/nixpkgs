@@ -5253,10 +5253,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   Filepushd = buildPerlPackage {
-    name = "File-pushd-1.005";
+    name = "File-pushd-1.014";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DA/DAGOLDEN/File-pushd-1.005.tar.gz;
-      sha256 = "50fdcc33e69a50bab1e32d1a7c96753938f6d95a06015e34e662958c58687842";
+      url = "mirror://cpan/authors/id/D/DA/DAGOLDEN/File-pushd-1.014.tar.gz";
+      sha256 = "02rlqvyy7gly3dsqwaa81aisyy9c791b8xvwzczcbgmcwgzkgaxm";
     };
     meta = {
       homepage = https://metacpan.org/release/File-pushd;
