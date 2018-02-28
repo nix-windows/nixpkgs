@@ -11073,10 +11073,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ScalarListUtils = buildPerlPackage {
-    name = "Scalar-List-Utils-1.42";
+    name = "Scalar-List-Utils-1.50";
     src = fetchurl {
-      url = mirror://cpan/authors/id/P/PE/PEVANS/Scalar-List-Utils-1.42.tar.gz;
-      sha256 = "3507f72541f66a2dce850b9b56771e5fccda3d215c52f74946c6e370c0f4a4da";
+      url = "mirror://cpan/authors/id/P/PE/PEVANS/Scalar-List-Utils-1.50.tar.gz";
+      sha256 = "0x9n0617gjjcqa4nk5biiwkxdi90xpdfg6z07gjr009qjg3bkah6";
     };
     meta = {
       description = "Common Scalar and List utility subroutines";
