@@ -11168,10 +11168,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   SetObject = buildPerlPackage {
-    name = "Set-Object-1.34";
+    name = "Set-Object-1.39";
     src = fetchurl {
-      url = mirror://cpan/authors/id/R/RU/RURBAN/Set-Object-1.34.tar.gz;
-      sha256 = "1dipd6k572pzqjzbj9vagb2k347qcg29lsxzx9y214bhnw7fgvjp";
+      url = "mirror://cpan/authors/id/R/RU/RURBAN/Set-Object-1.39.tar.gz";
+      sha256 = "040q819l9x55j0hjhfvc153451syvjffw3d22gs398sd23mwzzsy";
     };
   };
 
