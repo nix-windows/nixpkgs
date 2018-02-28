@@ -5016,10 +5016,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   FileChangeNotify = buildPerlModule {
-    name = "File-ChangeNotify-0.24";
+    name = "File-ChangeNotify-0.28";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DR/DROLSKY/File-ChangeNotify-0.24.tar.gz;
-      sha256 = "3c8180169de0f97ad852a55942f74e520cbe433aa0889d0b65548ee38a111124";
+      url = "mirror://cpan/authors/id/D/DR/DROLSKY/File-ChangeNotify-0.28.tar.gz";
+      sha256 = "019gm8l2x9jsy5c8rm83kng8vkpzy0f8avm2vh41l4w1sh4yh3z0";
     };
     buildInputs = [ TestException ];
     propagatedBuildInputs =
