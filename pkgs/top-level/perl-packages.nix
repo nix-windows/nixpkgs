@@ -10139,10 +10139,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   Pegex = buildPerlPackage rec {
-    name = "Pegex-0.60";
+    name = "Pegex-0.64";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/I/IN/INGY/${name}.tar.gz";
-      sha256 = "317347f8c6355e886d87aef4c30fb4cb6cfa3e46adf62f59e6141ec05a97f2cf";
+      url = "mirror://cpan/authors/id/I/IN/INGY/Pegex-0.64.tar.gz";
+      sha256 = "1kb7y2cc3nibbn8i8y3vrzz1f9h3892nbf8jj88c5fdgpmj05q17";
     };
     buildInputs = [ FileShareDirInstall YAMLLibYAML ];
     meta = {
