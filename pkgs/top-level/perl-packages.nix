@@ -3380,10 +3380,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DateTimeLocale = buildPerlPackage rec {
-    name = "DateTime-Locale-1.03";
+    name = "DateTime-Locale-1.17";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/D/DR/DROLSKY/${name}.tar.gz";
-      sha256 = "3100568a62a91ca1c09c0aac8e1e4ba34e6f82047ec64f714733a647c040f511";
+      url = "mirror://cpan/authors/id/D/DR/DROLSKY/DateTime-Locale-1.17.tar.gz";
+      sha256 = "1jawnci23kik5x4gln6ixvv9bxznd5f6ira024yjxsc97y5mk9hc";
     };
     buildInputs = [ DistCheckConflicts TestFatal TestRequires TestWarnings ];
     propagatedBuildInputs = [ DistCheckConflicts ListMoreUtils ParamsValidate ];
