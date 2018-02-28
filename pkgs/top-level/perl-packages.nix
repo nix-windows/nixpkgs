@@ -6370,10 +6370,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   HTTPMessage = buildPerlPackage rec {
-    name = "HTTP-Message-6.11";
+    name = "HTTP-Message-6.14";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/E/ET/ETHER/${name}.tar.gz";
-      sha256 = "e7b368077ae6a188d99920411d8f52a8e5acfb39574d4f5c24f46fd22533d81b";
+      url = "mirror://cpan/authors/id/O/OA/OALDERS/HTTP-Message-6.14.tar.gz";
+      sha256 = "1j9arz2phh0q7dhrkswk3kdh9fj6rddgr19sirpfrf5l1vqvkaki";
     };
     propagatedBuildInputs = [ EncodeLocale HTTPDate IOHTML LWPMediaTypes URI ];
     meta = {
