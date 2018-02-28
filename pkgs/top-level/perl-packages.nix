@@ -12183,10 +12183,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TermProgressBar = buildPerlPackage {
-    name = "Term-ProgressBar-2.14";
+    name = "Term-ProgressBar-2.21";
     src = fetchurl {
-      url = mirror://cpan/authors/id/S/SZ/SZABGAB/Term-ProgressBar-2.14.tar.gz;
-      sha256 = "18cj7mzbis9xk0v32g2700vq9b4p9v5msk02mglf244cj77bflf6";
+      url = "mirror://cpan/authors/id/M/MA/MANWAR/Term-ProgressBar-2.21.tar.gz";
+      sha256 = "0i0fqfwjv1lr4p7arh306c1ha3gv89hl1b7gwf98skd9dhd4z6b6";
     };
     buildInputs = [ CaptureTiny TestException ];
     propagatedBuildInputs = [ ClassMethodMaker TermReadKey ];
