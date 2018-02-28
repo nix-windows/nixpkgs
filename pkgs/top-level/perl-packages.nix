@@ -7252,10 +7252,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ListAllUtils = buildPerlPackage {
-    name = "List-AllUtils-0.09";
+    name = "List-AllUtils-0.14";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DR/DROLSKY/List-AllUtils-0.09.tar.gz;
-      sha256 = "4cfe6359cc6c9f4ba0d178e223f4b468d3cf7768d645334962f05de069bdaee2";
+      url = "mirror://cpan/authors/id/D/DR/DROLSKY/List-AllUtils-0.14.tar.gz";
+      sha256 = "1kgngv8l2b2zda1ap6yh5dggl9s64wafsbyc02h7a6df4xcscnp4";
     };
     buildInputs = [ TestWarnings ];
     propagatedBuildInputs = [ ListMoreUtils ];
