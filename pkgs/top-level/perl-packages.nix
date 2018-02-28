@@ -10714,10 +10714,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   podlinkcheck = buildPerlPackage rec {
-    name = "podlinkcheck-14";
+    name = "podlinkcheck-15";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/K/KR/KRYDE/${name}.tar.gz";
-      sha256 = "8ad152bdffbb7f5080616c0c0ae142f75b4c1255ed82b9cd80a5f4e3172fed3d";
+      url = "mirror://cpan/authors/id/K/KR/KRYDE/podlinkcheck-15.tar.gz";
+      sha256 = "1nr1ffii05rywisgq6n4ds0gak34afi2dbll1a2vybgq3gnfnfsf";
     };
     propagatedBuildInputs = [ FileFindIterator FileHomeDir IPCRun constantdefer libintlperl ];
     meta = {
