@@ -2252,10 +2252,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ConfigStd = buildPerlPackage {
-    name = "Config-Std-0.901";
+    name = "Config-Std-0.903";
     src = fetchurl {
-      url = mirror://cpan/authors/id/B/BR/BRICKER/Config-Std-0.901.tar.gz;
-      sha256 = "c5c57eb82a37cc41ea152098fc8e5548acfea8861140fbac8fc3beccbb09c243";
+      url = "mirror://cpan/authors/id/B/BR/BRICKER/Config-Std-0.903.tar.gz";
+      sha256 = "1zl02jhw4nc6q77w9a376fd4g24mkqggbhmr98k9s9xxcgv9yw5p";
     };
     propagatedBuildInputs = [ ClassStd ];
     meta = {
