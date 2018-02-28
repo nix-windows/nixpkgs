@@ -3857,10 +3857,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DevelStackTrace = buildPerlPackage {
-    name = "Devel-StackTrace-1.34";
+    name = "Devel-StackTrace-2.03";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DR/DROLSKY/Devel-StackTrace-1.34.tar.gz;
-      sha256 = "e882ccd7f4cbab0d0cdad53897f3f3bf29bdcf47d2bdfde1ac07f1bc7d7ebd16";
+      url = "mirror://cpan/authors/id/D/DR/DROLSKY/Devel-StackTrace-2.03.tar.gz";
+      sha256 = "0j58kgjr9s3vibsgifmk9k5h7daag0cb9x45f30m9qi4pr7cs63n";
     };
     meta = {
       homepage = http://metacpan.org/release/Devel-StackTrace;
