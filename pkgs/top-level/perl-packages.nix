@@ -9354,10 +9354,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   namespaceclean = buildPerlPackage rec {
-    name = "namespace-clean-0.26";
+    name = "namespace-clean-0.27";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/R/RI/RIBASUSHI/${name}.tar.gz";
-      sha256 = "73986e19c4ad0e634e35f4f26e81437f152d8026eb1d91fe795725746ce13eca";
+      url = "mirror://cpan/authors/id/R/RI/RIBASUSHI/namespace-clean-0.27.tar.gz";
+      sha256 = "17dg64pd4bwi2ad3p8ykwys1zha7kg8a8ykvks7wfg8q7qyah44a";
     };
     propagatedBuildInputs = [ BHooksEndOfScope PackageStash ];
     meta = {
