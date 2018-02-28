@@ -9885,10 +9885,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   PackageDeprecationManager = buildPerlPackage rec {
-    name = "Package-DeprecationManager-0.16";
+    name = "Package-DeprecationManager-0.17";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/D/DR/DROLSKY/${name}.tar.gz";
-      sha256 = "4018a06f7a3ba252c9eccc3fdcad9490cd003dfa6baf261545e96b5a82e784a7";
+      url = "mirror://cpan/authors/id/D/DR/DROLSKY/Package-DeprecationManager-0.17.tar.gz";
+      sha256 = "0jv8svfh1c1q4vxlkf8vjfbdq3n2sj3nx5llv1qrhp1b93d3lx0x";
     };
     buildInputs = [ TestFatal TestWarnings ];
     propagatedBuildInputs = [ PackageStash ParamsUtil SubInstall SubName namespaceautoclean ];
