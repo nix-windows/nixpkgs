@@ -10728,10 +10728,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   PodPerldoc = buildPerlPackage {
-    name = "Pod-Perldoc-3.25";
+    name = "Pod-Perldoc-3.28";
     src = fetchurl {
-      url = mirror://cpan/authors/id/M/MA/MALLEN/Pod-Perldoc-3.25.tar.gz;
-      sha256 = "f1a4b3ac7aa244485456b0e8733c773bbb39ae35b01a59515f6cba6bbe293a84";
+      url = "mirror://cpan/authors/id/M/MA/MALLEN/Pod-Perldoc-3.28.tar.gz";
+      sha256 = "0kf6xwdha8jl0nxv60r2v7xsfnvv6i3gy135xsl40g71p02ychfc";
     };
     meta = {
       description = "Look up Perl documentation in Pod format";
