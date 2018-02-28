@@ -9483,10 +9483,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   NetCIDR = buildPerlPackage {
-    name = "Net-CIDR-0.17";
+    name = "Net-CIDR-0.18";
     src = fetchurl {
-      url = mirror://cpan/authors/id/M/MR/MRSAM/Net-CIDR-0.17.tar.gz;
-      sha256 = "4a968e700d382cf0946e47df420d0151fbd8e0135f037d404c7c63713b66daf0";
+      url = "mirror://cpan/authors/id/M/MR/MRSAM/Net-CIDR-0.18.tar.gz";
+      sha256 = "09qlxwq19n8d7lggcwq88yibckccbyf351y1531qwb9bsjl7xpy3";
     };
     meta = {
       description = "Manipulate IPv4/IPv6 netblocks in CIDR notation";
