@@ -12477,10 +12477,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TestDifferences = buildPerlPackage {
-    name = "Test-Differences-0.63";
+    name = "Test-Differences-0.64";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DC/DCANTRELL/Test-Differences-0.63.tar.gz;
-      sha256 = "7c657a178c32f48de3b469f6d4f67b75f018a3a19c1e6d0d8892188b0d261a66";
+      url = "mirror://cpan/authors/id/D/DC/DCANTRELL/Test-Differences-0.64.tar.gz";
+      sha256 = "0xmj5vgklq4yqvi7l63ky1k6g7fhww68llpmw9rhlaihqbcrsicz";
     };
     propagatedBuildInputs = [ CaptureTiny TextDiff ];
     meta = {
