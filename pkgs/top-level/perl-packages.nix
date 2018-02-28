@@ -3509,10 +3509,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DevelPPPort = buildPerlPackage rec {
-    name = "Devel-PPPort-3.32";
+    name = "Devel-PPPort-3.36";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/W/WO/WOLFSAGE/${name}.tar.gz";
-      sha256 = "257801ef441f317bc79d20cdc72344e5b4ff6f685d65bdf79ff153e733fa3856";
+      url = "mirror://cpan/authors/id/W/WO/WOLFSAGE/Devel-PPPort-3.36.tar.gz";
+      sha256 = "0lpsgaarrp0xd4nwpfpdzpphrhgldnpdfbq542nq72flwasb23xp";
     };
     meta = {
       description = "Perl/Pollution/Portability";
