@@ -8272,10 +8272,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ModuleManifest = buildPerlPackage {
-    name = "Module-Manifest-1.08";
+    name = "Module-Manifest-1.09";
     src = fetchurl {
-      url = mirror://cpan/authors/id/A/AD/ADAMK/Module-Manifest-1.08.tar.gz;
-      sha256 = "722ed428afcbe5b5b441b0165cbafbd8534fa63d7856d4089e6e25ac21e6445d";
+      url = "mirror://cpan/authors/id/E/ET/ETHER/Module-Manifest-1.09.tar.gz";
+      sha256 = "16skpm804a19gsgxzn1wba3lmvc7cx5q8ly4srpyd82yy47zi5d3";
     };
     buildInputs = [ TestException TestWarn ];
     propagatedBuildInputs = [ ParamsUtil ];
