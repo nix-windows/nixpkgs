@@ -4315,10 +4315,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DistZillaPluginTestUnusedVars = buildPerlPackage {
-    name = "Dist-Zilla-Plugin-Test-UnusedVars-2.000005";
+    name = "Dist-Zilla-Plugin-Test-UnusedVars-2.000007";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DO/DOHERTY/Dist-Zilla-Plugin-Test-UnusedVars-2.000005.tar.gz;
-      sha256 = "37ec462dc82f45cfd9d6d92ee59b8fd215a9a14b18d179b05912baee77359804";
+      url = "mirror://cpan/authors/id/D/DO/DOHERTY/Dist-Zilla-Plugin-Test-UnusedVars-2.000007.tar.gz";
+      sha256 = "1hj39g892499g0yzkf1mfxqyycdiv6g8nl1jq7fi6ch4l2irj0ga";
     };
     buildInputs = [ CaptureTiny DistZilla MooseAutobox TestOutput ];
     propagatedBuildInputs = [ DistZilla Moose TestVars namespaceautoclean ];
