@@ -12560,10 +12560,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TestFile = buildPerlPackage {
-    name = "Test-File-1.41";
+    name = "Test-File-1.443";
     src = fetchurl {
-      url = mirror://cpan/authors/id/B/BD/BDFOY/Test-File-1.41.tar.gz;
-      sha256 = "45ec1b714f64d05e34205c40b08c49549f257910e4966fa28e2ac170d5516316";
+      url = "mirror://cpan/authors/id/B/BD/BDFOY/Test-File-1.443.tar.gz";
+      sha256 = "1mdwb3x8d4l24wsymamsnq2c73a637v4q5kmb5xqqz31iymsdd31";
     };
     buildInputs = [ Testutf8 ];
     meta = {
