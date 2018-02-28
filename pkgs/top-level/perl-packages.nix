@@ -9315,10 +9315,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   MusicBrainzDiscID = buildPerlModule rec {
-    name = "MusicBrainz-DiscID-0.03";
+    name = "MusicBrainz-DiscID-0.04";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/N/NJ/NJH/${name}.tar.gz";
-      sha256 = "0fjph2q3yp0aa87gckv3391s47m13wbyylj7jb7vqx7hv0pzj0jh";
+      url = "mirror://cpan/authors/id/N/NJ/NJH/MusicBrainz-DiscID-0.04.tar.gz";
+      sha256 = "1i4qk1qfcmxdibqkyfjrrjdq2zk42vjcz590qgiyc47fi9p6xx1j";
     };
     # Build.PL in this package uses which to find pkg-config -- make it use path instead
     patchPhase = ''sed -ie 's/`which pkg-config`/"pkg-config"/' Build.PL'';
