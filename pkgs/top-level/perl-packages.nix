@@ -4475,10 +4475,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   EmailSender = buildPerlPackage rec {
-    name = "Email-Sender-1.300028";
+    name = "Email-Sender-1.300031";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/R/RJ/RJBS/${name}.tar.gz";
-      sha256 = "4a1cb9386a6b58b589b3183c807e533547a28e596fb15aa4cfd614947ad8ad30";
+      url = "mirror://cpan/authors/id/R/RJ/RJBS/Email-Sender-1.300031.tar.gz";
+      sha256 = "052g0slw3h2lzn93j71fi47nfawww2aph4jhr3c860ji70lkf4n4";
     };
     buildInputs = [ CaptureTiny ];
     propagatedBuildInputs = [ libnet EmailAbstract EmailAddress EmailSimple ListMoreUtils ModuleRuntime Moo MooXTypesMooseLike SubExporter Throwable TryTiny ];
