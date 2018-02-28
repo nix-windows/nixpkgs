@@ -8468,10 +8468,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   MojoIOLoopForkCall = buildPerlModule rec {
-    name = "Mojo-IOLoop-ForkCall-0.17";
+    name = "Mojo-IOLoop-ForkCall-0.19";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/J/JB/JBERGER/${name}.tar.gz";
-      sha256 = "886de5c3b44194a86228471075fac4036073bda19093e776c702aa65c3ef1824";
+      url = "mirror://cpan/authors/id/J/JB/JBERGER/Mojo-IOLoop-ForkCall-0.19.tar.gz";
+      sha256 = "0qpc9n7f0wsn67a7794d8bhy3zzm4ipg9x0hk2dzfl0lglfbfdm4";
     };
     propagatedBuildInputs = [ IOPipely Mojolicious ];
     meta = {
