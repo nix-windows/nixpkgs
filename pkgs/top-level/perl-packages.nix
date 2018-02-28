@@ -7276,10 +7276,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ListMoreUtils = buildPerlPackage rec {
-    name = "List-MoreUtils-0.413";
+    name = "List-MoreUtils-0.428";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/R/RE/REHSACK/${name}.tar.gz";
-      sha256 = "4d6429d5672ce74a59d6490320252cb8b5b8285db8fe9c6551a4162e5375ef37";
+      url = "mirror://cpan/authors/id/R/RE/REHSACK/List-MoreUtils-0.428.tar.gz";
+      sha256 = "1hkc8xkd27yzfkgaglzn77j4qjmilyva4gaz3pc64vpism2hjgki";
     };
     propagatedBuildInputs = [ ExporterTiny ];
     meta = {
