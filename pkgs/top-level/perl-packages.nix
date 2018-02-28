@@ -4416,10 +4416,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   EmailMIME = buildPerlPackage rec {
-    name = "Email-MIME-1.936";
+    name = "Email-MIME-1.946";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/R/RJ/RJBS/${name}.tar.gz";
-      sha256 = "4c0934284da84b8e9ed48ff1060c9719273fac18e776f4c8e888a47c863ee661";
+      url = "mirror://cpan/authors/id/R/RJ/RJBS/Email-MIME-1.946.tar.gz";
+      sha256 = "0z1k3i0lzp2k421gc8f3wq0jbqflkbw2xqd2k7n7pmv56417kvk8";
     };
     propagatedBuildInputs = [ EmailAddress EmailMIMEContentType EmailMIMEEncodings EmailMessageID EmailSimple MIMETypes ];
     meta = {
