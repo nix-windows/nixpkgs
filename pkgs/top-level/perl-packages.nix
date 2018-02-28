@@ -13634,10 +13634,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TestVersion = buildPerlPackage rec {
-    name = "Test-Version-2.05";
+    name = "Test-Version-2.07";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/P/PL/PLICEASE/${name}.tar.gz";
-      sha256 = "39c0ec02663da0e56962bdafaef6790cf83d12b4d90e8a4cdc971d57d869d63f";
+      url = "mirror://cpan/authors/id/P/PL/PLICEASE/Test-Version-2.07.tar.gz";
+      sha256 = "1b6vrk2xnifi0dc1xy5q1ybvjy9kcrav029irva26ssx75cbgs7a";
     };
     buildInputs = [ TestException ];
     propagatedBuildInputs = [ FileFindRulePerl ];
