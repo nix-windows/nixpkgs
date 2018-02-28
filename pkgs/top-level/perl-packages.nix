@@ -4431,10 +4431,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   EmailMIMEContentType = buildPerlPackage rec {
-    name = "Email-MIME-ContentType-1.018";
+    name = "Email-MIME-ContentType-1.022";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/R/RJ/RJBS/${name}.tar.gz";
-      sha256 = "7508cd1227b8f150a403ca49658cb4a0892836dd8f01ff95f049957b2abf10f9";
+      url = "mirror://cpan/authors/id/R/RJ/RJBS/Email-MIME-ContentType-1.022.tar.gz";
+      sha256 = "042kxhs3bp1ab9z0mbr1wy21ld4lxd6v2a2mmrashqnsn2075fws";
     };
     meta = {
       homepage = https://github.com/rjbs/Email-MIME-ContentType;
