@@ -5110,10 +5110,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   FileFindRulePerl = buildPerlPackage {
-    name = "File-Find-Rule-Perl-1.13";
+    name = "File-Find-Rule-Perl-1.15";
     src = fetchurl {
-      url = mirror://cpan/authors/id/A/AD/ADAMK/File-Find-Rule-Perl-1.13.tar.gz;
-      sha256 = "d2ecb270778ddf54c536a78d02fe6ee7a675f7dcb7f3497ba1a76493f1bd2476";
+      url = "mirror://cpan/authors/id/E/ET/ETHER/File-Find-Rule-Perl-1.15.tar.gz";
+      sha256 = "19iy8spzrvh71x33b5yi16wjw5jjvs12jvjj0f7f3370hqzl6j4s";
     };
     propagatedBuildInputs = [ FileFindRule ParamsUtil ];
     meta = {
