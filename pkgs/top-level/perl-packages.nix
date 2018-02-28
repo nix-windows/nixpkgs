@@ -9981,10 +9981,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ParamsValidate = buildPerlModule rec {
-    name = "Params-Validate-1.24";
+    name = "Params-Validate-1.29";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/D/DR/DROLSKY/${name}.tar.gz";
-      sha256 = "1e1576f16e6e01ba63aa73775da563b410b49f26ee44169a45280feb958a5f0d";
+      url = "mirror://cpan/authors/id/D/DR/DROLSKY/Params-Validate-1.29.tar.gz";
+      sha256 = "0cwpf8yxwyxbnwhf6rx4wnaq1q38j38i34a78a005shb8gxqv9j9";
     };
     buildInputs = [ ModuleBuild TestFatal TestRequires ];
     propagatedBuildInputs = [ ModuleImplementation ];
