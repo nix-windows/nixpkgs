@@ -2848,10 +2848,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DataFloat = buildPerlPackage rec {
-    name = "Data-Float-0.012";
+    name = "Data-Float-0.013";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/Z/ZE/ZEFRAM/${name}.tar.gz";
-      sha256 = "698ecb092a3284e260cd3c3208408feb791d7d0f06a02673f9125ab2d51cc2d8";
+      url = "mirror://cpan/authors/id/Z/ZE/ZEFRAM/Data-Float-0.013.tar.gz";
+      sha256 = "12ji4yf3nc965rqqgfhr96w7irpm6n1g15nivfxvhc49hlym5cg2";
     };
     buildInputs = [ ModuleBuild ];
   };
