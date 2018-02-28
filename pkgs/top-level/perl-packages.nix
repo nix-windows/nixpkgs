@@ -8844,10 +8844,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   MooseXHasSugar = buildPerlModule {
-    name = "MooseX-Has-Sugar-0.05070421";
+    name = "MooseX-Has-Sugar-1.000006";
     src = fetchurl {
-      url = mirror://cpan/authors/id/K/KE/KENTNL/MooseX-Has-Sugar-0.05070421.tar.gz;
-      sha256 = "5acf92a6dcac50a6edfcbdb2c38802f8c1f9dc7194a79d0b85a3d4105ebba7df";
+      url = "mirror://cpan/authors/id/K/KE/KENTNL/MooseX-Has-Sugar-1.000006.tar.gz";
+      sha256 = "02cdqalfm26la736hcz6cz94awa2n31g71fl2vs1ism8ngfx7vpg";
     };
     buildInputs = [ Moose MooseXTypes TestFatal namespaceautoclean ];
     propagatedBuildInputs = [ SubExporter ];
