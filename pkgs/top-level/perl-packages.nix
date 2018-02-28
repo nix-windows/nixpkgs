@@ -11210,10 +11210,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   SOAPLite = buildPerlPackage {
-    name = "SOAP-Lite-1.11";
+    name = "SOAP-Lite-1.26";
     src = fetchurl {
-      url = mirror://cpan/authors/id/P/PH/PHRED/SOAP-Lite-1.11.tar.gz;
-      sha256 = "1zhy06v72r95ih3lx5rlx0bvkq214ndmcmn97m5k2rkxxy4ybpp4";
+      url = "mirror://cpan/authors/id/P/PH/PHRED/SOAP-Lite-1.26.tar.gz";
+      sha256 = "1zq2z4c52zclv3nc0g6fya571zzq59yirkxgk8shp2dh5hqzig7c";
     };
     propagatedBuildInputs = [ ClassInspector HTTPDaemon LWP TaskWeaken URI XMLParser ];
     meta = {
