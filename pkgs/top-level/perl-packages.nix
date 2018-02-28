@@ -8029,10 +8029,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   MIMEtools = buildPerlPackage {
-    name = "MIME-tools-5.507";
+    name = "MIME-tools-5.509";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DS/DSKOLL/MIME-tools-5.507.tar.gz;
-      sha256 = "2f43683e1d5bed21179207d81c0caf1d5b5d480d018ac812f4ab950879fe7793";
+      url = "mirror://cpan/authors/id/D/DS/DSKOLL/MIME-tools-5.509.tar.gz";
+      sha256 = "0wv9rzx5j1wjm01c3dg48qk9wlbm6iyf91j536idk09xj869ymv4";
     };
     buildInputs = [ TestDeep ];
     propagatedBuildInputs = [ MailTools ];
