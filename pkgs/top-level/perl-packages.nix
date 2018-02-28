@@ -2960,10 +2960,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DataSection = buildPerlPackage rec {
-    name = "Data-Section-0.200006";
+    name = "Data-Section-0.200007";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/R/RJ/RJBS/${name}.tar.gz";
-      sha256 = "0psvsfn5q9y1qkzkq62dr1c6bfrckkkz8hr1sgkdn2mbkpwh319l";
+      url = "mirror://cpan/authors/id/R/RJ/RJBS/Data-Section-0.200007.tar.gz";
+      sha256 = "1pmlxca0a8sv2jjwvhwgqavq6iwys6kf457lby4anjp3f1dpx4yd";
     };
     propagatedBuildInputs = [ MROCompat SubExporter TestFailWarnings ];
     meta = {
