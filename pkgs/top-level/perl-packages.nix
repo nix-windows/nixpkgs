@@ -9627,10 +9627,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   NetSMTP = buildPerlPackage {
-    name = "Net-SMTP-1.25";
+    name = "libnet-3.11";
     src = fetchurl {
-      url = mirror://cpan/authors/id/S/SH/SHAY/libnet-1.25.tar.gz;
-      sha256 = "01f3l4aj3ynl8syyrl122k4bmfds77yw5q36aafrgaq22fnb3b2a";
+      url = "mirror://cpan/authors/id/S/SH/SHAY/libnet-3.11.tar.gz";
+      sha256 = "1lsj3a2vbryh85mbb6yddyb2zjv5vs88fdj5x3v7fp2ndr6ixarg";
     };
     patchPhase = "chmod a-x Configure";
     doCheck = false; # The test suite fails, because it requires network access.
