@@ -11390,10 +11390,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   Starlet = buildPerlPackage {
-    name = "Starlet-0.28";
+    name = "Starlet-0.31";
     src = fetchurl {
-      url = mirror://cpan/authors/id/K/KA/KAZUHO/Starlet-0.28.tar.gz;
-      sha256 = "245f606cdc8acadbe12e7e56dfa0752a8e8daa9a094373394fc17a45f5dde850";
+      url = "mirror://cpan/authors/id/K/KA/KAZUHO/Starlet-0.31.tar.gz";
+      sha256 = "1n32ip3g9ra2sdyjq3wh7pynwpn6zvm3jyba5xcb8348ca73nq5r";
     };
     buildInputs = [ LWP TestTCP ];
     propagatedBuildInputs = [ ParallelPrefork Plack ServerStarter ];
