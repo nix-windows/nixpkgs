@@ -12278,10 +12278,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TermSizePerl = buildPerlPackage {
-    name = "Term-Size-Perl-0.029";
+    name = "Term-Size-Perl-0.031";
     src = fetchurl {
-      url = mirror://cpan/authors/id/F/FE/FERREIRA/Term-Size-Perl-0.029.tar.gz;
-      sha256 = "8c1aaab73646ee1d233e827213ea3b5ab8afcf1d02a8f94be7aed306574875e7";
+      url = "mirror://cpan/authors/id/F/FE/FERREIRA/Term-Size-Perl-0.031.tar.gz";
+      sha256 = "17i05y186l977bhp32b24c8rqasmg1la934dizf5sc0vrd36g6mf";
     };
     meta = {
       description = "Perl extension for retrieving terminal size (Perl version)";
