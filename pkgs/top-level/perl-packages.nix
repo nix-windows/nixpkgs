@@ -12490,10 +12490,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TestDistManifest = buildPerlPackage {
-    name = "Test-DistManifest-1.012";
+    name = "Test-DistManifest-1.014";
     src = fetchurl {
-      url = mirror://cpan/authors/id/E/ET/ETHER/Test-DistManifest-1.012.tar.gz;
-      sha256 = "4b128bef9beea2f03bdca037ceb722de43b4a2c516c3f50c2a26421548a72208";
+      url = "mirror://cpan/authors/id/E/ET/ETHER/Test-DistManifest-1.014.tar.gz";
+      sha256 = "1ifpff5simjslabwy7ac6kdylv4c0b5b39fgpwf9ha16yh6w49ix";
     };
     buildInputs = [ TestNoWarnings ];
     propagatedBuildInputs = [ ModuleManifest ];
