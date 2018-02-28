@@ -14159,10 +14159,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   URIdb = buildPerlModule {
-    name = "URI-db-0.15";
+    name = "URI-db-0.18";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DW/DWHEELER/URI-db-0.15.tar.gz;
-      sha256 = "ac3dc3eeb8ca58dc4f7e1dfed6bca5bb8ebbc5dfacee63161490b09a4bfac982";
+      url = "mirror://cpan/authors/id/D/DW/DWHEELER/URI-db-0.18.tar.gz";
+      sha256 = "02ryniip31c1m5ywhn1i3xvk42rp283cdsxyvdb9yxs5k8xis2j6";
     };
     propagatedBuildInputs = [ URI URINested ];
     meta = {
