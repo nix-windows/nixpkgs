@@ -11966,10 +11966,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   SysSyslog = buildPerlPackage {
-    name = "Sys-Syslog-0.34";
+    name = "Sys-Syslog-0.35";
     src = fetchurl {
-      url = mirror://cpan/authors/id/S/SA/SAPER/Sys-Syslog-0.34.tar.gz;
-      sha256 = "09cnzk0fpj2i8asi4ba5wzs3i5pmbins87xpgmxcw4ipmn66s7ld";
+      url = "mirror://cpan/authors/id/S/SA/SAPER/Sys-Syslog-0.35.tar.gz";
+      sha256 = "1dzv2rjlhlifgljgm3lhnvkqjhhp1m3y2prqakkslympf1xy8a7y";
     };
     meta = {
       description = "Perl interface to the UNIX syslog(3) calls";
