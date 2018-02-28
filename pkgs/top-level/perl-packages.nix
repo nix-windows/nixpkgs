@@ -14659,10 +14659,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   XMLSAXBase = buildPerlPackage {
-    name = "XML-SAX-Base-1.08";
+    name = "XML-SAX-Base-1.09";
     src = fetchurl {
-      url = mirror://cpan/authors/id/G/GR/GRANTM/XML-SAX-Base-1.08.tar.gz;
-      sha256 = "666270318b15f88b8427e585198abbc19bc2e6ccb36dc4c0a4f2d9807330219e";
+      url = "mirror://cpan/authors/id/G/GR/GRANTM/XML-SAX-Base-1.09.tar.gz";
+      sha256 = "1l1ai9g1z11ja7mvnfl5mj346r13jyckbg9qlw6c2izglidkbjv6";
     };
     meta = {
       description = "Base class for SAX Drivers and Filters";
