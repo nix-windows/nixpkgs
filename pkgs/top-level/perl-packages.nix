@@ -4270,10 +4270,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DistZillaPluginTestPodLinkCheck = buildPerlPackage rec {
-    name = "Dist-Zilla-Plugin-Test-Pod-LinkCheck-1.002";
+    name = "Dist-Zilla-Plugin-Test-Pod-LinkCheck-1.004";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/R/RW/RWSTAUNER/${name}.tar.gz";
-      sha256 = "26f3b257d5037aeec8335910cfdaf76fc8612f38f5d3134f46cd433e116947b0";
+      url = "mirror://cpan/authors/id/R/RW/RWSTAUNER/Dist-Zilla-Plugin-Test-Pod-LinkCheck-1.004.tar.gz";
+      sha256 = "142lw5g1vf9vz2jfgy6ybba4lssi4q9mrv46mb98h0wll1nj6p9j";
     };
 #    buildInputs = [ ModuleBuild ];
     propagatedBuildInputs = [ DistZilla Moose TestPodLinkCheck ];
