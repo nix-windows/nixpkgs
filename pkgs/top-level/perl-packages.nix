@@ -4566,10 +4566,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   EncodeJIS2K = buildPerlPackage {
-    name = "Encode-JIS2K-0.02";
+    name = "Encode-JIS2K-0.03";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DA/DANKOGAI/Encode-JIS2K-0.02.tar.gz;
-      sha256 = "5d718add5857f37fc270f24360bc9d100b72e0e13a11ca3149fe4e4d7c7cc4bf";
+      url = "mirror://cpan/authors/id/D/DA/DANKOGAI/Encode-JIS2K-0.03.tar.gz";
+      sha256 = "1k1mdj4rd9m1z4h7qd2dl92ky0r1rk7mmagwsvdb9pirvdr4vj0y";
     };
     outputs = [ "out" ];
     meta = {
