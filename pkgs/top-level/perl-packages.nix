@@ -1749,10 +1749,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ClassAutouse = buildPerlPackage {
-    name = "Class-Autouse-1.99_02";
+    name = "Class-Autouse-2.01";
     src = fetchurl {
-      url = mirror://cpan/authors/id/A/AD/ADAMK/Class-Autouse-1.99_02.tar.gz;
-      sha256 = "1jkhczx2flxrz154ps90fj9wcchkpmnp5sapwc0l92rpn7jpsf08";
+      url = "mirror://cpan/authors/id/A/AD/ADAMK/Class-Autouse-2.01.tar.gz";
+      sha256 = "06ygdvrvqzzd9qlki9yp8dz78m09dpmzvc0dq8cxh6apq0v34ny0";
     };
   };
 
