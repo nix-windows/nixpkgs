@@ -304,11 +304,11 @@ let self = _self // overrides; _self = with self; {
   };
 
   AppSqitch = buildPerlModule rec {
-    version = "0.9994";
-    name = "App-Sqitch-${version}";
+    version = "0.9996";
+    name = "App-Sqitch-0.9996";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/D/DW/DWHEELER/${name}.tar.gz";
-      sha256 = "0in602z40s50fdlmws4g0a1pb8p7yn0wx8jgsacz26a4i1q7gpi4";
+      url = "mirror://cpan/authors/id/D/DW/DWHEELER/App-Sqitch-0.9996.tar.gz";
+      sha256 = "07pwjvv56g7vv47x1pwchzd85nlfx8blqapyx1w6bkg7akjxskl6";
     };
     buildInputs = [
       CaptureTiny PathClass TestDeep TestDir TestException
