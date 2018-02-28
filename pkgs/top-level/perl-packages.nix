@@ -169,10 +169,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   AnyEventRabbitMQ = buildPerlPackage {
-    name = "AnyEvent-RabbitMQ-1.15";
+    name = "AnyEvent-RabbitMQ-1.19";
     src = fetchurl {
-      url = mirror://cpan/authors/id/B/BO/BOBTFISH/AnyEvent-RabbitMQ-1.15.tar.gz;
-      sha256 = "fda292dfaae10f6d99aafc46831ce507153b58368e3eb2617bbb3f749605805a";
+      url = "mirror://cpan/authors/id/D/DL/DLAMBLEY/AnyEvent-RabbitMQ-1.19.tar.gz";
+      sha256 = "02ig64iwzqx81c8qjbi8jza0linc06bamfir8za8l0d4llpyqh54";
     };
     buildInputs = [ TestException ];
     propagatedBuildInputs = [ AnyEvent DevelGlobalDestruction FileShareDir ListMoreUtils NetAMQP Readonly namespaceclean ];
