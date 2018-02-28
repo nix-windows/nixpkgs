@@ -4989,10 +4989,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   FCGIProcManager = buildPerlPackage {
-    name = "FCGI-ProcManager-0.25";
+    name = "FCGI-ProcManager-0.28";
     src = fetchurl {
-      url = mirror://cpan/authors/id/A/AR/ARODLAND/FCGI-ProcManager-0.25.tar.gz;
-      sha256 = "b9ae1146e2638f3aa477c9ab3ceb728f92c5e36e4cce8f0b5847efad601d024d";
+      url = "mirror://cpan/authors/id/A/AR/ARODLAND/FCGI-ProcManager-0.28.tar.gz";
+      sha256 = "03j20jdm53mzjw2pbiyk2c3ci3jy0br0h00y0mg1fyj28b05ijg1";
     };
     meta = {
       description = "A perl-based FastCGI process manager";
