@@ -6469,10 +6469,10 @@ let self = _self // overrides; _self = with self; {
   if_ = self."if";
 
   ImageInfo = buildPerlPackage rec {
-    name = "Image-Info-1.39";
+    name = "Image-Info-1.41";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/S/SR/SREZIC/${name}.tar.gz";
-      sha256 = "af155264667a2c22e3e2225195b8f6589329f9567e1789b7ce439ee21178713d";
+      url = "mirror://cpan/authors/id/S/SR/SREZIC/Image-Info-1.41.tar.gz";
+      sha256 = "1nx3kfibj4nwq91ggymhimd2ii98f59h31fdqgdn0rk82isd4in5";
     };
     propagatedBuildInputs = [ IOstringy ];
     meta = {
