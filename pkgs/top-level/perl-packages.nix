@@ -7392,10 +7392,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   LocalePO = buildPerlPackage {
-    name = "Locale-PO-0.23";
+    name = "Locale-PO-0.27";
     src = fetchurl {
-      url = mirror://cpan/authors/id/C/CO/COSIMO/Locale-PO-0.23.tar.gz;
-      sha256 = "52e5fdc88ec4eb00512418a938dc5089476ea66c9e744fee3c6bbfdf17a0d302";
+      url = "mirror://cpan/authors/id/C/CO/COSIMO/Locale-PO-0.27.tar.gz";
+      sha256 = "1f8nslh94hmmz3h3yxf9j1ybgji137sr76ppqqvfir76cd5lm69w";
     };
     propagatedBuildInputs = [ FileSlurp ];
     meta = {
