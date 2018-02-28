@@ -7185,10 +7185,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   LinguaENTagger = buildPerlPackage {
-    name = "Lingua-EN-Tagger-0.24";
+    name = "Lingua-EN-Tagger-0.28";
     src = fetchurl {
-      url = mirror://cpan/authors/id/A/AC/ACOBURN/Lingua-EN-Tagger-0.24.tar.gz;
-      sha256 = "0qksqh1zi8fz76a29s2ll4g6yr8y6agmzgq7ngccvgj3gza5q241";
+      url = "mirror://cpan/authors/id/A/AC/ACOBURN/Lingua-EN-Tagger-0.28.tar.gz";
+      sha256 = "1rm223d871s150dgnhbar71w56bim950cp45f0904w6px5fifcqa";
     };
     propagatedBuildInputs = [ HTMLParser HTMLTagset LinguaStem /* MemoizeExpireLRU */ ];
     meta = {
