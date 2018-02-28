@@ -2451,10 +2451,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   CPANMetaYAML = buildPerlPackage rec {
-    name = "CPAN-Meta-YAML-0.016";
+    name = "CPAN-Meta-YAML-0.018";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/D/DA/DAGOLDEN/${name}.tar.gz";
-      sha256 = "195v3lrfjzqxfiqi1zp02xmhp6mg9y3p7abmlfk2nj1rb28p0yrl";
+      url = "mirror://cpan/authors/id/D/DA/DAGOLDEN/CPAN-Meta-YAML-0.018.tar.gz";
+      sha256 = "150jh9l7baddl2587m23qs2l0pb395qsx9bhsgdsnn6y9k4zgjik";
     };
     buildInputs = [ JSONPP ];
     doCheck = true;
