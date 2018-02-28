@@ -582,10 +582,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   base = buildPerlPackage {
-    name = "base-2.18";
+    name = "base-2.23";
     src = fetchurl {
-      url = mirror://cpan/authors/id/R/RG/RGARCIA/base-2.18.tar.gz;
-      sha256 = "55b0d21f8edb5ef6dddcb1fd2457acb19c7584f2dfdea614685cd8ea62a1c306";
+      url = "mirror://cpan/authors/id/R/RJ/RJBS/base-2.23.tar.gz";
+      sha256 = "1pjxcbbcpwlgzm0fzsbqd58zn8cj9vwril1wn3xfd7ws550mixa0";
     };
   };
 
