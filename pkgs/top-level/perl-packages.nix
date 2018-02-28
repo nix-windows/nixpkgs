@@ -194,10 +194,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ApacheLogFormatCompiler = buildPerlModule rec {
-    name = "Apache-LogFormat-Compiler-0.33";
+    name = "Apache-LogFormat-Compiler-0.35";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/K/KA/KAZEBURO/${name}.tar.gz";
-      sha256 = "17blk3zhp05azgypn25ydxf3d7fyfgr9bxyiv7xkchhqma96vwqv";
+      url = "mirror://cpan/authors/id/K/KA/KAZEBURO/Apache-LogFormat-Compiler-0.35.tar.gz";
+      sha256 = "06i70ydxk2wa2rcqn16842kra2qz3jwk0vk1abq8lah4180c0m0n";
     };
     buildInputs = [ HTTPMessage ModuleBuild TestMockTime TestRequires TryTiny URI ];
     propagatedBuildInputs = [ POSIXstrftimeCompiler ];
