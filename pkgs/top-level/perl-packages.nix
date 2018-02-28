@@ -5866,10 +5866,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   HashMerge = buildPerlPackage rec {
-    name = "Hash-Merge-0.200";
+    name = "Hash-Merge-0.299";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/R/RE/REHSACK/${name}.tar.gz";
-      sha256 = "0r1a2axz85wn6573zrl9rk8mkfl2cvf1gp9vwya5qndp60rz1ya7";
+      url = "mirror://cpan/authors/id/H/HE/HERMES/Hash-Merge-0.299.tar.gz";
+      sha256 = "1rrqpz9118w4xrcw2q5wm2v2yk2xvasc75n69gjj8hfrfs99hhd6";
     };
     propagatedBuildInputs = [ Clone ];
     meta = {
