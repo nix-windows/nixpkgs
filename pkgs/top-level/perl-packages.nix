@@ -5241,10 +5241,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   FilePath = buildPerlPackage rec {
-    name = "File-Path-2.12";
+    name = "File-Path-2.15";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/R/RI/RICHE/${name}.tar.gz";
-      sha256 = "bbf61a0d37c135c694e80f4ea344932bdc5474c213025ae307ea52cb6886d17e";
+      url = "mirror://cpan/authors/id/J/JK/JKEENAN/File-Path-2.15.tar.gz";
+      sha256 = "0i070nks40zmcgjzddyzf43ma8g11vrfhwi0bkv50g7rrp0z6w0m";
     };
     meta = {
       description = "Create or remove directory trees";
