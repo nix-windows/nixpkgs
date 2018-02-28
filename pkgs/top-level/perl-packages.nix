@@ -5399,10 +5399,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   FileWhich = buildPerlPackage rec {
-    name = "File-Which-1.21";
+    name = "File-Which-1.22";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/P/PL/PLICEASE/${name}.tar.gz";
-      sha256 = "9def5f10316bfd944e56b7f8a2501be1d44c288325309462aa9345e340854bcc";
+      url = "mirror://cpan/authors/id/P/PL/PLICEASE/File-Which-1.22.tar.gz";
+      sha256 = "1m0drx90ya77f4cx5zl6lbcc407gz57xni96x1wni346jv7zza78";
     };
     meta = {
       homepage = http://perl.wdlabs.com/File-Which;
