@@ -11237,10 +11237,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   Socket6 = buildPerlPackage rec {
-    name = "Socket6-0.25";
+    name = "Socket6-0.28";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/U/UM/UMEMOTO/${name}.tar.gz";
-      sha256 = "1ads4k4vvq6pnxkdw0s8gaj03w4h9snxyw7zyikfzd20fy76yx6s";
+      url = "mirror://cpan/authors/id/U/UM/UMEMOTO/Socket6-0.28.tar.gz";
+      sha256 = "11j5jzqbzmwlws9zals43ry2f1nw9qy6im7yhn9ck5rikywrmm5z";
     };
     setOutputFlags = false;
     buildInputs = [ pkgs.which ];
