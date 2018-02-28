@@ -10072,10 +10072,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   PathTiny = buildPerlPackage {
-    name = "Path-Tiny-0.052";
+    name = "Path-Tiny-0.104";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DA/DAGOLDEN/Path-Tiny-0.052.tar.gz;
-      sha256 = "1b70yhbdww9k5m4a4lhdd71jrxdxhi10533slmxynxa04nyn2f0a";
+      url = "mirror://cpan/authors/id/D/DA/DAGOLDEN/Path-Tiny-0.104.tar.gz";
+      sha256 = "1vxaczi44d2acfyyzwa7p6c5gx3rgm6c36zbdl40982axg7iv7y6";
     };
     buildInputs = [ DevelHide Filepushd TestDeep TestFailWarnings TestFatal perl ];
     propagatedBuildInputs = [ autodie ];
