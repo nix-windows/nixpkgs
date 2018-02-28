@@ -10443,10 +10443,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ProcProcessTable = buildPerlPackage {
-    name = "Proc-ProcessTable-0.51";
+    name = "Proc-ProcessTable-0.55";
     src = fetchurl {
-      url = mirror://cpan/authors/id/J/JW/JWB/Proc-ProcessTable-0.51.tar.gz;
-      sha256 = "66636e102985a2a05ef4334b53a7893d627c192fac5dd7ff37dd1a0a50c0128d";
+      url = "mirror://cpan/authors/id/J/JW/JWB/Proc-ProcessTable-0.55.tar.gz";
+      sha256 = "1x8lazq595dh49ns582sa0mljc4zpyfzl241wk2idh5083cn15iv";
     };
     meta = {
       description = "Perl extension to access the unix process table";
