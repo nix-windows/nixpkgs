@@ -5412,10 +5412,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   Filter = buildPerlPackage {
-    name = "Filter-1.55";
+    name = "Filter-1.58";
     src = fetchurl {
-      url = mirror://cpan/authors/id/R/RU/RURBAN/Filter-1.55.tar.gz;
-      sha256 = "7855f5f5f16777c14614b5d907794a170ed4cdeb4382bf03ffca825c8c6bc4a0";
+      url = "mirror://cpan/authors/id/R/RU/RURBAN/Filter-1.58.tar.gz";
+      sha256 = "0gbzcp5whgqnzl9ky65q0bk7n8zraznrm8xwzz6d027yrfs1rsbd";
     };
     meta = {
       description = "Source Filters";
