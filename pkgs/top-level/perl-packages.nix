@@ -6656,10 +6656,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   IOSocketIP = buildPerlPackage {
-    name = "IO-Socket-IP-0.37";
+    name = "IO-Socket-IP-0.39";
     src = fetchurl {
-      url = mirror://cpan/authors/id/P/PE/PEVANS/IO-Socket-IP-0.37.tar.gz;
-      sha256 = "2adc5f0b641d41f662b4d99c0795780c62f9af9119884d053265fc8858ae6f7b";
+      url = "mirror://cpan/authors/id/P/PE/PEVANS/IO-Socket-IP-0.39.tar.gz";
+      sha256 = "15kv5g1yb4a345sk3r5wfr99f868lhfqkddzsgpqddvccfkhv58i";
     };
     meta = {
       description = "Family-neutral IP socket supporting both IPv4 and IPv6";
