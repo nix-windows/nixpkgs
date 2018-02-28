@@ -7731,10 +7731,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   MailDKIM = buildPerlPackage rec {
-    name = "Mail-DKIM-0.40";
+    name = "Mail-DKIM-0.52";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/J/JA/JASLONG/${name}.tar.gz";
-      sha256 = "1wd6mab4fp47v1nh85jfxsjmysnyv5mwvfv47cn5m2h2lb1s0piw";
+      url = "mirror://cpan/authors/id/M/MB/MBRADSHAW/Mail-DKIM-0.52.tar.gz";
+      sha256 = "1dbczg7vyvvm12d9gbiqd9a24qg4254cz7bh7yf3p27i58hhpbwy";
     };
     propagatedBuildInputs = [ CryptOpenSSLRSA NetDNS MailTools ];
     doCheck = false; # tries to access the domain name system
