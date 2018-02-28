@@ -11143,10 +11143,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ServerStarter = buildPerlModule {
-    name = "Server-Starter-0.32";
+    name = "Server-Starter-0.34";
     src = fetchurl {
-      url = mirror://cpan/authors/id/K/KA/KAZUHO/Server-Starter-0.32.tar.gz;
-      sha256 = "a8ecc19f05f3c3b079e1c7f2c007a6df2b9a2912b9848a8fb51bd78c7b13ac1a";
+      url = "mirror://cpan/authors/id/K/KA/KAZUHO/Server-Starter-0.34.tar.gz";
+      sha256 = "0y4gc11xfbkf1nfwmy5wv6c78pbwsnamgpr63fyma5il3x50v8ln";
     };
     buildInputs = [ TestRequires TestSharedFork TestTCP ];
     meta = {
