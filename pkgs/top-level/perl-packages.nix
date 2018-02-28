@@ -887,10 +887,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   Carp = buildPerlPackage {
-    name = "Carp-1.36";
+    name = "Carp-1.38";
     src = fetchurl {
-      url = mirror://cpan/authors/id/R/RJ/RJBS/Carp-1.36.tar.gz;
-      sha256 = "dcc789935126461c80df0653f98c1d8d0b936dcc3d04174287cb02767eca123c";
+      url = "mirror://cpan/authors/id/R/RJ/RJBS/Carp-1.38.tar.gz";
+      sha256 = "00bijwwc0ix27h2ma3lvsf3b56biar96bl9dikxgx7cmpcycxad5";
     };
     meta = {
       description = "Alternative warn and die for modules";
