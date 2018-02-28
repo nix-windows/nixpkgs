@@ -13405,10 +13405,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   TestMagpie = buildPerlPackage {
-    name = "Test-Magpie-0.05";
+    name = "Test-Magpie-0.11";
     src = fetchurl {
-      url = mirror://cpan/authors/id/C/CY/CYCLES/Test-Magpie-0.05.tar.gz;
-      sha256 = "0a0c6vcj92spy6ngfdqn9yfym37jwxlds7hlw6xphkdmcklynh0b";
+      url = "mirror://cpan/authors/id/S/ST/STEVENL/Test-Magpie-0.11.tar.gz";
+      sha256 = "1c4iy35yg3fa9mrc4phmpz46fkihl6yic6a13fpcxyd3xafd5zhm";
     };
     propagatedBuildInputs = [ aliased DevelPartialDump ListAllUtils Moose MooseXParamsValidate MooseXTypes MooseXTypesStructured namespaceautoclean SetObject SubExporter TestFatal ];
     meta = {
