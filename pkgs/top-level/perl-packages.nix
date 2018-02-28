@@ -8454,10 +8454,10 @@ let self = _self // overrides; _self = with self; {
     };
   };
   Mojolicious = buildPerlPackage rec {
-    name = "Mojolicious-6.56";
+    name = "Mojolicious-7.69";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/S/SR/SRI/${name}.tar.gz";
-      sha256 = "82f73553836ac378edf825fd9f24be982653be9e0d78f8ba38b7841aabdafb02";
+      url = "mirror://cpan/authors/id/S/SR/SRI/Mojolicious-7.69.tar.gz";
+      sha256 = "006v35j60lcdvh44rbjaya9n5i50aq3lf6s1ba8lhhz2h09yyfj7";
     };
     propagatedBuildInputs = [ JSONPP ];
     meta = {
