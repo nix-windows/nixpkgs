@@ -6209,10 +6209,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   HTMLTidy = buildPerlPackage rec {
-    name = "HTML-Tidy-1.56";
+    name = "HTML-Tidy-1.60";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/P/PE/PETDANCE/${name}.tar.gz";
-      sha256 = "1zp4wndvr9vadbqjmd8d8ck6hlmr0dqg20vpa8cqfdflqkzqf208";
+      url = "mirror://cpan/authors/id/P/PE/PETDANCE/HTML-Tidy-1.60.tar.gz";
+      sha256 = "1iyp2fd6j75cn1xvcwl2lxr8qpjxssy2360cyqn6g3kzd1fzdyxw";
     };
 
     propagatedBuildInputs = [ TextDiff ];
