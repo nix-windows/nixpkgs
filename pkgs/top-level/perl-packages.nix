@@ -7219,10 +7219,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   LinguaTranslit = buildPerlPackage rec {
-    name = "Lingua-Translit-0.26";
+    name = "Lingua-Translit-0.28";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/A/AL/ALINKE/${name}.tar.gz";
-      sha256 = "2430b5c84927f15570533eb68c56958c580f16044fc413d48bf44f0460422598";
+      url = "mirror://cpan/authors/id/A/AL/ALINKE/Lingua-Translit-0.28.tar.gz";
+      sha256 = "1qgap0j0ixmif309dvbqca7sy8xha9xgnj9s2lvh8qrczkc92gqi";
     };
     doCheck = false;
   };
