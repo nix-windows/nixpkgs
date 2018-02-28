@@ -454,10 +454,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   AuthenDecHpwd = buildPerlPackage rec {
-    name = "Authen-DecHpwd-2.006";
+    name = "Authen-DecHpwd-2.007";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/Z/ZE/ZEFRAM/${name}.tar.gz";
-      sha256 = "67f45fef6a23b7548f387b675cbf7881bf9da62d7d007cbf90d3a4b851b99eb7";
+      url = "mirror://cpan/authors/id/Z/ZE/ZEFRAM/Authen-DecHpwd-2.007.tar.gz";
+      sha256 = "0xzind7zr2prjq3zbs2j18snfpshd4xrd7igv4kp67xl0axr6fpl";
     };
     buildInputs = [ ModuleBuild ];
     propagatedBuildInputs = [ ScalarString DataInteger DigestCRC ];
