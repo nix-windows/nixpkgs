@@ -2359,10 +2359,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   CookieBaker = buildPerlModule rec {
-    name = "Cookie-Baker-0.06";
+    name = "Cookie-Baker-0.08";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/K/KA/KAZEBURO/${name}.tar.gz";
-      sha256 = "4b1fb173d6977af902fa018242a0b28099e5612a2fa43e0160380781f5d76ea0";
+      url = "mirror://cpan/authors/id/K/KA/KAZEBURO/Cookie-Baker-0.08.tar.gz";
+      sha256 = "0lq168vdafz45ik2x1rg1db1gq3vkpkj7f6x1vcmhd4xvkr12hhq";
     };
     buildInputs = [ ModuleBuild TestTime ];
     propagatedBuildInputs = [ URI ];
