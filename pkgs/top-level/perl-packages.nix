@@ -5621,10 +5621,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   Gnome2 = buildPerlPackage rec {
-    name = "Gnome2-1.046";
+    name = "Gnome2-1.047";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/X/XA/XAOC/${name}.tar.gz";
-      sha256 = "a6c787232ab7e82a423a9ff5a49cec6bf586c1bb3c04c2052a91cdda5b66ae40";
+      url = "mirror://cpan/authors/id/X/XA/XAOC/Gnome2-1.047.tar.gz";
+      sha256 = "031rnrbgz68l00h1rvbys7rzx0qxd0wd51m1s5g92ky1qdfmrj6c";
     };
     buildInputs = [ ExtUtilsDepends ExtUtilsPkgConfig Glib Gnome2Canvas Gnome2VFS Gtk2 ];
     propagatedBuildInputs = [ ExtUtilsDepends ExtUtilsPkgConfig Glib Gnome2Canvas Gnome2VFS Gtk2 Pango pkgs.gnome2.libgnomeui ];
