@@ -14699,10 +14699,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   XMLSimple = buildPerlPackage {
-    name = "XML-Simple-2.20";
+    name = "XML-Simple-2.24";
     src = fetchurl {
-      url = mirror://cpan/authors/id/G/GR/GRANTM/XML-Simple-2.20.tar.gz;
-      sha256 = "0jj3jiray1l4pi9wkjcpxjc3v431whdwx5aqnhgdm4i7h3817zsw";
+      url = "mirror://cpan/authors/id/G/GR/GRANTM/XML-Simple-2.24.tar.gz";
+      sha256 = "0ks2q9fj0n8n5q7qgzya1jmnqddbrr309v6w1awznxbws6gq254s";
     };
     propagatedBuildInputs = [XMLParser];
   };
