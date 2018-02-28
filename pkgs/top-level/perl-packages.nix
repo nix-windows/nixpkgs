@@ -14049,10 +14049,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   UnicodeCaseFold = buildPerlModule rec {
-    name = "Unicode-CaseFold-1.00";
+    name = "Unicode-CaseFold-1.01";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/A/AR/ARODLAND/${name}.tar.gz";
-      sha256 = "c489b5a440e84b0554e866d3fe4077fa1956eeed473e203588e0c24acce1f016";
+      url = "mirror://cpan/authors/id/A/AR/ARODLAND/Unicode-CaseFold-1.01.tar.gz";
+      sha256 = "0k8rcdm87ffs6hawgm2kcybn9lrddl4hbj8a6fxvil7r10l232j1";
     };
     meta = {
       homepage = http://metacpan.org/release/Unicode-CaseFold;
