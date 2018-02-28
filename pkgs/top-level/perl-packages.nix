@@ -11106,10 +11106,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ScopeUpper = buildPerlPackage {
-    name = "Scope-Upper-0.24";
+    name = "Scope-Upper-0.30";
     src = fetchurl {
-      url = mirror://cpan/authors/id/V/VP/VPIT/Scope-Upper-0.24.tar.gz;
-      sha256 = "159jcwliyb7j80858pi052hkmhgy4cdbjha419kmhhqc9s1rhd5g";
+      url = "mirror://cpan/authors/id/V/VP/VPIT/Scope-Upper-0.30.tar.gz";
+      sha256 = "1d5vi2xiwxhwx2pvjmnnkldjiysy7gib21240cadhl1q8a11a5bz";
     };
     meta = {
       homepage = http://search.cpan.org/dist/Scope-Upper/;
