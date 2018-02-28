@@ -4748,10 +4748,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   Expect = buildPerlPackage {
-    name = "Expect-1.32";
+    name = "Expect-1.35";
     src = fetchurl {
-      url = mirror://cpan/authors/id/S/SZ/SZABGAB/Expect-1.32.tar.gz;
-      sha256 = "d1f96842a5c7dd8516b202b530d87a70b65e7054d3bf975c34f6a42084e54e25";
+      url = "mirror://cpan/authors/id/J/JA/JACOBY/Expect-1.35.tar.gz";
+      sha256 = "01pxg4vg4b30fw1g6867absgp7m9cn8kf0rihnax9v0x89hjgn89";
     };
     buildInputs = [ TestException ];
     propagatedBuildInputs = [ IOTty ];
