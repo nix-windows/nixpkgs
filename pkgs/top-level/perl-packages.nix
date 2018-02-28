@@ -6174,10 +6174,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   HTMLScrubber = buildPerlPackage rec {
-    name = "HTML-Scrubber-0.15";
+    name = "HTML-Scrubber-0.17";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/P/PO/PODMASTER/${name}.tar.gz";
-      sha256 = "0xb5zj67y2sjid9bs3yfm81rgi91fmn38wy1ryngssw6vd92ijh2";
+      url = "mirror://cpan/authors/id/N/NI/NIGELM/HTML-Scrubber-0.17.tar.gz";
+      sha256 = "06p7w4zd42b2yh541mlzyqj40lwmvvn3fyqi8big4mf34la7m2jm";
     };
     propagatedBuildInputs = [ HTMLParser ];
   };
