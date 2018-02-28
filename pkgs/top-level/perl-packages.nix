@@ -14647,10 +14647,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   XMLSAX = buildPerlPackage {
-    name = "XML-SAX-0.96";
+    name = "XML-SAX-1.00";
     src = fetchurl {
-      url = mirror://cpan/authors/id/G/GR/GRANTM/XML-SAX-0.96.tar.gz;
-      sha256 = "024fbjgg6s87j0y3yik55plzf7d6qpn7slwd03glcb54mw9zdglv";
+      url = "mirror://cpan/authors/id/G/GR/GRANTM/XML-SAX-1.00.tar.gz";
+      sha256 = "1qra9k3wszjxvsgbragl55z3qba4nri0ipmjaxfib4l6xxj6bsj5";
     };
     propagatedBuildInputs = [XMLNamespaceSupport];
     postInstall = ''
