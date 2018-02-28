@@ -3883,10 +3883,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   DevelSymdump = buildPerlPackage rec {
-    name = "Devel-Symdump-2.15";
+    name = "Devel-Symdump-2.18";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/A/AN/ANDK/${name}.tar.gz";
-      sha256 = "76c2a90d31318204ecf1977f0217ce57b142e6681fe2b99fb8789efc5dd86f41";
+      url = "mirror://cpan/authors/id/A/AN/ANDK/Devel-Symdump-2.18.tar.gz";
+      sha256 = "1h3n0w23camhj20a97nw7v40rqa7xcxx8vkn2qjjlngm0yhq2vw2";
     };
     meta = {
       description = "Dump symbol names or the symbol table";
