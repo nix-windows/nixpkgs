@@ -10097,10 +10097,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   PathTools = buildPerlPackage {
-    name = "PathTools-3.47";
+    name = "PathTools-3.74";
     src = fetchurl {
-      url = mirror://cpan/authors/id/S/SM/SMUELLER/PathTools-3.47.tar.gz;
-      sha256 = "caa8d4b45372b8cb0ef0f6f696efa3a60b0fd394b115cad39a7fbb8f6bd38026";
+      url = "mirror://cpan/authors/id/X/XS/XSAWYERX/PathTools-3.74.tar.gz";
+      sha256 = "04bfjdvn5p78hirljcinpxv8djcjn8nyg5gcmnmvz8sr9k2lqwi5";
     };
   };
 
