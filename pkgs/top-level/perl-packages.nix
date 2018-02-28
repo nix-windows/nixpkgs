@@ -2121,10 +2121,10 @@ let self = _self // overrides; _self = with self; {
   CompressZlib = IOCompress;
 
   CompressUnLZMA = buildPerlPackage rec {
-    name = "Compress-unLZMA-0.04";
+    name = "Compress-unLZMA-0.05";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/F/FE/FERREIRA/${name}.tar.gz";
-      sha256 = "0sg9gj3rhif6hgmhwpz6w0g52l65vj5hx9818v5cdhvcif0jhg0b";
+      url = "mirror://cpan/authors/id/F/FE/FERREIRA/Compress-unLZMA-0.05.tar.gz";
+      sha256 = "1f0pcpcjjj60whqc5sc5jd0dd7z3si4fnp268w4ykmcjini03s2d";
     };
     propagatedBuildInputs = [ IOCompress ];
   };
