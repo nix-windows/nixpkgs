@@ -14577,10 +14577,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   XMLNamespaceSupport = buildPerlPackage {
-    name = "XML-NamespaceSupport-1.11";
+    name = "XML-NamespaceSupport-1.12";
     src = fetchurl {
-      url = mirror://cpan/authors/id/P/PE/PERIGRIN/XML-NamespaceSupport-1.11.tar.gz;
-      sha256 = "1sklgcldl3w6gn706vx1cgz6pm4y5lfgsjxnfqyk20pilgq530bd";
+      url = "mirror://cpan/authors/id/P/PE/PERIGRIN/XML-NamespaceSupport-1.12.tar.gz";
+      sha256 = "1vz5pbi4lm5fhq2slrs2hlp6bnk29863abgjlcx43l4dky2rbsa7";
     };
   };
 
