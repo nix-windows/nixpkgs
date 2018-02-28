@@ -11353,10 +11353,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   SQLTranslator = buildPerlPackage rec {
-    name = "SQL-Translator-0.11021";
+    name = "SQL-Translator-0.11024";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/I/IL/ILMARI/${name}.tar.gz";
-      sha256 = "64cb38a9f78367bc115359a999003bbeb3c32cc75bba8306ec1a938fc441bfd1";
+      url = "mirror://cpan/authors/id/I/IL/ILMARI/SQL-Translator-0.11024.tar.gz";
+      sha256 = "1c8vb30jfgvz8xqnndiq2jcqxvp5adpnsad96ppqj045cxprvpjv";
     };
     buildInputs = [ JSON TestDifferences TestException XMLWriter YAML ];
     propagatedBuildInputs = [ CarpClan DBI FileShareDir ListMoreUtils Moo PackageVariant ParseRecDescent TryTiny ];
