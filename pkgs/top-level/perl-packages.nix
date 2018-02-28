@@ -8918,10 +8918,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   MooseXOneArgNew = buildPerlPackage {
-    name = "MooseX-OneArgNew-0.004";
+    name = "MooseX-OneArgNew-0.005";
     src = fetchurl {
-      url = mirror://cpan/authors/id/R/RJ/RJBS/MooseX-OneArgNew-0.004.tar.gz;
-      sha256 = "1frfrqaj283z1x95cqbbj3cvmb6rj50ngs47jq8myz6d1bg4zwff";
+      url = "mirror://cpan/authors/id/R/RJ/RJBS/MooseX-OneArgNew-0.005.tar.gz";
+      sha256 = "0gqhqdkwsnxmni0xv43iplplgp6g55khdwc5117j9i569r3wykvy";
     };
     buildInputs = [ Moose ];
     propagatedBuildInputs = [ Moose MooseXRoleParameterized namespaceautoclean ];
