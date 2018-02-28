@@ -25,10 +25,10 @@ let self = _self // overrides; _self = with self; {
 
 
   ack = buildPerlPackage rec {
-    name = "ack-2.14";
+    name = "ack-2.22";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/P/PE/PETDANCE/${name}.tar.gz";
-      sha256 = "0gqv30666vlclnwylhk9i64s7raa70x4ncy6bg48s5gcxwrshjc5";
+      url = "mirror://cpan/authors/id/P/PE/PETDANCE/ack-2.22.tar.gz";
+      sha256 = "0v0gdv1ja12ks4yp1nb93z1lh14s869dr4mfjb3nkgw6pkdl3i02";
     };
     outputs = ["out" "doc"];
     # use gnused so that the preCheck command passes
