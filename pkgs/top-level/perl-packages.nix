@@ -11865,10 +11865,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   Swim = buildPerlPackage rec {
-    name = "Swim-0.1.44";
+    name = "Swim-0.1.46";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/I/IN/INGY/${name}.tar.gz";
-      sha256 = "06aac148d7b1778028ffae657fdf79b1093b52035661fd8b9bdad729dc8741aa";
+      url = "mirror://cpan/authors/id/I/IN/INGY/Swim-0.1.46.tar.gz";
+      sha256 = "1s5agph2g9kg68wb5g4fzx6i42pqcn3zzpzz62xa04pcmxi76x5c";
     };
     buildInputs = [ FileShareDirInstall ];
     propagatedBuildInputs = [ HTMLEscape HashMerge IPCRun Pegex TextAutoformat YAMLLibYAML ];
