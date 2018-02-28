@@ -604,10 +604,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   BFlags = buildPerlPackage rec {
-    name = "B-Flags-0.14";
+    name = "B-Flags-0.17";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/R/RU/RURBAN/${name}.tar.gz";
-      sha256 = "07inzxvvf4bkl4iliys9rfdiz309nccpbr82a7g57bhcylj7qhzn";
+      url = "mirror://cpan/authors/id/R/RU/RURBAN/B-Flags-0.17.tar.gz";
+      sha256 = "1chhgkaw2h3qniz71dykynggqp0r6b6mi2f4nh4x3ghm2g89gny1";
     };
     meta = {
       description = "Friendlier flags for B";
