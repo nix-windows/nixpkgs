@@ -14378,10 +14378,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   Workflow = buildPerlPackage rec {
-    name = "Workflow-1.42";
+    name = "Workflow-1.45";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/J/JO/JONASBN/${name}.tar.gz";
-      sha256 = "0d93wc9cgw862x9x5zmbx6l6326dhq8py25yqpw7nqym6yphisnc";
+      url = "mirror://cpan/authors/id/J/JO/JONASBN/Workflow-1.45.tar.gz";
+      sha256 = "0w814z4j85gghzqnbxzsr60m8dbqc02yi7137sq58lhbsfshmvhx";
     };
     buildInputs = [ DBDMock ListMoreUtils TestException ];
     propagatedBuildInputs = [ ClassAccessor ClassFactory ClassObservable DBI
