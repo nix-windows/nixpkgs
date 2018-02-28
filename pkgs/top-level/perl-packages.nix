@@ -8553,10 +8553,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   MooXTypesMooseLikeNumeric = buildPerlPackage rec {
-    name = "MooX-Types-MooseLike-Numeric-1.02";
+    name = "MooX-Types-MooseLike-Numeric-1.03";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/M/MA/MATEU/${name}.tar.gz";
-      sha256 = "6186f75ab2747723fd979249ec6ee0c4550f5b47aa50c0d222cc7d3590182bb6";
+      url = "mirror://cpan/authors/id/M/MA/MATEU/MooX-Types-MooseLike-Numeric-1.03.tar.gz";
+      sha256 = "0jy4f14qr1jrnhh77q9jab3pgpv2hx72wb4jg40h2gcngdhypb8n";
     };
     buildInputs = [ TestFatal ];
     propagatedBuildInputs = [ MooXTypesMooseLike ];
