@@ -3607,10 +3607,10 @@ let self = _self // overrides; _self = with self; {
   DBIxClass = buildPerlPackage rec {
     # tests broken again
     doCheck = false;
-    name = "DBIx-Class-0.082840";
+    name = "DBIx-Class-0.082841";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/R/RI/RIBASUSHI/${name}.tar.gz";
-      sha256 = "4049afd175e315ebcab945b19030aec40bcec46cc5611b0286a5a267ca7181ef";
+      url = "mirror://cpan/authors/id/R/RI/RIBASUSHI/DBIx-Class-0.082841.tar.gz";
+      sha256 = "1gf3hgv8f9rnr8bl4ljgsqk4aliphmvljhsk4282kvdc4mcgh1fp";
     };
     patches = [ ../development/perl-modules/dbiclassx-fix.patch ]; # Remove after next release
     buildInputs = [ DBDSQLite PackageStash SQLTranslator TestDeep TestException TestWarn ];
