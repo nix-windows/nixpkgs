@@ -12968,10 +12968,10 @@ let self = _self // overrides; _self = with self; {
   TestSimple = null;
 
   TestSimple13 = buildPerlPackage rec {
-    name = "Test-Simple-1.302067";
+    name = "Test-Simple-1.302125";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/E/EX/EXODIST/${name}.tar.gz";
-      sha256 = "4d43a1ed9cd43a5ad0e6cb206c0cd86d59f118ad6895220688d7bd918016b2a3";
+      url = "mirror://cpan/authors/id/E/EX/EXODIST/Test-Simple-1.302125.tar.gz";
+      sha256 = "05x3383b88pcm7c6iqr0r8v2nbr428rjzb2w1jpcbi30zaj8adwa";
     };
     meta = {
       description = "Basic utilities for writing tests";
