@@ -442,10 +442,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   ArchiveZip_1_53 = buildPerlPackage {
-    name = "Archive-Zip-1.53";
+    name = "Archive-Zip-1.60";
     src = fetchurl {
-      url = mirror://cpan/authors/id/P/PH/PHRED/Archive-Zip-1.53.tar.gz;
-      sha256 = "c66f3cdfd1965d47d84af1e37b997e17d3f8c5f2cceffc1e90d04d64001424b9";
+      url = "mirror://cpan/authors/id/P/PH/PHRED/Archive-Zip-1.60.tar.gz";
+      sha256 = "02y2ylq83hy9kgj57sc0239x65br9sm98c0chsm61s08yc2mpiza";
     };
     meta = {
       description = "Provide an interface to ZIP archive files";
