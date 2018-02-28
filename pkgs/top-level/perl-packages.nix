@@ -10352,10 +10352,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   PlackMiddlewareRemoveRedundantBody = buildPerlPackage {
-    name = "Plack-Middleware-RemoveRedundantBody-0.05";
+    name = "Plack-Middleware-RemoveRedundantBody-0.06";
     src = fetchurl {
-      url = mirror://cpan/authors/id/S/SW/SWEETKID/Plack-Middleware-RemoveRedundantBody-0.05.tar.gz;
-      sha256 = "a0676e1c792bea7f25f1d901bee59054d35012d5ea8cd42529d336143fa87cd8";
+      url = "mirror://cpan/authors/id/S/SW/SWEETKID/Plack-Middleware-RemoveRedundantBody-0.06.tar.gz";
+      sha256 = "1vc3qspg4wpx2776xqr3f57nm32h2kg8bl0yji7pg9bw7srw7grz";
     };
     buildInputs = [ HTTPMessage Plack ];
     propagatedBuildInputs = [ Plack ];
