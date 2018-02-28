@@ -10632,10 +10632,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   PodEventual = buildPerlPackage {
-    name = "Pod-Eventual-0.093330";
+    name = "Pod-Eventual-0.094001";
     src = fetchurl {
-      url = mirror://cpan/authors/id/R/RJ/RJBS/Pod-Eventual-0.093330.tar.gz;
-      sha256 = "29de14a69df8a26f7e8ff73daca5afa7acc84cc9b7ae28093a5b1af09a4830b6";
+      url = "mirror://cpan/authors/id/R/RJ/RJBS/Pod-Eventual-0.094001.tar.gz";
+      sha256 = "0d08z31j4lfiz7gh7dvrsy46wmr2mmcvc0phcqd5v3hh1f8vi7xy";
     };
     propagatedBuildInputs = [ MixinLinewise TestDeep ];
     meta = {
