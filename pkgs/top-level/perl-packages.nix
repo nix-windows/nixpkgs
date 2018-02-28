@@ -7030,11 +7030,11 @@ let self = _self // overrides; _self = with self; {
   };
 
   Later = buildPerlPackage rec {
-    version = "0.19";
-    name = "Object-Realize-Later-${version}";
+    version = "0.21";
+    name = "Object-Realize-Later-0.21";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/M/MA/MARKOV/${name}.tar.gz";
-      sha256 = "0ka0qar51kk5wlvd2s3yis3w9qc14h0ngn0ds0v6c8ssmjvfcgbz";
+      url = "mirror://cpan/authors/id/M/MA/MARKOV/Object-Realize-Later-0.21.tar.gz";
+      sha256 = "1nfqssld7pcdw9sj4mkfnh75w51wl14i1h7npj9fld4fri09cywg";
     };
   };
 
