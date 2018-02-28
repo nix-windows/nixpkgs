@@ -2494,10 +2494,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   CPANUploader = buildPerlPackage rec {
-    name = "CPAN-Uploader-0.103010";
+    name = "CPAN-Uploader-0.103013";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/R/RJ/RJBS/${name}.tar.gz";
-      sha256 = "1n57d61q9g37s0pp7sriq8vvqj2cvp3s9v0grpv277s9idvm37x8";
+      url = "mirror://cpan/authors/id/R/RJ/RJBS/CPAN-Uploader-0.103013.tar.gz";
+      sha256 = "07k8ia8gvj9mrz7a2lckgd3vxjsahfr43lgrb85474dkhz94f5pq";
     };
     propagatedBuildInputs = [ FileHomeDir GetoptLongDescriptive HTTPMessage LWP LWPProtocolhttps TermReadKey ];
     meta = {
