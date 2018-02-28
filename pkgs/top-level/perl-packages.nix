@@ -10702,10 +10702,10 @@ let self = _self // overrides; _self = with self; {
   };
 
   podlators = buildPerlPackage rec {
-    name = "podlators-4.06";
+    name = "podlators-4.10";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/R/RR/RRA/${name}.tar.gz";
-      sha256 = "0fsb1k88fsqwgmk5fkcz57jf27g6ip4ncikawslm596d1si2h48a";
+      url = "mirror://cpan/authors/id/R/RR/RRA/podlators-4.10.tar.gz";
+      sha256 = "008b4j41ijrfyyq5nd3y7pqyww6rg49fjg2c6kmpnqrmgs347qqp";
     };
     meta = {
       description = "Convert POD data to various other formats";
