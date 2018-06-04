@@ -5,6 +5,7 @@ stdenv.mkDerivation {
 
   buildInputs = with perlPackages; [
     makeWrapper perl CPANMeta GetoptLongDescriptive CPANPLUS Readonly Log4Perl
+    ArchiveExtract LogMessage ModulePluggable ObjectAccessor PackageConstants
   ];
 
   phases = [ "installPhase" ];
