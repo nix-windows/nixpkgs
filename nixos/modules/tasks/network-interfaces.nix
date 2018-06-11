@@ -55,17 +55,6 @@ let
     in
       genAttrs allDevices (d: interfacesOfDevice d);
 
-  # Convert device:interface key:value pairs into a list, and if it exists,
-  # place the interface which is named after the device at the beginning.
-  wlanListDeviceFirst = device: interfaces:
-    if hasAttr device interfaces
-    then mapAttrsToList (n: v: v//{_iName=n;}) (filterAttrs (n: _: n==device) interfaces) ++ mapAttrsToList (n: v: v//{_iName=n;}) (filterAttrs (n: _: n!=device) interfaces)
-    else mapAttrsToList (n: v: v // {_iName = n;}) interfaces;
-
-  # We must escape interfaces due to the systemd interpretation
-  subsystemDevice = interface:
-    "sys-subsystem-net-devices-${escapeSystemdPath interface}.device";
-
   addrOpts = v:
     assert v == 4 || v == 6;
     { options = {
