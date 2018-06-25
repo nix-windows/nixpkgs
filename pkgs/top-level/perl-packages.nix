@@ -7,13 +7,16 @@
 
 {config, pkgs, fetchurl, fetchFromGitHub, stdenv, fetchsvn, gnused, perl, overrides}:
 
-let self = _self // overrides; _self = with self; {
+let
+  inherit (stdenv.lib) maintainers;
+  self = _self // overrides;
+  _self = with self; {
 
   inherit perl;
 
-  inherit (pkgs) buildPerlPackage;
+  callPackage = pkgs.newScope self;
 
-  inherit (stdenv.lib) maintainers;
+  buildPerlPackage = callPackage ../development/perl-modules/generic { };
 
   # Helper functions for packages that use Module::Build to build.
   buildPerlModule = { buildInputs ? [], ... } @ args:
@@ -516,8 +519,6 @@ let self = _self // overrides; _self = with self; {
     };
   };
 
-  ArchiveZip_1_53 = ArchiveZip;
-
   AudioScan = buildPerlPackage rec {
     name = "Audio-Scan-1.00";
     src = fetchurl {
@@ -717,10 +718,7 @@ let self = _self // overrides; _self = with self; {
     };
   };
 
-  BerkeleyDB = import ../development/perl-modules/BerkeleyDB {
-    inherit buildPerlPackage fetchurl;
-    inherit (pkgs) db;
-  };
+  BerkeleyDB = callPackage ../development/perl-modules/BerkeleyDB { };
 
   BHooksEndOfScope = buildPerlPackage rec {
     name = "B-Hooks-EndOfScope-0.24";
@@ -1861,6 +1859,10 @@ let self = _self // overrides; _self = with self; {
       url = "mirror://cpan/authors/id/J/JS/JSWARTZ/${name}.tar.gz";
       sha256 = "c7f1a2b3570a8fede484e933f89ba1729e0abd05935791d146c522dd120ee851";
     };
+    preConfigure = stdenv.lib.optionalString (stdenv.lib.versionAtLeast perl.version "5.26") ''
+      # fix error 'Unescaped left brace in regex is illegal here in regex'
+      substituteInPlace lib/CHI/t/Driver/Subcache/l1_cache.pm --replace 'qr/CHI stats: {' 'qr/CHI stats: \{'
+    '';
     buildInputs = [ TestClass TestDeep TestException TestWarn TimeDate ];
     propagatedBuildInputs = [ CarpAssert ClassLoad DataUUID DigestJHash HashMoreUtils JSONMaybeXS ListMoreUtils LogAny Moo MooXTypesMooseLikeNumeric StringRewritePrefix TaskWeaken TimeDuration TimeDurationParse ];
     meta = {
@@ -2097,6 +2099,10 @@ let self = _self // overrides; _self = with self; {
       url = "mirror://cpan/authors/id/E/EV/EVO/${name}.tar.gz";
       sha256 = "0ricb0mn0i06ngfhq5y035yx8i7ahlx83yyqwixqmv6hg4p79b5c";
     };
+    preConfigure = stdenv.lib.optionalString (stdenv.lib.versionAtLeast perl.version "5.26") ''
+      # fix error 'Unescaped left brace in regex is illegal here in regex'
+      substituteInPlace tests/xemulator/class_methodmaker/Test.pm --replace 's/(TEST\s{)/$1/g' 's/(TEST\s\{)/$1/g'
+    '';
   };
 
   ClassMethodMaker = buildPerlPackage rec {
@@ -2397,10 +2403,7 @@ let self = _self // overrides; _self = with self; {
     };
   };
 
-  CompressRawZlib = import ../development/perl-modules/Compress-Raw-Zlib {
-    inherit fetchurl buildPerlPackage stdenv;
-    inherit (pkgs) zlib;
-  };
+  CompressRawZlib = callPackage ../development/perl-modules/Compress-Raw-Zlib { };
 
   CompressUnLZMA = buildPerlPackage rec {
     name = "Compress-unLZMA-0.05";
@@ -4047,30 +4050,15 @@ let self = _self // overrides; _self = with self; {
     buildInputs = [ TestException ];
   };
 
-  DBDSQLite = import ../development/perl-modules/DBD-SQLite {
-    inherit stdenv fetchurl buildPerlPackage DBI;
-    inherit (pkgs) sqlite;
-  };
+  DBDSQLite = callPackage ../development/perl-modules/DBD-SQLite { };
 
-  DBDmysql = import ../development/perl-modules/DBD-mysql {
-    inherit fetchurl buildPerlPackage DBI;
-    inherit (pkgs) mysql;
-  };
+  DBDmysql = callPackage ../development/perl-modules/DBD-mysql { };
 
-  DBDPg = import ../development/perl-modules/DBD-Pg {
-    inherit stdenv fetchurl buildPerlPackage DBI;
-    inherit (pkgs) postgresql;
-  };
+  DBDPg = callPackage ../development/perl-modules/DBD-Pg { };
 
-  DBDsybase = import ../development/perl-modules/DBD-sybase {
-    inherit fetchurl buildPerlPackage DBI;
-    inherit (pkgs) freetds;
-  };
+  DBDsybase = callPackage ../development/perl-modules/DBD-sybase { };
 
-  DBFile = import ../development/perl-modules/DB_File {
-    inherit fetchurl buildPerlPackage;
-    inherit (pkgs) db;
-  };
+  DBFile = callPackage ../development/perl-modules/DB_File { };
 
   DBI = buildPerlPackage rec {
     name = "DBI-${version}";
@@ -8479,7 +8467,7 @@ let self = _self // overrides; _self = with self; {
 
   ListBinarySearch = buildPerlPackage {
     name = "List-BinarySearch-0.25";
-    src = pkgs.fetchurl {
+    src = fetchurl {
       url = mirror://cpan/authors/id/D/DA/DAVIDO/List-BinarySearch-0.25.tar.gz;
       sha256 = "0ap8y9rsjxg75887klgij90mf459f8dwy0dbx1g06h30pmqk04f8";
     };
@@ -9034,9 +9022,7 @@ let self = _self // overrides; _self = with self; {
     propagatedBuildInputs = [ LWP NetDNS ];
   };
 
-  maatkit = import ../development/perl-modules/maatkit {
-    inherit fetchurl buildPerlPackage stdenv DBDmysql;
-  };
+  maatkit = callPackage ../development/perl-modules/maatkit { };
 
   MacPasteboard = buildPerlPackage rec {
     name = "Mac-Pasteboard-0.009";
@@ -9530,7 +9516,7 @@ let self = _self // overrides; _self = with self; {
     };
   };
 
-  MNI-Perllib = pkgs.callPackage ../development/perl-modules/MNI {};
+  MNI-Perllib = callPackage ../development/perl-modules/MNI {};
 
   Mo = buildPerlPackage rec {
      name = "Mo-0.40";

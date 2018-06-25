@@ -7341,9 +7341,6 @@ with pkgs;
 
   ocropus = callPackage ../applications/misc/ocropus { };
 
-  perl = perl524;
-  inherit (callPackages ../development/interpreters/perl {}) perl522 perl524 perl526 perl528;
-
   pachyderm = callPackage ../applications/networking/cluster/pachyderm { };
 
   php = php72;
@@ -12400,11 +12397,27 @@ with pkgs;
 
   ### DEVELOPMENT / PERL MODULES
 
-  buildPerlPackage = callPackage ../development/perl-modules/generic perl;
+  inherit (callPackages ../development/interpreters/perl {}) perl522 perl524 perl526 perl528;
 
-  perlPackages = recurseIntoAttrs (callPackage ./perl-packages.nix {
+  perl522Packages = recurseIntoAttrs (callPackage ./perl-packages.nix {
+    perl = perl522;
     overrides = (config.perlPackageOverrides or (p: {})) pkgs;
   });
+  perl524Packages = recurseIntoAttrs (callPackage ./perl-packages.nix {
+    perl = perl524;
+    overrides = (config.perlPackageOverrides or (p: {})) pkgs;
+  });
+  perl526Packages = recurseIntoAttrs (callPackage ./perl-packages.nix {
+    perl = perl526;
+    overrides = (config.perlPackageOverrides or (p: {})) pkgs;
+  });
+  perl528Packages = recurseIntoAttrs (callPackage ./perl-packages.nix {
+    perl = perl528;
+    overrides = (config.perlPackageOverrides or (p: {})) pkgs;
+  });
+
+  perlPackages = perl524Packages;
+  inherit (perlPackages) perl buildPerlPackage;
 
   perlXMLParser = perlPackages.XMLParser;
 
