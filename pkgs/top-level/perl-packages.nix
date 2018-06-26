@@ -516,6 +516,8 @@ let self = _self // overrides; _self = with self; {
     };
   };
 
+  ArchiveZip_1_53 = ArchiveZip;
+
   AudioScan = buildPerlPackage rec {
     name = "Audio-Scan-1.00";
     src = fetchurl {
@@ -9438,7 +9440,7 @@ let self = _self // overrides; _self = with self; {
       url    = "http://dcssrv1.oit.uci.edu/indiv/ehood/release/MHonArc/tar/${name}.tar.gz";
       sha256 = "1xmf26dfwr8achprc3n1pxgl0mkiyr6pf25wq3dqgzqkghrrsxa2";
     };
-    propagatedBuildInputs = [ ];
+    outputs = [ "out" "dev" ]; # no "devdoc"
 
     installTargets = "install";
 
@@ -11978,10 +11980,13 @@ let self = _self // overrides; _self = with self; {
   };
 
   PathTools = buildPerlPackage {
-    name = "PathTools-3.47";
+    name = "PathTools-3.74";
+    preConfigure = ''
+      substituteInPlace Cwd.pm --replace '/usr/bin/pwd' '${pkgs.coreutils}/bin/pwd'
+    '';
     src = fetchurl {
-      url = mirror://cpan/authors/id/S/SM/SMUELLER/PathTools-3.47.tar.gz;
-      sha256 = "caa8d4b45372b8cb0ef0f6f696efa3a60b0fd394b115cad39a7fbb8f6bd38026";
+      url = mirror://cpan/authors/id/X/XS/XSAWYERX/PathTools-3.74.tar.gz;
+      sha256 = "25724cc54c59a3bfabadec95e72db292c98676bf3632497384e8dc6277936e11";
     };
   };
 
@@ -13098,6 +13103,7 @@ let self = _self // overrides; _self = with self; {
       url = "mirror://cpan/authors/id/J/JD/JDUNCAN/${name}.tar.gz";
       sha256 = "09c8xb43p1s6ala6g4274az51mf33phyjkp66dpvgkgbi1xfnawp";
     };
+    meta.broken = true;
   };
 
   RegexpGrammars = buildPerlModule rec {
@@ -13991,6 +13997,7 @@ let self = _self // overrides; _self = with self; {
     };
 
     buildInputs = [ ArchiveZip_1_53 pkgs.file ];
+    meta.broken = true;
   };
 
 
@@ -14010,6 +14017,7 @@ let self = _self // overrides; _self = with self; {
       license = licenses.gpl3;
       platforms = platforms.all;
       maintainers = with maintainers; [ pSub ];
+      meta.broken = true;
     };
   };
 
