@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchFromGitHub, fetchhg, fetchurl, mercurial, python27, zlib, makeWrapper, oraclejdk8 }:
+{ stdenv, lib, fetchFromGitHub, fetchhg, fetchurl, fetchzip, mercurial, python27, zlib, makeWrapper, oraclejdk8 }:
 
 let
   # pre-download some cache entries ('mx' will not be able to download under nixbld1)
@@ -43,6 +43,7 @@ let
     rec { sha1 = "f2cfb09cee12469ff64f0d698b13de19903bb4f7"; name = "NanoHTTPD-WebSocket_${sha1}.jar";                   url = mirror://maven/org/nanohttpd/nanohttpd-websocket/2.3.1/nanohttpd-websocket-2.3.1.jar; }
     rec { sha1 = "a8d54d1ca554a77f377eff6bf9e16ca8383c8f6c"; name = "NanoHTTPD_${sha1}.jar";                             url = mirror://maven/org/nanohttpd/nanohttpd/2.3.1/nanohttpd-2.3.1.jar; }
     rec { sha1 = "aca5eb39e2a12fddd6c472b240afe9ebea3a6733"; name = "org.json_${sha1}.jar";                              url = mirror://maven/org/json/json/20160810/json-20160810.jar; }
+    rec { sha1 = "30b13b7efc55b7feea667691509cf59902375001"; name = "ANTLR4_${sha1}.jar";                                url = mirror://maven/org/antlr/antlr4-runtime/4.7/antlr4-runtime-4.7.jar; }
     rec { sha1 = "fdedd5f2522122102f0b3db85fe7aa563a009926"; name = "JLINE_${sha1}.jar";                                 url = mirror://maven/jline/jline/2.14.5/jline-2.14.5.jar; }
     rec { sha1 = "476d9a44cd19d6b55f81571077dfa972a4f8a083"; name = "JAVA_ALLOCATION_INSTRUMENTER_${sha1}.jar";          url = https://lafo.ssw.uni-linz.ac.at/pub/graal-external-deps/java-allocation-instrumenter/java-allocation-instrumenter-8f0db117e64e.jar; }
     rec { sha1 = "0da08b8cce7bbf903602a25a3a163ae252435795"; name = "ASM5_${sha1}.jar";                                  url = https://lafo.ssw.uni-linz.ac.at/pub/graal-external-deps/asm-5.0.4.jar; }
@@ -50,27 +51,44 @@ let
     rec { sha1 = "280c265b789e041c02e5c97815793dfc283fb1e6"; name = "LIBFFI_${sha1}.tar.gz";                             url = https://lafo.ssw.uni-linz.ac.at/pub/graal-external-deps/libffi-3.2.1.tar.gz; }
     rec { sha1 = "616a4fca49c5d610a3354e78cd97e7627024bb66"; name = "GSON_SHADOWED_${sha1}.jar";                         url = https://lafo.ssw.uni-linz.ac.at/pub/graal-external-deps/gson-shadowed-2.2.4.jar; }
     rec { sha1 = "b13337a4ffd095c2e27ea401dc6edfca0d23a6e4"; name = "GSON_SHADOWED.sources_${sha1}.jar";                 url = https://lafo.ssw.uni-linz.ac.at/pub/graal-external-deps/gson-shadowed-2.2.4-sources.jar; }
+    rec { sha1 = "8819cea8bfe22c9c63f55465e296b3855ea41786"; name = "TruffleJSON_${sha1}.jar";                           url = https://lafo.ssw.uni-linz.ac.at/pub/graal-external-deps/trufflejson-20180130.jar; }
+    rec { sha1 = "9712a8124c40298015f04a74f61b3d81a51513af"; name = "CHECKSTYLE_8.8_${sha1}.jar";                        url = https://github.com/graalvm/mx/releases/download/checkstyle-8.8/checkstyle-8.8-all.jar; }
   ];
+
+  findbugs = fetchzip {
+    name   = "findbugs-3.0.0";
+    url    = https://lafo.ssw.uni-linz.ac.at/pub/graal-external-deps/findbugs-3.0.0.zip;
+    sha256 = "0sf5f9h1s6fmhfigjy81i109j1ani5kzdr4njlpq0mnkkh9fpr7m";
+  };
 
 in rec {
 
   mx = stdenv.mkDerivation rec {
-    version = "5.171.0";
+    version = "5.175.5";
     name = "mx";
     src = fetchFromGitHub {
       owner  = "graalvm";
       repo   = "mx";
       rev    = version;
-      sha256 = "0ag3g49fnjrnlmjb55dbn9l2cwyvanx36f5hyf21ad8px05fh6jv";
+      sha256 = "016s6l51q03fv4gkzfs2dz787lqlirdygsxgc9jn2j915kszfb0k";
     };
     nativeBuildInputs = [ makeWrapper ];
     buildPhase = ''
       substituteInPlace mx --replace /bin/pwd pwd
+
+      # forbid network access while simulate success for passing obligatory "VerifyLibraryURL"
+      substituteInPlace mx.py --replace \
+        'def download(path, urls, verbose=False, abortOnError=True, verifyOnly=False):' \
+        'def download(path, urls, verbose=False, abortOnError=True, verifyOnly=False):
+          print("FAKE download(path={} urls={} verbose={} abortOnError={} verifyOnly={})".format(path, urls, verbose, abortOnError, verifyOnly))
+          return True'
     '';
     installPhase = ''
       mkdir -p $out/bin
       cp -dpR * $out/bin
-      wrapProgram $out/bin/mx --prefix PATH : ${lib.makeBinPath [ python27 mercurial ]}
+      wrapProgram $out/bin/mx \
+        --prefix PATH : ${lib.makeBinPath [ python27 mercurial ]} \
+        --set    FINDBUGS_HOME ${findbugs}
     '';
     meta = with stdenv.lib; {
       homepage = https://github.com/graalvm/mx;
@@ -82,7 +100,7 @@ in rec {
 
   # copy of pkgs.oraclejvm8 with JVMCI interface (TODO: it should work with pkgs.openjdk8 too)
   jvmci8 = stdenv.mkDerivation rec {
-    version = "0.43";
+    version = "0.45";
     name = let
              n = "jvmci8u171-${version}";
            in if (lib.stringLength n) == (lib.stringLength oraclejdk8.name) then
@@ -93,7 +111,7 @@ in rec {
       owner  = "graalvm";
       repo   = "graal-jvmci-8";
       rev    = "jvmci-${version}";
-      sha256 = "0jkp67m7s252kngxnj0yp397pgx5z95v1lbi68v9g4dw050l28rk";
+      sha256 = "1nppk9dpamisiadss1iy82i3rf6igndbf1vax85w9lz310kh0d12";
     };
     buildInputs = [ mx mercurial ];
     postUnpack = ''
@@ -129,7 +147,7 @@ in rec {
   };
 
   graalvm8 = stdenv.mkDerivation rec {
-    version = "1.0.0-rc1";
+    version = "1.0.0-rc2";
     name = let
              n = "graal-${version}";
            in if (lib.stringLength n) == (lib.stringLength jvmci8.name) then
@@ -140,7 +158,7 @@ in rec {
       owner  = "oracle";
       repo   = "graal";
       rev    = "vm-${version}";
-      sha256 = "1j1m53d8x0mkvqr9lwlkjddfha5jrsq9hxlblbjv1bqcivfmmfn7";
+      sha256 = "1yb7g7jrvljs0q8la08qpn3pi6hbklvgpx2jr8a88chk9nyd5bjq";
     };
     buildInputs = [ mx zlib mercurial jvmci8 ];
     postUnpack = ''
@@ -161,10 +179,15 @@ in rec {
 
       export MX_ALT_OUTPUT_ROOT=$NIX_BUILD_TOP/mxbuild
       export MX_CACHE_DIR=${makeMxCache graal-mxcache}
-      ( cd substratevm; mx --java-home $out build --no-daemon )
+      export NATIVE_IMAGE_USER_HOME=$NIX_BUILD_TOP/home
+      ( cd substratevm
+        # FIXME: sulong build is excluded here because it requires `clangStdenv` to build (not only the compiler but clang's include and libs) while other parts need gcc
+        mx --java-home $out --dy /substratevm,/tools gate --omit-clean -x --tags python,js,ruby,sulong
+      )
     '';
+
     installPhase = ''
-      # add graal files
+      # add graal files modelling after directory structure of "graalvm-ce" binary distribution
       mkdir -p $out/jre/tools/{profiler,chromeinspector}
       cp -pR  substratevm/svmbuild/native-image-root/linux-amd64/bin/*  $out/jre/bin/
       cp -pLR substratevm/svmbuild/native-image-root/lib/*              $out/jre/lib/           || true # ignore "same file" error when dereferencing symlinks
