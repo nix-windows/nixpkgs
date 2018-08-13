@@ -9,6 +9,7 @@ let
   cfg = config.networking;
   dnsmasqResolve = config.services.dnsmasq.enable &&
                    config.services.dnsmasq.resolveLocalQueries;
+  # This hosts runs a full-blown DNS resolver.                   
   hasLocalResolver = config.services.bind.enable ||
                      config.services.unbound.enable ||
                      dnsmasqResolve;
@@ -236,9 +237,8 @@ in
             '' + optionalString (length resolvconfOptions > 0) ''
               # Options as described in resolv.conf(5)
               resolv_conf_options='${concatStringsSep " " resolvconfOptions}'
-            '' + optionalString hasLocalResolver ''
-              # This hosts runs a full-blown DNS resolver.
-              name_servers='127.0.0.1'
+            '' + optionalString (hasLocalResolver || cfg.nameservers != []) ''
+              name_servers='${lib.concatStringsSep " " (lib.optional hasLocalResolver "127.0.0.1" ++ cfg.nameservers)}'
             '' + optionalString dnsmasqResolve ''
               dnsmasq_conf=/etc/dnsmasq-conf.conf
               dnsmasq_resolv=/etc/dnsmasq-resolv.conf
@@ -288,10 +288,7 @@ in
           ln -s /run/systemd/resolve/resolv.conf /run/resolvconf/interfaces/systemd
         ''}
 
-        # Make sure resolv.conf is up to date if not managed manually or by systemd
-        ${optionalString (!config.environment.etc?"resolv.conf") ''
-          ${pkgs.openresolv}/bin/resolvconf -u
-        ''}
+        ${pkgs.openresolv}/bin/resolvconf -u
       '';
 
   };
