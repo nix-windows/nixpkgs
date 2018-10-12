@@ -30,8 +30,8 @@ in stdenv.mkDerivation rec {
 
   prePatch = optionalString stdenv.isDarwin ''
     substituteInPlace libz/configure \
-        --replace /usr/bin/libtool ar \
-        --replace 'AR="libtool"' 'AR="ar"' \
+        --replace /usr/bin/libtool ${stdenv.cc.bintools.targetPrefix}ar \
+        --replace 'AR="libtool"' 'AR="${stdenv.cc.bintools.targetPrefix}ar"' \
         --replace 'ARFLAGS="-o"' 'ARFLAGS="-r"'
   '';
 
