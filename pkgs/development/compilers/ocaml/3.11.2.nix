@@ -2,28 +2,28 @@
 
 let
    useX11 = stdenv.isi686 || stdenv.isx86_64;
-   useNativeCompilers = stdenv.isi686 || stdenv.isx86_64 || stdenv.isMips;
+   useNativeCompilers = stdenv.isi686 || stdenv.isx86_64 || stdenv.isMips32;
    inherit (stdenv.lib) optionals optionalString;
 in
 
 stdenv.mkDerivation rec {
-  
+
   name = "ocaml-${version}";
   version = "3.11.2";
-  
+
   src = fetchurl {
     url = "https://caml.inria.fr/pub/distrib/ocaml-3.11/${name}.tar.bz2";
     sha256 = "86f3387a0d7e7c8be2a3c53af083a5a726e333686208d5ea0dd6bb5ac3f58143";
   };
 
   # Needed to avoid a SIGBUS on the final executable on mips
-  NIX_CFLAGS_COMPILE = if stdenv.isMips then "-fPIC" else "";
+  NIX_CFLAGS_COMPILE = if stdenv.isMips32 then "-fPIC" else "";
 
   patches = optionals stdenv.isDarwin [ ./gnused-on-osx-fix.patch ] ++
     [ (fetchurl {
         name = "0007-Fix-ocamlopt-w.r.t.-binutils-2.21.patch";
         url = "http://caml.inria.fr/mantis/file_download.php?file_id=418&type=bug";
-	sha256 = "612a9ac108bbfce2238aa5634123da162f0315dedb219958be705e0d92dcdd8e";
+        sha256 = "612a9ac108bbfce2238aa5634123da162f0315dedb219958be705e0d92dcdd8e";
       })
     ];
 

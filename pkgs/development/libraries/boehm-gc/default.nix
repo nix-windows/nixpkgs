@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [ pkgconfig ];
 
   outputs = [ "out" "dev" "doc" ];
-  separateDebugInfo = stdenv.isLinux;
+  separateDebugInfo = stdenv.isLinux && !stdenv.isMips64;
 
   preConfigure = stdenv.lib.optionalString (stdenv.hostPlatform.libc == "musl") ''
     export NIX_CFLAGS_COMPILE+="-D_GNU_SOURCE -DUSE_MMAP -DHAVE_DL_ITERATE_PHDR"

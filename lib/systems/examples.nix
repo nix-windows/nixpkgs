@@ -27,6 +27,21 @@ rec {
     platform = platforms.raspberrypi;
   };
 
+  mips64-multiplatform = rec {
+    config = "mips64-unknown-linux-gnuabi64";
+    platform = platforms.mips64-multiplatform;
+  };
+
+  ubiquiti-erlite3 = rec {
+    config = "mips64-unknown-linux-gnu";
+    platform = platforms.mips64-multiplatform;
+  };
+
+  mips64el-multiplatform = rec {
+    config = "mips64el-unknown-linux-gnuabi64";
+    platform = platforms.mips64el-multiplatform;
+  };
+
   armv7l-hf-multiplatform = rec {
     config = "armv7l-unknown-linux-gnueabihf";
     platform = platforms.armv7l-hf-multiplatform;

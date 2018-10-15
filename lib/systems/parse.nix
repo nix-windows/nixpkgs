@@ -223,6 +223,15 @@ rec {
         }
       ];
     };
+    gnuabi64     =  {
+      assertions = [
+        { assertion = platform: platform.isMips64;
+          message = ''
+            The "gnuabi64" ABI is only for MIPS64.
+          '';
+        }
+      ];
+    };
 
     musleabi     = { float = "soft"; };
     musleabihf   = { float = "hard"; };

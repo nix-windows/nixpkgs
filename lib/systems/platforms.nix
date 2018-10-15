@@ -449,6 +449,37 @@ rec {
     };
   };
 
+  mips64-multiplatform = {
+    name = "mips64-multiplatform";
+#   bfdEmulation = "elf64ltsmip";
+    kernelArch = "mips";
+    kernelTarget = "zImage";
+    kernelAutoModules = true;
+    kernelBaseConfig = "malta_kvm_guest_defconfig";
+    kernelExtraConfig = ''
+      CPS y
+      MSA y
+    '';
+    gcc = {
+      arch = "mips64r2"; # qemu
+      float = "hard";
+      abi = "64";
+    };
+  };
+
+  ubiquiti-erlite3 = mips64-multiplatform // {
+    name = "ubiquiti-erlite3";
+    kernelBaseConfig = "cavium_octeon_defconfig";
+    gcc = {
+      arch = "octeon+"; # Cavium CN5020
+      abi = "n32";
+    };
+  };
+
+  mips64el-multiplatform = mips64-multiplatform // {
+    name = "mips64el-multiplatform";
+  };
+
   ##
   ## Other
   ##
@@ -475,5 +506,7 @@ rec {
       "aarch64-linux" = aarch64-multiplatform;
       "mipsel-linux" = fuloong2f_n32;
       "powerpc64le-linux" = powernv;
+      "mips64-linux" = mips64-multiplatform;
+      "mips64el-linux" = mips64el-multiplatform;
     }.${system} or pcBase;
 }

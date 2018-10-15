@@ -88,7 +88,7 @@ let
       export TMPDIR=$NIX_BUILD_TOP
     '';
 
-    separateDebugInfo = stdenv.isLinux;
+    separateDebugInfo = stdenv.isLinux && !stdenv.isMips64;
 
     enableParallelBuilding = true;
 

@@ -99,7 +99,7 @@ stdenv.mkDerivation rec {
     '';
 
   # One test fails on mips.
-  doCheck = !stdenv.isMips;
+  doCheck = !stdenv.isMips32;
 
   disallowedReferences = [ (lib.getDev kerberos) ];
 

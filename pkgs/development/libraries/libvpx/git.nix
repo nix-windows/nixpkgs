@@ -41,11 +41,11 @@
 }:
 
 let
-  inherit (stdenv) isi686 isx86_64 isAarch32 is64bit isMips isDarwin isCygwin;
+  inherit (stdenv) isi686 isx86_64 isAarch32 is64bit isMips32 isDarwin isCygwin;
   inherit (stdenv.lib) enableFeature optional optionals;
 in
 
-assert isi686 || isx86_64 || isAarch32 || isMips; # Requires ARM with floating point support
+assert isi686 || isx86_64 || isAarch32 || isMips32; # Requires ARM with floating point support
 
 assert vp8DecoderSupport || vp8EncoderSupport || vp9DecoderSupport || vp9EncoderSupport;
 assert internalStatsSupport && (vp9DecoderSupport || vp9EncoderSupport) -> postprocSupport;
@@ -107,8 +107,8 @@ stdenv.mkDerivation rec {
     (enableFeature fastUnalignedSupport "fast-unaligned")
     "--disable-codec-srcs"
     (enableFeature debugLibsSupport "debug-libs")
-    (enableFeature isMips "dequant-tokens")
-    (enableFeature isMips "dc-recon")
+    (enableFeature isMips32 "dequant-tokens")
+    (enableFeature isMips32 "dc-recon")
     (enableFeature postprocSupport "postproc")
     (enableFeature (postprocSupport && (vp9DecoderSupport || vp9EncoderSupport)) "vp9-postproc")
     (enableFeature multithreadSupport "multithread")

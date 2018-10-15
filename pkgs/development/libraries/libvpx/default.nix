@@ -39,7 +39,7 @@
 }:
 
 let
-  inherit (stdenv) is64bit isMips isDarwin isCygwin;
+  inherit (stdenv) is64bit isMips32 isDarwin isCygwin;
   inherit (stdenv.lib) enableFeature optional optionals;
 in
 
@@ -100,8 +100,8 @@ stdenv.mkDerivation rec {
     (if sizeLimitSupport then "--size-limit=5120x3200" else null)
     "--disable-codec-srcs"
     (enableFeature debugLibsSupport "debug-libs")
-    (enableFeature isMips "dequant-tokens")
-    (enableFeature isMips "dc-recon")
+    (enableFeature isMips32 "dequant-tokens")
+    (enableFeature isMips32 "dc-recon")
     (enableFeature postprocSupport "postproc")
     (enableFeature (postprocSupport && (vp9DecoderSupport || vp9EncoderSupport)) "vp9-postproc")
     (enableFeature multithreadSupport "multithread")

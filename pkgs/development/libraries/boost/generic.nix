@@ -75,7 +75,8 @@ let
     # TODO: make this unconditional
   ] ++ optionals (stdenv.hostPlatform != stdenv.buildPlatform) [
     "address-model=${toString stdenv.hostPlatform.parsed.cpu.bits}"
-    "architecture=${toString stdenv.hostPlatform.parsed.cpu.family}"
+    "architecture=${if stdenv.hostPlatform.isMips64 then "mips64"
+                    else toString stdenv.hostPlatform.parsed.cpu.family}"
     "binary-format=${toString stdenv.hostPlatform.parsed.kernel.execFormat.name}"
     "target-os=${toString stdenv.hostPlatform.parsed.kernel.name}"
 
@@ -83,7 +84,7 @@ let
     # https://www.boost.org/doc/libs/1_66_0/libs/context/doc/html/context/architectures.html
     "abi=${if stdenv.hostPlatform.parsed.cpu.family == "arm" then "aapcs"
            else if stdenv.hostPlatform.isWindows then "ms"
-           else if stdenv.hostPlatform.isMips then "o32"
+           else if stdenv.hostPlatform.isMips32 then "o32"
            else "sysv"}"
   ] ++ optional (link != "static") "runtime-link=${runtime-link}"
     ++ optional (variant == "release") "debug-symbols=off"
