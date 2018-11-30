@@ -32,6 +32,8 @@ let
 
   stagesCross = import ./cross args;
 
+  stagesWindows = import ./windows args;
+
   stagesCustom = import ./custom args;
 
   # Select the appropriate stages for the platform `system'.
@@ -53,4 +55,5 @@ in
     "i686-cygwin" = stagesNative;
     "x86_64-cygwin" = stagesNative;
     "x86_64-freebsd" = stagesFreeBSD;
+    "x86_64-windows" = stagesWindows;
   }.${localSystem.system} or stagesNative

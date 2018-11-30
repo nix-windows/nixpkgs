@@ -272,6 +272,8 @@ rec {
     "2" = # We only do 2-part hacks for things Nix already supports
       if elemAt l 1 == "cygwin"
         then { cpu = elemAt l 0;                      kernel = "windows";  abi = "cygnus";   }
+      else if elemAt l 1 == "windows"
+        then { cpu = elemAt l 0;                      kernel = "windows";  abi = "msvc";   }
       else if (elemAt l 1 == "eabi")
         then { cpu = elemAt l 0; vendor = "none"; kernel = "none"; abi = elemAt l 1; }
       else if (elemAt l 1 == "elf")

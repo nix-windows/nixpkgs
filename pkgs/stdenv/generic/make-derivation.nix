@@ -120,7 +120,7 @@ rec {
           (map (drv: drv.__spliced.buildBuild or drv) depsBuildBuild)
           (map (drv: drv.nativeDrv or drv) nativeBuildInputs
              ++ lib.optional separateDebugInfo ../../build-support/setup-hooks/separate-debug-info.sh
-             ++ lib.optional stdenv.hostPlatform.isWindows ../../build-support/setup-hooks/win-dll-link.sh)
+             ++ lib.optional (stdenv.hostPlatform.isWindows && !stdenv.hostPlatform.isMicrosoft) ../../build-support/setup-hooks/win-dll-link.sh)
           (map (drv: drv.__spliced.buildTarget or drv) depsBuildTarget)
         ]
         [
@@ -186,7 +186,14 @@ rec {
             ("-" + stdenv.hostPlatform.config);
 
           builder = attrs.realBuilder or stdenv.shell;
-          args = attrs.args or ["-e" (attrs.builder or ./default-builder.sh)];
+          args = attrs.args or (
+             if lib.hasSuffix "perl" stdenv.shell || lib.hasSuffix "perl.exe" stdenv.shell then
+               [     (attrs.builder or ./default-builder.pl )]
+             else if lib.hasSuffix "cmd.exe" stdenv.shell then
+               ["/c" (attrs.builder or ./default-builder.cmd)]
+             else
+               ["-e" (attrs.builder or ./default-builder.sh )]
+          );
           inherit stdenv;
 
           # The `system` attribute of a derivation has special meaning to Nix.

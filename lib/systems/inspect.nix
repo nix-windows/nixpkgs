@@ -40,6 +40,7 @@ rec {
     isWindows      = { kernel = kernels.windows; };
     isCygwin       = { kernel = kernels.windows; abi = abis.cygnus; };
     isMinGW        = { kernel = kernels.windows; abi = abis.gnu; };
+    isMicrosoft    = { kernel = kernels.windows; abi = abis.msvc; };
 
     isAndroid      = [ { abi = abis.android; } { abi = abis.androideabi; } ];
     isMusl         = with abis; map (a: { abi = a; }) [ musl musleabi musleabihf ];

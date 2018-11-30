@@ -34,6 +34,7 @@ rec {
         else if final.isLinux /* default */ then "glibc"
         else if final.isAvr                 then "avrlibc"
         # TODO(@Ericson2314) think more about other operating systems
+        else if final.isMicrosoft           then /*throw*/ "?microsoft libc?"
         else                                     "native/impure";
       extensions = {
         sharedLibrary =
