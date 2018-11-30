@@ -7,7 +7,7 @@ let lib = import ../../../lib; in lib.makeOverridable (
   # (see all-packages.nix).
   fetchurlBoot
 
-, setupScript ? ./setup.sh
+, setupScript ? if lib.hasSuffix "perl" shell || lib.hasSuffix "perl.exe" shell then ./setup.pm else  ./setup.sh
 
 , extraNativeBuildInputs ? []
 , extraBuildInputs ? []
@@ -42,22 +42,26 @@ let lib = import ../../../lib; in lib.makeOverridable (
 }:
 
 let
-  defaultNativeBuildInputs = extraNativeBuildInputs ++
-    [ ../../build-support/setup-hooks/move-docs.sh
-      ../../build-support/setup-hooks/compress-man-pages.sh
-      ../../build-support/setup-hooks/strip.sh
-      ../../build-support/setup-hooks/patch-shebangs.sh
-    ]
-      # FIXME this on Darwin; see
-      # https://github.com/NixOS/nixpkgs/commit/94d164dd7#commitcomment-22030369
-    ++ lib.optional hostPlatform.isLinux ../../build-support/setup-hooks/audit-tmpdir.sh
-    ++ [
-      ../../build-support/setup-hooks/multiple-outputs.sh
-      ../../build-support/setup-hooks/move-sbin.sh
-      ../../build-support/setup-hooks/move-lib64.sh
-      ../../build-support/setup-hooks/set-source-date-epoch-to-latest.sh
-      cc
-    ];
+  defaultNativeBuildInputs =
+    if hostPlatform.isMicrosoft then
+      extraNativeBuildInputs ++ [cc]
+    else
+      extraNativeBuildInputs ++
+      [ ../../build-support/setup-hooks/move-docs.sh
+        ../../build-support/setup-hooks/compress-man-pages.sh
+        ../../build-support/setup-hooks/strip.sh
+        ../../build-support/setup-hooks/patch-shebangs.sh
+      ]
+        # FIXME this on Darwin; see
+        # https://github.com/NixOS/nixpkgs/commit/94d164dd7#commitcomment-22030369
+      ++ lib.optional hostPlatform.isLinux ../../build-support/setup-hooks/audit-tmpdir.sh
+      ++ [
+        ../../build-support/setup-hooks/multiple-outputs.sh
+        ../../build-support/setup-hooks/move-sbin.sh
+        ../../build-support/setup-hooks/move-lib64.sh
+        ../../build-support/setup-hooks/set-source-date-epoch-to-latest.sh
+        cc
+      ];
 
   defaultBuildInputs = extraBuildInputs;
 
@@ -77,7 +81,12 @@ let
 
       builder = shell;
 
-      args = ["-e" ./builder.sh];
+      args = if lib.hasSuffix "perl" shell || lib.hasSuffix "perl.exe" shell then
+               [     ./builder.pl ]
+             else if lib.hasSuffix "cmd.exe" shell then
+               ["/c" ./builder.cmd]
+             else
+               ["-e" ./builder.sh ];
 
       setup = setupScript;
 

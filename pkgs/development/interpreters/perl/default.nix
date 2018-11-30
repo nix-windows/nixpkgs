@@ -17,12 +17,51 @@ with lib;
 assert enableThreading -> (stdenv ? glibc);
 
 let
+  meta = {
+    homepage = https://www.perl.org/;
+    description = "The standard implementation of the Perl 5 programmming language";
+    license = licenses.artistic1;
+    maintainers = [ maintainers.eelco ];
+    platforms = platforms.all;
+  };
 
-  libc = if stdenv.cc.libc or null != null then stdenv.cc.libc else "/usr";
-  libcInc = lib.getDev libc;
-  libcLib = lib.getLib libc;
-  crossCompiling = stdenv.buildPlatform != stdenv.hostPlatform;
-  common = { version, sha256 }: stdenv.mkDerivation (rec {
+  common = { version, sha256 }: if stdenv.hostPlatform.isMicrosoft then stdenv.mkDerivation (rec {
+    inherit version meta;
+
+    name = "perl-${version}";
+
+    src = fetchurlBoot {
+      url = "mirror://cpan/src/5.0/${name}.tar.gz";
+      inherit sha256;
+    };
+
+    disallowedReferences = [ stdenv.cc ];
+
+#   unpackPhase = ''
+#       for my $k (sort (keys %ENV)) { print("ENV $k = '$ENV{$k}'\n"); }
+#       #print("PATH=$ENV{PATH}\n");
+#       exit(1);
+#   '';
+
+    dontConfigure = true;
+    buildPhase = ''
+      chdir('win32');
+      #print("PATH=$ENV{PATH}\n");
+      system("nmake install INST_TOP=$ENV{out} CCTYPE=MSVC141 WIN64=define BUILD_STATIC=define");
+    '';
+
+    setupHook = ./setup-hook.pl;
+
+    passthru.libPrefix = "lib";
+
+    doCheck = false; # some tests fail, expensive
+  })
+  else let
+    libc = if stdenv.cc.libc or null != null then stdenv.cc.libc else "/usr";
+    libcInc = lib.getDev libc;
+    libcLib = lib.getLib libc;
+    crossCompiling = stdenv.buildPlatform != stdenv.hostPlatform;
+  in stdenv.mkDerivation (rec {
     inherit version;
 
     name = "perl-${version}";
@@ -144,14 +183,6 @@ let
         wrapProgram $dev/bin/perl --prefix PERL5LIB : \
           "$dev/lib/perl5/cross_perl/${version}:$out/lib/perl5/${version}:$out/lib/perl5/${version}/$runtimeArch"
       ''; # */
-
-    meta = {
-      homepage = https://www.perl.org/;
-      description = "The standard implementation of the Perl 5 programmming language";
-      license = licenses.artistic1;
-      maintainers = [ maintainers.eelco ];
-      platforms = platforms.all;
-    };
   } // stdenv.lib.optionalAttrs (stdenv.buildPlatform != stdenv.hostPlatform) rec {
     crossVersion = "ab8d05c9e695d3db4f7dc15c70f23623349c2f49"; # Oct 03, 2018
 

@@ -12,7 +12,10 @@ let
   mirrorsFile =
     stdenvNoCC.mkDerivation ({
       name = "mirrors-list";
-      builder = ./write-mirror-list.sh;
+      builder = if lib.hasSuffix "perl" stdenvNoCC.shell || lib.hasSuffix "perl.exe" stdenvNoCC.shell then
+                  ./write-mirror-list.pl
+                else
+                  ./write-mirror-list.sh;
       preferLocalBuild = true;
     } // mirrors);
 
@@ -114,7 +117,10 @@ stdenvNoCC.mkDerivation {
     else if name != "" then name
     else baseNameOf (toString (builtins.head urls_));
 
-  builder = ./builder.sh;
+  builder = if lib.hasSuffix "perl" stdenvNoCC.shell || lib.hasSuffix "perl.exe" stdenvNoCC.shell then
+              ./builder.pl
+            else
+              ./builder.sh;
 
   nativeBuildInputs = [ curl ];
 
