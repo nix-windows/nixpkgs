@@ -11,7 +11,7 @@ using namespace std;
 string wliteral(const wstring ws) {
     string rc = "L\"";
     for (wchar_t c : ws) {
-        if (' ' <= c && c <= '~')
+        if (' ' <= c && c <= '~' && c != '"' && c != '\\')
             rc += c;
         else {
             char sz[7];
