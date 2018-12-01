@@ -44,14 +44,31 @@ let
       ++ stdenv.lib.optional (versionAtLeast version "1.1.0" && stdenv.hostPlatform.isAarch64) "no-afalgeng";
 
 #   print("PATH=$ENV{PATH}\n");
-    configurePhase = ''
+    configurePhase = if (versionOlder version "1.1.0") then ''
       system("perl Configure VC-WIN64A --prefix=$ENV{out} $ENV{configureFlags}");
+    '' else ''
+      system("perl Configure VC-WIN64A-masm --prefix=$ENV{out} $ENV{configureFlags}");
     '';
 
     buildPhase = if (versionOlder version "1.1.0") then ''
-      system('ms\do_win64a') == 0 or die "cmd exited $!";
-      system('nmake -f ms\ntdll.mak install') == 0 or die "nmake exited $!";
-    '' else abort "TODO";
+      system('ms\do_win64a') == 0 or die "do_win64a failed: $!";
+      system('nmake -f ms\ntdll.mak') == 0 or die "nmake failed: $!";
+    '' else ''
+      system('nmake') == 0 or die "nmake failed: $!";
+    '';
+
+    doCheck = true;
+    checkPhase = if (versionOlder version "1.1.0") then ''
+      system('nmake -f ms\ntdll.mak test') == 0 or die "nmake failed: $!";
+    '' else ''
+      system('nmake test') == 0 or die "nmake failed: $!";
+    '';
+
+    installPhase = if (versionOlder version "1.1.0") then ''
+      system('nmake -f ms\ntdll.mak install') == 0 or die "nmake failed: $!";
+    '' else ''
+      system('nmake install') == 0 or die "nmake failed: $!";
+    '';
   }
   else stdenv.mkDerivation rec {
     inherit name version src meta;
