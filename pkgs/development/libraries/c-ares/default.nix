@@ -1,7 +1,6 @@
 { stdenv, fetchurl, writeTextDir }:
 
-let self =
-stdenv.mkDerivation rec {
+let
   name = "c-ares-1.15.0";
 
   src = fetchurl {
@@ -9,17 +8,29 @@ stdenv.mkDerivation rec {
     sha256 = "0lk8knip4xk6qzksdkn7085mmgm4ixfczdyyjw656c193y3rgnvc";
   };
 
-  configureFlags = stdenv.lib.optionals stdenv.hostPlatform.isWindows [ "--disable-shared" "--enable-static" ];
+  self = if stdenv.hostPlatform.isMicrosoft then
+  stdenv.mkDerivation rec {
+    inherit name src;
+    #  $ENV{INSTALL_DIR} = $ENV{out};
+    buildPhase = ''
+      system("nmake -f Makefile.msvc install INSTALL_DIR=$ENV{out}");
+    '';
+  }
+  else
+  stdenv.mkDerivation rec {
+    inherit name src;
 
-  meta = with stdenv.lib; {
-    description = "A C library for asynchronous DNS requests";
-    homepage = https://c-ares.haxx.se;
-    license = licenses.mit;
-    platforms = platforms.all;
-  };
+    configureFlags = stdenv.lib.optionals stdenv.hostPlatform.isWindows [ "--disable-shared" "--enable-static" ];
 
-  # Adapted from running a cmake build
-  passthru.cmake-config = writeTextDir "c-ares-config.cmake"
+    meta = with stdenv.lib; {
+      description = "A C library for asynchronous DNS requests";
+      homepage = https://c-ares.haxx.se;
+      license = licenses.mit;
+      platforms = platforms.all;
+    };
+
+    # Adapted from running a cmake build
+    passthru.cmake-config = writeTextDir "c-ares-config.cmake"
     ''
       set(c-ares_INCLUDE_DIR "${self}/include")
 

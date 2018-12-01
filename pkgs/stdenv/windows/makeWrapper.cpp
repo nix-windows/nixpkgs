@@ -11,9 +11,11 @@ using namespace std;
 string wliteral(const wstring ws) {
     string rc = "L\"";
     for (wchar_t c : ws) {
-        if (' ' <= c && c <= '~' && c != '"' && c != '\\')
+        if (' ' <= c && c <= '~') {
+            if (c == '"' || c == '\\')
+                rc += '\\';
             rc += c;
-        else {
+        } else {
             char sz[7];
             sprintf(sz, "\\u%04X", c);
             rc += sz;
@@ -55,7 +57,7 @@ int wmain(int argc, const wchar_t** argv) {
     }
 
     // TODO: generate plain C code (and build with /NODEFAULTLIBS), it could end up in very small wrapper executables
-    std::string code;
+    string code;
     code += "#include <windows.h>\n";
     code += "#include <assert.h>\n";
     code += "#include <iostream>\n";
@@ -93,7 +95,7 @@ int wmain(int argc, const wchar_t** argv) {
     code += "            pw += len + 1;\n";
     code += "        }\n";
     code += "    }\n";
-    code += "    vector<std::wstring> args;\n";
+    code += "    vector<wstring> args;\n";
     code += "    {\n";
     code += "        int numArgs;\n";
     code += "        LPWSTR* wargv = CommandLineToArgvW(GetCommandLineW(), &numArgs);\n";

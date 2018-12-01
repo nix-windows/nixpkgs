@@ -884,23 +884,16 @@ sub patchPhase() {
     runHook 'prePatch';
 #
     for $i (split / +/, $ENV{patches}) {
-        print("TODO applying patch $i\n");
-        exit(1);
-#         local uncompress=cat
-#         case "$i" in
-#             *.gz)
-#                 uncompress="gzip -d"
-#                 ;;
-#             *.bz2)
-#                 uncompress="bzip2 -d"
-#                 ;;
-#             *.xz)
-#                 uncompress="xz -d"
-#                 ;;
-#             *.lzma)
-#                 uncompress="lzma -d"
-#                 ;;
-#         esac
+        print("applying patch $i\n");
+
+        # TODO: native Windows utils ?
+        my $uncompress = 'C:\Git\usr\bin\cat.exe';
+        $uncompress = 'C:\Git\usr\bin\gzip.exe -d'  if $i =~ /\.gz$/;
+        $uncompress = 'C:\Git\usr\bin\bzip2.exe -d' if $i =~ /\.bz2$/;
+        die "todo"                                  if $i =~ /\.xz$/;    # $uncompress = 'xz -d'
+        die "todo"                                  if $i =~ /\.lzma$/;  # $uncompress = 'lzma -d'
+
+        system("$uncompress < \"$i\" 2>&1 | C:\\Git\\usr\\bin\\patch.exe " . ($ENV{patchFlags} || '-p1')) == 0 or die "patch failed: $!";
 #         # "2>&1" is a hack to make patch fail if the decompressor fails (nonexistent patch, etc.)
 #         # shellcheck disable=SC2086
 #         $uncompress < "$i" 2>&1 | patch ${patchFlags:--p1}
