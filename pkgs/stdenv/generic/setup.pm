@@ -276,7 +276,7 @@ for my $i (split / /, $ENV{initialPath}) {
     addToSearchPath('HOST_PATH', "$i/bin") unless $ENV{strictDeps};
 }
 
-print ("initial path: $ENV{PATH}\n"); # if (( "${NIX_DEBUG:-0}" >= 1 ))
+print ("initial path: '$ENV{PATH}'\n"); # if (( "${NIX_DEBUG:-0}" >= 1 ))
 
 
 
@@ -330,6 +330,7 @@ my %pkgHookVarVars  = ( -1 => [\$envBuildBuildHooks, \$envBuildHostHooks, \$envB
 # Add env hooks for all sorts of deps with the specified host offset.
 sub addEnvHooks {
     my ($depHostOffset, @rest) = @_;
+    print("TODO: addEnvHooks($depHostOffset, @rest)\n");
 
     for my $pkgHookVar (@{$pkgHookVarVars{$depHostOffset}}) {
         push(@$$pkgHookVar, @rest);
@@ -552,8 +553,8 @@ sub _addToEnv() {
         my $pkgsVar = $pkgAccumVarVars{$depHostOffset};
         for my $depTargetOffset (@allPlatOffsets) {
             next unless $depHostOffset <= $depTargetOffset;
-            my $hookRef = $hookVar->[$depTargetOffset - $depHostOffset]; # ???
-            print("TODO _addToEnv: hookRef=$hookRef");
+            my $hookRef = ${$hookVar->[$depTargetOffset - $depHostOffset]}; # ???
+            print("TODO _addToEnv: hookRef=$hookRef\n");
 
             if (!$ENV{strictDeps}) {
                 # Apply environment hooks to all packages during native
@@ -606,13 +607,10 @@ print("envTargetTargetHooks = $envTargetTargetHooks @{$envTargetTargetHooks}\n")
 #     prefix="$NIX_BUILD_TOP/tmp_prefix";
 # fi
 
+$ENV{PATH} = "$ENV{_PATH}$PATH_DELIMITER$ENV{PATH}" if $ENV{_PATH} &&  $ENV{PATH};
+$ENV{PATH} =  $ENV{_PATH}                           if $ENV{_PATH} && !$ENV{PATH};
 
-if ($ENV{_PATH} && $ENV{PATH}) {
-    $ENV{PATH} = $ENV{_PATH} . $PATH_DELIMITER . $ENV{PATH};
-} else {
-    $ENV{PATH} = $ENV{_PATH};
-}
-print("final path: '$PATH'\n"); # if (( "${NIX_DEBUG:-0}" >= 1 ))
+print("final path: '$ENV{PATH}'\n"); # if (( "${NIX_DEBUG:-0}" >= 1 ))
 
 
 # # Make GNU Make produce nested output.

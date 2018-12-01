@@ -1,7 +1,9 @@
 require "$ENV{stdenv}/setup.pm";
 require "$ENV{mirrorsFile}";
 
-my $curlVersion=`curl -V` =~ s/^curl ([0-9.]+).+/\1/sr;
+my $curlVersion = `curl -V` =~ s/^curl ([0-9.]+).+/\1/sr;
+
+die "curl not found on PATH '$ENV{PATH}'" if !$curlVersion;
 
 
 # Curl flags to handle redirects, not use EPSV, handle cookies for
