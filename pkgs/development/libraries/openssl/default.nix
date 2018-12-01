@@ -7,13 +7,54 @@
 with stdenv.lib;
 
 let
-  common = args@{ version, sha256, patches ? [] }: stdenv.mkDerivation rec {
+  common = args@{ version, sha256, patches ? [] }: let
     name = "openssl-${version}";
 
     src = fetchurl {
       url = "https://www.openssl.org/source/${name}.tar.gz";
       inherit sha256;
     };
+
+    meta = with stdenv.lib; {
+      homepage = https://www.openssl.org/;
+      description = "A cryptographic library that implements the SSL and TLS protocols";
+      license = licenses.openssl;
+      platforms = platforms.all;
+      maintainers = [ maintainers.peti ];
+      priority = 10; # resolves collision with ‘man-pages’
+    };
+
+  in if stdenv.hostPlatform.isMicrosoft then stdenv.mkDerivation rec {
+    inherit name version src meta;
+
+    patches =
+      (args.patches or [])
+      ++ [ ./nix-ssl-cert-file.patch ];
+
+    nativeBuildInputs = [ perl ];
+
+    configureFlags = [
+      "shared" # "shared" builds both shared and static libraries
+      "--libdir=lib"
+      "--openssldir=etc/ssl"
+    ] ++ stdenv.lib.optionals withCryptodev [
+      "-DHAVE_CRYPTODEV"
+      "-DUSE_CRYPTODEV_DIGESTS"
+    ] ++ stdenv.lib.optional enableSSL2 "enable-ssl2"
+      ++ stdenv.lib.optional (versionAtLeast version "1.1.0" && stdenv.hostPlatform.isAarch64) "no-afalgeng";
+
+#   print("PATH=$ENV{PATH}\n");
+    configurePhase = ''
+      system("perl Configure VC-WIN64A --prefix=$ENV{out} $ENV{configureFlags}");
+    '';
+
+    buildPhase = if (versionOlder version "1.1.0") then ''
+      system('ms\do_win64a') == 0 or die "cmd exited $!";
+      system('nmake -f ms\ntdll.mak install') == 0 or die "nmake exited $!";
+    '' else abort "TODO";
+  }
+  else stdenv.mkDerivation rec {
+    inherit name version src meta;
 
     patches =
       (args.patches or [])
@@ -111,15 +152,6 @@ let
         exit 1
       fi
     '';
-
-    meta = with stdenv.lib; {
-      homepage = https://www.openssl.org/;
-      description = "A cryptographic library that implements the SSL and TLS protocols";
-      license = licenses.openssl;
-      platforms = platforms.all;
-      maintainers = [ maintainers.peti ];
-      priority = 10; # resolves collision with ‘man-pages’
-    };
   };
 
 in {
