@@ -169,39 +169,40 @@ in
           mkdir $ENV{out} or die;
           mkdir "$ENV{out}/bin" or die;
 
-          for my $name ('cl', 'lib', 'link', 'nmake', 'mt', 'rc') {
-            open(my $fh, ">$ENV{out}/bin/$name.cmd");
-            print $fh "PATH=${msvc}/bin/HostX64/x64;${sdk}/bin/${sdk.version}/x64;${sdk}/bin/x64;%PATH%\n";
-            # + C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/MSBuild/15.0/bin/Roslyn;
-            # + C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community//MSBuild/15.0/bin;
-            # + C:/Windows/Microsoft.NET/Framework64/v4.0.30319;
-            print $fh "set INCLUDE=${msvc}/include;${sdk}/include/${sdk.version}/ucrt;${sdk}/include/${sdk.version}/shared;${sdk}/include/${sdk.version}/um;${sdk}/include/${sdk.version}/winrt;${sdk}/include/${sdk.version}/cppwinrt\n";
-            print $fh "set LIB=${msvc}/lib/x64;${sdk}/lib/${sdk.version}/ucrt/x64;${sdk}/lib/${sdk.version}/um/x64\n";
+          my $INCLUDE='${msvc}/include;${sdk}/include/${sdk.version}/ucrt;${sdk}/include/${sdk.version}/shared;${sdk}/include/${sdk.version}/um;${sdk}/include/${sdk.version}/winrt;${sdk}/include/${sdk.version}/cppwinrt';
+          my $LIB='${msvc}/lib/x64;${sdk}/lib/${sdk.version}/ucrt/x64;${sdk}/lib/${sdk.version}/um/x64';
 
-            print $fh "set LIBPATH=${msvc}\lib\x64;${msvc}\lib\x86\store\references;${sdk}\UnionMetadata\${sdk.version};${sdk}\References\${sdk.version}\n";
-            # + C:/Windows/Microsoft.NET/Framework64/v4.0.30319;
-            print $fh "set WindowsLibPath=${sdk}/UnionMetadata/${sdk.version};${sdk}/References/${sdk.version}\n";
+          $ENV{INCLUDE} = $INCLUDE;
+          $ENV{LIB}     = $LIB;
+          $ENV{PATH}    = "${msvc}/bin/HostX64/x64;$ENV{PATH}";
+          system("cl /EHsc /Fe:$ENV{out}/bin/makeWrapper.exe ${./makeWrapper.cpp}") == 0 or die "cl: $!";
 
-            print $fh "set WindowsSDKLibVersion=${sdk.version}\n";
-            print $fh "set WindowsSDKVersion=${sdk.version}\n";
-            print $fh "set WindowsSdkVerBinPath=${sdk}/bin/${sdk.version}\n";
-            print $fh "set WindowsSdkBinPath=${sdk}/bin\n";
-            print $fh "set WindowsSdkDir=${sdk}\n";
+          for my $name ('cl', 'ml64', 'lib', 'link', 'nmake', 'mt', 'rc') {
+            $target = "${msvc}/bin/HostX64/x64/$name.exe"       if -f "${msvc}/bin/HostX64/x64/$name.exe";
+            $target = "${sdk}/bin/${sdk.version}/x64/$name.exe" if -f "${sdk}/bin/${sdk.version}/x64/$name.exe";
+            $target = "${sdk}/bin/x64/$name.exe"                if -f "${sdk}/bin/x64/$name.exe";
+            dir unless $target;
 
-            print $fh "set VCToolsVersion=${msvc.version}\n";
-            print $fh "set VCToolsInstallDir=${msvc}\n";
-            print $fh "set VCToolsRedistDir=${msvc}\n";
-
-            #print $fh "set VSCMD_ARG_HOST_ARCH=x64\n";
-            #print $fh "set VSCMD_ARG_TGT_ARCH=x64\n";
-            #print $fh "set VSCMD_VER=15.0\n";
-
-            print $fh "set UCRTVersion=${sdk.version}\n";
-            print $fh "set UniversalCRTSdkDir=${sdk}\n";
-
-            print $fh "$name.exe %*\n";
-            close($fh);
+            system("$ENV{out}/bin/makeWrapper.exe", $target, "$ENV{out}/bin/$name.exe",
+                   '--prefix', 'PATH',             ';', '${msvc}/bin/HostX64/x64;${sdk}/bin/${sdk.version}/x64;${sdk}/bin/x64',
+                   '--set',    'INCLUDE',               $INCLUDE,
+                   '--set',    'LIB',                   $LIB,
+                   '--set',    'LIBPATH',               '${msvc}/lib/x64;${msvc}/lib/x86/store/references;${sdk}/UnionMetadata/${sdk.version};${sdk}/References/${sdk.version}',
+                   '--set',    'WindowsLibPath',        '${sdk}/UnionMetadata/${sdk.version};${sdk}/References/${sdk.version}',
+                   '--set',    'WindowsSDKLibVersion',  '${sdk.version}',
+                   '--set',    'WindowsSDKVersion',     '${sdk.version}',
+                   '--set',    'WindowsSdkVerBinPath',  '${sdk}/bin/${sdk.version}',
+                   '--set',    'WindowsSdkBinPath',     '${sdk}/bin',
+                   '--set',    'WindowsSdkDir',         '${sdk}',
+                   '--set',    'VCToolsVersion',        '${msvc.version}',
+                   '--set',    'VCToolsInstallDir',     '${msvc}',
+                   '--set',    'VCToolsRedistDir',      '${msvc}',
+                   '--set',    'UCRTVersion',           '${sdk.version}',
+                   '--set',    'UniversalCRTSdkDir',    '${sdk}',
+                   '--add-flags', '/nologo'
+                  ) == 0 or die "makeWrapper failed: $!";
           }
+
           use File::Copy qw(copy);
           copy '${gnumake}', "$ENV{out}/bin/gmake.exe";
         '';
