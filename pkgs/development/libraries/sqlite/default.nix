@@ -6,9 +6,7 @@ with stdenv.lib;
 
 let
   archiveVersion = import ./archive-version.nix stdenv.lib;
-in
 
-stdenv.mkDerivation rec {
   name = "sqlite-${version}";
   version = "3.24.0";
 
@@ -17,6 +15,32 @@ stdenv.mkDerivation rec {
     url = "https://sqlite.org/2018/sqlite-autoconf-${archiveVersion version}.tar.gz";
     sha256 = "0jmprv2vpggzhy7ma4ynmv1jzn3pfiwzkld0kkg6hvgvqs44xlfr";
   };
+in
+
+if stdenv.hostPlatform.isMicrosoft then
+stdenv.mkDerivation rec {
+  inherit name version src;
+  # TODO: add enablers from NIX_CFLAGS_COMPILE
+  buildPhase = ''
+    system("nmake /f Makefile.msc core PLATFORM=x64"); #FOR_WIN10=1
+  '';
+  installPhase = ''
+    mkdir $ENV{out} or die;
+    mkdir "$ENV{out}/bin" or die;
+    mkdir "$ENV{out}/lib" or die;
+    mkdir "$ENV{out}/include" or die;
+
+    use File::Copy qw(copy);
+    copy 'sqlite3.exe',  "$ENV{out}/bin/";
+    copy 'sqlite3.dll',  "$ENV{out}/lib/";
+    copy 'sqlite3.lib',  "$ENV{out}/lib/";
+    copy 'sqlite3.h',    "$ENV{out}/include/";
+    copy 'sqlite3ext.h', "$ENV{out}/include/";
+  '';
+}
+else
+stdenv.mkDerivation rec {
+  inherit name version src;
 
   outputs = [ "bin" "dev" "out" ];
   separateDebugInfo = stdenv.isLinux;

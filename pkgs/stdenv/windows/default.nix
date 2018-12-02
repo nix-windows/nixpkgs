@@ -128,10 +128,7 @@ in
         version = "14.16.27023";
         name = "msvc-${version}";
         preferLocalBuild = true;
-        dontBuild = true;
-        dontConfigure = true;
-        unpackPhase = "#";
-        installPhase = ''
+        buildCommand = ''
           use File::Copy::Recursive qw(dircopy);
           dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/14.16.27023", $ENV{out}) or die "$!";
         '';
@@ -143,10 +140,7 @@ in
         version = "10.0.17134.0";
         name = "sdk-${version}";
         preferLocalBuild = true;
-        dontBuild = true;
-        dontConfigure = true;
-        unpackPhase = "#";
-        installPhase = ''
+        buildCommand = ''
           use File::Copy::Recursive qw(dircopy);
           dircopy("C:/Program Files (x86)/Windows Kits/10", $ENV{out}) or die "$!";
         '';
@@ -154,17 +148,26 @@ in
         outputHashAlgo = "sha256";
         outputHash = "0y8c2x9li690mvfx7prpkgqacs16mqyqf3simaisizjxzbmkm1hq";
       };
+      msbuild = stdenvNoCC.mkDerivation rec {
+        version = "15.0";
+        name = "msbuild-${version}";
+        preferLocalBuild = true;
+        buildCommand = ''
+          use File::Copy::Recursive qw(dircopy);
+          dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/MSBuild", $ENV{out}) or die "$!";
+        '';
+        outputHashMode = "recursive";
+        outputHashAlgo = "sha256";
+        outputHash = "1yqx3yvvamid5d9yza7ya84vdxg89zc7qvm2b5m9v8hsmymjrvg6";
+      };
       gnumake = fetchurl/*Boot*/ {
         url = https://raw.githubusercontent.com/mbuilov/gnumake-windows/master/gnumake-4.2.1-x64.exe;
         sha256 = "0fly79df9330im0r4xr25d5yi46kr23p5s9mybjfz28v930n2zx5";
       };
       cc-wrapper = stdenvNoCC.mkDerivation {
-        name = "${msvc.name}+${sdk.name}";
+        name = "${msvc.name}+${sdk.name}+${msbuild.name}";
         preferLocalBuild = true;
-        dontBuild = true;
-        dontConfigure = true;
-        unpackPhase = "#";
-        installPhase = ''
+        buildCommand = ''
           mkdir $ENV{out} or die;
           mkdir "$ENV{out}/bin" or die;
 
@@ -177,14 +180,16 @@ in
           $ENV{PATH}    = "${msvc}/bin/HostX64/x64;$ENV{PATH}";
           system("cl /EHsc /Fe:$ENV{out}/bin/makeWrapper.exe ${./makeWrapper.cpp}") == 0 or die "cl: $!";
 
-          for my $name ('cl', 'ml64', 'lib', 'link', 'nmake', 'mt', 'rc') {
-            $target = "${msvc}/bin/HostX64/x64/$name.exe"       if -f "${msvc}/bin/HostX64/x64/$name.exe";
-            $target = "${sdk}/bin/${sdk.version}/x64/$name.exe" if -f "${sdk}/bin/${sdk.version}/x64/$name.exe";
-            $target = "${sdk}/bin/x64/$name.exe"                if -f "${sdk}/bin/x64/$name.exe";
+          for my $name ('cl', 'ml64', 'lib', 'link', 'nmake', 'mt', 'rc', 'dumpbin', 'csc') {
+            $target = "${msvc}/bin/HostX64/x64/$name.exe"                   if -f "${msvc}/bin/HostX64/x64/$name.exe";
+            $target = "${sdk}/bin/${sdk.version}/x64/$name.exe"             if -f "${sdk}/bin/${sdk.version}/x64/$name.exe";
+            $target = "${sdk}/bin/x64/$name.exe"                            if -f "${sdk}/bin/x64/$name.exe";
+            $target = "${msbuild}/${msbuild.version}/bin/Roslyn/$name.exe"  if -f "${msbuild}/${msbuild.version}/bin/Roslyn/$name.exe";
+            $target = "${msbuild}/${msbuild.version}/bin/$name.exe"         if -f "${msbuild}/${msbuild.version}/bin/$name.exe";
             dir unless $target;
 
             system("$ENV{out}/bin/makeWrapper.exe", $target, "$ENV{out}/bin/$name.exe",
-                   '--prefix', 'PATH',             ';', '${msvc}/bin/HostX64/x64;${sdk}/bin/${sdk.version}/x64;${sdk}/bin/x64',
+                   '--prefix', 'PATH',             ';', '${msvc}/bin/HostX64/x64;${sdk}/bin/${sdk.version}/x64;${sdk}/bin/x64;${msbuild}/${msbuild.version}/bin/Roslyn;${msbuild}/${msbuild.version}/bin',
                    '--set',    'INCLUDE',               $INCLUDE,
                    '--set',    'LIB',                   $LIB,
                    '--set',    'LIBPATH',               '${msvc}/lib/x64;${msvc}/lib/x86/store/references;${sdk}/UnionMetadata/${sdk.version};${sdk}/References/${sdk.version}',
