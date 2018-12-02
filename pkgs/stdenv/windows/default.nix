@@ -133,7 +133,6 @@ in
         unpackPhase = "#";
         installPhase = ''
           use File::Copy::Recursive qw(dircopy);
-          print("out='$ENV{out}'\n");
           dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/14.16.27023", $ENV{out}) or die "$!";
         '';
         outputHashMode = "recursive";
@@ -172,6 +171,7 @@ in
           my $INCLUDE='${msvc}/include;${sdk}/include/${sdk.version}/ucrt;${sdk}/include/${sdk.version}/shared;${sdk}/include/${sdk.version}/um;${sdk}/include/${sdk.version}/winrt;${sdk}/include/${sdk.version}/cppwinrt';
           my $LIB='${msvc}/lib/x64;${sdk}/lib/${sdk.version}/ucrt/x64;${sdk}/lib/${sdk.version}/um/x64';
 
+          # set the environment to compile makeWrapper when there is no wrappers yet
           $ENV{INCLUDE} = $INCLUDE;
           $ENV{LIB}     = $LIB;
           $ENV{PATH}    = "${msvc}/bin/HostX64/x64;$ENV{PATH}";
@@ -198,8 +198,7 @@ in
                    '--set',    'VCToolsInstallDir',     '${msvc}',
                    '--set',    'VCToolsRedistDir',      '${msvc}',
                    '--set',    'UCRTVersion',           '${sdk.version}',
-                   '--set',    'UniversalCRTSdkDir',    '${sdk}',
-                   '--add-flags', '/nologo'
+                   '--set',    'UniversalCRTSdkDir',    '${sdk}'
                   ) == 0 or die "makeWrapper failed: $!";
           }
 

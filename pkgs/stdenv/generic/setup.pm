@@ -805,18 +805,19 @@ sub _defaultUnpack {
         return 1;
 
     } else {
-        if ($fn =~ /\.tar\.xz$|\.tar\.lzma$|\.txz$/) {
-            my $exitcode = system("xz -d < \"$fn\" | tar xf -");
+        # Win10 has native C:\Windows\System32\curl.exe and C:\Windows\System32\tar.exe, but not bzip2
+        # so let's use 7z (TODO include to stdenv)
+        if ($fn =~ /\.tar\.|\.tgz$|\.tbz$|\.tbz2|\.txz$/) {
+            my $exitcode = system("\"C:/Program Files/7-Zip/7z.exe\" x \"$fn\" -so | \"C:/Program Files/7-Zip/7z.exe\" x -aoa -si -ttar");
             print("exitcode=$exitcode\n");
             return $exitcode;
-        }
-        if ($fn =~ /\.tar$|\.tar\.|\.tgz$|\.tbz$|\.tbz2$/) {
-            my $exitcode = system("tar xf \"$fn\"");
+        } else {
+            my $exitcode = system("\"C:/Program Files/7-Zip/7z.exe\" x \"$fn\"");
             print("exitcode=$exitcode\n");
             return $exitcode;
         }
         #return system('C:/Program Files/7-Zip/7z.exe', 'x', $fn);
-        return 1;
+        #return 1;
     }
 }
 
