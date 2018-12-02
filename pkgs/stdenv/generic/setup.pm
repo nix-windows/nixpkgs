@@ -1223,17 +1223,12 @@ sub genericBuild() {
 #         return
 #     fi
     if (defined $ENV{buildCommand}) {
-        print("TODO eval '$ENV{buildCommand}'\n");
-        exit(1);
+        print("eval '$ENV{buildCommand}'\n");
+        eval "$ENV{buildCommand}";
+        if ($@) { print "$@" ; die; }
+        return;
     }
-#     if [ -n "${buildCommand:-}" ]; then
-#         local oldOpts="$(shopt -po nounset)"
-#         set +u
-#         eval "$buildCommand"
-#         eval "$oldOpts"
-#         return
-#     fi
-#
+
     if ($ENV{phases}) {
         $phases = $ENV{phases};
     } else {
@@ -1264,14 +1259,14 @@ sub genericBuild() {
 #         local oldOpts="$(shopt -po nounset)"
 #         set +u
         if (defined $ENV{$curPhase}) {
-            print("TODO eval '$ENV{$curPhase}'\n");
+            print("eval '$ENV{$curPhase}'\n");
             eval "$ENV{$curPhase}";
             if ($@) { print "$@" ; die; }
         } else {
-            print("TODO eval '$curPhase'\n");
+            print("eval '$curPhase'\n");
             eval "$curPhase()";
             if ($@) { print "$@" ; die; }
-            print("TODO evaled '$curPhase'\n");
+            print("evaled '$curPhase'\n");
         }
 #         eval "${!curPhase:-$curPhase}"
 #         eval "$oldOpts"
