@@ -180,7 +180,7 @@ in
           $ENV{PATH}    = "${msvc}/bin/HostX64/x64;$ENV{PATH}";
           system("cl /EHsc /Fe:$ENV{out}/bin/makeWrapper.exe ${./makeWrapper.cpp}") == 0 or die "cl: $!";
 
-          for my $name ('cl', 'ml64', 'lib', 'link', 'nmake', 'mt', 'rc', 'dumpbin', 'csc') {
+          for my $name ('cl', 'ml64', 'lib', 'link', 'nmake', 'mc', 'mt', 'rc', 'dumpbin', 'csc', 'msbuild') {
             $target = "${msvc}/bin/HostX64/x64/$name.exe"                   if -f "${msvc}/bin/HostX64/x64/$name.exe";
             $target = "${sdk}/bin/${sdk.version}/x64/$name.exe"             if -f "${sdk}/bin/${sdk.version}/x64/$name.exe";
             $target = "${sdk}/bin/x64/$name.exe"                            if -f "${sdk}/bin/x64/$name.exe";
@@ -212,6 +212,8 @@ in
         '';
         passthru = {
           targetPrefix = "";
+          isClang = false;
+          isGNU = false;
         };
       };
     in
