@@ -1,3 +1,6 @@
+use File::Basename qw(basename);
+use File::Copy::Recursive qw(dircopy);
+
 # set -eu
 # set -o pipefail
 #
@@ -773,20 +776,13 @@ print("final path: '$ENV{PATH}'\n"); # if (( "${NIX_DEBUG:-0}" >= 1 ))
 #         export > "$NIX_BUILD_TOP/env-vars" || true
 #     fi
 # }
-#
-#
-# # Utility function: echo the base name of the given path, with the
-# # prefix `HASH-' removed, if present.
-# stripHash() {
-#     local strippedName
-#     # On separate line for `set -e`
-#     strippedName="$(basename "$1")"
-#     if echo "$strippedName" | grep -q '^[a-z0-9]\{32\}-'; then
-#         echo "$strippedName" | cut -c34-
-#     else
-#         echo "$strippedName"
-#     fi
-# }
+
+
+# Utility function: echo the base name of the given path, with the
+# prefix `HASH-' removed, if present.
+sub stripHash {
+    return basename(shift) =~ s/^[a-z0-9]{32}-//r;
+}
 
 
 
@@ -801,9 +797,8 @@ sub _defaultUnpack {
         # introduced by store optimization, which might break things
         # in the build.
         #cp -pr --reflink=auto -- "$fn" "$(stripHash "$fn")"
-        print("TODO? cp -pr --reflink=auto -- \"$fn\" \"\$(stripHash \"$fn\")\n");
-        return 1;
-
+        dircopy($fn, stripHash($fn)) or die "$!";
+        return 0;
     } else {
         # Win10 has native C:\Windows\System32\curl.exe and C:\Windows\System32\tar.exe, but not bzip2
         # so let's use 7z (TODO include to stdenv)
