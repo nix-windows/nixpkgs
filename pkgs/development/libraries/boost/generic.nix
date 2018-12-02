@@ -20,6 +20,50 @@
 , ...
 }:
 
+
+if stdenv.hostPlatform.isMicrosoft then
+let
+  b2Args = "--prefix=$ENV{out} -j$ENV{NIX_BUILD_CORES} --layout=system address-model=64 variant=release threading=multi link=static runtime-link=shared toolset=msvc";
+in stdenv.mkDerivation {
+  name = "boost-${version}";
+
+  inherit src;
+# src = ./boost_1_67_0;
+
+  enableParallelBuilding = true;
+
+# buildInputs = [ /*expat zlib bzip2 libiconv*/ ]
+#   ++ optional (stdenv.hostPlatform == stdenv.buildPlatform) icu
+#   ++ optional enablePython python
+#   ++ optional enableNumpy python.pkgs.numpy
+#   ;
+
+  configurePhase = ''
+    system("bootstrap.bat vc141");
+
+    open(my $fh, ">$ENV{NIX_BUILD_TOP}/fakevcvars.bat");
+    print $fh "PATH=${stdenv.cc}/bin;%PATH%";
+    close($fh);
+
+    open(my $fh, ">project-config.jam");
+    print $fh "import option ;\n";
+    print $fh "using msvc : 14.1 : : <setup>".($ENV{NIX_BUILD_TOP} =~ s,\\,/,gr)."/fakevcvars.bat ;\n";
+    print $fh "option.set keep-going : false ;\n";
+    close($fh);
+  '';
+
+  buildPhase = ''
+    $ENV{ProgramFiles} = $ENV{TEMP};                        # let jam not crash
+    system("b2 ${b2Args}");
+  '';
+
+  installPhase = ''
+    system("b2 ${b2Args} install");
+  '';
+}
+
+else
+
 # We must build at least one type of libraries
 assert enableShared || enableStatic;
 
