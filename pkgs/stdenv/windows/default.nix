@@ -16,68 +16,6 @@ let
     ;
 
   path = [];
-#   (if system == "i686-solaris" then [ "/usr/gnu" ] else []) ++
-#   (if system == "i686-netbsd" then [ "/usr/pkg" ] else []) ++
-#   (if system == "x86_64-solaris" then [ "/opt/local/gnu" ] else []) ++
-#   ["/" "/usr" "/usr/local"];
-
-# prehookBase = ''
-#   # Disable purity tests; it's allowed (even needed) to link to
-#   # libraries outside the Nix store (like the C library).
-#   export NIX_ENFORCE_PURITY=
-#   export NIX_ENFORCE_NO_NATIVE="''${NIX_ENFORCE_NO_NATIVE-1}"
-# '';
-
-# prehookFreeBSD = ''
-#   ${prehookBase}
-#
-#   alias make=gmake
-#   alias tar=gtar
-#   alias sed=gsed
-#   export MAKE=gmake
-#   shopt -s expand_aliases
-# '';
-
-# prehookOpenBSD = ''
-#   ${prehookBase}
-#
-#   alias make=gmake
-#   alias grep=ggrep
-#   alias mv=gmv
-#   alias ln=gln
-#   alias sed=gsed
-#   alias tar=gtar
-#
-#   export MAKE=gmake
-#   shopt -s expand_aliases
-# '';
-
-# prehookNetBSD = ''
-#   ${prehookBase}
-#
-#   alias make=gmake
-#   alias sed=gsed
-#   alias tar=gtar
-#   export MAKE=gmake
-#   shopt -s expand_aliases
-# '';
-#
-# # prevent libtool from failing to find dynamic libraries
-# prehookCygwin = ''
-#   ${prehookBase}
-#
-#   shopt -s expand_aliases
-#   export lt_cv_deplibs_check_method=pass_all
-# '';
-#
-# extraNativeBuildInputsCygwin = [
-#   ../cygwin/all-buildinputs-as-runtimedep.sh
-#   ../cygwin/wrap-exes-to-find-dlls.sh
-# ] ++ (if system == "i686-cygwin" then [
-#   ../cygwin/rebase-i686.sh
-# ] else if system == "x86_64-cygwin" then [
-#   ../cygwin/rebase-x86_64.sh
-# ] else []);
 
   # A function that builds a "native" stdenv (one that uses tools in
   # /usr etc.).
@@ -141,12 +79,25 @@ in
         name = "sdk-${version}";
         preferLocalBuild = true;
         buildCommand = ''
-          use File::Copy::Recursive qw(dircopy);
-          dircopy("C:/Program Files (x86)/Windows Kits/10", $ENV{out}) or die "$!";
+          dircopy("C:/Program Files (x86)/~Windows Kits~~/10", $ENV{out}) or die "$!";
+
+          # so far there is no `substituteInPlace`
+          for my $filename (glob("$ENV{out}/DesignTime/CommonConfiguration/Neutral/*.props")) {
+            open(my $in, $filename) or die $!;
+            open(my $out, ">$filename.new") or die $!;
+            for my $line (<$in>) {
+              $line =~ s|\$\(Registry:HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots\@KitsRoot10\)|\$([MSBUILD]::GetDirectoryNameOfFileAbove('\$(MSBUILDTHISFILEDIRECTORY)', 'sdkmanifest.xml'))\\|g;
+              $line =~ s|(\$\(Registry:[^)]+\))|<!-- $1 -->|g;
+              print $out $line;
+            }
+            close($in);
+            close($out);
+            move("$filename.new", $filename) or die $!;
+          }
         '';
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
-        outputHash = "0y8c2x9li690mvfx7prpkgqacs16mqyqf3simaisizjxzbmkm1hq";
+        outputHash = "134i0dlq6vmicbg5rdm9z854p1s3nsdb5lhbv1k2190rv2jmig11";
       };
       msbuild = stdenvNoCC.mkDerivation rec {
         version = "15.0";
@@ -159,6 +110,34 @@ in
         outputHashMode = "recursive";
         outputHashAlgo = "sha256";
         outputHash = "1yqx3yvvamid5d9yza7ya84vdxg89zc7qvm2b5m9v8hsmymjrvg6";
+      };
+      vc = stdenvNoCC.mkDerivation rec { # needs to compile .vcprojx (for example Python3)
+        name = "msbuild-${msvc.version}";
+        preferLocalBuild = true;
+          #use File::Copy;
+          #use File::Copy::Recursive qw(dircopy);
+        buildCommand = ''
+          dircopy("C:/Program Files (x86)/~Microsoft Visual Studio~/Preview/Community/Common7/IDE/VC", $ENV{out}) or die "$!";
+
+          # so far there is no `substituteInPlace`
+          for my $filename (glob("$ENV{out}/VCTargets/*.props"), glob("$ENV{out}/VCTargets/*.targets")) {
+            open(my $in, $filename) or die $!;
+            open(my $out, ">$filename.new") or die $!;
+            for my $line (<$in>) {
+              $line =~ s|>(\$\(Registry:HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots\@KitsRoot10\))|>${sdk}/<!-- $1 -->|g;
+              $line =~ s|>(\$\(Registry:HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Microsoft SDKs\\Windows\\v10.0\@InstallationFolder\))|>${sdk}/<!-- $1 -->|g;
+              $line =~ s|\$\(VCToolsInstallDir_150\)|${msvc}/|g;
+              $line =~ s|>(\$\(Registry:[^)]+\))|><!-- $1 -->|g;
+              print $out $line;
+            }
+            close($in);
+            close($out);
+            move("$filename.new", $filename) or die $!;
+          }
+        '';
+        outputHashMode = "recursive";
+        outputHashAlgo = "sha256";
+        outputHash = "1v21w0n28pv70d6vh9xjfny5nx4hkra897b2v8gqd3ighx6wwx94";
       };
       gnumake = fetchurl/*Boot*/ {
         url = https://raw.githubusercontent.com/mbuilov/gnumake-windows/master/gnumake-4.2.1-x64.exe;
@@ -202,9 +181,32 @@ in
                    '--set',    'VCToolsVersion',        '${msvc.version}',
                    '--set',    'VCToolsInstallDir',     '${msvc}',
                    '--set',    'VCToolsRedistDir',      '${msvc}',
+                   '--set',    'VCTargetsPath',         '${vc}/VCTargets',
                    '--set',    'UCRTVersion',           '${sdk.version}',
-                   '--set',    'UniversalCRTSdkDir',    '${sdk}'
+                   '--set',    'UniversalCRTSdkDir',    '${sdk}/'
                   ) == 0 or die "makeWrapper failed: $!";
+
+            # just for debugging, better use .exe-wrappers as they do not need to be prefixed with 'call'
+            open(my $fh, ">$ENV{out}/bin/_$name.bat");
+            print $fh "\@echo off\n";
+            print $fh "PATH"                     ."=${msvc}/bin/HostX64/x64;${sdk}/bin/${sdk.version}/x64;${sdk}/bin/x64;${msbuild}/${msbuild.version}/bin/Roslyn;${msbuild}/${msbuild.version}/bin;%PATH%\n";
+            print $fh "set INCLUDE"              ."=$INCLUDE\n";
+            print $fh "set LIB"                  ."=$LIB\n";
+            print $fh "set LIBPATH"              ."=${msvc}/lib/x64;${msvc}/lib/x86/store/references;${sdk}/UnionMetadata/${sdk.version};${sdk}/References/${sdk.version}\n";
+            print $fh "set WindowsLibPath"       ."=${sdk}/UnionMetadata/${sdk.version};${sdk}/References/${sdk.version}\n";
+            print $fh "set WindowsSDKLibVersion" ."=${sdk.version}\n";
+            print $fh "set WindowsSDKVersion"    ."=${sdk.version}\n";
+            print $fh "set WindowsSdkVerBinPath" ."=${sdk}/bin/${sdk.version}\n";
+            print $fh "set WindowsSdkBinPath"    ."=${sdk}/bin\n";
+            print $fh "set WindowsSdkDir"        ."=${sdk}\n";
+            print $fh "set VCToolsVersion"       ."=${msvc.version}\n";
+            print $fh "set VCToolsInstallDir"    ."=${msvc}\n";
+            print $fh "set VCToolsRedistDir"     ."=${msvc}\n";
+            print $fh "set VCTargetsPath"        ."=${vc}/VCTargets\n";
+            print $fh "set UCRTVersion"          ."=${sdk.version}\n";
+            print $fh "set UniversalCRTSdkDir"   ."=${sdk}/\n";
+            print $fh "$target %*\n";
+            close($fh);
           }
 
           use File::Copy qw(copy);
@@ -214,6 +216,7 @@ in
           targetPrefix = "";
           isClang = false;
           isGNU = false;
+          inherit msvc sdk msbuild vc;
         };
       };
     in

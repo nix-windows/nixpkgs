@@ -13,10 +13,121 @@
 , callPackage
 , self
 , CF, configd
+#, git
+, runCommand, p7zip
 , python-setup-hook
 # For the Python package set
 , packageOverrides ? (self: super: {})
 }:
+
+let
+  majorVersion = "3.7";
+  minorVersion = "1";
+  minorVersionSuffix = "";
+  version = "${majorVersion}.${minorVersion}${minorVersionSuffix}";
+  src = fetchurl {
+    url = "https://www.python.org/ftp/python/${majorVersion}.${minorVersion}/Python-${version}.tar.xz";
+    sha256 = "0v9x4h22rh5cwpsq1mwpdi3c9lc9820lzp2nmn9g20llij72nzps";
+  };
+in
+
+if stdenv.hostPlatform.isMicrosoft then
+
+let
+  nuget-bin = fetchurl {
+    url = "https://dist.nuget.org/win-x86-commandline/v4.8.1/nuget.exe";
+    sha256 = "0zy3fygyakrm8jix0i4q3rzr3lhbj9g5p4jxxc1yn8k0g64av0d6";
+  };
+  # TODO: fetchnuget
+  python-bin = runCommand "python3-bin-${version}" {
+    preferLocalBuild = true;
+    outputHashAlgo = "sha256";
+    outputHashMode = "recursive";
+    outputHash = "0gwfisipw6c0qq36fhbpgnlpc1d6hgxgvkpqqjh9pxbz9a1g1ccf";
+  } ''
+    system("${nuget-bin} install pythonx86 -Version ${version} -NoCache -Verbosity detailed -ExcludeVersion -OutputDirectory .") == 0 or die $!;
+    move('pythonx86', $ENV{out}) or die $!;
+  '';
+
+  #  todo: use pkgs.
+  dep-bzip2 = fetchurl {
+    url = https://github.com/python/cpython-source-deps/archive/bzip2-1.0.6.zip;
+    sha256 = "13cqvdmrmgwxsm32kjaxdm59q1c5fjxj7i2blxjbjrr6591x2by4";
+  };
+  dep-sqlite = fetchurl {
+    url = https://github.com/python/cpython-source-deps/archive/sqlite-3.21.0.0.zip;
+    sha256 = "084c78hq5bqpgfk85bf8nz7lwwg54vgf6h4k4d8qpdpfdbbz594m";
+  };
+  dep-xz = fetchurl {
+    url = https://github.com/python/cpython-source-deps/archive/xz-5.2.2.zip;
+    sha256 = "0gzvqcmbin1csbi8cbfkygshk7865scj9lzhw7kl169nw3qxddh2";
+  };
+  dep-zlib = fetchurl {
+    url = https://github.com/python/cpython-source-deps/archive/zlib-1.2.11.zip;
+    sha256 = "0fm6ymbf37qbnwvlj90z2y1jqmqvcj8bw2m42xcc59jzji91kfyy";
+  };
+  dep-openssl-bin = fetchurl {
+    url = https://github.com/python/cpython-bin-deps/archive/openssl-bin-1.1.0i.zip;
+    sha256 = "19s69851a8h2dizj1skzsqm5zdip5m4q3if6p9wp6c6ns9qmxnvi";
+  };
+  dep-tcltk = fetchurl {
+    url = https://github.com/python/cpython-bin-deps/archive/tcltk-8.6.8.0.zip;
+    sha256 = "1ndc01jkgfiv0dp07n2h2j8jxhm8zjkzv4q5jylmqzyl2a8qv8k3";
+  };
+
+in stdenv.mkDerivation rec {
+  name = "python3-${version}";
+  pythonVersion = majorVersion;
+  inherit majorVersion version src;
+
+  nativeBuildInputs = [ p7zip /*git*/ ];
+
+  dontConfigure = true;
+  # $ENV{PATH} = "$ENV{PATH};C:/Windows/System32/WindowsPowerShell/v1.0"; # powershell is only to download nuget.exe (remove later)
+  # copy('${nuget-bin}', 'externals/nuget.exe') or die $!;                # nuget is only to download python-bin
+  buildPhase = ''
+    dircopy('${python-bin}', 'externals/pythonx86') or die $!;
+
+    system('7z x ${dep-bzip2       } -oexternals') == 0 or die $!;
+    system('7z x ${dep-sqlite      } -oexternals') == 0 or die $!;
+    system('7z x ${dep-xz          } -oexternals') == 0 or die $!;
+    system('7z x ${dep-zlib        } -oexternals') == 0 or die $!;
+    system('7z x ${dep-openssl-bin } -oexternals') == 0 or die $!;
+    system('7z x ${dep-tcltk       } -oexternals') == 0 or die $!;
+    for my $f (glob('externals/*')) {
+        print("f='$f'\n");
+        rename($f, $f =~ s/cpython-(bin|source)-deps-//r) or die $!;
+    }
+
+    $ENV{GIT} = 'c:/git/bin/git.exe';
+
+    chdir('PCbuild');
+    system("build.bat") == 0 or die "build.bat: $!";
+  '';
+  installPhase = ''
+    mkdir $ENV{out};
+    mkdir "$ENV{out}/bin";
+    for my $name ('python.exe', 'python.pdb', 'pythonw.exe', 'pythonw.pdb', 'python3.dll', 'python3.pdb', 'python37.dll', 'python37.pdb') {
+      copy("win32/$name", "$ENV{out}/bin/" ) or die "copy $name: $!";
+    }
+    mkdir "$ENV{out}/DLLs";
+    for my $name ('libcrypto-1_1.dll', 'libssl-1_1.dll', 'pyexpat.pyd', 'select.pyd', 'sqlite3.dll', 'unicodedata.pyd', 'winsound.pyd', '_asyncio.pyd', '_bz2.pyd', '_contextvars.pyd', '_ctypes.pyd', '_decimal.pyd', '_distutils_findvs.pyd', '_elementtree.pyd', '_hashlib.pyd', '_lzma.pyd', '_msi.pyd', '_multiprocessing.pyd', '_overlapped.pyd', '_queue.pyd', '_socket.pyd', '_sqlite3.pyd', '_ssl.pyd') {
+      copy("win32/$name", "$ENV{out}/DLLs/") or die "copy $name: $!";
+    }
+    mkdir "$ENV{out}/libs";
+    for my $name ('pyexpat.lib', 'python3.lib', 'python37.lib', 'select.lib', 'sqlite3.lib', 'unicodedata.lib', 'winsound.lib', '_asyncio.lib', '_bz2.lib', '_contextvars.lib', '_ctypes.lib', '_decimal.lib', '_distutils_findvs.lib', '_elementtree.lib', '_hashlib.lib', '_lzma.lib', '_msi.lib', '_multiprocessing.lib', '_overlapped.lib', '_queue.lib', '_socket.lib', '_sqlite3.lib', '_ssl.lib', '_tkinter.lib') {
+      copy("win32/$name", "$ENV{out}/libs/") or die "copy $name: $!";
+    }
+    dircopy('../Include', "$ENV{out}/Include") or die "dircopy Include: $!";
+    dircopy('../Lib',     "$ENV{out}/Lib"    ) or die "dircopy Lib: $!";
+    dircopy('../Tools',   "$ENV{out}/Tools"  ) or die "dircopy Tools: $!";
+  '';
+  passthru.nuget = nuget-bin;
+  passthru.python-bin = python-bin;
+  passthru.dep-bzip2 = dep-bzip2;
+}
+
+else
 
 assert x11Support -> tcl != null
                   && tk != null
@@ -25,10 +136,6 @@ assert x11Support -> tcl != null
 with stdenv.lib;
 
 let
-  majorVersion = "3.7";
-  minorVersion = "1";
-  minorVersionSuffix = "";
-  version = "${majorVersion}.${minorVersion}${minorVersionSuffix}";
   libPrefix = "python${majorVersion}";
   sitePackages = "lib/${libPrefix}/site-packages";
 
@@ -42,14 +149,9 @@ let
 in stdenv.mkDerivation {
   name = "python3-${version}";
   pythonVersion = majorVersion;
-  inherit majorVersion version;
+  inherit majorVersion version src;
 
   inherit buildInputs;
-
-  src = fetchurl {
-    url = "https://www.python.org/ftp/python/${majorVersion}.${minorVersion}/Python-${version}.tar.xz";
-    sha256 = "0v9x4h22rh5cwpsq1mwpdi3c9lc9820lzp2nmn9g20llij72nzps";
-  };
 
   NIX_LDFLAGS = optionalString stdenv.isLinux "-lgcc_s";
 
@@ -98,7 +200,7 @@ in stdenv.mkDerivation {
   ];
 
   preConfigure = ''
-    for i in /usr /sw /opt /pkg; do	# improve purity
+    for i in /usr /sw /opt /pkg; do # improve purity
       substituteInPlace ./setup.py --replace $i /no-such-path
     done
     ${optionalString stdenv.isDarwin ''

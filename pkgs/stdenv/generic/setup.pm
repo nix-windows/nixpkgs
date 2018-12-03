@@ -1,4 +1,7 @@
-use File::Basename qw(basename);
+# make these function available in builder code without explicit `use`
+use Cwd qw(getcwd);
+use File::Basename qw(dirname basename);
+use File::Copy qw(copy move);
 use File::Copy::Recursive qw(dircopy);
 
 # set -eu
@@ -11,22 +14,34 @@ use File::Copy::Recursive qw(dircopy);
 # : ${outputs:=out}
 #
 #
-# ######################################################################
-# # Hook handling.
-#
-#
-# # Run all hooks with the specified name in the order in which they
-# # were added, stopping if any fails (returns a non-zero exit
-# # code). The hooks for <hookName> are the shell function or variable
-# # <hookName>, and the values of the shell array ‘<hookName>Hooks’.
+sub readFile {
+    open(my $fh, shift) or die $!;
+    binmode $fh;
+    local $/ = undef;
+    my $content = <$fh>;
+    close $fh;
+    return $content;
+}
+
+######################################################################
+# Hook handling.
+my %builtinHooks = (
+ '_defaultUnpack' => \&_defaultUnpack,
+);
+
+
+# Run all hooks with the specified name in the order in which they
+# were added, stopping if any fails (returns a non-zero exit
+# code). The hooks for <hookName> are the shell function or variable
+# <hookName>, and the values of the shell array ‘<hookName>Hooks’.
 sub runHook {
 #     local oldOpts="$(shopt -po nounset)"
 #     set -u # May be called from elsewhere, so do `set -u`.
 #
     my ($hookName, @rest) = @_;
     my @hooksSlice = split / +/, ($ENV{$hookName."Hooks"} =~ s/^\s+|\s+$//r);
-    print("hookName=$hookName hooksSlice=@hooksSlice\n");
-    die "TODO" if scalar(@hooksSlice) > 0;
+    print("runHook hookName=$hookName hooksSlice=@hooksSlice\n");
+#   die "TODO" if scalar(@hooksSlice) > 0;
 #     shift
 #     local hooksSlice="${hookName%Hook}Hooks[@]"
 #
@@ -39,6 +54,30 @@ sub runHook {
 #     done
 #
 #     eval "${oldOpts}"
+    for my $hook ($hookName, @hooksSlice) {
+        #my $f = eval "\\\$$hook";
+        #print("f=$f\n");
+        #if ($@) {
+        #    print("eval of hook failed $@\n");
+        #} else {
+        if (exists($builtinHooks{$hook})) {
+            print("BUILTIN hook=$hook\n");
+            &{$builtinHooks{$hook}}(@rest);
+        } elsif (exists($ENV{$hook})) {
+            scalar(@rest) == 0 or die "how to eval with args?";
+            if (-f $ENV{$hook}) {
+                print("FILE hook=$hook $ENV{$hook}\n");
+                eval readFile($ENV{$hook});
+            } else {
+                print("ENV hook=$hook $ENV{$hook}\n");
+                eval "$ENV{$hook}";
+            }
+        } else {
+            print("IGNORE hook=$hook ref(hook)=[".ref($hook)."]\n");
+        }
+        #}
+    }
+
     return 0;
 }
 #
@@ -51,21 +90,24 @@ sub runOneHook {
 
     my ($hookName, @rest) = @_;
     my @hooksSlice = split / +/, ($ENV{$hookName."Hooks"} =~ s/^\s+|\s+$//r);
-    print("hookName=$hookName hooksSlice=@hooksSlice\n");
+    print("runOneHook hookName=$hookName hooksSlice=@hooksSlice\n");
 
     my $ret = 1;
-    for my $hook (@hooksSlice) {
-        print("hook=$hook\n");
+    for my $hook ($hookName, @hooksSlice) {
         #my $f = eval "\\\$$hook";
         #print("f=$f\n");
         #if ($@) {
         #    print("eval of hook failed $@\n");
         #} else {
-            if ($hook->(@rest) == 0) { # todo check hook type
+        if (exists($builtinHooks{$hook})) {
+            print("BUILTIN hook=$hook\n");
+            if (&{$builtinHooks{$hook}}(@rest) == 0) { # todo check hook type
                 $ret = 0;
                 break;
             }
-        #}
+        } else {
+            print("IGNORE hook=$hook ref(hook)=[".ref($hook)."]\n");
+        }
     }
     print("runOneHook: $ret\n");
     return $ret;
@@ -1203,20 +1245,16 @@ sub showPhaseHeader {
 my $phases;
 sub genericBuild() {
     for $k (sort (keys %ENV)) {
-      print("$k=$ENV{$k};\n");
+      print("genericBuild env: $k=$ENV{$k};\n");
     }
 
     if (defined $ENV{buildCommandPath}) {
-        print("TODO source '$ENV{buildCommandPath}'\n");
-        exit(1);
+        #require($ENV{buildCommandPath}) or die $!;
+        eval readFile($ENV{buildCommandPath});
+        if ($@) { print "$@" ; die; }
+        return;
     }
-#     if [ -f "${buildCommandPath:-}" ]; then
-#         local oldOpts="$(shopt -po nounset)"
-#         set +u
-#         source "$buildCommandPath"
-#         eval "$oldOpts"
-#         return
-#     fi
+
     if (defined $ENV{buildCommand}) {
         print("eval '$ENV{buildCommand}'\n");
         eval "$ENV{buildCommand}";
