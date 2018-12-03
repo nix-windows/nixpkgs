@@ -3,7 +3,7 @@
 , static ? false
 }:
 
-stdenv.mkDerivation (rec {
+let
   name = "zlib-${version}";
   version = "1.2.11";
 
@@ -14,6 +14,33 @@ stdenv.mkDerivation (rec {
       ];
     sha256 = "c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1";
   };
+
+in
+
+if stdenv.hostPlatform.isMicrosoft then
+
+stdenv.mkDerivation (rec {
+  inherit name version src;
+  dontConfigure = true;
+  buildPhase = ''
+    system('nmake -f win32/Makefile.msc');
+  '';
+  installPhase = ''
+    mkdir("$ENV{out}");
+    mkdir("$ENV{out}/bin");
+    mkdir("$ENV{out}/include");
+    mkdir("$ENV{out}/lib");
+    copy('zlib1.dll', "$ENV{out}/bin"    ) or die $!;
+    copy('zlib.h',    "$ENV{out}/include") or die $!;
+    copy('zconf.h',   "$ENV{out}/include") or die $!;
+    copy('zlib.lib',  "$ENV{out}/lib"    ) or die $!;
+    copy('zdll.lib',  "$ENV{out}/lib"    ) or die $!;
+  '';
+})
+
+else
+stdenv.mkDerivation (rec {
+  inherit name version src;
 
   patches = stdenv.lib.optional stdenv.hostPlatform.isCygwin ./disable-cygwin-widechar.patch;
 
