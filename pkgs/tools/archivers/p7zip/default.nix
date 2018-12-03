@@ -1,5 +1,31 @@
 { stdenv, fetchurl }:
 
+if stdenv.hostPlatform.isMicrosoft then
+
+stdenv.mkDerivation rec {
+  version = "18.05";
+  name = "p7zip-${version}";
+
+  src = fetchurl {
+    url = https://www.7-zip.org/a/7z1805-src.7z;
+    sha256 = "10sxwxrzllmsvijf01ni2kbxi3im14wzf03fb0sq81xdvjxzrb6r";
+  };
+
+  sourceRoot = ".";
+  dontConfigure = true;
+  buildPhase = ''
+    chdir('CPP/7zip/UI/Console');
+    system("nmake CPU=AMD64 NEW_COMPILER=1") == 0 or die $!;
+  '';
+  installPhase = ''
+    mkdir("$ENV{out}") or die $!;
+    mkdir("$ENV{out}/bin") or die $!;
+    copy("AMD64/7z.exe", "$ENV{out}/bin/") or die $!;
+  '';
+}
+
+else
+
 stdenv.mkDerivation rec {
   name = "p7zip-${version}";
   version = "16.02";
