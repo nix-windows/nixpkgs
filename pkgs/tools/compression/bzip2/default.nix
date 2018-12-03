@@ -2,7 +2,7 @@
 , linkStatic ? (stdenv.hostPlatform.system == "i686-cygwin")
 }:
 
-stdenv.mkDerivation rec {
+let
   name = "bzip2-${version}";
   version = "1.0.6.0.1";
 
@@ -20,6 +20,38 @@ stdenv.mkDerivation rec {
     sha256 = "0b5b5p8c7bslc6fslcr1nj9136412v3qcvbg6yxi9argq9g72v8c";
   };
 
+  meta = with stdenv.lib; {
+    description = "High-quality data compression program";
+    license = licenses.bsdOriginal;
+    platforms = platforms.all;
+    maintainers = [];
+  };
+in
+
+if stdenv.hostPlatform.isMicrosoft then
+
+stdenv.mkDerivation rec {
+  inherit name version src meta;
+  buildPhase = ''
+    system("nmake -f makefile.msc") == 0 or die $!;
+  '';
+  installPhase = ''
+    mkdir("$ENV{out}");
+    mkdir("$ENV{out}/bin");
+    mkdir("$ENV{out}/include");
+    mkdir("$ENV{out}/lib");
+    copy('bzip2.exe',         "$ENV{out}/bin"    ) or die $!;
+    copy('bzip2recover.exe',  "$ENV{out}/bin"    ) or die $!;
+    copy('bzlib.h',           "$ENV{out}/include") or die $!;
+    copy('libbz2.lib',        "$ENV{out}/lib"    ) or die $!;
+  '';
+}
+
+else
+
+stdenv.mkDerivation rec {
+  inherit name version src meta;
+
   patches = [
     ./CVE-2016-3189.patch
   ];
@@ -34,11 +66,4 @@ stdenv.mkDerivation rec {
 
   configureFlags =
     stdenv.lib.optionals linkStatic [ "--enable-static" "--disable-shared" ];
-
-  meta = with stdenv.lib; {
-    description = "High-quality data compression program";
-    license = licenses.bsdOriginal;
-    platforms = platforms.all;
-    maintainers = [];
-  };
 }
