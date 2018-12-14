@@ -5307,13 +5307,7 @@ let
     };
   };
 
-  ExtUtilsCBuilder = buildPerlPackage rec {
-    name = "ExtUtils-CBuilder-0.280230";
-    src = fetchurl {
-      url = mirror://cpan/authors/id/A/AM/AMBS/ExtUtils-CBuilder-0.280230.tar.gz;
-      sha256 = "1mcwvic01x0flcz3jsny5j8j5zz96r63qjwq75hs42cpf3by3ahx";
-    };
-  };
+  ExtUtilsCBuilder = null; # part of Perl 5.28
 
   ExtUtilsCChecker = buildPerlModule rec {
     name = "ExtUtils-CChecker-0.10";
