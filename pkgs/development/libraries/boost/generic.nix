@@ -23,7 +23,7 @@
 
 if stdenv.hostPlatform.isMicrosoft then
 let
-  b2Args = "--prefix=$ENV{out} -j$ENV{NIX_BUILD_CORES} --layout=system address-model=64 variant=release threading=multi link=static runtime-link=shared toolset=msvc";
+  b2Args = "--prefix=$ENV{out} -j$ENV{NIX_BUILD_CORES} address-model=64 variant=release threading=multi link=static runtime-link=shared toolset=msvc";
 in stdenv.mkDerivation {
   name = "boost-${version}";
 
@@ -59,6 +59,8 @@ in stdenv.mkDerivation {
 
   installPhase = ''
     system("b2 ${b2Args} install");
+    move("$ENV{out}/include/boost-1_67/boost", "$ENV{out}/include/boost");
+    rmdir("$ENV{out}/include/boost-1_67");
   '';
 }
 
