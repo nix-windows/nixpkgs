@@ -22,7 +22,19 @@ stdenv.mkDerivation rec {
   inherit name version src;
   # TODO: add enablers from NIX_CFLAGS_COMPILE
   buildPhase = ''
-    system("nmake /f Makefile.msc core PLATFORM=x64"); #FOR_WIN10=1
+    # fix 'sqlite3.lo : error LNK2019: unresolved external symbol _guard_dispatch_icall referenced in function winShmUnmap'
+    # https://github.com/Microsoft/angle/issues/150#issuecomment-416317269
+    open (my $in, "Makefile.msc") or die $!;
+    open (my $out, ">Makefile.msc.new") or die $!;
+    for my $line (<$in>) {
+      $line =~ s|/d2guard4|/d2guard4 /guard:cf|g;
+      print $out $line;
+    }
+    close($in) or die $!;
+    close($out) or die $!;
+    move("Makefile.msc.new", "Makefile.msc") or die $!;
+
+    system("nmake /f Makefile.msc core FOR_WIN10=1 PLATFORM=x64") == 0 or die $!;
   '';
   installPhase = ''
     mkdir $ENV{out} or die;
@@ -31,11 +43,11 @@ stdenv.mkDerivation rec {
     mkdir "$ENV{out}/include" or die;
 
     use File::Copy qw(copy);
-    copy 'sqlite3.exe',  "$ENV{out}/bin/";
-    copy 'sqlite3.dll',  "$ENV{out}/lib/";
-    copy 'sqlite3.lib',  "$ENV{out}/lib/";
-    copy 'sqlite3.h',    "$ENV{out}/include/";
-    copy 'sqlite3ext.h', "$ENV{out}/include/";
+    copy 'winsqlite3shell.exe', "$ENV{out}/bin/";
+    copy 'winsqlite3.dll',      "$ENV{out}/bin/";
+    copy 'winsqlite3.lib',      "$ENV{out}/lib/";
+    copy 'sqlite3.h',           "$ENV{out}/include/";
+    copy 'sqlite3ext.h',        "$ENV{out}/include/";
   '';
 }
 else
