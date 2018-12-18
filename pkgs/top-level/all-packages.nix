@@ -22158,7 +22158,10 @@ with pkgs;
 
   mynewt-newt = callPackage ../tools/package-management/mynewt-newt { };
 
-  inherit (callPackages ../tools/package-management/nix ({
+  inherit (callPackages (if stdenv.hostPlatform.isMicrosoft then
+                           ../tools/package-management/nix/windows.nix
+                         else
+                           ../tools/package-management/nix) ({
       curl = curl_7_59;
       boehmgc = boehmgc.override { enableLargeConfig = true; };
     } // lib.optionalAttrs (config?nix.storeDir) { inherit (config.nix) storeDir; }
