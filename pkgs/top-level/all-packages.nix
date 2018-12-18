@@ -22158,12 +22158,12 @@ with pkgs;
 
   mynewt-newt = callPackage ../tools/package-management/mynewt-newt { };
 
-  inherit (callPackages ../tools/package-management/nix {
-      storeDir = config.nix.storeDir or "/nix/store";
-      stateDir = config.nix.stateDir or "/nix/var";
+  inherit (callPackages ../tools/package-management/nix ({
       curl = curl_7_59;
       boehmgc = boehmgc.override { enableLargeConfig = true; };
-      })
+    } // lib.optionalAttrs (config?nix.storeDir) { inherit (config.nix) storeDir; }
+      // lib.optionalAttrs (config?nix.stateDir) { inherit (config.nix) stateDir; }
+    ))
     nix
     nix1
     nixStable
