@@ -23,7 +23,7 @@ assert c-aresSupport -> c-ares != null;
 assert brotliSupport -> brotli != null;
 assert gssSupport -> libkrb5 != null;
 
-stdenv.mkDerivation rec {
+let
   name = "curl-7.59.0";
 
   src = fetchurl {
@@ -33,6 +33,22 @@ stdenv.mkDerivation rec {
     ];
     sha256 = "185mazhi4bc5mc6rvhrmnc67j8l3sg7f0w2hp5gmi5ccdbyhz4mm";
   };
+
+in if stdenv.hostPlatform.isMicrosoft then
+stdenv.mkDerivation rec {
+  inherit name src;
+
+  buildPhase = ''
+    chdir("winbuild");
+    system("nmake /f Makefile.vc mode=dll VC=15");
+  '';
+  installPhase = ''
+    dircopy("../builds/libcurl-vc15-x64-release-dll-ipv6-sspi-winssl", $ENV{out}) or die "$!";
+  '';
+}
+else
+stdenv.mkDerivation rec {
+  inherit name src;
 
   outputs = [ "bin" "dev" "out" "man" "devdoc" ];
   separateDebugInfo = stdenv.isLinux;

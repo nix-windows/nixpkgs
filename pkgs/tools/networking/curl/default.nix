@@ -42,7 +42,6 @@ stdenv.mkDerivation rec {
     system("nmake /f Makefile.vc mode=dll VC=15");
   '';
   installPhase = ''
-    use File::Copy::Recursive qw(dircopy);
     dircopy("../builds/libcurl-vc15-x64-release-dll-ipv6-sspi-winssl", $ENV{out}) or die "$!";
   '';
 }
