@@ -67,7 +67,6 @@ in
         name = "msvc-${version}";
         preferLocalBuild = true;
         buildCommand = ''
-          use File::Copy::Recursive qw(dircopy);
           dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/14.16.27023", $ENV{out}) or die "$!";
         '';
         outputHashMode = "recursive";
@@ -114,8 +113,6 @@ in
       vc = stdenvNoCC.mkDerivation rec { # needs to compile .vcprojx (for example Python3)
         name = "msbuild-${msvc.version}";
         preferLocalBuild = true;
-          #use File::Copy;
-          #use File::Copy::Recursive qw(dircopy);
         buildCommand = ''
           dircopy("C:/Program Files (x86)/~Microsoft Visual Studio~/Preview/Community/Common7/IDE/VC", $ENV{out}) or die "$!";
 
@@ -135,13 +132,6 @@ in
             move("$filename.new", $filename) or die $!;
           }
         '';
-        outputHashMode = "recursive";
-        outputHashAlgo = "sha256";
-        outputHash = "1v21w0n28pv70d6vh9xjfny5nx4hkra897b2v8gqd3ighx6wwx94";
-      };
-      gnumake = fetchurl/*Boot*/ {
-        url = https://raw.githubusercontent.com/mbuilov/gnumake-windows/master/gnumake-4.2.1-x64.exe;
-        sha256 = "0fly79df9330im0r4xr25d5yi46kr23p5s9mybjfz28v930n2zx5";
       };
       cc-wrapper = stdenvNoCC.mkDerivation {
         name = "${msvc.name}+${sdk.name}+${msbuild.name}";
@@ -208,9 +198,6 @@ in
             print $fh "$target %*\n";
             close($fh);
           }
-
-          use File::Copy qw(copy);
-          copy '${gnumake}', "$ENV{out}/bin/gmake.exe";
         '';
         passthru = {
           targetPrefix = "";
