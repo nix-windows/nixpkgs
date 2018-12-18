@@ -60,6 +60,21 @@ rec {
         preferLocalBuild = true;
         allowSubstitutes = false;
       }
+      ( if stdenv.hostPlatform.isMicrosoft then
+      ''
+        use File::Path qw(mkpath);
+        my $n = "$ENV{out}${destination}";
+        mkpath(dirname($n));
+        if (-e $ENV{textPath}) {
+          move($ENV{textPath}, $n) or die "$!";
+        } else {
+          open(my $fh, ">$n");
+          print $fh $ENV{textPath};
+          close($fh);
+        }
+        ${checkPhase}
+      ''
+      else
       ''
         n=$out${destination}
         mkdir -p "$(dirname "$n")"
@@ -73,7 +88,7 @@ rec {
         ${checkPhase}
 
         (test -n "$executable" && chmod +x "$n") || true
-      '';
+      '');
 
 
   /*
