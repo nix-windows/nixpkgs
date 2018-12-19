@@ -7,7 +7,9 @@ let lib = import ../../../lib; in lib.makeOverridable (
   # (see all-packages.nix).
   fetchurlBoot
 
-, setupScript ? if lib.hasSuffix "perl" shell || lib.hasSuffix "perl.exe" shell then ./setup.pm else  ./setup.sh
+, setupScript ?      if lib.hasSuffix "perl" shell || lib.hasSuffix "perl.exe" shell then ./setup.pm
+                else if lib.hasSuffix "cmd.exe" shell then ./setup.cmd
+                else  ./setup.sh
 
 , extraNativeBuildInputs ? []
 , extraBuildInputs ? []

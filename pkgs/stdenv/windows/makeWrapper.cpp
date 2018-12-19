@@ -69,8 +69,13 @@ int wmain(int argc, const wchar_t** argv) {
     code += "    if (!s.empty() && s.find_first_of(L\"&()[]{}^=;!'+,`!\\\" \") == wstring::npos)\n";
     code += "        return s;\n";
     code += "    wstring r;\n";
-    code += "    for (auto & i : s) {\n";
-    code += "        if (i == '\"') r += L\"\\\"\\\"\\\"\"; else r += i;\n";
+    code += "    wchar_t lastChar;\n";
+    code += "    for (wchar_t i : s) {\n";
+    code += "        if (i == L'\"')\n";
+    code += "            r += lastChar == i ? L\"\\\"\\\"\" : L\"\\\"\\\"\\\"\";\n";
+    code += "        else\n";
+    code += "            r += i;\n";
+    code += "        lastChar = i;\n";
     code += "    }\n";
     code += "    return L'\"' + r + L'\"';\n";
     code += "}\n";
@@ -105,12 +110,16 @@ int wmain(int argc, const wchar_t** argv) {
     code += "    }\n";
 
     for (auto & t : env_prefix) {
-        code += "auto it = env.find(" + wliteral(get<0>(t)) + ");\n";
-        code += "env[" + wliteral(get<0>(t)) + "] = it == env.end() ? " + wliteral(get<2>(t)) + " : (" + wliteral(get<2>(t)) + " " + wliteral(get<1>(t)) + ") + it->second;\n";
+        code += "{\n";
+        code += "    auto it = env.find(" + wliteral(get<0>(t)) + ");\n";
+        code += "    env[" + wliteral(get<0>(t)) + "] = it == env.end() ? " + wliteral(get<2>(t)) + " : (" + wliteral(get<2>(t)) + " " + wliteral(get<1>(t)) + ") + it->second;\n";
+        code += "}\n";
     }
     for (auto & t : env_suffix) {
-        code += "auto it = env.find(" + wliteral(get<0>(t)) + ");\n";
-        code += "env[" + wliteral(get<0>(t)) + "] = it == env.end() ? " + wliteral(get<2>(t)) + " : it->second + (" + wliteral(get<1>(t)) + " " + wliteral(get<2>(t)) + ");\n";
+        code += "{\n";
+        code += "    auto it = env.find(" + wliteral(get<0>(t)) + ");\n";
+        code += "    env[" + wliteral(get<0>(t)) + "] = it == env.end() ? " + wliteral(get<2>(t)) + " : it->second + (" + wliteral(get<1>(t)) + " " + wliteral(get<2>(t)) + ");\n";
+        code += "}\n";
     }
     for (auto & t : env_set) {
         code += "env[" + wliteral(get<0>(t)) + "] = " + wliteral(get<1>(t)) + ";\n";
@@ -167,13 +176,24 @@ int wmain(int argc, const wchar_t** argv) {
     code += "    ExitProcess(dwExitCode);\n";
     code += "}\n";
 
+//  cout << code.c_str() << endl;
+
     ofstream src("_wrapper.cpp", ofstream::out);
     src << code.c_str() << endl;
     src.close();
 
+    if (!SetEnvironmentVariableA("INCLUDE", INCLUDE)) {
+        cout << "SetEnvironmentVariableA(INCLUDE, " << INCLUDE << ") failed lastError=" << GetLastError() << endl;
+        ExitProcess(1);
+    }
+    if (!SetEnvironmentVariableA("LIB", LIB)) {
+        cout << "SetEnvironmentVariableA(LIB, " << LIB << ") failed lastError=" << GetLastError() << endl;
+        ExitProcess(1);
+    }
+
     STARTUPINFOW si = {sizeof(STARTUPINFOW)};
     PROCESS_INFORMATION pi = {0};
-    if (!CreateProcessW(NULL, const_cast<wchar_t*>((L"cl /EHsc /Fe:" + wrapper_exe + L" _wrapper.cpp").c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
+    if (!CreateProcessW(NULL, const_cast<wchar_t*>(((CC L" /EHsc /Fe:") + wrapper_exe + L" _wrapper.cpp").c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
         cout << "CreateProcessW(cl _wrapper.cpp) failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
