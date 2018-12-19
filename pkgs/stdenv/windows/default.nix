@@ -103,6 +103,10 @@ let
 #   outputHashAlgo = "sha256";
 #   outputHash = "0q2pshj3vaacwvg6ikbhhyc5pmyx9p2rsj353mqbywydj2c21mjf";
 # };
+
+  msvc-INCLUDE = "${msvc}/include;${sdk}/include/${sdk-version}/ucrt;${sdk}/include/${sdk-version}/shared;${sdk}/include/${sdk-version}/um;${sdk}/include/${sdk-version}/winrt;${sdk}/include/${sdk-version}/cppwinrt";
+  msvc-LIB     = "${msvc}/lib/x64;${sdk}/lib/${sdk-version}/ucrt/x64;${sdk}/lib/${sdk-version}/um/x64";
+  msvc-PATH    = "${msvc}/bin/HostX64/x64;${sdk}/bin/${sdk-version}/x64;${sdk}/bin/x64";
 in
 
 [
@@ -128,6 +132,12 @@ in
       system = localSystem;
     };
 
+    fetchurl = import ../../build-support/fetchurl {
+      inherit lib;
+      stdenvNoCC = stdenv;
+      curl = curl-static;
+    };
+
     p7zip-static = stdenv.mkDerivation {
       name = "7z-18.05-static";
       src = fetchurlBoot {
@@ -138,45 +148,49 @@ in
                                              ''copy %src% %out%\bin\7z.exe'' ];
     };
 
-    makeWrapper = stdenv.mkDerivation rec {
-      name = "makeWrapper";
-      INCLUDE = "${msvc}/include;${sdk}/include/${sdk-version}/ucrt;${sdk}/include/${sdk-version}/shared;${sdk}/include/${sdk-version}/um;${sdk}/include/${sdk-version}/winrt;${sdk}/include/${sdk-version}/cppwinrt";
-      LIB     = "${msvc}/lib/x64;${sdk}/lib/${sdk-version}/ucrt/x64;${sdk}/lib/${sdk-version}/um/x64";
-      PATH    = "${msvc}/bin/HostX64/x64;${sdk}/bin/${sdk-version}/x64;${sdk}/bin/x64";
-      builder = lib.concatStringsSep " & " [ ''md %out%\bin''
-                                             ''cl /O2 /MT /EHsc /Fe:%out%\bin\makeWrapper.exe /DINCLUDE="""${INCLUDE}""" /DLIB="""${LIB}""" /DCC=L"""${msvc}/bin/HostX64/x64/cl.exe""" ${./makeWrapper.cpp}'' ];
+    curl-static = stdenv.mkDerivation rec {
+      name = "curl-7.62.0";
+      src = fetchurlBoot {
+        url = "https://curl.haxx.se/download/${name}.tar.bz2";
+        sha256 = "084niy7cin13ba65p8x38w2xcyc54n3fgzbin40fa2shfr0ca0kq";
+      };
+      INCLUDE = msvc-INCLUDE;
+      LIB     = msvc-LIB;
+      PATH    = "${msvc-PATH};${p7zip-static}/bin";
+      builder = lib.concatStringsSep " & " [ ''7z x %src% -so  |  7z x -aoa -si -ttar''
+                                             ''cd ${name}\winbuild''
+                                             ''nmake /f Makefile.vc mode=static VC=15''
+                                             ''xcopy /E/I ..\builds\libcurl-vc15-x64-release-static-ipv6-sspi-winssl\bin %out%\bin'' ];
     };
 
-    # an useful lib not included by default
-    perl-FileCopyRecursive-src = stdenv.mkDerivation {
-      name = "perl-FileCopyRecursive-src";
-      src = fetchurlBoot {
+    perl-for-stdenv-shell = let
+      # an useful lib not included by default
+      perl-FileCopyRecursive-src = fetchurlBoot {
         url = "https://cpan.metacpan.org/authors/id/D/DM/DMUEY/File-Copy-Recursive-0.44.tar.gz";
         sha256 = "1r3frbl61kr7ig9bzd60fka772cd504v3kx9kgnwvcy1inss06df";
       };
-      PATH = "${p7zip-static}/bin";
-      builder = ''7z x %src% -so  |  7z x -aoa -si -ttar -o%out%'';
+    in stdenv.mkDerivation rec {
+      name = "perl-5.28.1";
+      src = fetchurlBoot {
+        url = "https://www.cpan.org/src/5.0/${name}.tar.gz";
+        sha256 = "0iy3as4hnbjfyws4in3j9d6zhhjxgl5m95i5n9jy2bnzcpz8bgry";
+      };
+      INCLUDE = msvc-INCLUDE;
+      LIB     = msvc-LIB;
+      PATH    = "${msvc-PATH};${p7zip-static}/bin";
+      builder = lib.concatStringsSep " & " [ ''7z x %src% -so  |  7z x -aoa -si -ttar''
+                                             ''7z x ${perl-FileCopyRecursive-src} -so  |  7z x -aoa -si -ttar -o${name}\ext''
+                                             ''cd ${name}\win32''
+                                             ''nmake install INST_TOP=%out% CCTYPE=MSVC141${if stdenv.is64bit then " WIN64=define" else ""}'' ];
     };
 
-    perl-for-stdenv-shell = stdenv.mkDerivation rec {
-      name = "perl-5.28.1";
-      src = stdenv.mkDerivation {
-        name = "${name}-src";
-        src = fetchurlBoot {
-          url = "https://www.cpan.org/src/5.0/perl-5.28.1.tar.gz";
-          sha256 = "0iy3as4hnbjfyws4in3j9d6zhhjxgl5m95i5n9jy2bnzcpz8bgry";
-        };
-        PATH = "${p7zip-static}/bin";
-        builder = ''7z x %src% -so  |  7z x -aoa -si -ttar -o%out%'';
-      };
-      INCLUDE = "${msvc}/include;${sdk}/include/${sdk-version}/ucrt;${sdk}/include/${sdk-version}/shared;${sdk}/include/${sdk-version}/um;${sdk}/include/${sdk-version}/winrt;${sdk}/include/${sdk-version}/cppwinrt";
-      LIB     = "${msvc}/lib/x64;${sdk}/lib/${sdk-version}/ucrt/x64;${sdk}/lib/${sdk-version}/um/x64";
-      PATH    = "${msvc}/bin/HostX64/x64;${sdk}/bin/${sdk-version}/x64;${sdk}/bin/x64";
-      builder = lib.concatStringsSep " & " [ ''xcopy /E/I %src% .\''
-                                             ''cd perl-5.28.1''
-                                             ''xcopy /E/I ${lib.replaceStrings ["/"] ["\\"] "${perl-FileCopyRecursive-src}"}\File-Copy-Recursive-0.44 ext\File-Copy-Recursive''
-                                             ''cd win32''
-                                             ''nmake install INST_TOP=%out% CCTYPE=MSVC141${if stdenv.is64bit then " WIN64=define" else ""}'' ];
+    makeWrapper = stdenv.mkDerivation rec {
+      name = "makeWrapper";
+      INCLUDE = msvc-INCLUDE;
+      LIB     = msvc-LIB;
+      PATH    = msvc-PATH;
+      builder = lib.concatStringsSep " & " [ ''md %out%\bin''
+                                             ''cl /O2 /MT /EHsc /Fe:%out%\bin\makeWrapper.exe /DINCLUDE="""${INCLUDE}""" /DLIB="""${LIB}""" /DCC=L"""${msvc}/bin/HostX64/x64/cl.exe""" ${./makeWrapper.cpp}'' ];
     };
   })
 
@@ -186,14 +200,12 @@ in
 
     stdenv = import ../generic {
       name = "stdenv-windows-boot-1";
-      #inherit config;
-      #inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform;
       inherit config;
-      inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform fetchurlBoot cc;
+      inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform cc;
 
       initialPath = [ prevStage.makeWrapper prevStage.p7zip-static ];
-      shell = "C:/Perl64/bin/perl.exe"; # BUGBUG (recompile nix)
-#     /*prevStage.*/perl-for-stdenv-shell; #"C:/Windows/System32/cmd.exe"; #
+      fetchurlBoot = prevStage.fetchurl;
+      shell = "C:/Perl64/bin/perl.exe"; # BUGBUG (recompile nix and change to prevStage.perl-for-stdenv-shell)
     };
 
     cc = let
@@ -238,9 +250,9 @@ in
             die "no target $target"                                         if !$target;
 
             system( "makeWrapper.exe", $target, "$ENV{out}/bin/$name.exe"
-                  , '--prefix', 'PATH',             ';', '${msvc}/bin/HostX64/x64;${sdk}/bin/${sdk-version}/x64;${sdk}/bin/x64;${msbuild}/${msbuild-version}/bin/Roslyn;${msbuild}/${msbuild-version}/bin'
-                  , '--suffix', 'INCLUDE',          ';', '${msvc}/include;${sdk}/include/${sdk-version}/ucrt;${sdk}/include/${sdk-version}/shared;${sdk}/include/${sdk-version}/um;${sdk}/include/${sdk-version}/winrt;${sdk}/include/${sdk-version}/cppwinrt'
-                  , '--suffix', 'LIB',              ';', '${msvc}/lib/x64;${sdk}/lib/${sdk-version}/ucrt/x64;${sdk}/lib/${sdk-version}/um/x64'
+                  , '--prefix', 'PATH',             ';', '${msvc-PATH};${msbuild}/${msbuild-version}/bin/Roslyn;${msbuild}/${msbuild-version}/bin'
+                  , '--suffix', 'INCLUDE',          ';', '${msvc-INCLUDE}'
+                  , '--suffix', 'LIB',              ';', '${msvc-LIB}'
                   , '--suffix', 'LIBPATH',          ';', '${msvc}/lib/x64;${msvc}/lib/x86/store/references;${sdk}/UnionMetadata/${sdk-version};${sdk}/References/${sdk-version}'
                   , '--suffix', 'WindowsLibPath',   ';', '${sdk}/UnionMetadata/${sdk-version};${sdk}/References/${sdk-version}'
                   , '--set',    'WindowsSDKLibVersion',  '${sdk-version}'
@@ -265,6 +277,7 @@ in
           makeWrapper = prevStage.makeWrapper;
 #         perl-for-stdenv-shell = prevStage.perl-for-stdenv-shell;
 #         p7zip-static = prevStage.p7zip-static;
+#         curl = prevStage.curl-static;
         };
       };
     in cc-wrapper;
