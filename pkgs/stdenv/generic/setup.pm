@@ -843,13 +843,13 @@ sub _defaultUnpack {
         return 0;
     } else {
         # Win10 has native C:\Windows\System32\curl.exe and C:\Windows\System32\tar.exe, but not bzip2
-        # so let's use 7z (TODO include to stdenv)
+        # so let's use 7z (stdenv has in on initialPath)
         if ($fn =~ /\.tar\.|\.tgz$|\.tbz$|\.tbz2|\.txz$/) {
-            my $exitcode = system("\"C:/Program Files/7-Zip/7z.exe\" x \"$fn\" -so | \"C:/Program Files/7-Zip/7z.exe\" x -aoa -si -ttar");
+            my $exitcode = system("7z.exe x \"$fn\" -so | 7z.exe x -aoa -si -ttar");
             print("exitcode=$exitcode\n");
             return $exitcode;
         } else {
-            my $exitcode = system("\"C:/Program Files/7-Zip/7z.exe\" x \"$fn\"");
+            my $exitcode = system("7z.exe x \"$fn\"");
             print("exitcode=$exitcode\n");
             return $exitcode;
         }

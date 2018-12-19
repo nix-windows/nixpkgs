@@ -185,15 +185,17 @@ rec {
             (stdenv.hostPlatform != stdenv.buildPlatform && runtimeSensativeIfFixedOutput)
             ("-" + stdenv.hostPlatform.config);
 
-          builder = attrs.realBuilder or stdenv.shell;
-          args = attrs.args or (
-             if lib.hasSuffix "perl" stdenv.shell || lib.hasSuffix "perl.exe" stdenv.shell then
-               [     (attrs.builder or ./default-builder.pl )]
-             else if lib.hasSuffix "cmd.exe" stdenv.shell then
-               ["/c" (attrs.builder or ./default-builder.cmd)]
-             else
-               ["-e" (attrs.builder or ./default-builder.sh )]
-          );
+          inherit (rec {
+            builder = attrs.realBuilder or stdenv.shell;
+            args = attrs.args or (
+              if lib.hasSuffix "perl" builder || lib.hasSuffix "perl.exe" builder then
+                [     (attrs.builder or ./default-builder.pl )]
+              else if lib.hasSuffix "cmd.exe" builder then
+                ["/c" (attrs.builder /*or ./default-builder.cmd*/)]
+              else
+                ["-e" (attrs.builder or ./default-builder.sh )]
+            );
+          }) builder args;
           inherit stdenv;
 
           # The `system` attribute of a derivation has special meaning to Nix.
