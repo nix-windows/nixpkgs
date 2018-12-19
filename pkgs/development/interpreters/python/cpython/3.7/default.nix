@@ -99,24 +99,32 @@ in stdenv.mkDerivation rec {
         rename($f, $f =~ s/cpython-(bin|source)-deps-//r) or die $!;
     }
 
-    $ENV{GIT} = 'c:/git/bin/git.exe';
+    $ENV{GIT} = 'c:/git/bin/git.exe'; # BUGBUG
 
     chdir('PCbuild');
-    system("build.bat") == 0 or die "build.bat: $!";
+    system("build.bat -p ${if stdenv.is64bit then "x64" else "Win32"} -c Release") == 0 or die "build.bat: $!";
   '';
   installPhase = ''
     mkdir $ENV{out};
     mkdir "$ENV{out}/bin";
     for my $name ('python.exe', 'python.pdb', 'pythonw.exe', 'pythonw.pdb', 'python3.dll', 'python3.pdb', 'python37.dll', 'python37.pdb') {
-      copy("win32/$name", "$ENV{out}/bin/" ) or die "copy $name: $!";
+      copy("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/bin/" ) or die "copy $name: $!";
     }
     mkdir "$ENV{out}/DLLs";
-    for my $name ('libcrypto-1_1.dll', 'libssl-1_1.dll', 'pyexpat.pyd', 'select.pyd', 'sqlite3.dll', 'unicodedata.pyd', 'winsound.pyd', '_asyncio.pyd', '_bz2.pyd', '_contextvars.pyd', '_ctypes.pyd', '_decimal.pyd', '_distutils_findvs.pyd', '_elementtree.pyd', '_hashlib.pyd', '_lzma.pyd', '_msi.pyd', '_multiprocessing.pyd', '_overlapped.pyd', '_queue.pyd', '_socket.pyd', '_sqlite3.pyd', '_ssl.pyd') {
-      copy("win32/$name", "$ENV{out}/DLLs/") or die "copy $name: $!";
+    for my $name ('libcrypto-1_1${if stdenv.is64bit then "-x64" else ""}.dll',
+                  'libssl-1_1${if stdenv.is64bit then "-x64" else ""}.dll',
+                  'pyexpat.pyd', 'select.pyd', 'sqlite3.dll', 'unicodedata.pyd', 'winsound.pyd', '_asyncio.pyd',
+                  '_bz2.pyd', '_contextvars.pyd', '_ctypes.pyd', '_decimal.pyd', '_distutils_findvs.pyd', '_elementtree.pyd',
+                  '_hashlib.pyd', '_lzma.pyd', '_msi.pyd', '_multiprocessing.pyd', '_overlapped.pyd', '_queue.pyd', '_socket.pyd',
+                  '_sqlite3.pyd', '_ssl.pyd') {
+      copy("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/DLLs/") or die "copy $name: $!";
     }
     mkdir "$ENV{out}/libs";
-    for my $name ('pyexpat.lib', 'python3.lib', 'python37.lib', 'select.lib', 'sqlite3.lib', 'unicodedata.lib', 'winsound.lib', '_asyncio.lib', '_bz2.lib', '_contextvars.lib', '_ctypes.lib', '_decimal.lib', '_distutils_findvs.lib', '_elementtree.lib', '_hashlib.lib', '_lzma.lib', '_msi.lib', '_multiprocessing.lib', '_overlapped.lib', '_queue.lib', '_socket.lib', '_sqlite3.lib', '_ssl.lib', '_tkinter.lib') {
-      copy("win32/$name", "$ENV{out}/libs/") or die "copy $name: $!";
+    for my $name ('pyexpat.lib', 'python3.lib', 'python37.lib', 'select.lib', 'sqlite3.lib', 'unicodedata.lib', 'winsound.lib',
+                  '_asyncio.lib', '_bz2.lib', '_contextvars.lib', '_ctypes.lib', '_decimal.lib', '_distutils_findvs.lib',
+                  '_elementtree.lib', '_hashlib.lib', '_lzma.lib', '_msi.lib', '_multiprocessing.lib', '_overlapped.lib',
+                  '_queue.lib', '_socket.lib', '_sqlite3.lib', '_ssl.lib', '_tkinter.lib') {
+      copy("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/libs/") or die "copy $name: $!";
     }
     dircopy('../Include', "$ENV{out}/Include") or die "dircopy Include: $!";
     dircopy('../Lib',     "$ENV{out}/Lib"    ) or die "dircopy Lib: $!";
