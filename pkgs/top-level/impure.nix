@@ -5,7 +5,7 @@ with builtins;
 
 let
 
-  homeDir = builtins.getEnv "HOME";
+  homeDir = builtins.getEnv (if builtins.currentSystem == "x86_64-windows" then "USERPROFILE" else "HOME");
 
   # Return ‘x’ if it evaluates, or ‘def’ if it throws an exception.
   try = x: def: let res = tryEval x; in if res.success then res.value else def;
