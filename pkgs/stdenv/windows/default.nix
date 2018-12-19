@@ -179,9 +179,6 @@ in
       LIB     = msvc-LIB;
       PATH    = "${msvc-PATH};${p7zip-static}/bin";
       builder = lib.concatStringsSep " & " [ ''7z x %src% -so  |  7z x -aoa -si -ttar''
-                                           # ''xcopy /E/I %src% .\''
-                                           # ''cd perl-5.28.1''
-                                           # ''xcopy /E/I ${lib.replaceStrings ["/"] ["\\"] "${perl-FileCopyRecursive-src}"}\File-Copy-Recursive-0.44 ${name}\ext\File-Copy-Recursive''
                                              ''7z x ${perl-FileCopyRecursive-src} -so  |  7z x -aoa -si -ttar -o${name}\ext''
                                              ''cd ${name}\win32''
                                              ''nmake install INST_TOP=%out% CCTYPE=MSVC141${if stdenv.is64bit then " WIN64=define" else ""}'' ];
@@ -203,15 +200,12 @@ in
 
     stdenv = import ../generic {
       name = "stdenv-windows-boot-1";
-      #inherit config;
-      #inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform;
       inherit config;
       inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform cc;
 
       initialPath = [ prevStage.makeWrapper prevStage.p7zip-static ];
       fetchurlBoot = prevStage.fetchurl;
-      shell = "C:/Perl64/bin/perl.exe"; # BUGBUG (recompile nix)
-#     /*prevStage.*/perl-for-stdenv-shell; #"C:/Windows/System32/cmd.exe"; #
+      shell = "C:/Perl64/bin/perl.exe"; # BUGBUG (recompile nix and change to prevStage.perl-for-stdenv-shell)
     };
 
     cc = let
