@@ -125,7 +125,7 @@ in
 
       cc = null;
       fetchurlBoot = null;
-      shell = "C:/Windows/System32/cmd.exe"; # TODO: builtins.getEnv "COMSPEC"
+      shell = builtins.getEnv "COMSPEC"; # "C:/Windows/System32/cmd.exe"; TODO: download some command-interpreter? maybe perl-static.exe?
     };
 
     fetchurlBoot = import ../../build-support/fetchurl/boot.nix {
@@ -138,6 +138,7 @@ in
       curl = curl-static;
     };
 
+    # TODO: build from sources
     p7zip-static = stdenv.mkDerivation {
       name = "7z-18.05-static";
       src = fetchurlBoot {
@@ -178,7 +179,7 @@ in
       INCLUDE = msvc-INCLUDE;
       LIB     = msvc-LIB;
       PATH    = "${msvc-PATH};${p7zip-static}/bin";
-      builder = lib.concatStringsSep " & " [ ''7z x %src% -so  |  7z x -aoa -si -ttar''
+      builder = lib.concatStringsSep " & " [ ''7z x %src% -so                          |  7z x -aoa -si -ttar''
                                              ''7z x ${perl-FileCopyRecursive-src} -so  |  7z x -aoa -si -ttar -o${name}\ext''
                                              ''cd ${name}\win32''
                                              ''nmake install INST_TOP=%out% CCTYPE=MSVC141${if stdenv.is64bit then " WIN64=define" else ""}'' ];
@@ -190,7 +191,7 @@ in
       LIB     = msvc-LIB;
       PATH    = msvc-PATH;
       builder = lib.concatStringsSep " & " [ ''md %out%\bin''
-                                             ''cl /O2 /MT /EHsc /Fe:%out%\bin\makeWrapper.exe /DINCLUDE="""${INCLUDE}""" /DLIB="""${LIB}""" /DCC=L"""${msvc}/bin/HostX64/x64/cl.exe""" ${./makeWrapper.cpp}'' ];
+                                             ''cl /O2 /MT /EHsc /Fe:%out%\bin\makeWrapper.exe /DINCLUDE=${INCLUDE} /DLIB=${LIB} /DCC=${msvc}/bin/HostX64/x64/cl.exe ${./makeWrapper.cpp}'' ];
     };
   })
 
@@ -205,7 +206,7 @@ in
 
       initialPath = [ prevStage.makeWrapper prevStage.p7zip-static ];
       fetchurlBoot = prevStage.fetchurl;
-      shell = "C:/Perl64/bin/perl.exe"; # BUGBUG (recompile nix and change to prevStage.perl-for-stdenv-shell)
+      shell = prevStage.perl-for-stdenv-shell;
     };
 
     cc = let
@@ -275,7 +276,7 @@ in
           isGNU = false;
           inherit msvc sdk msbuild msvc-version sdk-version msbuild-version vc /*vc1*/ /*perl-for-stdenv-shell*/;
           makeWrapper = prevStage.makeWrapper;
-#         perl-for-stdenv-shell = prevStage.perl-for-stdenv-shell;
+          perl-for-stdenv-shell = prevStage.perl-for-stdenv-shell;
 #         p7zip-static = prevStage.p7zip-static;
 #         curl = prevStage.curl-static;
         };

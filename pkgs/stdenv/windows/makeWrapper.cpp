@@ -8,7 +8,7 @@
 
 using namespace std;
 
-string wliteral(const wstring ws) {
+string wliteral(const wstring & ws) {
     string rc = "L\"";
     for (wchar_t c : ws) {
         if (' ' <= c && c <= '~') {
@@ -182,18 +182,22 @@ int wmain(int argc, const wchar_t** argv) {
     src << code.c_str() << endl;
     src.close();
 
-    if (!SetEnvironmentVariableA("INCLUDE", INCLUDE)) {
-        cout << "SetEnvironmentVariableA(INCLUDE, " << INCLUDE << ") failed lastError=" << GetLastError() << endl;
+    #define S0(x)  #x
+    #define S1(x)  S0(x)
+    #define L0(x)  L#x
+    #define L1(x)  L0(x)
+    if (!SetEnvironmentVariableA("INCLUDE", S1(INCLUDE))) {
+        cout << "SetEnvironmentVariableA(INCLUDE, " << S1(INCLUDE) << ") failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
-    if (!SetEnvironmentVariableA("LIB", LIB)) {
-        cout << "SetEnvironmentVariableA(LIB, " << LIB << ") failed lastError=" << GetLastError() << endl;
+    if (!SetEnvironmentVariableA("LIB", S1(LIB))) {
+        cout << "SetEnvironmentVariableA(LIB, " << S1(LIB) << ") failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
 
     STARTUPINFOW si = {sizeof(STARTUPINFOW)};
     PROCESS_INFORMATION pi = {0};
-    if (!CreateProcessW(NULL, const_cast<wchar_t*>(((CC L" /EHsc /Fe:") + wrapper_exe + L" _wrapper.cpp").c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
+    if (!CreateProcessW(NULL, const_cast<wchar_t*>(((L1(CC) L" /EHsc /Fe:") + wrapper_exe + L" _wrapper.cpp").c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
         cout << "CreateProcessW(cl _wrapper.cpp) failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
