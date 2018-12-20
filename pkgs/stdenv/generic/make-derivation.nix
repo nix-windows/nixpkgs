@@ -191,7 +191,7 @@ rec {
               if lib.hasSuffix "perl" builder || lib.hasSuffix "perl.exe" builder then
                 [     (attrs.builder or ./default-builder.pl )]
               else if lib.hasSuffix "cmd.exe" builder then
-                ["/c" (attrs.builder /*or ./default-builder.cmd*/)]
+                ["/c"  attrs.builder                          ]
               else
                 ["-e" (attrs.builder or ./default-builder.sh )]
             );

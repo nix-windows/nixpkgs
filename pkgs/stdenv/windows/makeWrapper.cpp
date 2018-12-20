@@ -8,7 +8,7 @@
 
 using namespace std;
 
-string wliteral(const wstring ws) {
+string wliteral(const wstring & ws) {
     string rc = "L\"";
     for (wchar_t c : ws) {
         if (' ' <= c && c <= '~') {
