@@ -201,7 +201,7 @@ in
       initialPath = [ prevStage.makeWrapper prevStage.p7zip-static ];
       cc = null;
       fetchurlBoot = null;
-      shell = prevStage.perl-for-stdenv-shell;
+      shell = "${prevStage.perl-for-stdenv-shell}/bin/perl.exe";
     };
 
     fetchurl = import ../../build-support/fetchurl {
