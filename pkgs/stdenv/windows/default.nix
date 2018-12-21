@@ -125,7 +125,7 @@ in
 
       cc = null;
       fetchurlBoot = null;
-      shell = "C:/Windows/System32/cmd.exe"; # TODO: builtins.getEnv "COMSPEC"
+      shell = builtins.getEnv "COMSPEC"; # "C:/Windows/System32/cmd.exe"; TODO: download some command-interpreter? maybe perl-static.exe?
     };
 
     fetchurlBoot = import ../../build-support/fetchurl/boot.nix {
@@ -191,7 +191,7 @@ in
       LIB     = msvc-LIB;
       PATH    = msvc-PATH;
       builder = lib.concatStringsSep " & " [ ''md %out%\bin''
-                                             ''cl /O2 /MT /EHsc /Fe:%out%\bin\makeWrapper.exe /DINCLUDE="""${INCLUDE}""" /DLIB="""${LIB}""" /DCC=L"""${msvc}/bin/HostX64/x64/cl.exe""" ${./makeWrapper.cpp}'' ];
+                                             ''cl /O2 /MT /EHsc /Fe:%out%\bin\makeWrapper.exe /DINCLUDE=${INCLUDE} /DLIB=${LIB} /DCC=${msvc}/bin/HostX64/x64/cl.exe ${./makeWrapper.cpp}'' ];
     };
   })
 
@@ -206,7 +206,7 @@ in
 
       initialPath = [ prevStage.makeWrapper prevStage.p7zip-static ];
       fetchurlBoot = prevStage.fetchurl;
-      shell = "C:/Perl64/bin/perl.exe"; # BUGBUG (recompile nix and change to prevStage.perl-for-stdenv-shell)
+      shell = prevStage.perl-for-stdenv-shell;
     };
 
     cc = let
