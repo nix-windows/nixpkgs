@@ -35,7 +35,8 @@ sub tryDownload {
     # if we get error code 18, resume partial download
     while ($curlexit == 18) {
        # keep this inside an if statement, since on failure it doesn't abort the script
-       print(join ' ', (@curl, '-C', '-', '--fail', $url, '--output', $ENV{downloadedFile}));
+       my @cmd = (@curl, '-C', '-', '--fail', $url, '--output', $ENV{downloadedFile});
+       print(join ' ', @cmd);
        return 0 if system(@curl, '-C', '-', '--fail', $url, '--output', $ENV{downloadedFile}) == 0;
        $curlexit = $? >> 8;
     }
@@ -55,7 +56,7 @@ sub tryHashedMirrors() {
 
     for my $mirror (split / /, $hashedMirrors) {
         my $url = "$mirror/$outputHashAlgo/$outputHash";
-        if (system(@curl, '--retry', '0',
+        my @cmd = (@curl, '--retry', '0',
                           '--connect-timeout', $ENV{NIX_CONNECT_TIMEOUT} ? $ENV{NIX_CONNECT_TIMEOUT} : '15',
                           '--fail',
                           '--silent',
@@ -63,7 +64,9 @@ sub tryHashedMirrors() {
                           '--head',
                           $url,
                           '--write-out', '%{http_code}',
-                          '--output', $^O eq 'MSWin32' ? 'nul' : '/dev/null') == 0) {
+                          '--output', $^O eq 'MSWin32' ? 'nul' : '/dev/null');
+        print(join ' ', @cmd);
+        if (system(@cmd) == 0) {
             finish() if tryDownload($url) == 0;
         }
     }
