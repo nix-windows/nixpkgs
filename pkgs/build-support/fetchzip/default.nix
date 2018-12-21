@@ -29,12 +29,12 @@ if lib.hasSuffix "perl" stdenv.shell || lib.hasSuffix "perl.exe" stdenv.shell th
     mkdir($unpackDir) or die "mkdir: $!";
     chdir($unpackDir) or die "chdir: $!";
 
-    my $renamed="$ENV{TMPDIR}/${baseNameOf url}";
+    my $renamed = "$ENV{TMPDIR}/${baseNameOf url}";
     move($ENV{downloadedFile}, $renamed) or die "move: $!";
     unpackFile($renamed);
   ''
   + (if stripRoot then ''
-      my @ls = grep { $_ !~ /\/pax_global_header$/ } glob("$unpackDir/*");
+      my @ls = grep { $_ !~ /\/(pax_global_header|[0-9a-f]{40}\.paxheader|[0-9a-f]{40}\.data)$/ } glob("$unpackDir/*");
       print("ls=".(join ' ', @ls)."\n");
       if (@ls != 1) {
         print("error: zip file must contain a single file or directory.\n");
