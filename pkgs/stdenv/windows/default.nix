@@ -132,12 +132,6 @@ in
       system = localSystem;
     };
 
-    fetchurl = import ../../build-support/fetchurl {
-      inherit lib;
-      stdenvNoCC = stdenv;
-      curl = curl-static;
-    };
-
     # TODO: build from sources
     p7zip-static = stdenv.mkDerivation {
       name = "7z-18.05-static";
@@ -202,11 +196,18 @@ in
     stdenv = import ../generic {
       name = "stdenv-windows-boot-1";
       inherit config;
-      inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform cc;
+      inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform;
 
       initialPath = [ prevStage.makeWrapper prevStage.p7zip-static ];
-      fetchurlBoot = prevStage.fetchurl;
+      cc = null;
+      fetchurlBoot = null;
       shell = prevStage.perl-for-stdenv-shell;
+    };
+
+    fetchurl = import ../../build-support/fetchurl {
+      inherit lib;
+      stdenvNoCC = stdenv; # with perl as .shell
+      curl = prevStage.curl-static;
     };
 
     cc = let
@@ -291,8 +292,9 @@ in
       name = "stdenv-windows-boot-3";
       inherit config;
 
-      inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform initialPath fetchurlBoot shell;
+      inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform initialPath shell;
       cc = prevStage.cc;
+      fetchurlBoot = prevStage.fetchurl;
     };
   })
 
