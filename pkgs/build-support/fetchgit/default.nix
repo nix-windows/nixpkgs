@@ -50,8 +50,14 @@ if md5 != "" then
 else
 stdenvNoCC.mkDerivation {
   inherit name;
-  builder = ./builder.sh;
-  fetcher = "${./nix-prefetch-git}";  # This must be a string to ensure it's called with bash.
+  builder = if stdenvNoCC.lib.hasSuffix "perl" stdenvNoCC.shell || stdenvNoCC.lib.hasSuffix "perl.exe" stdenvNoCC.shell then
+              ./builder.pl
+            else
+              ./builder.sh;
+  fetcher = if stdenvNoCC.lib.hasSuffix "perl" stdenvNoCC.shell || stdenvNoCC.lib.hasSuffix "perl.exe" stdenvNoCC.shell then
+              ./nix-prefetch-git.pl
+            else
+              "${./nix-prefetch-git}";  # This must be a string to ensure it's called with bash.
   nativeBuildInputs = [git];
 
   outputHashAlgo = "sha256";
