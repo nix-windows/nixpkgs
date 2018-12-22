@@ -40,7 +40,13 @@ stdenv.mkDerivation rec {
 
   buildPhase = ''
     chdir("winbuild");
-    system("nmake /f Makefile.vc mode=dll VC=15 USE_SSL=true USE_SSPI=false WITH_SSL=dll SSL_PATH=${openssl} WITH_ZLIB=dll ZLIB_PATH=${zlib}");
+    # TODO? buildenv
+    make_path("devel/include", "devel/lib");
+    dircopy('${zlib}/lib/*', 'devel/lib/');
+    dircopy('${zlib}/include/*', 'devel/include/');
+    dircopy('${openssl}/lib/*', 'devel/lib/');
+    dircopy('${openssl}/include/*', 'devel/include/');
+    system("nmake /f Makefile.vc mode=dll VC=15 USE_SSL=true USE_SSPI=false WITH_SSL=dll WITH_ZLIB=dll WITH_DEVEL=./devel");
   '';
   installPhase = ''
     for my $dir (glob('../builds/*')) {

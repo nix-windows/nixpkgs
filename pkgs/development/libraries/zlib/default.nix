@@ -26,12 +26,12 @@ stdenv.mkDerivation (rec {
     system('nmake -f win32/Makefile.msc') == 0 or die;
   '';
   installPhase = ''
-    mkpath("$ENV{out}/bin", "$ENV{out}/include", "$ENV{out}/lib") or die $!;
-    copy('zlib1.dll', "$ENV{out}/bin"    )                        or die $!;
-    copy('zlib.h',    "$ENV{out}/include")                        or die $!;
-    copy('zconf.h',   "$ENV{out}/include")                        or die $!;
-    copy('zlib.lib',  "$ENV{out}/lib"    )                        or die $!;
-    copy('zdll.lib',  "$ENV{out}/lib"    )                        or die $!;
+    make_path("$ENV{out}/bin", "$ENV{out}/include", "$ENV{out}/lib") or die $!;
+    copy('zlib1.dll', "$ENV{out}/bin/"     )                         or die $!;
+    copy('zlib.h',    "$ENV{out}/include/")                          or die $!;
+    copy('zconf.h',   "$ENV{out}/include/")                          or die $!;
+    copy('zlib.lib',  "$ENV{out}/lib/"    )                          or die $!;
+    copy('zdll.lib',  "$ENV{out}/lib/"    )                          or die $!;
   '';
 })
 

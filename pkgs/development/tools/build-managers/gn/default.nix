@@ -56,7 +56,7 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = if stdenv.hostPlatform.isMicrosoft then ''
-    mkpath("$ENV{out}/bin") or die $!;
+    make_path("$ENV{out}/bin") or die $!;
     copy("out/gn.exe", "$ENV{out}/bin/") or die $!;
   '' else ''
     install -vD out/gn "$out/bin/gn"
