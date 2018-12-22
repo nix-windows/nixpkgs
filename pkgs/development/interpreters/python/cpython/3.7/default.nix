@@ -121,7 +121,8 @@ in stdenv.mkDerivation rec {
     }
     mkdir "$ENV{out}/libs";
     for my $name ('pyexpat.lib', 'python3.lib', 'python37.lib', 'select.lib', 'sqlite3.lib', 'unicodedata.lib', 'winsound.lib',
-                  '_asyncio.lib', '_bz2.lib', '_contextvars.lib', '_ctypes.lib', '_decimal.lib', '_distutils_findvs.lib',
+                  '_asyncio.lib', '_bz2.lib', '_contextvars.lib', '_ctypes.lib', '_decimal.lib',
+                 #'_distutils_findvs.lib',
                   '_elementtree.lib', '_hashlib.lib', '_lzma.lib', '_msi.lib', '_multiprocessing.lib', '_overlapped.lib',
                   '_queue.lib', '_socket.lib', '_sqlite3.lib', '_ssl.lib', '_tkinter.lib') {
       copy("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/libs/") or die "copy $name: $!";
@@ -130,9 +131,9 @@ in stdenv.mkDerivation rec {
     dircopy('../Lib',     "$ENV{out}/Lib"    ) or die "dircopy Lib: $!";
     dircopy('../Tools',   "$ENV{out}/Tools"  ) or die "dircopy Tools: $!";
   '';
-  passthru.nuget = nuget-bin;
-  passthru.python-bin = python-bin;
-  passthru.dep-bzip2 = dep-bzip2;
+# passthru.nuget = nuget-bin;
+# passthru.python-bin = python-bin;
+# passthru.dep-bzip2 = dep-bzip2;
 }
 
 else
