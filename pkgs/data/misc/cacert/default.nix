@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, nss, python
+{ stdenv, fetchurl, nss, python, python3
 , blacklist ? []
 , includeEmail ? false
 }:
@@ -14,6 +14,64 @@ let
   };
 
 in
+
+if stdenv.hostPlatform.isMicrosoft then
+
+stdenv.mkDerivation rec {
+  name = "nss-cacert-${nss.version}";
+
+  src = nss.src;
+
+  nativeBuildInputs = [ python3 ];
+
+    #   ln -s nss/lib/ckfw/builtins/certdata.txt
+    #
+    #   cat << EOF > blacklist.txt
+    #   ${concatStringsSep "\n" (map (c: ''"${c}"'') blacklist)}
+    #   EOF
+    #
+  configurePhase = ''
+    copy('nss/lib/ckfw/builtins/certdata.txt', 'certdata.txt');
+    copy('${certdata2pem}', 'certdata2pem.py');
+  '';
+    #   patch -p1 < ${./fix-unicode-ca-names.patch}
+    #   ${optionalString includeEmail ''
+    #     # Disable CAs used for mail signing
+    #     substituteInPlace certdata2pem.py --replace \[\'CKA_TRUST_EMAIL_PROTECTION\'\] '''
+    #   ''}
+
+  buildPhase = ''
+    system('python certdata2pem.py') == 0 or die;
+
+    open(my $bundle, '>ca-bundle.crt') or die $!;
+    for my $cert (glob('*.crt')) {
+      print $bundle ($cert =~ s/^([^.]+)\.crt$/\1/r =~ s/_/ /rg)."\n";
+      open (my $fcert, $cert) or die $!;
+      for my $line (<$fcert>) {
+        print $bundle $line;
+      }
+      close($fcert);
+      print $bundle "\n";
+    }
+  '';
+
+  installPhase = ''
+    mkdir("$ENV{out}");
+    mkdir("$ENV{out}/etc");
+    mkdir("$ENV{out}/etc/ssl");
+    mkdir("$ENV{out}/etc/ssl/certs");
+    copy('ca-bundle.crt', "$ENV{out}/etc/ssl/certs/");
+  '';
+    #   # install individual certs in unbundled output
+    #   mkdir -pv $unbundled/etc/ssl/certs
+    #   cp -v *.crt $unbundled/etc/ssl/certs
+    #   rm -f $unbundled/etc/ssl/certs/ca-bundle.crt  # not wanted in unbundled
+
+  #setupHook = ./setup-hook.sh;
+}
+
+
+else
 
 stdenv.mkDerivation rec {
   name = "nss-cacert-${nss.version}";
