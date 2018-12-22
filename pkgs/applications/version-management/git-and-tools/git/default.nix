@@ -85,7 +85,7 @@ stdenv.mkDerivation {
       'SHA1_BLK'                    => "",
       'HAVE_ALLOCA_H'               => "",
       'HAVE_STRING_H'               => "",
-    # 'HAVE_WPGMPTR'                => "",
+      'HAVE_WPGMPTR'                => "",
       'BINDIR'                      => '"bin"',
       'GIT_EXEC_PATH'               => '"libexec/git-core"',
       'FALLBACK_RUNTIME_PREFIX'     => '"C:/git"',
@@ -142,6 +142,12 @@ stdenv.mkDerivation {
       # VS2017's msvcrt.lib has no __wgetmainargs
       open(my $fh, ">>compat/mingw.c");
       print $fh 'int __wgetmainargs(int *argc, wchar_t ***argv, wchar_t ***env, int glob, _startupinfo *si) {';
+      print $fh '  /* this is unrelated to __wgetmainargs, just an early startup code to fix zero _wpgmptr */';
+      print $fh '  if (_wpgmptr == NULL) {';
+      print $fh '    static wchar_t wpgmptrbuf[0x400];';
+      print $fh '    assert(GetModuleFileNameW(NULL, wpgmptrbuf, 0x400) < 0x400);';
+      print $fh '    _wpgmptr = wpgmptrbuf;';
+      print $fh '  }';
       print $fh '  int (*pfn)(int *, wchar_t ***, wchar_t ***, int, _startupinfo *);';
       print $fh '  pfn = GetProcAddress(LoadLibrary("msvcrt"), "__wgetmainargs");';
       print $fh '  assert(pfn);';
