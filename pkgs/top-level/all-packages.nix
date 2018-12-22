@@ -7832,10 +7832,15 @@ with pkgs;
   python2Packages = python2.pkgs;
   python3Packages = python3.pkgs;
 
-  python27 = callPackage ../development/interpreters/python/cpython/2.7 {
-    self = python27;
-    inherit (darwin) CF configd;
-  };
+  python27 = if stdenv.hostPlatform.isMicrosoft then
+      callPackage ../development/interpreters/python/cpython/2.7/windows.nix {
+        self = python27;
+      }
+    else
+      callPackage ../development/interpreters/python/cpython/2.7 {
+        self = python27;
+        inherit (darwin) CF configd;
+      };
   python35 = callPackage ../development/interpreters/python/cpython/3.5 {
     inherit (darwin) CF configd;
     self = python35;
@@ -16056,18 +16061,22 @@ with pkgs;
 
   bookworm = callPackage ../applications/office/bookworm { };
 
-  chromium = callPackage ../applications/networking/browsers/chromium ({
-    channel = "stable";
-    pulseSupport = config.pulseaudio or true;
-    enablePepperFlash = config.chromium.enablePepperFlash or false;
-    enableWideVine = config.chromium.enableWideVine or false;
-  } // (if stdenv.isAarch64 then {
-          stdenv = gcc8Stdenv;
-        } else {
-          llvmPackages = llvmPackages_7;
-          stdenv = llvmPackages_7.stdenv;
-        })
-   );
+  chromium =
+    if stdenv.hostPlatform.isMicrosoft then
+      callPackage ../applications/networking/browsers/chromium/windows.nix {}
+    else
+      callPackage ../applications/networking/browsers/chromium ({
+        channel = "stable";
+        pulseSupport = config.pulseaudio or true;
+        enablePepperFlash = config.chromium.enablePepperFlash or false;
+        enableWideVine = config.chromium.enableWideVine or false;
+      } // (if stdenv.isAarch64 then {
+              stdenv = gcc8Stdenv;
+            } else {
+              llvmPackages = llvmPackages_7;
+              stdenv = llvmPackages_7.stdenv;
+            })
+       );
 
   chronos = callPackage ../applications/networking/cluster/chronos { };
 
