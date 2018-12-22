@@ -74,18 +74,18 @@ let
     url = https://github.com/python/cpython-bin-deps/archive/nasm-2.11.06.zip;
     sha256 = "1b5hd8k5fwpb25r6r77yka1d6xa163350scfdnc8krw0dar8fg6y";
   };
-  dep-tcl = fetchurl {
-    url = https://github.com/python/cpython-source-deps/archive/tcl-8.5.19.0.zip;
-    sha256 = "0j6fk02ih4ixs4mcxzq5d63wdpgx2q5pnjcz2bn711s4vzbaf845";
-  };
-  dep-tk = fetchurl {
-    url = https://github.com/python/cpython-source-deps/archive/tk-8.5.19.0.zip;
-    sha256 = "1l97h4lc03bi7w1nn5fh7dz755mnck4wcz47laavc0lgrmxsp85m";
-  };
-  dep-tix = fetchurl {
-    url = https://github.com/python/cpython-source-deps/archive/tix-8.4.3.5.zip;
-    sha256 = "10c2zyk3bjscq4km01smwqda3ndk5156c9jyass3a66cjzgrnxph";
-  };
+# dep-tcl = fetchurl {
+#   url = https://github.com/python/cpython-source-deps/archive/tcl-8.5.19.0.zip;
+#   sha256 = "0j6fk02ih4ixs4mcxzq5d63wdpgx2q5pnjcz2bn711s4vzbaf845";
+# };
+# dep-tk = fetchurl {
+#   url = https://github.com/python/cpython-source-deps/archive/tk-8.5.19.0.zip;
+#   sha256 = "1l97h4lc03bi7w1nn5fh7dz755mnck4wcz47laavc0lgrmxsp85m";
+# };
+# dep-tix = fetchurl {
+#   url = https://github.com/python/cpython-source-deps/archive/tix-8.4.3.5.zip;
+#   sha256 = "10c2zyk3bjscq4km01smwqda3ndk5156c9jyass3a66cjzgrnxph";
+# };
 in
 
 stdenv.mkDerivation ({
@@ -106,9 +106,9 @@ stdenv.mkDerivation ({
     system('7z x ${dep-bsddb       } -oexternals') == 0 or die $!;
     system('7z x ${dep-openssl     } -oexternals') == 0 or die $!;
     system('7z x ${dep-nasm        } -oexternals') == 0 or die $!;
-    system('7z x ${dep-tcl         } -oexternals') == 0 or die $!;
-    system('7z x ${dep-tk          } -oexternals') == 0 or die $!;
-    system('7z x ${dep-tix         } -oexternals') == 0 or die $!;
+    #system('7z x ''${dep-tcl         } -oexternals') == 0 or die $!;
+    #system('7z x ''${dep-tk          } -oexternals') == 0 or die $!;
+    #system('7z x ''${dep-tix         } -oexternals') == 0 or die $!;
     for my $f (glob('externals/*')) {
         print("f='$f'\n");
         rename($f, $f =~ s/cpython-(bin|source)-deps-//r) or die $!;
@@ -128,7 +128,7 @@ stdenv.mkDerivation ({
     }
 
     chdir('PCbuild');
-    system("build.bat${if withExternals then " -e" else ""} -p ${if stdenv.is64bit then "x64" else "Win32"} -c Release \"/p:PlatformToolset=v141\"") == 0 or die "build.bat: $!";
+    system("build.bat${if withExternals then " -e" else ""} --no-tkinter -p ${if stdenv.is64bit then "x64" else "Win32"} -c Release \"/p:PlatformToolset=v141\"") == 0 or die "build.bat: $!";
   '';
 
   installPhase = ''
@@ -140,7 +140,7 @@ stdenv.mkDerivation ({
     mkdir "$ENV{out}/DLLs";
     for my $name ('pyexpat.pyd', 'select.pyd', 'unicodedata.pyd', 'winsound.pyd',
                   '_ctypes.pyd', '_elementtree.pyd', '_msi.pyd', '_multiprocessing.pyd', '_socket.pyd',
-                  ${stdenv.lib.optionalString withExternals ", 'sqlite3.dll', '_sqlite3.pyd', '_bsddb.pyd', '_hashlib.pyd', 'bz2.pyd', '_ssl.pyd', 'tcl85.dll'"}
+                  ${stdenv.lib.optionalString withExternals ", 'sqlite3.dll', '_sqlite3.pyd', '_bsddb.pyd', '_hashlib.pyd', 'bz2.pyd', '_ssl.pyd'"}
                   ) {
       copy("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/DLLs/") or die "copy $name: $!";
     }
