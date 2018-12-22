@@ -313,7 +313,16 @@ rec {
        escapeWindowsArg ''esc"a'peme''
        => ''"esc\"a'peme"''
   */
-  escapeWindowsArg = arg: ''"${replaceStrings [''\"'' ''"''] [''\\\"'' ''\"''] (toString arg)}"'';
+  escapeWindowsArg = arg:
+    let
+      s = replaceStrings [''\"'' ''"''] [''\\\"'' ''\"''] (toString arg);
+      len = stringLength s;
+    in
+      if len > 0 && substring (len - 1) 1 == ''\'' then
+        ''"${s}\"''
+      else
+        ''"${s}"'';
+
 
   /* Quote all arguments to be safely passed to the Bourne shell.
 
