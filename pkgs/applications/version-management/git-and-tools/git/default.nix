@@ -163,25 +163,25 @@ stdenv.mkDerivation {
       close($fh);
 
       mkdir('xdiffobjs') or die $!;
-      my @cmd = ("cl.exe", '-c', '-MD', '-Zi', '-GL', '-Fo:xdiffobjs/',  (map { '"' . ("-D$_=$defines{$_}" =~ s/"/"""/gr) . '"' } keys %defines), @xdiff_srcs);
+      my @cmd = ("cl.exe", '-c', '-MD', '-Zi', '-GL', '-Fo:xdiffobjs/',  (map { escapeWindowsArg("-D$_=$defines{$_}") } keys %defines), @xdiff_srcs);
       print(join(' ', @cmd), "\n");
       system(@cmd);
       system("lib.exe",  "/out:xdiff.lib",  '/LTCG', glob('xdiffobjs/*.obj'));
 
       mkdir('libgitobjs') or die $!;
-      my @cmd = ("cl.exe", '-c', '-MD', '-Zi', '-GL', '-Fo:libgitobjs/', (map { '"' . ("-D$_=$defines{$_}" =~ s/"/"""/gr) . '"' } keys %defines), @libgit_srcs);
+      my @cmd = ("cl.exe", '-c', '-MD', '-Zi', '-GL', '-Fo:libgitobjs/', (map { escapeWindowsArg("-D$_=$defines{$_}") } keys %defines), @libgit_srcs);
       print(join(' ', @cmd), "\n");
       system(@cmd);
       system("lib.exe",  "/out:libgit.lib", '/LTCG', glob('libgitobjs/*.obj'));
 
       mkdir('gitobjs') or die $!;
-      my @cmd = ("cl.exe", '-c', '-MD', '-Zi', '-GL', '-Fo:gitobjs/',    (map { '"' . ("-D$_=$defines{$_}" =~ s/"/"""/gr) . '"' } keys %defines), @git_srcs);
+      my @cmd = ("cl.exe", '-c', '-MD', '-Zi', '-GL', '-Fo:gitobjs/',    (map { escapeWindowsArg("-D$_=$defines{$_}") } keys %defines), @git_srcs);
       print(join(' ', @cmd), "\n");
       system(@cmd);
       system("link.exe", "/out:git.exe",              '/DEBUG', '/LTCG', '/SUBSYSTEM:CONSOLE', glob('gitobjs/*.obj'),   "libgit.lib", "xdiff.lib", 'advapi32.lib', 'ws2_32.lib', 'user32.lib', "${zlib}/lib/zlib.lib");
 
       mkdir('gitrhobjs') or die $!;
-      my @cmd = ("cl.exe", '-c', '-MD', '-Zi', '-GL', '-Fo:gitrhobjs/',  (map { '"' . ("-D$_=$defines{$_}" =~ s/"/"""/gr) . '"' } keys %defines), @git_remote_http_srcs);
+      my @cmd = ("cl.exe", '-c', '-MD', '-Zi', '-GL', '-Fo:gitrhobjs/',  (map { escapeWindowsArg("-D$_=$defines{$_}") } keys %defines), @git_remote_http_srcs);
       print(join(' ', @cmd), "\n");
       system(@cmd);
       system("link.exe", "/out:git-remote-http.exe",  '/DEBUG', '/LTCG', '/SUBSYSTEM:CONSOLE', glob('gitrhobjs/*.obj'), "libgit.lib", "xdiff.lib", 'advapi32.lib', 'ws2_32.lib', 'user32.lib', "${zlib}/lib/zlib.lib", "${curl}/lib/libcurl.lib");
