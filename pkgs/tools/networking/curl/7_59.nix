@@ -40,10 +40,15 @@ stdenv.mkDerivation rec {
 
   buildPhase = ''
     chdir("winbuild");
-    system("nmake /f Makefile.vc mode=dll VC=15");
+    system("nmake /f Makefile.vc mode=dll VC=15 USE_SSL=true USE_SSPI=false WITH_SSL=dll SSL_PATH=${openssl} WITH_ZLIB=dll ZLIB_PATH=${zlib}");
   '';
   installPhase = ''
-    dircopy("../builds/libcurl-vc15-x64-release-dll-ipv6-sspi-winssl", $ENV{out}) or die "$!";
+    for my $dir (glob('../builds/*')) {
+      dircopy($dir, $ENV{out}) or die "$!" if -f "$dir/bin/curl.exe";
+    }
+    copy('${openssl}/bin/libeay32.dll', "$ENV{out}/bin/LIBEAY32.dll");
+    copy('${openssl}/bin/ssleay32.dll', "$ENV{out}/bin/SSLEAY32.dll");
+    copy('${zlib}/bin/zlib1.dll',       "$ENV{out}/bin/zlib1.dll");
   '';
 }
 else
