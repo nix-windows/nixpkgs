@@ -63,7 +63,7 @@ rec {
       ( if stdenv.hostPlatform.isMicrosoft then
       ''
         my $n = "$ENV{out}${destination}";
-        make_path(dirname($n)) or die "make_path(".dirname($n)."): $!";
+        make_path(dirname($n));
         if (-e $ENV{textPath}) {
           move($ENV{textPath}, $n) or die "move($ENV{textPath}, $n): $!";
         } else {
