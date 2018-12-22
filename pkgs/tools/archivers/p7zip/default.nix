@@ -18,8 +18,7 @@ stdenv.mkDerivation rec {
     system("nmake CPU=AMD64 NEW_COMPILER=1") == 0 or die $!;
   '';
   installPhase = ''
-    mkdir("$ENV{out}") or die $!;
-    mkdir("$ENV{out}/bin") or die $!;
+    mkpath("$ENV{out}/bin") or die $!;
     copy("AMD64/7z.exe", "$ENV{out}/bin/") or die $!;
   '';
 }
