@@ -69,13 +69,9 @@ int wmain(int argc, const wchar_t** argv) {
     code += "    if (!s.empty() && s.find_first_of(L\"&()[]{}^=;!'+,`!\\\" \") == wstring::npos)\n";
     code += "        return s;\n";
     code += "    wstring r;\n";
-    code += "    wchar_t lastChar;\n";
     code += "    for (wchar_t i : s) {\n";
-    code += "        if (i == L'\"')\n";
-    code += "            r += lastChar == i ? L\"\\\"\\\"\" : L\"\\\"\\\"\\\"\";\n";
-    code += "        else\n";
-    code += "            r += i;\n";
-    code += "        lastChar = i;\n";
+    code += "        r += i;\n";
+    code += "        if (i == L'\"') r += i;\n";
     code += "    }\n";
     code += "    return L'\"' + r + L'\"';\n";
     code += "}\n";
