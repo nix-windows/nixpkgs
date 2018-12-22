@@ -44,6 +44,7 @@ stdenv.mkDerivation rec {
     system('python certdata2pem.py') == 0 or die;
 
     open(my $bundle, '>ca-bundle.crt') or die $!;
+    binmode $bundle;
     for my $cert (glob('*.crt')) {
       print $bundle ($cert =~ s/^([^.]+)\.crt$/\1/r =~ s/_/ /rg)."\n";
       open (my $fcert, $cert) or die $!;
