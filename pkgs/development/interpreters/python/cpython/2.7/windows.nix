@@ -132,19 +132,16 @@ stdenv.mkDerivation ({
   '';
 
   installPhase = ''
-    mkdir $ENV{out};
-    mkdir "$ENV{out}/bin";
+    make_path("$ENV{out}/bin", "$ENV{out}/DLLs", "$ENV{out}/libs");
     for my $name ('python.exe', 'python.pdb', 'pythonw.exe', 'pythonw.pdb', 'python27.dll', 'python27.pdb') {
       copy("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/bin/" ) or die "copy $name: $!";
     }
-    mkdir "$ENV{out}/DLLs";
     for my $name ('pyexpat.pyd', 'select.pyd', 'unicodedata.pyd', 'winsound.pyd',
                   '_ctypes.pyd', '_elementtree.pyd', '_msi.pyd', '_multiprocessing.pyd', '_socket.pyd',
                   ${stdenv.lib.optionalString withExternals ", 'sqlite3.dll', '_sqlite3.pyd', '_bsddb.pyd', '_hashlib.pyd', 'bz2.pyd', '_ssl.pyd'"}
                   ) {
       copy("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/DLLs/") or die "copy $name: $!";
     }
-    mkdir "$ENV{out}/libs";
     for my $name ('pyexpat.lib', 'python27.lib', 'select.lib', 'unicodedata.lib', 'winsound.lib',
                   '_ctypes.lib', '_elementtree.lib', '_msi.lib', '_multiprocessing.lib', '_socket.lib',
                   ${stdenv.lib.optionalString withExternals ", 'sqlite3.lib', '_bsddb.lib', '_hashlib.lib', 'bz2.lib', '_ssl.lib'"}
