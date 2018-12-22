@@ -43,7 +43,7 @@ stdenv.mkDerivation rec {
       open(my $in, $filename) or die $!;
       open(my $out, ">$filename.new") or die $!;
       for my $line (<$in>) {
-        $line =~ s|<WindowsTargetPlatformVersion>10\.[0-9.]+<|<WindowsTargetPlatformVersion>${stdenv.cc.sdk.version}<|g;
+        $line =~ s|<WindowsTargetPlatformVersion>10\.[0-9.]+<|<WindowsTargetPlatformVersion>${stdenv.cc.sdk-version}<|g;
         print $out $line;
       }
       close($in);
