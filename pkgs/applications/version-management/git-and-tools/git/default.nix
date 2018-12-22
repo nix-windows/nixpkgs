@@ -86,17 +86,20 @@ stdenv.mkDerivation {
       'HAVE_ALLOCA_H'               => "",
       'HAVE_STRING_H'               => "",
       'HAVE_WPGMPTR'                => "",
+      'SNPRINTF_RETURNS_BOGUS'      => "",
+      'NATIVE_CRLF'                 => "",
       'BINDIR'                      => '"bin"',
-      'GIT_EXEC_PATH'               => '"libexec/git-core"',
+      'GIT_EXEC_PATH'               => '"$ENV{out}/bin"',
+     #'GIT_EXEC_PATH'               => '"$ENV{out}/libexec/git-core"',
       'FALLBACK_RUNTIME_PREFIX'     => '"C:/git"',
       'PAGER_ENV'                   => '"LESS=FRX"',
       'GIT_HOST_CPU'                => '"x86_64"',
       'STRIP_EXTENSION'             => '".exe"',
-      'ETC_GITCONFIG'               => '"etc/gitconfig"',
-      'ETC_GITATTRIBUTES'           => '"etc/gitattributes"',
-      'GIT_HTML_PATH'               => '"share/doc/git-doc"',
-      'GIT_INFO_PATH'               => '"share/info"',
-      'GIT_MAN_PATH'                => '"share/man"',
+      'ETC_GITCONFIG'               => '"$ENV{out}/etc/gitconfig"',
+      'ETC_GITATTRIBUTES'           => '"$ENV{out}/etc/gitattributes"',
+      'GIT_HTML_PATH'               => '"$ENV{out}/share/doc/git-doc"',
+      'GIT_INFO_PATH'               => '"$ENV{out}/share/info"',
+      'GIT_MAN_PATH'                => '"$ENV{out}/share/man"',
       'GIT_VERSION'                 => '"2.19.1.MSVC"',
       'GIT_USER_AGENT'              => '"git/2.19.1.MSVC"',
       'GIT_BUILT_FROM_COMMIT'       => '"-"',
@@ -139,10 +142,14 @@ stdenv.mkDerivation {
       # `./command-list.h` needs `bash` to generate (todo: do it once `stdenvMinGW` will work)
       copy('${./command-list-2.19.1.h}', './command-list.h') or die;
 
+      # fetch-pack does `close(1)` so the receiving party gets unexpected EOF
+      # TODO: use .patch
+      copy('${./fetch-pack.c}', './builtin/fetch-pack.c') or die;
+
       # VS2017's msvcrt.lib has no __wgetmainargs
       open(my $fh, ">>compat/mingw.c");
       print $fh 'int __wgetmainargs(int *argc, wchar_t ***argv, wchar_t ***env, int glob, _startupinfo *si) {';
-      print $fh '  /* this is unrelated to __wgetmainargs, just an early startup code to fix zero _wpgmptr */';
+      print $fh '  /* this is unrelated to __wgetmainargs, just an early startup code to fix zero _wpgmptr; needless with GIT_EXEC_PATH? */';
       print $fh '  if (_wpgmptr == NULL) {';
       print $fh '    static wchar_t wpgmptrbuf[0x400];';
       print $fh '    assert(GetModuleFileNameW(NULL, wpgmptrbuf, 0x400) < 0x400);';
@@ -181,13 +188,16 @@ stdenv.mkDerivation {
       system("link.exe", "/out:git-remote-https.exe", '/DEBUG', '/LTCG', '/SUBSYSTEM:CONSOLE', glob('gitrhobjs/*.obj'), "libgit.lib", "xdiff.lib", 'advapi32.lib', 'ws2_32.lib', 'user32.lib', "${zlib}/lib/zlib.lib", "${curl}/lib/libcurl.lib");
   '';
   installPhase = ''
-    mkdir($ENV{out}) or die;
-    mkdir("$ENV{out}/bin") or die;
-    copy("git.exe",                 "$ENV{out}/bin/") or die;
-    copy("git.pdb",                 "$ENV{out}/bin/") or die;
-    copy("git-remote-http.exe",     "$ENV{out}/bin/") or die;
-    copy("git-remote-https.exe",    "$ENV{out}/bin/") or die;
-    copy("${curl}/bin/libcurl.dll", "$ENV{out}/bin/") or die;
+    mkdir($ENV{out})                                   or die "mkdir $ENV{out}: $!";
+    mkdir("$ENV{out}/bin")                             or die "mkdir $ENV{out}/bin: $!";
+    copy("git.exe",                  "$ENV{out}/bin/") or die "copy git.exe: $!";
+    copy("git.pdb",                  "$ENV{out}/bin/") or die "copy git.pdb: $!";
+    copy("git-remote-http.exe",      "$ENV{out}/bin/") or die "copy git-remote-http.exe: $!";
+    copy("git-remote-https.exe",     "$ENV{out}/bin/") or die "copy git-remote-https.exe: $!";
+    copy('${curl}/bin/libcurl.dll',  "$ENV{out}/bin/") or die "copy libcurl.dll: $!";
+    copy('${curl}/bin/LIBEAY32.dll', "$ENV{out}/bin/") or die "copy LIBEAY32.dll: $!";
+    copy('${curl}/bin/SSLEAY32.dll', "$ENV{out}/bin/") or die "copy SSLEAY32.dll: $!";
+    copy('${curl}/bin/zlib1.dll',    "$ENV{out}/bin/") or die "copy zlib1.dll: $!";
   '';
 }
 
