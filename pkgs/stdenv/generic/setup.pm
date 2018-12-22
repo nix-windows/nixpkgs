@@ -24,6 +24,14 @@ sub readFile {
     return $content;
 }
 
+sub escapeWindowsArg {
+    my ($s) = @_;
+    $s =~ s|\\$|\\\\|g;
+    $s =~ s|\\"|\\\\"|g;
+    $s =~ s|\"|\\"|g;
+    return "\"$s\"";
+}
+
 ######################################################################
 # Hook handling.
 my %builtinHooks = (
