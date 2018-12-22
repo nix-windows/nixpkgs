@@ -311,9 +311,9 @@ rec {
 
      Example:
        escapeWindowsArg ''esc"a'peme''
-       => ''"esc""a'peme"''
+       => ''"esc\"a'peme"''
   */
-  escapeWindowsArg = arg: ''"${replaceStrings [''"''] [''""''] (toString arg)}"'';
+  escapeWindowsArg = arg: ''"${replaceStrings [''\"'' ''"''] [''\\\"'' ''\"''] (toString arg)}"'';
 
   /* Quote all arguments to be safely passed to the Bourne shell.
 
@@ -321,7 +321,7 @@ rec {
 
      Example:
        escapeShellArgs ["one" "two three" "four'f\"ive"]
-       => ''"one" "two three" "four'f""ive"''
+       => ''"one" "two three" "four'f\"ive"''
   */
   escapeWindowsArgs = concatMapStringsSep " " escapeWindowsArg;
 
