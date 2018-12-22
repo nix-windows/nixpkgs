@@ -14,7 +14,7 @@
 , self
 , CF, configd
 #, git
-, runCommand, p7zip
+, runCommand
 , python-setup-hook
 # For the Python package set
 , packageOverrides ? (self: super: {})
@@ -80,11 +80,10 @@ in stdenv.mkDerivation rec {
   pythonVersion = majorVersion;
   inherit majorVersion version src;
 
-  nativeBuildInputs = [ p7zip /*git*/ ];
+# nativeBuildInputs = [ p7zip /*git*/ ]; # 7z in part of stdenv
 
   dontConfigure = true;
-  # $ENV{PATH} = "$ENV{PATH};C:/Windows/System32/WindowsPowerShell/v1.0"; # powershell is only to download nuget.exe (remove later)
-  # copy('${nuget-bin}', 'externals/nuget.exe') or die $!;                # nuget is only to download python-bin
+
   buildPhase = ''
     dircopy('${python-bin}', 'externals/pythonx86') or die $!;
 
@@ -98,8 +97,6 @@ in stdenv.mkDerivation rec {
         print("f='$f'\n");
         rename($f, $f =~ s/cpython-(bin|source)-deps-//r) or die $!;
     }
-
-    $ENV{GIT} = 'c:/git/bin/git.exe'; # BUGBUG
 
     chdir('PCbuild');
     system("build.bat -p ${if stdenv.is64bit then "x64" else "Win32"} -c Release") == 0 or die "build.bat: $!";
