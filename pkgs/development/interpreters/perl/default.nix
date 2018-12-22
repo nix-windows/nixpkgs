@@ -35,7 +35,7 @@ let
       inherit sha256;
     };
 
-    disallowedReferences = [ stdenv.cc ];
+#   disallowedReferences = [ stdenv.cc ];
 
 #   unpackPhase = ''
 #       for my $k (sort (keys %ENV)) { print("ENV $k = '$ENV{$k}'\n"); }
@@ -54,7 +54,7 @@ let
 
     passthru.libPrefix = "lib";
 
-    doCheck = false; # some tests fail, expensive
+#   doCheck = false; # some tests fail, expensive
   })
   else let
     libc = if stdenv.cc.libc or null != null then stdenv.cc.libc else "/usr";
@@ -211,8 +211,8 @@ in rec {
 
   # the latest Maint version
   perl528 = common {
-    version = "5.28.0";
-    sha256 = "1a3f822lcl8dr8v0hk80yyhpzqlljg49z9flb48rs3nbsij9z4ky";
+    version = "5.28.1";
+    sha256 = "0iy3as4hnbjfyws4in3j9d6zhhjxgl5m95i5n9jy2bnzcpz8bgry";
   };
 
   # the latest Devel version
