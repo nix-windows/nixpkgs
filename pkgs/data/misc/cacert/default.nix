@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, nss, python, python3
+{ stdenv, fetchurlBoot, nss, python, python3
 , blacklist ? []
 , includeEmail ? false
 }:
@@ -7,7 +7,7 @@ with stdenv.lib;
 
 let
 
-  certdata2pem = fetchurl {
+  certdata2pem = fetchurlBoot {
     name = "certdata2pem.py";
     url = "https://salsa.debian.org/debian/ca-certificates/raw/debian/20170717/mozilla/certdata2pem.py";
     sha256 = "1d4q27j1gss0186a5m8bs5dk786w07ccyq0qi6xmd2zr1a8q16wy";
@@ -43,15 +43,15 @@ stdenv.mkDerivation rec {
   buildPhase = ''
     system('python certdata2pem.py') == 0 or die;
 
-    open(my $bundle, '>ca-bundle.crt') or die $!;
+    open(my $bundle, '>ca-bundle') or die $!;
     binmode $bundle;
-    for my $cert (glob('*.crt')) {
-      print $bundle ($cert =~ s/^([^.]+)\.crt$/\1/r =~ s/_/ /rg)."\n";
-      open (my $fcert, $cert) or die $!;
-      for my $line (<$fcert>) {
-        print $bundle $line;
-      }
-      close($fcert);
+    for my $filename (glob('*.crt')) {
+      local $/ = undef;
+      open (my $cert, $filename) or die $!;
+      my $content = <$cert>;
+      close($cert);
+      print $bundle ($filename =~ s/^([^.]+)\.crt$/\1/r =~ s/_/ /rg)."\n";
+      print $bundle $content;
       print $bundle "\n";
     }
   '';
@@ -61,7 +61,7 @@ stdenv.mkDerivation rec {
     mkdir("$ENV{out}/etc");
     mkdir("$ENV{out}/etc/ssl");
     mkdir("$ENV{out}/etc/ssl/certs");
-    copy('ca-bundle.crt', "$ENV{out}/etc/ssl/certs/");
+    copy('ca-bundle', "$ENV{out}/etc/ssl/certs/ca-bundle.crt");
   '';
     #   # install individual certs in unbundled output
     #   mkdir -pv $unbundled/etc/ssl/certs
