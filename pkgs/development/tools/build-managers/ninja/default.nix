@@ -39,7 +39,7 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-    mkpath("$ENV{out}/bin") or die "mkpath: $!";
+    make_path("$ENV{out}/bin") or die "make_path: $!";
     copy("ninja.exe", "$ENV{out}/bin") or die "copy: $!";
   '';
 

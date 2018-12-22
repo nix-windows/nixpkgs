@@ -57,7 +57,7 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-    mkpath("$ENV{out}/etc/ssl/certs");
+    make_path("$ENV{out}/etc/ssl/certs");
     copy('ca-bundle', "$ENV{out}/etc/ssl/certs/ca-bundle.crt");
   '';
     #   # install individual certs in unbundled output

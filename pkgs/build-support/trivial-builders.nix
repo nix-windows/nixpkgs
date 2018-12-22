@@ -62,13 +62,12 @@ rec {
       }
       ( if stdenv.hostPlatform.isMicrosoft then
       ''
-        use File::Path qw(mkpath);
         my $n = "$ENV{out}${destination}";
-        mkpath(dirname($n));
+        make_path(dirname($n));
         if (-e $ENV{textPath}) {
-          move($ENV{textPath}, $n) or die "$!";
+          move($ENV{textPath}, $n) or die "move($ENV{textPath}, $n): $!";
         } else {
-          open(my $fh, ">$n");
+          open(my $fh, ">$n") or die "open(>$n): $!";
           print $fh $ENV{textPath};
           close($fh);
         }

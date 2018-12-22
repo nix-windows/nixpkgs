@@ -3,7 +3,7 @@ use Cwd qw(getcwd);
 use File::Basename qw(dirname basename);
 use File::Copy qw(copy move);
 use File::Copy::Recursive qw(dircopy);
-use File::Path qw(mkpath rmtree);
+use File::Path qw(make_path remove_tree);
 
 # set -eu
 # set -o pipefail

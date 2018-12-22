@@ -8,7 +8,7 @@ print("I am nix-prefetch-git.pl ".(join ' ', @ARGV)."\n");
 
 
 use Cwd;
-use File::Path qw(rmtree);
+use File::Path qw(remove_tree);
 use File::Find qw(find);
 use File::Basename qw(basename);
 
@@ -296,7 +296,7 @@ sub _clone_user_rev {
 
   if (!$leaveDotGit) {
     print STDERR "removing \`.git'...\n";
-    sub process1 { if ($_ =~ /\/\.git$/) { print STDERR "removing $_\n";                   rmtree($_);                                 } };
+    sub process1 { if ($_ =~ /\/\.git$/) { print STDERR "removing $_\n";                   remove_tree($_);                            } };
     find({ wanted => \&process1, no_chdir => 1}, $dir);
   } else {
     sub process2 { if ($_ =~ /\/\.git$/) { print STDERR "make_deterministic_repo $_/..\n"; make_deterministic_repo(readlink("$_/..")); } };
@@ -359,7 +359,7 @@ $branchName = 'fetchgit' unless $branchName;
 if ($builder) {
   usage() unless $out && $url && $rev;
   if (-e $out) {
-      rmtree($out); sleep(1);
+      remove_tree($out); sleep(1);
   }
   mkdir($out) or die "mkdir($out): $!";
   clone_user_rev($out, $url, $rev);

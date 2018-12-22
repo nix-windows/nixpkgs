@@ -239,7 +239,7 @@ in
       cc-wrapper = stdenv.mkDerivation {
         name = "${msvc.name}+${sdk.name}+${msbuild.name}";
         buildCommand = ''
-          mkpath("$ENV{out}/bin") or die "mkpath $ENV{out}/bin: $!";
+          make_path("$ENV{out}/bin") or die "make_path $ENV{out}/bin: $!";
 
           for my $name ('cl', 'ml64', 'lib', 'link', 'nmake', 'mc', 'mt', 'rc', 'dumpbin', 'csc', 'msbuild') {
             my $target;
