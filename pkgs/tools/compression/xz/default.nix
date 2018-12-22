@@ -54,9 +54,7 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-    mkdir($ENV{out});
-    mkdir("$ENV{out}/lib");
-    mkdir("$ENV{out}/include");
+    mkpath("$ENV{out}/lib", "$ENV{out}/include") or die $!;
     ${if enableStatic then ''
         copy("windows/vs2017/Release/x64/liblzma/liblzma.lib",     "$ENV{out}/lib") or die $!; # static lib
 
@@ -69,7 +67,7 @@ stdenv.mkDerivation rec {
         close($in) or die $!;
         close($out) or die $!;
       '' else ''
-        mkdir("$ENV{out}/bin");
+        mkpath("$ENV{out}/bin");
         copy("windows/vs2017/Release/x64/liblzma_dll/liblzma.dll", "$ENV{out}/bin") or die $!;
         copy("windows/vs2017/Release/x64/liblzma_dll/liblzma.lib", "$ENV{out}/lib") or die $!;
         copy("src/liblzma/api/lzma.h",                             "$ENV{out}/include") or die $!;

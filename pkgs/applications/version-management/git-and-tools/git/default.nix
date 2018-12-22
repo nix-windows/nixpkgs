@@ -188,8 +188,7 @@ stdenv.mkDerivation {
       system("link.exe", "/out:git-remote-https.exe", '/DEBUG', '/LTCG', '/SUBSYSTEM:CONSOLE', glob('gitrhobjs/*.obj'), "libgit.lib", "xdiff.lib", 'advapi32.lib', 'ws2_32.lib', 'user32.lib', "${zlib}/lib/zlib.lib", "${curl}/lib/libcurl.lib");
   '';
   installPhase = ''
-    mkdir($ENV{out})                                   or die "mkdir $ENV{out}: $!";
-    mkdir("$ENV{out}/bin")                             or die "mkdir $ENV{out}/bin: $!";
+    mkpath("$ENV{out}/bin")                            or die "mkpath $ENV{out}/bin: $!";
     copy("git.exe",                  "$ENV{out}/bin/") or die "copy git.exe: $!";
     copy("git.pdb",                  "$ENV{out}/bin/") or die "copy git.pdb: $!";
     copy("git-remote-http.exe",      "$ENV{out}/bin/") or die "copy git-remote-http.exe: $!";
