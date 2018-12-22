@@ -102,12 +102,10 @@ in stdenv.mkDerivation rec {
     system("build.bat -p ${if stdenv.is64bit then "x64" else "Win32"} -c Release") == 0 or die "build.bat: $!";
   '';
   installPhase = ''
-    mkdir $ENV{out};
-    mkdir "$ENV{out}/bin";
+    make_path("$ENV{out}/bin", "$ENV{out}/DLLs", "$ENV{out}/libs");
     for my $name ('python.exe', 'python.pdb', 'pythonw.exe', 'pythonw.pdb', 'python3.dll', 'python3.pdb', 'python37.dll', 'python37.pdb') {
       copy("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/bin/" ) or die "copy $name: $!";
     }
-    mkdir "$ENV{out}/DLLs";
     for my $name ('libcrypto-1_1${if stdenv.is64bit then "-x64" else ""}.dll',
                   'libssl-1_1${if stdenv.is64bit then "-x64" else ""}.dll',
                   'pyexpat.pyd', 'select.pyd', 'sqlite3.dll', 'unicodedata.pyd', 'winsound.pyd', '_asyncio.pyd',
@@ -116,7 +114,6 @@ in stdenv.mkDerivation rec {
                   '_sqlite3.pyd', '_ssl.pyd') {
       copy("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/DLLs/") or die "copy $name: $!";
     }
-    mkdir "$ENV{out}/libs";
     for my $name ('pyexpat.lib', 'python3.lib', 'python37.lib', 'select.lib', 'sqlite3.lib', 'unicodedata.lib', 'winsound.lib',
                   '_asyncio.lib', '_bz2.lib', '_contextvars.lib', '_ctypes.lib', '_decimal.lib',
                  #'_distutils_findvs.lib',

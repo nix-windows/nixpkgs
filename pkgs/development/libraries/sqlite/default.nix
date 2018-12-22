@@ -37,12 +37,7 @@ stdenv.mkDerivation rec {
     system("nmake /f Makefile.msc core FOR_WIN10=1 PLATFORM=x64") == 0 or die $!;
   '';
   installPhase = ''
-    mkdir $ENV{out} or die;
-    mkdir "$ENV{out}/bin" or die;
-    mkdir "$ENV{out}/lib" or die;
-    mkdir "$ENV{out}/include" or die;
-
-    use File::Copy qw(copy);
+    make_path("$ENV{out}/bin", "$ENV{out}/lib", "$ENV{out}/include");
     copy 'winsqlite3shell.exe', "$ENV{out}/bin/";
     copy 'winsqlite3.dll',      "$ENV{out}/bin/";
     copy 'winsqlite3.lib',      "$ENV{out}/lib/";
