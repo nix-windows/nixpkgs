@@ -313,7 +313,7 @@ rec {
        escapeWindowsArg ''esc"a'peme''
        => ''"esc""a'peme"''
   */
-  escapeWindowsArg = arg: ''"${replaceStrings [''"''] [''""''] (toString s)}"'';
+  escapeWindowsArg = arg: ''"${replaceStrings [''"''] [''""''] (toString arg)}"'';
 
   /* Quote all arguments to be safely passed to the Bourne shell.
 
