@@ -1,11 +1,23 @@
-﻿use strict;
+#!perl
+
+# This is to be run on Windows where Visual Studio, ActivePerl and 7zip are installed; Nix is not needed
+
+use strict;
 use warnings;
 use Cwd;
 use Math::BigInt;
 use Digest::SHA             qw(sha256_hex);
+use Digest::file            qw(digest_file_hex);
 use File::Copy              qw(copy move);
 use File::Copy::Recursive   qw(dircopy);
 use File::Path              qw(make_path remove_tree);
+use File::Fetch;
+
+
+unless (-f '7z.exe' && digest_file_hex('7z.exe', "SHA-256") eq '47462483fe54776e01d8ceb8ff9fd5bf2c3f1f01d852a54d878914f62f98f2d3') {
+  File::Fetch->new(uri => "https://github.com/volth/nixpkgs/releases/download/windows-0.2/7z.exe")->fetch(to=>"./");
+}
+die unless -f '7z.exe' && digest_file_hex('7z.exe', "SHA-256") eq '47462483fe54776e01d8ceb8ff9fd5bf2c3f1f01d852a54d878914f62f98f2d3';
 
 my $msvc_version = "14.16.27023";
 my $sdk_version = "10.0.17134.0";
@@ -87,7 +99,7 @@ sub writeNar {
     } elsif (-f $path) {
 #     print STDERR "FILE $path\n";
       &$writeString("regular");
-      if (-x $path) {
+      if ($^O ne 'MSWin32' && -x $path) {
         &$writeString("executable");
         &$writeString("");
       }
@@ -106,8 +118,16 @@ sub writeNar {
 }
 
 my $wd = getcwd();
+#my $compression = '-mx1'; # fast
+my $compression = '';
 
-unless (-d "msvc-$msvc_version.nar") {
+print qq[
+      msvc-version = "$msvc_version";
+      sdk-version = "$sdk_version";
+      msbuild-version = "$msbuild_version";
+];
+
+unless (-d "msvc-$msvc_version.nar.xz") {
     remove_tree("msvc");
     make_path("msvc");
     dircopy("C:/Program Files (x86)/~Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc_version}/atlmfc",  "msvc/atlmfc" ) or die "$!";
@@ -117,23 +137,25 @@ unless (-d "msvc-$msvc_version.nar") {
     dircopy("C:/Program Files (x86)/~Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc_version}/vcperf",  "msvc/vcperf" ) or die "$!";
     dircopy("C:/Program Files (x86)/~Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc_version}/crt",     "msvc/crt"    ) or die "$!";
 
-    my $msvc_nar    = writeNar(">msvc-$msvc_version.nar",       "msvc",    "sha256");
+    my $msvc_nar    = writeNar("| 7z a $compression -si msvc-$msvc_version.nar.xz",       "msvc",    "sha256");
     print qq[
       msvc = import <nix/fetchurl.nix> {
         name = "msvc-$msvc_version";
-        #url = "https://github.com/volth/nixpkgs/releases/download/windows-0.1/msvc-$msvc_version.nar.xz"; 
-        url = "file://$wd/msvc-$msvc_version.nar";
+        #url = "https://github.com/volth/nixpkgs/releases/download/windows-0.2/msvc-$msvc_version.nar.xz";
+        url = "file://$wd/msvc-$msvc_version.nar.xz";
         unpack = true;
-        outputHash = "$msvc_nar->{NarHash}";
+        sha256 = "$msvc_nar->{NarHash}";
       };
     ];
 }
 
-unless (-f "sdk-$sdk_version.nar") {
+unless (-f "sdk-$sdk_version.nar.xz") {
     remove_tree("sdk");
     make_path("sdk");
 
-    dircopy("C:/Program Files (x86)/~Windows Kits/10", "sdk") or die "$!";
+    dircopy("C:/Program Files (x86)/~Windows Kits/10",                                   "sdk") or die "$!";
+    dircopy("C:/Program Files (x86)/~Microsoft Visual Studio/Preview/Community/DIA SDK", "sdk/DIA SDK") or die "$!"; # for chromium?
+
     # so far there is no `substituteInPlace`
     for my $filename (glob("sdk/DesignTime/CommonConfiguration/Neutral/*.props")) {
         open(my $in, $filename) or die $!;
@@ -147,49 +169,51 @@ unless (-f "sdk-$sdk_version.nar") {
         close($out);
         move("$filename.new", $filename) or die $!;
     }
-    dircopy("C:/Program Files (x86)/~Microsoft Visual Studio/Preview/Community/DIA SDK", "sdk/") or die "$!";
 
-    my $sdk_nar     = writeNar(">sdk-$sdk_version.nar",         "sdk",     "sha256");
+    my $sdk_nar     = writeNar("| 7z a $compression -si sdk-$sdk_version.nar.xz",         "sdk",     "sha256");
     print qq[
       sdk = import <nix/fetchurl.nix> {
         name = "sdk-$sdk_version";
-        url = "file://$wd/sdk-$sdk_version.nar";
+        #url = "https://github.com/volth/nixpkgs/releases/download/windows-0.2/sdk-$sdk_version.nar.xz";
+        url = "file://$wd/sdk-$sdk_version.nar.xz";
         unpack = true;
         sha256 = "$sdk_nar->{NarHash}";
       };
     ];
 }
 
-unless (-f "msbuild-$msbuild_version.nar") {
+unless (-f "msbuild-$msbuild_version.nar.xz") {
     remove_tree("msbuild");
     make_path("msbuild");
 
     dircopy("C:/Program Files (x86)/~Microsoft Visual Studio/Preview/Community/MSBuild", "msbuild") or die "$!";
 
-    my $msbuild_nar = writeNar(">msbuild-$msbuild_version.nar", "msbuild", "sha256");
+    my $msbuild_nar = writeNar("| 7z a $compression -si msbuild-$msbuild_version.nar.xz", "msbuild", "sha256");
     print qq[
       msbuild = import <nix/fetchurl.nix> {
         name = "msbuild-$msbuild_version";
-        url = "file://$wd/msbuild-$msbuild_version.nar";
+        #url = "https://github.com/volth/nixpkgs/releases/download/windows-0.2/msbuild-$msbuild_version.nar.xz";
+        url = "file://$wd/msbuild-$msbuild_version.nar.xz";
         unpack = true;
-        outputHash = "$msbuild_nar->{NarHash}";
+        sha256 = "$msbuild_nar->{NarHash}";
       };
     ];
 }
 
-unless (-f "vc1-$msbuild_version.nar") {
+unless (-f "vc1-$msbuild_version.nar.xz") {
     remove_tree("vc1");
     make_path("vc1");
 
     dircopy("C:/Program Files (x86)/~Microsoft Visual Studio/Preview/Community/Common7/IDE/VC", "vc1") or die "$!";
 
-    my $vc1_nar     = writeNar(">vc1-$msbuild_version.nar",     "vc1",     "sha256");
+    my $vc1_nar     = writeNar("| 7z a $compression -si vc1-$msbuild_version.nar.xz",     "vc1",     "sha256");
     print qq[
       vc1 = import <nix/fetchurl.nix> {
         name = "vc1-$msbuild_version";
-        url = "file://$wd/vc1-$msbuild_version.nar";
+        #url = "https://github.com/volth/nixpkgs/releases/download/windows-0.2/vc1-$msbuild_version.nar.xz";
+        url = "file://$wd/vc1-$msbuild_version.nar.xz";
         unpack = true;
-        outputHash = "$vc1_nar->{NarHash}";
+        sha256 = "$vc1_nar->{NarHash}";
       };
     ];
 }
