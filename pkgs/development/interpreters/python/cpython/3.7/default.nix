@@ -98,6 +98,19 @@ in stdenv.mkDerivation rec {
         rename($f, $f =~ s/cpython-(bin|source)-deps-//r) or die $!;
     }
 
+    for my $filename (glob('PCbuild/*.vcxproj')) {
+      open(my $in, $filename) or die $!;
+      open(my $out, ">$filename.new") or die $!;
+      for my $line (<$in>) {
+        $line =~ s|(<PropertyGroup Label="Globals">)|\1<WindowsTargetPlatformVersion>${stdenv.cc.sdk-version}</WindowsTargetPlatformVersion>|g;
+        $line =~ s|ToolsVersion="4\.0"|ToolsVersion="${stdenv.cc.msbuild-version}"|g;
+        print $out $line;
+      }
+      close($in);
+      close($out);
+      move("$filename.new", $filename) or die $!;
+    }
+
     chdir('PCbuild');
     system("build.bat -p ${if stdenv.is64bit then "x64" else "Win32"} -c Release") == 0 or die "build.bat: $!";
   '';
