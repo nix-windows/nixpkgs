@@ -1,4 +1,7 @@
-﻿use strict;
+#!perl
+# This is ti be run on Windows where Visual Studio, ActivePerl and 7zip are installed
+
+use strict;
 use warnings;
 use Cwd;
 use Math::BigInt;
