@@ -41,13 +41,9 @@ in stdenv.mkDerivation {
   configurePhase = ''
     system("bootstrap.bat vc141");
 
-    open(my $fh, ">$ENV{NIX_BUILD_TOP}/fakevcvars.bat");
-    print $fh "PATH=${stdenv.cc}/bin;%PATH%";
-    close($fh);
-
     open(my $fh, ">project-config.jam");
     print $fh "import option ;\n";
-    print $fh "using msvc : 14.1 : : <setup>".($ENV{NIX_BUILD_TOP} =~ s,\\,/,gr)."/fakevcvars.bat ;\n";
+    print $fh "using msvc : 14.1 : : <setup>${stdenv.cc}/VC/vcvarsall.bat ;\n";
     print $fh "option.set keep-going : false ;\n";
     close($fh);
   '';
