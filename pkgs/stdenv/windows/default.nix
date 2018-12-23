@@ -5,9 +5,6 @@
 assert crossSystem == null;
 
 let
-# inherit (localSystem) system;
-
-
   # copy of C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc-version}
   msvc-version = "14.16.27023";
   msvc = import <nix/fetchurl.nix> {
@@ -16,22 +13,6 @@ let
     unpack = true;
     outputHash = "16v8qsjajvym39yc0crg59hmwds4m42sgf95nz5v02fiysv78zqw";
   };
-# msvc = stdenvNoCC.mkDerivation rec {
-#   name = "msvc-${msvc-version}";
-#   preferLocalBuild = true;
-#   buildCommand = ''
-#     mkdir($ENV{out});
-#    #dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc-version}/atlmfc",  "$ENV{out}/atlmfc" ) or die "$!";
-#     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc-version}/bin",     "$ENV{out}/bin"    ) or die "$!";
-#     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc-version}/include", "$ENV{out}/include") or die "$!";
-#     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc-version}/lib",     "$ENV{out}/lib"    ) or die "$!";
-#     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc-version}/vcperf",  "$ENV{out}/vcperf" ) or die "$!";
-#     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc-version}/crt",     "$ENV{out}/crt"    ) or die "$!";
-#   '';
-#   outputHashMode = "recursive";
-#   outputHashAlgo = "sha256";
-#   outputHash = "16v8qsjajvym39yc0crg59hmwds4m42sgf95nz5v02fiysv78zqw";
-# };
 
   # copy of "C:/Program Files (x86)/Windows Kits/10"
   sdk-version = "10.0.17134.0";
@@ -41,30 +22,6 @@ let
     unpack = true;
     sha256 = "134i0dlq6vmicbg5rdm9z854p1s3nsdb5lhbv1k2190rv2jmig11";
   };
-# sdk = stdenvNoCC.mkDerivation {
-#   name = "sdk-${sdk-version}";
-#   preferLocalBuild = true;
-#   buildCommand = ''
-#     dircopy("C:/Program Files (x86)/Windows Kits/10", $ENV{out}) or die "$!";
-#
-#     # so far there is no `substituteInPlace`
-#     for my $filename (glob("$ENV{out}/DesignTime/CommonConfiguration/Neutral/*.props")) {
-#       open(my $in, $filename) or die $!;
-#       open(my $out, ">$filename.new") or die $!;
-#       for my $line (<$in>) {
-#         $line =~ s|\$\(Registry:HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots\@KitsRoot10\)|\$([MSBUILD]::GetDirectoryNameOfFileAbove('\$(MSBUILDTHISFILEDIRECTORY)', 'sdkmanifest.xml'))\\|g;
-#         $line =~ s|(\$\(Registry:[^)]+\))|<!-- $1 -->|g;
-#         print $out $line;
-#       }
-#       close($in);
-#       close($out);
-#       move("$filename.new", $filename) or die $!;
-#     }
-#   '';
-#   outputHashMode = "recursive";
-#   outputHashAlgo = "sha256";
-#   outputHash = "134i0dlq6vmicbg5rdm9z854p1s3nsdb5lhbv1k2190rv2jmig11";
-# };
 
   # copy of "C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/MSBuild"
   msbuild-version = "15.0";
@@ -74,16 +31,6 @@ let
     unpack = true;
     outputHash = "1yqx3yvvamid5d9yza7ya84vdxg89zc7qvm2b5m9v8hsmymjrvg6";
   };
-# msbuild = stdenvNoCC.mkDerivation {
-#   name = "msbuild-${msbuild-version}";
-#   preferLocalBuild = true;
-#   buildCommand = ''
-#     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/MSBuild", $ENV{out}) or die "$!";
-#   '';
-#   outputHashMode = "recursive";
-#   outputHashAlgo = "sha256";
-#   outputHash = "1yqx3yvvamid5d9yza7ya84vdxg89zc7qvm2b5m9v8hsmymjrvg6";
-# };
 
   # copy of "C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/Common7/IDE/VC"
   # to compile .vcprojx (for example Python3)
@@ -93,16 +40,6 @@ let
     unpack = true;
     outputHash = "0q2pshj3vaacwvg6ikbhhyc5pmyx9p2rsj353mqbywydj2c21mjf";
   };
-# vc1 = stdenvNoCC.mkDerivation {
-#   name = "vc-${msvc-version}";
-#   preferLocalBuild = true;
-#   buildCommand = ''
-#     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/Common7/IDE/VC", $ENV{out}) or die "$!";
-#   '';
-#   outputHashMode = "recursive";
-#   outputHashAlgo = "sha256";
-#   outputHash = "0q2pshj3vaacwvg6ikbhhyc5pmyx9p2rsj353mqbywydj2c21mjf";
-# };
 
   msvc-INCLUDE = "${msvc}/include;${sdk}/include/${sdk-version}/ucrt;${sdk}/include/${sdk-version}/shared;${sdk}/include/${sdk-version}/um;${sdk}/include/${sdk-version}/winrt;${sdk}/include/${sdk-version}/cppwinrt";
   msvc-LIB     = "${msvc}/lib/x64;${sdk}/lib/${sdk-version}/ucrt/x64;${sdk}/lib/${sdk-version}/um/x64";
@@ -276,7 +213,7 @@ in
           isGNU = false;
           inherit msvc sdk msbuild msvc-version sdk-version msbuild-version vc /*vc1*/ /*perl-for-stdenv-shell*/;
           makeWrapper = prevStage.makeWrapper;
-          perl-for-stdenv-shell = prevStage.perl-for-stdenv-shell;
+#         perl-for-stdenv-shell = prevStage.perl-for-stdenv-shell;
 #         p7zip-static = prevStage.p7zip-static;
 #         curl = prevStage.curl-static;
         };
