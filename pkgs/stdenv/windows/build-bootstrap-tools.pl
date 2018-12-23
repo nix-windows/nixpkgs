@@ -87,7 +87,7 @@ sub writeNar {
     } elsif (-f $path) {
 #     print STDERR "FILE $path\n";
       &$writeString("regular");
-      if (-x $path) {
+      if ($^O ne 'MSWin32' && -x $path) {
         &$writeString("executable");
         &$writeString("");
       }
@@ -107,7 +107,13 @@ sub writeNar {
 
 my $wd = getcwd();
 
-unless (-d "msvc-$msvc_version.nar") {
+print qq[
+      msvc-version = "$msvc_version";
+      sdk-version = "$sdk_version";
+      msbuild-version = "$msbuild_version";
+];
+
+unless (-d "msvc-$msvc_version.nar.xz") {
     remove_tree("msvc");
     make_path("msvc");
     dircopy("C:/Program Files (x86)/~Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc_version}/atlmfc",  "msvc/atlmfc" ) or die "$!";
@@ -117,19 +123,19 @@ unless (-d "msvc-$msvc_version.nar") {
     dircopy("C:/Program Files (x86)/~Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc_version}/vcperf",  "msvc/vcperf" ) or die "$!";
     dircopy("C:/Program Files (x86)/~Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc_version}/crt",     "msvc/crt"    ) or die "$!";
 
-    my $msvc_nar    = writeNar(">msvc-$msvc_version.nar",       "msvc",    "sha256");
+    my $msvc_nar    = writeNar("| 7z a -si msvc-$msvc_version.nar.xz",       "msvc",    "sha256");
     print qq[
       msvc = import <nix/fetchurl.nix> {
         name = "msvc-$msvc_version";
-        #url = "https://github.com/volth/nixpkgs/releases/download/windows-0.1/msvc-$msvc_version.nar.xz"; 
-        url = "file://$wd/msvc-$msvc_version.nar";
+        #url = "https://github.com/volth/nixpkgs/releases/download/windows-0.1/msvc-$msvc_version.nar.xz";
+        url = "file://$wd/msvc-$msvc_version.nar.xz";
         unpack = true;
         outputHash = "$msvc_nar->{NarHash}";
       };
     ];
 }
 
-unless (-f "sdk-$sdk_version.nar") {
+unless (-f "sdk-$sdk_version.nar.xz") {
     remove_tree("sdk");
     make_path("sdk");
 
@@ -149,45 +155,48 @@ unless (-f "sdk-$sdk_version.nar") {
     }
     dircopy("C:/Program Files (x86)/~Microsoft Visual Studio/Preview/Community/DIA SDK", "sdk/") or die "$!";
 
-    my $sdk_nar     = writeNar(">sdk-$sdk_version.nar",         "sdk",     "sha256");
+    my $sdk_nar     = writeNar("| 7z a -si sdk-$sdk_version.nar.xz",         "sdk",     "sha256");
     print qq[
       sdk = import <nix/fetchurl.nix> {
         name = "sdk-$sdk_version";
-        url = "file://$wd/sdk-$sdk_version.nar";
+        #url = "https://github.com/volth/nixpkgs/releases/download/windows-0.1/sdk-$sdk_version.nar.xz";
+        url = "file://$wd/sdk-$sdk_version.nar.xz";
         unpack = true;
         sha256 = "$sdk_nar->{NarHash}";
       };
     ];
 }
 
-unless (-f "msbuild-$msbuild_version.nar") {
+unless (-f "msbuild-$msbuild_version.nar.xz") {
     remove_tree("msbuild");
     make_path("msbuild");
 
     dircopy("C:/Program Files (x86)/~Microsoft Visual Studio/Preview/Community/MSBuild", "msbuild") or die "$!";
 
-    my $msbuild_nar = writeNar(">msbuild-$msbuild_version.nar", "msbuild", "sha256");
+    my $msbuild_nar = writeNar("| 7z a -si msbuild-$msbuild_version.nar.xz", "msbuild", "sha256");
     print qq[
       msbuild = import <nix/fetchurl.nix> {
         name = "msbuild-$msbuild_version";
-        url = "file://$wd/msbuild-$msbuild_version.nar";
+        #url = "https://github.com/volth/nixpkgs/releases/download/windows-0.1/msbuild-$msbuild_version.nar.xz";
+        url = "file://$wd/msbuild-$msbuild_version.nar.xz";
         unpack = true;
         outputHash = "$msbuild_nar->{NarHash}";
       };
     ];
 }
 
-unless (-f "vc1-$msbuild_version.nar") {
+unless (-f "vc1-$msbuild_version.nar.xz") {
     remove_tree("vc1");
     make_path("vc1");
 
     dircopy("C:/Program Files (x86)/~Microsoft Visual Studio/Preview/Community/Common7/IDE/VC", "vc1") or die "$!";
 
-    my $vc1_nar     = writeNar(">vc1-$msbuild_version.nar",     "vc1",     "sha256");
+    my $vc1_nar     = writeNar("| 7z a -si vc1-$msbuild_version.nar.xz",     "vc1",     "sha256");
     print qq[
       vc1 = import <nix/fetchurl.nix> {
         name = "vc1-$msbuild_version";
-        url = "file://$wd/vc1-$msbuild_version.nar";
+        #url = "https://github.com/volth/nixpkgs/releases/download/windows-0.1/vc1-$msbuild_version.nar.xz";
+        url = "file://$wd/vc1-$msbuild_version.nar.xz";
         unpack = true;
         outputHash = "$vc1_nar->{NarHash}";
       };

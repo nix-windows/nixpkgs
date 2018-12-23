@@ -5,40 +5,36 @@
 assert crossSystem == null;
 
 let
-  # copy of C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc-version}
   msvc-version = "14.16.27023";
-  msvc = import <nix/fetchurl.nix> {
-    name = "msvc-${msvc-version}";
-    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.1/msvc-${msvc-version}.nar.xz"; #"file://C:/msys64/home/User/t/msvc-${msvc-version}.nar.xz";
-    unpack = true;
-    outputHash = "16v8qsjajvym39yc0crg59hmwds4m42sgf95nz5v02fiysv78zqw";
-  };
-
-  # copy of "C:/Program Files (x86)/Windows Kits/10"
   sdk-version = "10.0.17134.0";
-  sdk = import <nix/fetchurl.nix> {
-    name = "sdk-${sdk-version}";
-    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.1/sdk-${sdk-version}.nar.xz"; #"file://C:/msys64/home/User/t/sdk-${sdk-version}.nar.xz";
-    unpack = true;
-    sha256 = "134i0dlq6vmicbg5rdm9z854p1s3nsdb5lhbv1k2190rv2jmig11";
-  };
-
-  # copy of "C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/MSBuild"
   msbuild-version = "15.0";
-  msbuild = import <nix/fetchurl.nix> {
-    name = "msbuild-${msbuild-version}";
-    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.1/msbuild-${msbuild-version}.nar.xz"; #"file://C:/msys64/home/User/t/msbuild-${msbuild-version}.nar.xz";
+
+  msvc = import <nix/fetchurl.nix> {
+    name = "msvc-14.16.27023";
+    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.2/msvc-14.16.27023.nar.xz";
     unpack = true;
-    outputHash = "1yqx3yvvamid5d9yza7ya84vdxg89zc7qvm2b5m9v8hsmymjrvg6";
+    outputHash = "7a38bb78963a97ff164330d2dc3dd936971e5aa07394afdd72aa9a92eeac8318";
   };
 
-  # copy of "C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/Common7/IDE/VC"
-  # to compile .vcprojx (for example Python3)
-  vc1 = import <nix/fetchurl.nix> {
-    name = "vc1-${msbuild-version}";
-    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.1/vc-${msbuild-version}.nar.xz"; #"file://C:/msys64/home/User/t/vc-${msbuild-version}.nar.xz";
+  sdk = import <nix/fetchurl.nix> {
+    name = "sdk-10.0.17134.0";
+    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.2/sdk-10.0.17134.0.nar.xz";
     unpack = true;
-    outputHash = "0q2pshj3vaacwvg6ikbhhyc5pmyx9p2rsj353mqbywydj2c21mjf";
+    sha256 = "48df3897cfd793eec97751c6d434b0878c306512cf83fd8c5d2d3d0b3f2b5325";
+  };
+
+  msbuild = import <nix/fetchurl.nix> {
+    name = "msbuild-15.0";
+    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.2/msbuild-15.0.nar.xz";
+    unpack = true;
+    outputHash = "45988cf191783ec9defb712d5e46121a882fa7cff3532a99dbfd4445e96d83a8";
+  };
+
+  vc1 = import <nix/fetchurl.nix> {
+    name = "vc1-15.0";
+    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.2/vc1-15.0.nar.xz";
+    unpack = true;
+    outputHash = "4ed6209890cd73bf701d65489dc54dddd75b988770cd68dee64ca93d24d45760";
   };
 
   msvc-INCLUDE = "${msvc}/include;${sdk}/include/${sdk-version}/ucrt;${sdk}/include/${sdk-version}/shared;${sdk}/include/${sdk-version}/um;${sdk}/include/${sdk-version}/winrt;${sdk}/include/${sdk-version}/cppwinrt";
@@ -73,7 +69,8 @@ in
     p7zip-static = stdenv.mkDerivation {
       name = "7z-18.05-static";
       src = fetchurlBoot {
-        url = "file://C:/Program%20Files/7-Zip/7z.exe"; # TODO: http://
+       #url = "file://C:/Program%20Files/7-Zip/7z.exe";
+        url = "https://github.com/volth/nixpkgs/releases/download/windows-0.2/7z.exe";
         sha256 = "1lzjk0pzc549hx6salnq04gkyb5zsngzzf6fv00nwxslzs1j8ij7";
       };
       builder = lib.concatStringsSep " & " [ ''md %out%\bin''
