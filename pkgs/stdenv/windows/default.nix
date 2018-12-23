@@ -6,35 +6,35 @@ assert crossSystem == null;
 
 let
   msvc-version = "14.16.27023";
-  sdk-version = "10.0.17134.0";
+  sdk-version = "10.0.17763.0";
   msbuild-version = "15.0";
 
   msvc = import <nix/fetchurl.nix> {
-    name = "msvc-14.16.27023";
-    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.2/msvc-14.16.27023.nar.xz";
+    name = "msvc-${msvc-version}";
+    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/msvc-${msvc-version}.nar.xz";
     unpack = true;
-    sha256 = "7a38bb78963a97ff164330d2dc3dd936971e5aa07394afdd72aa9a92eeac8318";
+    sha256 = "2c3307db0c7f9b6f2a93f147da22960440aec9070a8916dfac7d5651b0e700da";
   };
 
   sdk = import <nix/fetchurl.nix> {
-    name = "sdk-10.0.17134.0";
-    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.2/sdk-10.0.17134.0.nar.xz";
+    name = "sdk-${sdk-version}";
+    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/sdk-${sdk-version}.nar.xz";
     unpack = true;
-    sha256 = "31158792d7961b0727afa5736a6ea0762e34c276580b8bcee7d4b0c2109f537c";
+    sha256 = "ae43ffd01f53bef2ef6f2056dd87da30e46f02fdbcd2719dc382292106279369";
   };
 
   msbuild = import <nix/fetchurl.nix> {
-    name = "msbuild-15.0";
-    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.2/msbuild-15.0.nar.xz";
+    name = "msbuild-${msbuild-version}";
+    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/msbuild-${msbuild-version}.nar.xz";
     unpack = true;
-    sha256 = "45988cf191783ec9defb712d5e46121a882fa7cff3532a99dbfd4445e96d83a8";
+    sha256 = "59538ff87dff578642f606f38325813bf18ea051786954bb6fa3c5a4dd9f9c41";
   };
 
   vc1 = import <nix/fetchurl.nix> {
-    name = "vc1-15.0";
-    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.2/vc1-15.0.nar.xz";
+    name = "vc1-${msbuild-version}";
+    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/vc1-${msbuild-version}.nar.xz";
     unpack = true;
-    sha256 = "4ed6209890cd73bf701d65489dc54dddd75b988770cd68dee64ca93d24d45760";
+    sha256 = "0d861aeb29a9d88746a70c9d89007639c7d9107cfba8fa1139f68ee21ddf744b";
   };
 
   msvc-INCLUDE = "${msvc}/include;${msvc}/atlmfc/include;${sdk}/include/${sdk-version}/ucrt;${sdk}/include/${sdk-version}/shared;${sdk}/include/${sdk-version}/um;${sdk}/include/${sdk-version}/winrt;${sdk}/include/${sdk-version}/cppwinrt";
@@ -69,7 +69,7 @@ in
       name = "7z-18.05-static";
       src = fetchurlBoot {
        #url = "file://C:/Program%20Files/7-Zip/7z.exe";
-        url = "https://github.com/volth/nixpkgs/releases/download/windows-0.2/7z.exe";
+        url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/7z.exe";
         sha256 = "1lzjk0pzc549hx6salnq04gkyb5zsngzzf6fv00nwxslzs1j8ij7";
       };
       builder = lib.concatStringsSep " & " [ ''md %out%\bin''
