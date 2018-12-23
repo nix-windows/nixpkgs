@@ -34,6 +34,9 @@ in
 if stdenv.hostPlatform.isMicrosoft then
 
 let
+  libPrefix = "python${majorVersion}";
+  sitePackages = "Lib/site-packages";
+
   nuget-bin = fetchurl {
     url = "https://dist.nuget.org/win-x86-commandline/v4.8.1/nuget.exe";
     sha256 = "0zy3fygyakrm8jix0i4q3rzr3lhbj9g5p4jxxc1yn8k0g64av0d6";
@@ -141,6 +144,26 @@ in stdenv.mkDerivation rec {
 # passthru.nuget = nuget-bin;
 # passthru.python-bin = python-bin;
 # passthru.dep-bzip2 = dep-bzip2;
+
+  passthru = let
+    pythonPackages = callPackage ../../../../../top-level/python-packages.nix {
+      python = self;
+      overrides = packageOverrides;
+    };
+  in rec {
+    inherit libPrefix sitePackages;
+#   executable = "${libPrefix}m";
+#   buildEnv = callPackage ../../wrapper.nix { python = self; inherit (pythonPackages) requiredPythonModules; };
+#   withPackages = import ../../with-packages.nix { inherit buildEnv pythonPackages;};
+    pkgs = pythonPackages;
+    isPy3 = true;
+    isPy37 = true;
+    interpreter = "${self}/bin/python.exe";
+  };
+
+  meta = {
+    platforms = stdenv.lib.platforms.windows;
+  };
 }
 
 else

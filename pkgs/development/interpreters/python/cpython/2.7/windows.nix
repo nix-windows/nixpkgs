@@ -9,7 +9,7 @@
 #, sqlite
 #, tcl ? null, tk ? null, tix ? null, xlibsWrapper ? null, libX11 ? null, x11Support ? false
 #, zlib
-#, callPackage
+, callPackage
 , self
 #, db
 #, expat
@@ -19,7 +19,7 @@
 ## Some proprietary libs assume UCS2 unicode, especially on darwin :(
 #, ucsEncoding ? 4
 ## For the Python package set
-#, packageOverrides ? (self: super: {})
+, packageOverrides ? (self: super: {})
 , withExternals ? true
 }:
 
@@ -30,7 +30,7 @@ let
   minorVersionSuffix = "";
   version = "${majorVersion}.${minorVersion}${minorVersionSuffix}";
   libPrefix = "python${majorVersion}";
-  sitePackages = "lib/${libPrefix}/site-packages";
+  sitePackages = "Lib/site-packages";
 
   src = fetchurl {
     url = "https://www.python.org/ftp/python/${majorVersion}.${minorVersion}/Python-${version}.tar.xz";
@@ -152,4 +152,24 @@ stdenv.mkDerivation ({
     dircopy('../Lib',     "$ENV{out}/Lib"    ) or die "dircopy Lib: $!";
     dircopy('../Tools',   "$ENV{out}/Tools"  ) or die "dircopy Tools: $!";
   '';
+
+  passthru = let
+    pythonPackages = callPackage ../../../../../top-level/python-packages.nix {
+      python = self;
+      overrides = packageOverrides;
+    };
+  in rec {
+    inherit libPrefix sitePackages; # x11Support hasDistutilsCxxPatch ucsEncoding;
+#   executable = libPrefix;
+#   buildEnv = callPackage ../../wrapper.nix { python = self; inherit (pythonPackages) requiredPythonModules; };
+#   withPackages = import ../../with-packages.nix { inherit buildEnv pythonPackages;};
+    pkgs = pythonPackages;
+    isPy2 = true;
+    isPy27 = true;
+    interpreter = "${self}/bin/python.exe";
+  };
+
+  meta = {
+    platforms = stdenv.lib.platforms.windows;
+  };
 })
