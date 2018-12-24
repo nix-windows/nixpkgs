@@ -6,6 +6,7 @@ assert crossSystem == null;
 
 let
   msvc-version = "14.16.27023";
+  redist-version = "14.16.27012";
   sdk-version = "10.0.17763.0";
   msbuild-version = "15.0";
 
@@ -14,6 +15,13 @@ let
     url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/msvc-${msvc-version}.nar.xz";
     unpack = true;
     sha256 = "2c3307db0c7f9b6f2a93f147da22960440aec9070a8916dfac7d5651b0e700da";
+  };
+
+  redist = import <nix/fetchurl.nix> {
+    name = "redist-${redist-version}";
+    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/redist-${redist-version}.nar.xz";
+    unpack = true;
+    sha256 = "5efca79f200c6a0795e3fd00544723aee42c2e502f77fe74edc7ecd77ac61578";
   };
 
   sdk = import <nix/fetchurl.nix> {
@@ -39,6 +47,7 @@ let
 
   msvc-INCLUDE = "${msvc}/include;${msvc}/atlmfc/include;${sdk}/include/${sdk-version}/ucrt;${sdk}/include/${sdk-version}/shared;${sdk}/include/${sdk-version}/um;${sdk}/include/${sdk-version}/winrt;${sdk}/include/${sdk-version}/cppwinrt";
   msvc-LIB     = "${msvc}/lib/x64;${msvc}/atlmfc/lib/x64;${sdk}/lib/${sdk-version}/ucrt/x64;${sdk}/lib/${sdk-version}/um/x64";
+  msvc-LIBPATH = "${msvc}/lib/x64;${msvc}/atlmfc/lib/x64;${msvc}/lib/x86/store/references;${sdk}/UnionMetadata/${sdk-version};${sdk}/References/${sdk-version}";
   msvc-PATH    = "${msvc}/bin/HostX64/x64;${sdk}/bin/${sdk-version}/x64;${sdk}/bin/x64";
 in
 
@@ -195,7 +204,7 @@ in
                   , '--prefix', 'PATH',             ';', '${msvc-PATH};${msbuild}/${msbuild-version}/bin/Roslyn;${msbuild}/${msbuild-version}/bin'
                   , '--suffix', 'INCLUDE',          ';', '${msvc-INCLUDE}'
                   , '--suffix', 'LIB',              ';', '${msvc-LIB}'
-                  , '--suffix', 'LIBPATH',          ';', '${msvc}/lib/x64;${msvc}/lib/x86/store/references;${sdk}/UnionMetadata/${sdk-version};${sdk}/References/${sdk-version}'
+                  , '--suffix', 'LIBPATH',          ';', '${msvc-LIBPATH}'
                   , '--suffix', 'WindowsLibPath',   ';', '${sdk}/UnionMetadata/${sdk-version};${sdk}/References/${sdk-version}'
                   , '--set',    'WindowsSDKLibVersion',  '${sdk-version}'
                   , '--set',    'WindowsSDKVersion',     '${sdk-version}'
@@ -241,7 +250,10 @@ in
           targetPrefix = "";
           isClang = false;
           isGNU = false;
-          inherit msvc sdk msbuild msvc-version sdk-version msbuild-version vc /*vc1*/ /*perl-for-stdenv-shell*/;
+          inherit msvc msvc-version  redist redist-version  sdk sdk-version  msbuild msbuild-version vc /*vc1*/ /*perl-for-stdenv-shell*/;
+          INCLUDE = msvc-INCLUDE;
+          LIB     = msvc-LIB;
+          LIBPATH = msvc-LIBPATH;
           makeWrapper = prevStage.makeWrapper;
 #         perl-for-stdenv-shell = prevStage.perl-for-stdenv-shell;
 #         p7zip-static = prevStage.p7zip-static;

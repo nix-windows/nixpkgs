@@ -20,6 +20,7 @@ unless (-f '7z.exe' && digest_file_hex('7z.exe', "SHA-256") eq '47462483fe54776e
 die unless -f '7z.exe' && digest_file_hex('7z.exe', "SHA-256") eq '47462483fe54776e01d8ceb8ff9fd5bf2c3f1f01d852a54d878914f62f98f2d3';
 
 my $msvc_version = "14.16.27023";
+my $redist_version = "14.16.27012";
 my $sdk_version = "10.0.17763.0";
 my $msbuild_version = "15.0";
 
@@ -123,6 +124,7 @@ my $compression = '';
 
 print qq[
       msvc-version = "$msvc_version";
+      redist-version = "$redist_version";
       sdk-version = "$sdk_version";
       msbuild-version = "$msbuild_version";
 ];
@@ -145,6 +147,24 @@ unless (-d "msvc-$msvc_version.nar.xz") {
         #url = "file://$wd/msvc-\${msvc-version}.nar.xz";
         unpack = true;
         sha256 = "$msvc_nar->{NarHash}";
+      };
+    ];
+}
+
+unless (-d "redist-$redist_version.nar.xz") {
+    remove_tree("redist");
+    make_path("redist");
+    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Redist/MSVC/${redist_version}/x86",  "redist/x86"  ) or die "$!";
+    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Redist/MSVC/${redist_version}/x64",  "redist/x64"  ) or die "$!";
+
+    my $redist_nar    = writeNar("| 7z a $compression -si redist-$redist_version.nar.xz",       "redist",    "sha256");
+    print qq[
+      redist = import <nix/fetchurl.nix> {
+        name = "redist-\${redist-version}";
+        url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/redist-\${redist-version}.nar.xz";
+        #url = "file://$wd/redist-\${redist-version}.nar.xz";
+        unpack = true;
+        sha256 = "$redist_nar->{NarHash}";
       };
     ];
 }
