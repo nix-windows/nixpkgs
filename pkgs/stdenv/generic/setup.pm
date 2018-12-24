@@ -24,6 +24,23 @@ sub readFile {
     return $content;
 }
 
+sub writeFile {
+    my ($filename, $content) = @_;
+    make_path(dirname($filename)) or die "$!" unless -d dirname($filename);
+    open my $fh, ">$filename" or die "writeFile($filename) failed: $!";
+    binmode $fh; # do not emit \r
+    print $fh $content;
+    close $fh;
+}
+
+sub changeFile (&@) {
+    my $lambda = \&{shift @_};
+    for my $filename (@_) {
+        $_ = readFile($filename);
+        writeFile($filename, $lambda->($_));
+    }
+}
+
 sub escapeWindowsArg {
     my ($s) = @_;
     $s =~ s|\\$|\\\\|g;
@@ -77,9 +94,11 @@ sub runHook {
             if (-f $ENV{$hook}) {
                 print("FILE hook=$hook $ENV{$hook}\n");
                 eval readFile($ENV{$hook});
+                if ($@) { print "$@" ; die; }
             } else {
                 print("ENV hook=$hook $ENV{$hook}\n");
                 eval "$ENV{$hook}";
+                if ($@) { print "$@" ; die; }
             }
         } else {
             print("IGNORE hook=$hook ref(hook)=[".ref($hook)."]\n");
