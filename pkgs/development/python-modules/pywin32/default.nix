@@ -19,14 +19,11 @@ buildPythonPackage rec {
 # doCheck = false;
 #    copy '${./setup.py}', 'setup.py';
 
-  buildPhase = ''
-    $ENV{PYTHONPATH} = "${setuptools}/${python.sitePackages};$ENV{PYTHONPATH}";  # TODO: some hook should handle this
-    $ENV{INCLUDE} = "${python}/include";                                         # TODO: some hook should handle this
+  postPatch = ''
+    # We know where python.dll is, no need for heuristic search
+    changeFile { s|\Q"%s\\%s\\%s"), app_dir, py_dll_candidates[i]\E|"${ builtins.replaceStrings [''/'' ''\''] [''\\\\'' ''\\\\''] "${python}/bin/%s"}")|gr    } 'Pythonwin\Win32uiHostGlue.h';
 
-    $ENV{MSSDK_INCLUDE} = '${stdenv.cc.msvc}/include'; # do not let setup.py to read registry
-    $ENV{MSSDK_LIB}     = '${stdenv.cc.msvc}/lib';
-
-    # This symbol not defined in modern SDK
+    # This symbol is not defined in modern SDK
     changeFile { s|\Q#define JOB_OBJECT_RESERVED_LIMIT_VALID_FLAGS JOB_OBJECT_RESERVED_LIMIT_VALID_FLAGS||gr } 'win32\src\win32job.i';
 
     # Do not build manifests
@@ -45,6 +42,14 @@ buildPythonPackage rec {
 
     # No need to register COM objects
     writeFile 'pywin32_postinstall.py', '#';
+  '';
+
+  buildPhase = ''
+    $ENV{PYTHONPATH} = "${setuptools}/${python.sitePackages};$ENV{PYTHONPATH}";  # TODO: some hook should handle this
+    $ENV{INCLUDE} = "${python}/include";                                         # TODO: some hook should handle this
+
+    $ENV{MSSDK_INCLUDE} = '${stdenv.cc.msvc}/include'; # do not let setup.py to read registry
+    $ENV{MSSDK_LIB}     = '${stdenv.cc.msvc}/lib';
 
     system("${python.interpreter} setup.py install --prefix=$ENV{out}") == 0 or die;
   '';
@@ -56,6 +61,8 @@ buildPythonPackage rec {
                        "$ENV{out}/${python.sitePackages}/win32/pythonservice.exe") {
         move($file, "$ENV{out}/bin/") or die "move($file): $!";
     }
+
+    copy('${stdenv.cc.redist}/x64/Microsoft.VC141.MFC/mfc140.dll', "$ENV{out}/${python.sitePackages}/pythonwin") or die "copy(mfc140.dll): $!";
   '';
 
   meta = with lib; {

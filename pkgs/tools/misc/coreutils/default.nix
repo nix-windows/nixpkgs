@@ -10,6 +10,13 @@
 , singleBinary ? "symlinks" # you can also pass "shebangs" or false
 }:
 
+
+if stdenv.hostPlatform.isMicrosoft then
+
+  throw "coreutils??"
+
+else
+
 assert aclSupport -> acl != null;
 assert selinuxSupport -> libselinux != null && libsepol != null;
 

@@ -91,19 +91,24 @@ with pkgs;
 
   autoPatchelfHook = makeSetupHook { name = "auto-patchelf-hook"; }
     ../build-support/setup-hooks/auto-patchelf.sh;
-
+/*
   ensureNewerSourcesHook = { year }: makeSetupHook {}
+   (if stdenv.hostPlatform.isMicrosoft then
+    (writeScript "ensure-newer-sources-hook.pl" ''
+      print("TODO: I am ensure-newer-sources-hook.pl\n");
+    '')
+    else
     (writeScript "ensure-newer-sources-hook.sh" ''
       postUnpackHooks+=(_ensureNewerSources)
       _ensureNewerSources() {
         '${findutils}/bin/find' "$sourceRoot" \
           '!' -newermt '${year}-01-01' -exec touch -h -d '${year}-01-02' '{}' '+'
       }
-    '');
-
+    ''));
+*/
   # Zip file format only allows times after year 1980, which makes e.g. Python wheel building fail with:
   # ValueError: ZIP does not support timestamps before 1980
-  ensureNewerSourcesForZipFilesHook = ensureNewerSourcesHook { year = "1980"; };
+/*ensureNewerSourcesForZipFilesHook = ensureNewerSourcesHook { year = "1980"; }; */
 
   updateAutotoolsGnuConfigScriptsHook = makeSetupHook
     { substitutions = { gnu_config = gnu-config;}; }
@@ -134,7 +139,10 @@ with pkgs;
 
   diffPlugins = (callPackage ../build-support/plugins.nix {}).diffPlugins;
 
-  dieHook = makeSetupHook {} ../build-support/setup-hooks/die.sh;
+  dieHook = if stdenv.hostPlatform.isMicrosoft then
+              throw "dieHook??"
+            else
+              makeSetupHook {} ../build-support/setup-hooks/die.sh;
 
   archiver = callPackage ../applications/misc/archiver { };
 
@@ -344,7 +352,10 @@ with pkgs;
       inherit contents compressor prepend;
     };
 
-  makeWrapper = makeSetupHook { deps = [ dieHook ]; }
+  makeWrapper = if stdenv.hostPlatform.isMicrosoft then
+                  stdenv.cc.makeWrapper
+                else
+                  makeSetupHook { deps = [ dieHook ]; }
                               ../build-support/setup-hooks/make-wrapper.sh;
 
   makeModulesClosure = { kernel, firmware, rootModules, allowMissing ? false }:

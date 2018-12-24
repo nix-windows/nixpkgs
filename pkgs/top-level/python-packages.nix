@@ -138,7 +138,10 @@ in {
 
   # helpers
 
-  wrapPython = callPackage ../development/interpreters/python/wrap-python.nix {inherit python; inherit (pkgs) makeSetupHook makeWrapper; };
+  wrapPython = if stdenv.hostPlatform.isMicrosoft then
+      throw "wrapPython??"
+    else
+      callPackage ../development/interpreters/python/wrap-python.nix {inherit python; inherit (pkgs) makeSetupHook makeWrapper; };
 
   # specials
 
@@ -4998,6 +5001,7 @@ in {
 
   nanoleaf = callPackage ../development/python-modules/nanoleaf { };
 
+  pywin32 = callPackage ../development/python-modules/pywin32 { };
 });
 
 in fix' (extends overrides packages)

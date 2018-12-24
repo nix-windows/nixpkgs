@@ -200,8 +200,15 @@ foreach my $relName (sort keys %symlinks) {
         mkpath $abs or die "cannot create directory `$abs': $!";
     } else {
         #print "creating symlink $relName to $target\n";
-        symlink $target, $abs ||
-            die "error creating link `$abs': $!";
+        if ($^O eq 'MSWin32') {
+            $target =~ s#[/\\]+#\\#g; # sanitize mklink's input
+            $abs    =~ s#[/\\]+#\\#g;
+            system('mklink', -d $target ? '/D' : (), $abs, $target) == 0 ||
+                die "error creating link `$abs': $!";
+        } else {
+            symlink $target, $abs ||
+                die "error creating link `$abs': $!";
+        }
         $nrLinks++;
     }
 }

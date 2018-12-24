@@ -2,7 +2,7 @@
 # a fork of the buildEnv in the Nix distribution.  Most changes should
 # eventually be merged back into the Nix distribution.
 
-{ buildPackages, runCommand, lib }:
+{ stdenv, buildPackages, runCommand, lib }:
 
 lib.makeOverridable
 ({ name
@@ -66,7 +66,15 @@ runCommand name
     # XXX: The size is somewhat arbitrary
     passAsFile = if builtins.stringLength pkgs >= 128*1024 then [ "pkgs" ] else null;
   }
+  (if stdenv.hostPlatform.isMicrosoft then ''
+    eval readFile('${./builder.pl}');
+    if ($@) { print "$@" ; die; }
+
+    print("postBuild to eval='$postBuild'\n");
+    eval "$postBuild";
+    if ($@) { print "$@" ; die; }
+  '' else
   ''
     ${buildPackages.perl}/bin/perl -w ${./builder.pl}
     eval "$postBuild"
-  '')
+  ''))

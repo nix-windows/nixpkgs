@@ -236,7 +236,10 @@ rec {
    *               } ./myscript.sh;
    */
   makeSetupHook = { name ? "hook", deps ? [], substitutions ? {} }: script:
-    runCommand name substitutions
+    if stdenv.hostPlatform.isMicrosoft then
+      throw "makeSetupHook?? ${name} ${script}"
+    else
+      runCommand name substitutions
       (''
         mkdir -p $out/nix-support
         cp ${script} $out/nix-support/setup-hook

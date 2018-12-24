@@ -2,6 +2,13 @@
 , coreutils
 }:
 
+if stdenv.hostPlatform.isMicrosoft then
+
+  throw "findutils??"
+
+else
+
+
 stdenv.mkDerivation rec {
   name = "findutils-4.6.0";
 

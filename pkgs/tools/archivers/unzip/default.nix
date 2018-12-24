@@ -3,6 +3,12 @@
 , enableNLS ? false, libnatspec
 }:
 
+if stdenv.hostPlatform.isMicrosoft then
+
+  throw "unzip??"
+
+else
+
 stdenv.mkDerivation {
   name = "unzip-6.0";
 

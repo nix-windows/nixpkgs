@@ -137,9 +137,11 @@ in stdenv.mkDerivation rec {
                   '_queue.lib', '_socket.lib', '_sqlite3.lib', '_ssl.lib', '_tkinter.lib') {
       copy("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/libs/") or die "copy $name: $!";
     }
-    dircopy('../Include', "$ENV{out}/Include") or die "dircopy Include: $!";
-    dircopy('../Lib',     "$ENV{out}/Lib"    ) or die "dircopy Lib: $!";
-    dircopy('../Tools',   "$ENV{out}/Tools"  ) or die "dircopy Tools: $!";
+    dircopy '../Include',                                         "$ENV{out}/Include"  or die "dircopy Include: $!";
+       copy '../PC/pyconfig.h',                                   "$ENV{out}/Include/" or die "copy PC/pyconfig.h: $!";
+    dircopy '../Lib',                                             "$ENV{out}/Lib"      or die "dircopy Lib: $!";
+    dircopy '../Tools',                                           "$ENV{out}/Tools"    or die "dircopy Tools: $!";
+       copy '${stdenv.cc.msvc}/bin/Hostx64/x64/vcruntime140.dll', "$ENV{out}/bin/"     or die "dircopy vcruntime140.dll: $!";
   '';
 # passthru.nuget = nuget-bin;
 # passthru.python-bin = python-bin;
@@ -152,7 +154,7 @@ in stdenv.mkDerivation rec {
     };
   in rec {
     inherit libPrefix sitePackages;
-#   executable = "${libPrefix}m";
+    executable = "python.exe";
 #   buildEnv = callPackage ../../wrapper.nix { python = self; inherit (pythonPackages) requiredPythonModules; };
 #   withPackages = import ../../with-packages.nix { inherit buildEnv pythonPackages;};
     pkgs = pythonPackages;

@@ -3,10 +3,10 @@
 { lib
 , config
 , python
-, wrapPython
+/*, wrapPython*/
 , setuptools
-, unzip
-, ensureNewerSourcesForZipFilesHook
+/*, unzip*/
+/*, ensureNewerSourcesForZipFilesHook*/
 # Whether the derivation provides a Python module or not.
 , toPythonModule
 , namePrefix
@@ -70,11 +70,11 @@ toPythonModule (python.stdenv.mkDerivation (builtins.removeAttrs attrs [
 
   name = namePrefix + name;
 
-  nativeBuildInputs = [ ensureNewerSourcesForZipFilesHook ]
+  nativeBuildInputs = [ /*ensureNewerSourcesForZipFilesHook*/ ]
     ++ nativeBuildInputs;
 
-  buildInputs = [ wrapPython ]
-    ++ lib.optional (lib.hasSuffix "zip" (attrs.src.name or "")) unzip
+  buildInputs = [ /*wrapPython*/ ]
+/*  ++ lib.optional (lib.hasSuffix "zip" (attrs.src.name or "")) unzip */
     ++ lib.optional catchConflicts setuptools # If we no longer propagate setuptools
     ++ buildInputs
     ++ pythonPath;
@@ -87,7 +87,9 @@ toPythonModule (python.stdenv.mkDerivation (builtins.removeAttrs attrs [
   doInstallCheck = doCheck;
   installCheckInputs = checkInputs;
 
-  postFixup = lib.optionalString (!dontWrapPythonPrograms) ''
+  postFixup = if python.stdenv.hostPlatform.isMicrosoft then ''
+    print("TODO: I am mk-python-derivation postFixup; removeBinBytecode=${toString removeBinBytecode} catchConflicts=${toString catchConflicts}\n");
+  '' else (lib.optionalString (!dontWrapPythonPrograms) ''
     wrapPythonPrograms
   '' + lib.optionalString removeBinBytecode ''
     if [ -d "$out/bin" ]; then
@@ -99,7 +101,7 @@ toPythonModule (python.stdenv.mkDerivation (builtins.removeAttrs attrs [
     # If this happens, something went wrong with the dependencies specs.
     # Intentionally kept in a subdirectory, see catch_conflicts/README.md.
     ${python.interpreter} ${./catch_conflicts}/catch_conflicts.py
-  '' + attrs.postFixup or '''';
+  '' + attrs.postFixup or '''');
 
   meta = {
     # default to python's platforms

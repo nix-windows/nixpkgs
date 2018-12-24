@@ -96,7 +96,7 @@ sub ref_from_hash {
 # Return the hash of a reference if it exists on the remote repository.
 sub hash_from_ref {
   my ($ref) = @_;
-  return $1 if `git ls-remote origin` =~ /^(.+)\s+\Q$ref\R$/m;
+  return $1 if `git ls-remote origin` =~ /^(.+)\s+\Q$ref\E$/m;
   return '';
 }
 
