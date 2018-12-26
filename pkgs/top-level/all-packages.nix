@@ -13146,9 +13146,9 @@ with pkgs;
 
   perlcritic = perlPackages.PerlCritic;
 
-  msysPackages = recurseIntoAttrs (callPackage ./msys-packages.nix { });
+  msysPackages = recurseIntoAttrs (callPackage ../development/mingw-modules/msys-packages.nix { });
 
-  mingwPackages = recurseIntoAttrs (callPackage ./mingw-packages.nix { });
+  mingwPackages = recurseIntoAttrs (callPackage ../development/mingw-modules/mingw-packages.nix { });
 
   sqitchPg = callPackage ../development/tools/misc/sqitch {
     name = "sqitch-pg";

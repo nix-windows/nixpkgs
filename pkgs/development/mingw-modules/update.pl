@@ -36,7 +36,7 @@ sub isBroken {
   my $seen = shift;
 
   if ($seen->{$name}) {
-    print("seen $name\n");
+#   print("seen $name\n");
     return 0;
   }
   my $seen2 = { %$seen }; # copy
@@ -44,14 +44,15 @@ sub isBroken {
 
 # my %desc = %{$repo{$name}};
   if ($repo->{$name}->{broken}) {
-    print("cached $name\n");
+#   print("cached $name\n");
     return 1;
   }
 
-  for my $dep (@{$repo->{$name}->{DEPENDS}}) {
-    $dep = $1 if $dep =~ /([^>]+)(>=|=)([^>]+)/;
+  for (@{$repo->{$name}->{DEPENDS}}) {
+    my $dep = /([^>]+)(>=|=)([^>]+)/ ? $1 : $_;
 #   print("check $name->$dep\n");
-    if (exists($repo->{$dep})) {
+    if ($dep eq 'sh' || $dep eq 'awk' || $dep eq 'libjpeg') {
+    } elsif (exists($repo->{$dep})) {
       if (isBroken($repo, $dep, $seen2)) {
         $repo->{$name}->{broken} = 1;
         return 1;
@@ -75,7 +76,7 @@ sub isBroken {
 sub emitNix {
   my ($out, $baseUrl, $repo) = @_;
 print $out
-qq< # GENERATED FILE
+qq[ # GENERATED FILE
 {config, lib, stdenvNoCC, fetchurl}:
 
 let
@@ -92,10 +93,20 @@ let
         dircopy '.',       "\$ENV{out}/";
       '' +
       lib.concatMapStringsSep "\\n" (dep: ''
-        for my \$dll (glob('\${dep}/bin/*.dll')) {
-          #copy \$dll, "\$ENV{out}/bin/";
-          system('mklink', ("\$ENV{out}/bin/".basename(\$dll)) =~ s|/|\\\\|gr, \$dll =~ s|/|\\\\|gr);
-        }
+        use File::Find qw(find);
+        sub process {
+          my \$src = \$_;
+          my \$rel = substr(\$src, length '\${dep}');
+          my \$tgt = "\$ENV{out}\$rel";
+          return if \$rel =~ /^(\\/\.[A-Z]+|)\$/;
+          print("\$_ -> \$tgt\\n");
+          if (-d \$src) {
+            make_path(\$tgt);
+          } else {
+            system('mklink', \$tgt =~ s|/|\\\\|gr, \$src =~ s|/|\\\\|gr);
+          }
+        };
+        find({ wanted => \\&process, no_chdir => 1}, '\${dep}');
       '') buildInputs;
       meta.broken = broken;
     };
@@ -103,14 +114,18 @@ let
   _self = with self;
 {
   callPackage = pkgs.newScope self;
->;
+];
+
+  print $out  "  sh = bash;\n"                if !exists($repo->{sh})      && exists($repo->{bash});
+  print $out  "  awk = gawk;\n"               if !exists($repo->{awk})     && exists($repo->{gawk});
+  print $out  "  libjpeg = libjpeg-turbo;\n"  if !exists($repo->{libjpeg}) && exists($repo->{'libjpeg-turbo'});
 
 for my $name (sort (keys %$repo)) {
-# next unless $name =~ /^curl/;
+# next unless $name =~ /^perl-HTTP-M/;
   my %desc = %{$repo->{$name}};
   my $version = $desc{VERSION} =~ s/-\d+$//r;
-#  $name = "\"$name\"" unless okName($name);
-# dd \%desc;
+
+# dd \%desc if $name =~ /^perl-HTTP-M/;
 
   print $out
 qq<
@@ -126,21 +141,20 @@ qq<
                                my $op = '';
                                my $ver;
 
-                               if (/([^>]+)(>=|=)([^>]+)/) {
+                               if ($dep =~ /([^>]+)(>=|=)([^>]+)/) {
                                  $dep = $1;
                                  $op = $2;
                                  $ver = $3 =~ s/-\d+$//r;
                                }
 
-                               unless (exists($repo->{$dep})) {
-                                 if (exists($repo->{"$dep-git"})) {
-                                   $dep = "$dep-git";
-#                                } elsif ($dep eq 'libjpeg' && exists($repo{"$name-turbo"})) {
-#                                  $dep = "$dep-turbo";
-                                 } else {
-                                   print STDERR "broken dependency $name -> $dep\n";
-                                 }
+                               if ($dep eq 'sh' || $dep eq 'awk' || $dep eq 'libjpeg') {
+                               } elsif (exists($repo->{$dep})) {
+                               } elsif (exists($repo->{"$dep-git"})) {
+                                 $dep = "$dep-git";
+                               } else {
+#                                 print STDERR "broken dependency $name -> $dep\n";
                                }
+
                                my $refdep = okName($dep) ? $dep : "self.\"$dep\"";
 
                                if ($op eq '>=') { # todo: check version right here

@@ -15,10 +15,20 @@ let
         dircopy '.',       "$ENV{out}/";
       '' +
       lib.concatMapStringsSep "\n" (dep: ''
-        for my $dll (glob('${dep}/bin/*.dll')) {
-          #copy $dll, "$ENV{out}/bin/";
-          system('mklink', ("$ENV{out}/bin/".basename($dll)) =~ s|/|\\|gr, $dll =~ s|/|\\|gr);
-        }
+        use File::Find qw(find);
+        sub process {
+          my $src = $_;
+          my $rel = substr($src, length '${dep}');
+          my $tgt = "$ENV{out}$rel";
+          return if $rel =~ /^(\/.[A-Z]+|)$/;
+          print("$_ -> $target\n");
+          if (-d $src) {
+            make_path($tgt);
+          } else {
+            system('mklink', $tgt =~ s|/|\\|gr, $src =~ s|/|\\|gr);
+          }
+        };
+        find({ wanted => \&process, no_chdir => 1}, '${dep}');
       '') buildInputs;
       meta.broken = broken;
     };
@@ -26,6 +36,8 @@ let
   _self = with self;
 {
   callPackage = pkgs.newScope self;
+  sh = bash;
+  awk = gawk;
 
   "apr" = fetch {
     name        = "apr";
@@ -69,7 +81,6 @@ let
     filename    = "asciidoc-8.6.10-1-any.pkg.tar.xz";
     sha256      = "e925ea8f5194e542519bd63a92c0efb3c1a871189e6695f54426ea16db2fa2ad";
     buildInputs = [ python2 libxslt docbook-xsl ];
-    broken      = true;
   };
 
   "aspell" = fetch {
@@ -102,7 +113,6 @@ let
     filename    = "atool-0.39.0-1-any.pkg.tar.xz";
     sha256      = "1b3a8d8b402d356d9e1690959aa10523944271c660476f6af20e9ccf59c0a5a5";
     buildInputs = [ file perl ];
-    broken      = true;
   };
 
   "autoconf" = fetch {
@@ -111,7 +121,6 @@ let
     filename    = "autoconf-2.69-5-any.pkg.tar.xz";
     sha256      = "aaf1390524fa573a7f210e12203f0fcdb550028fb33badeb6e67d56ae57abbbb";
     buildInputs = [ awk m4 diffutils bash perl ];
-    broken      = true;
   };
 
   "autoconf-archive" = fetch {
@@ -127,7 +136,6 @@ let
     filename    = "autoconf2.13-2.13-2-any.pkg.tar.xz";
     sha256      = "99abc626148147ceb79ec99e374d9c5c2e7e54df2234043bf6b5b715206a6983";
     buildInputs = [ awk m4 diffutils bash ];
-    broken      = true;
   };
 
   "autogen" = fetch {
@@ -136,7 +144,6 @@ let
     filename    = "autogen-5.18.16-1-x86_64.pkg.tar.xz";
     sha256      = "bbef2ab6b6c831bc79a36f5dd571534b62a14c16f29e32c615cc39a237ab085a";
     buildInputs = [ gcc-libs gmp libcrypt libffi libgc libguile libxml2 ];
-    broken      = true;
   };
 
   "automake-wrapper" = fetch {
@@ -145,7 +152,6 @@ let
     filename    = "automake-wrapper-11-1-any.pkg.tar.xz";
     sha256      = "fc95a33b5ca011a01209ec6a6e3f58cced6ff074bdf8fa2ac627669ecaaefeb7";
     buildInputs = [ bash gawk self."automake1.6" self."automake1.7" self."automake1.7" self."automake1.8" self."automake1.9" self."automake1.10" self."automake1.11" self."automake1.12" self."automake1.13" self."automake1.14" self."automake1.15" self."automake1.16" ];
-    broken      = true;
   };
 
   "automake1.10" = fetch {
@@ -154,7 +160,6 @@ let
     filename    = "automake1.10-1.10.3-3-any.pkg.tar.xz";
     sha256      = "c1e0465e94f63b60aa7e7377ec50506e76d7d7e76fa1e403afb5065bfaa4465c";
     buildInputs = [ perl bash ];
-    broken      = true;
   };
 
   "automake1.11" = fetch {
@@ -163,7 +168,6 @@ let
     filename    = "automake1.11-1.11.6-3-any.pkg.tar.xz";
     sha256      = "c014f65044f654d8c18a98bfe81aea347c7ea8a01a8e876acbc94dbdc45653b2";
     buildInputs = [ perl bash ];
-    broken      = true;
   };
 
   "automake1.12" = fetch {
@@ -172,7 +176,6 @@ let
     filename    = "automake1.12-1.12.6-3-any.pkg.tar.xz";
     sha256      = "fb95e705ac548990b4749d42806adb6016a15d80cae52901df4e4af72c1510b0";
     buildInputs = [ perl bash ];
-    broken      = true;
   };
 
   "automake1.13" = fetch {
@@ -181,7 +184,6 @@ let
     filename    = "automake1.13-1.13.4-4-any.pkg.tar.xz";
     sha256      = "8da64de7957b2fedf0a6c7ae4588fd969125065a7412107287c362ab20b29f55";
     buildInputs = [ perl bash ];
-    broken      = true;
   };
 
   "automake1.14" = fetch {
@@ -190,7 +192,6 @@ let
     filename    = "automake1.14-1.14.1-3-any.pkg.tar.xz";
     sha256      = "773e78c17a75dd5d81f42f28e435a018265dd11928e7c0f0f11d5effb5f3f211";
     buildInputs = [ perl bash ];
-    broken      = true;
   };
 
   "automake1.15" = fetch {
@@ -199,7 +200,6 @@ let
     filename    = "automake1.15-1.15.1-1-any.pkg.tar.xz";
     sha256      = "18398ccee25a92bc3d22cf8bf2da2ebcc7403018b276e342bdf67367d870c102";
     buildInputs = [ perl bash ];
-    broken      = true;
   };
 
   "automake1.16" = fetch {
@@ -208,7 +208,6 @@ let
     filename    = "automake1.16-1.16.1-1-any.pkg.tar.xz";
     sha256      = "3efda150dbc0d740bc361f0aaa754f84c5b5229300e66291887fd2fcd4cd48b7";
     buildInputs = [ perl bash ];
-    broken      = true;
   };
 
   "automake1.6" = fetch {
@@ -217,7 +216,6 @@ let
     filename    = "automake1.6-1.6.3-2-any.pkg.tar.xz";
     sha256      = "66e1ee5830053ade6cfd5cb1250a0834b07e92a5b71928e50f4ed41d72e6c445";
     buildInputs = [ perl bash ];
-    broken      = true;
   };
 
   "automake1.7" = fetch {
@@ -226,7 +224,6 @@ let
     filename    = "automake1.7-1.7.9-2-any.pkg.tar.xz";
     sha256      = "f8c22aa7aeb506ac3a3ff42085defb7429b2dcc693f9511d44b5034666b850d6";
     buildInputs = [ perl bash ];
-    broken      = true;
   };
 
   "automake1.8" = fetch {
@@ -235,7 +232,6 @@ let
     filename    = "automake1.8-1.8.5-3-any.pkg.tar.xz";
     sha256      = "53e2919b6d285de612357f7b2886f959911369928c7d9a3a7d14684d48fecb10";
     buildInputs = [ perl bash ];
-    broken      = true;
   };
 
   "automake1.9" = fetch {
@@ -244,7 +240,6 @@ let
     filename    = "automake1.9-1.9.6-2-any.pkg.tar.xz";
     sha256      = "0d160a58595aee6ca86ec883ab884549b8a793b4a88cd223ec86b45c1b6d002e";
     buildInputs = [ perl bash ];
-    broken      = true;
   };
 
   "axel" = fetch {
@@ -300,7 +295,6 @@ let
     filename    = "bison-3.2.2-1-x86_64.pkg.tar.xz";
     sha256      = "dc043fb973e6eeb6869e1bb494325b735cc4d47624d1b016c36ce18b836bcd81";
     buildInputs = [ m4 sh ];
-    broken      = true;
   };
 
   "bisonc++" = fetch {
@@ -340,7 +334,6 @@ let
     filename    = "bsdcpio-3.3.3-3-x86_64.pkg.tar.xz";
     sha256      = "e2b48e299b41cd7824ae26dbe4f6a8fcaafc360ddf4003b5f8c95bbe80d672b9";
     buildInputs = [ gcc-libs libbz2 libiconv libexpat liblzma liblz4 liblzo2 libnettle libxml2 zlib ];
-    broken      = true;
   };
 
   "bsdtar" = fetch {
@@ -349,7 +342,6 @@ let
     filename    = "bsdtar-3.3.3-3-x86_64.pkg.tar.xz";
     sha256      = "0f8e926a306a8eccd307b31cc85e3a132ec010d3588cd49472535b7abaa27fe0";
     buildInputs = [ gcc-libs libbz2 libiconv libexpat liblzma liblz4 liblzo2 libnettle libxml2 zlib ];
-    broken      = true;
   };
 
   "busybox" = fetch {
@@ -390,7 +382,6 @@ let
     filename    = "ca-certificates-20180409-1-any.pkg.tar.xz";
     sha256      = "9ffb48ac5d11d6d51c5d817039ec901c5e919072ed775335ca50d1f9e2196821";
     buildInputs = [ bash openssl findutils coreutils sed p11-kit ];
-    broken      = true;
   };
 
   "ccache" = fetch {
@@ -407,7 +398,6 @@ let
     filename    = "cdecl-2.5-1-x86_64.pkg.tar.xz";
     sha256      = "b49ead1877dcee37018b4b404088d53ee0dfa01cc4d83ad62bf8f4511b89d71b";
     buildInputs = [ libedit ];
-    broken      = true;
   };
 
   "cgdb" = fetch {
@@ -424,7 +414,6 @@ let
     filename    = "clang-svn-60106.1d5b05f-1-x86_64.pkg.tar.xz";
     sha256      = "a393952ed135e66bab949f28e5a40fba6d2d89f8c4c3cf4221b231358359a82d";
     buildInputs = [ llvm-svn ];
-    broken      = true;
   };
 
   "cloc" = fetch {
@@ -433,7 +422,6 @@ let
     filename    = "cloc-1.80-1-any.pkg.tar.xz";
     sha256      = "7aa63e31e7946ae2c42f03480df5eaf83c76dfc99db892a430bbd74794c81d3f";
     buildInputs = [ perl perl-Algorithm-Diff perl-Regexp-Common perl-Parallel-ForkManager ];
-    broken      = true;
   };
 
   "cloog" = fetch {
@@ -458,7 +446,6 @@ let
     filename    = "cmake-3.13.2-1-x86_64.pkg.tar.xz";
     sha256      = "62796f67360778003bb36aeb6b2f26505f6a807a6d4285aa3a0bada84ab7b034";
     buildInputs = [ gcc-libs jsoncpp libcurl libexpat libarchive librhash libutil-linux libuv ncurses pkg-config zlib ];
-    broken      = true;
   };
 
   "cocom" = fetch {
@@ -474,7 +461,6 @@ let
     filename    = "colordiff-1.0.18-1-any.pkg.tar.xz";
     sha256      = "8bd451607be21c46d26de5d09a0849d21835bdd02e5eb638ea8b2667bb595ee0";
     buildInputs = [ diffutils perl ];
-    broken      = true;
   };
 
   "colormake-git" = fetch {
@@ -483,7 +469,6 @@ let
     filename    = "colormake-git-r8.9c1d2e6-1-any.pkg.tar.xz";
     sha256      = "835a637b514280a3a24e273faff1b1f0abff65691123d0eb768be2b7bbe20c45";
     buildInputs = [ make ];
-    broken      = true;
   };
 
   "conemu-git" = fetch {
@@ -545,7 +530,6 @@ let
     filename    = "curl-7.63.0-1-x86_64.pkg.tar.xz";
     sha256      = "944f4f426affd2aeac2f692e96a646c3fe739f5340f62612b53af9fa8c40c78f";
     buildInputs = [ ca-certificates libcurl libcrypt libmetalink libnghttp2 libpsl openssl zlib ];
-    broken      = true;
   };
 
   "cvs" = fetch {
@@ -554,7 +538,6 @@ let
     filename    = "cvs-1.11.23-3-x86_64.pkg.tar.xz";
     sha256      = "ecbb92c376c0e0ebc365a18772c2219eba48ce4afa7117ce3661c85c1f8af911";
     buildInputs = [ heimdal zlib libcrypt libopenssl ];
-    broken      = true;
   };
 
   "cygrunsrv" = fetch {
@@ -571,7 +554,6 @@ let
     filename    = "cyrus-sasl-2.1.27-1-x86_64.pkg.tar.xz";
     sha256      = "903d0255dd4e1bc38577d86e0814235a6f7166e10d9441b78963dd5a3d5fb9aa";
     buildInputs = [ (assert libsasl.version=="2.1.27"; libsasl) ];
-    broken      = true;
   };
 
   "dash" = fetch {
@@ -588,7 +570,7 @@ let
     version     = "5.3.28";
     filename    = "db-5.3.28-2-x86_64.pkg.tar.xz";
     sha256      = "b3137f111e0332aff99c8ece70e445cbb97efbf02d5facd36f0c2242d5dd369a";
-    buildInputs = [ libdb ];
+    buildInputs = [ (assert libdb.version=="5.3.28"; libdb) ];
   };
 
   "db-docs" = fetch {
@@ -597,7 +579,6 @@ let
     filename    = "db-docs-5.3.28-2-x86_64.pkg.tar.xz";
     sha256      = "7287b440ae4b4362f6d7c98fbe93d7ce0a3f5057788958a4048f4a5648230955";
     buildInputs = [ sh ];
-    broken      = true;
   };
 
   "dejagnu" = fetch {
@@ -614,7 +595,6 @@ let
     filename    = "delta-20060803-1-x86_64.pkg.tar.xz";
     sha256      = "ae8f70fc1e4ec82a47f4471d622830f751f747db29ac2b09a5b8cb5a1790942f";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "depot-tools-git" = fetch {
@@ -647,7 +627,6 @@ let
     filename    = "diffutils-3.6-1-x86_64.pkg.tar.xz";
     sha256      = "fc4629b8a00ee43d4102fbdf3f122828cfd9c7540bc74dd77476b43157bd2baa";
     buildInputs = [ msys2-runtime sh ];
-    broken      = true;
   };
 
   "docbook-dsssl" = fetch {
@@ -656,7 +635,6 @@ let
     filename    = "docbook-dsssl-1.79-1-any.pkg.tar.xz";
     sha256      = "03a865131ce845f6f87ebc9d774b5a5383492fc8e633e970517bd75fb5951bf1";
     buildInputs = [ sgml-common perl ];
-    broken      = true;
   };
 
   "docbook-mathml" = fetch {
@@ -665,7 +643,6 @@ let
     filename    = "docbook-mathml-1.1CR1-1-any.pkg.tar.xz";
     sha256      = "4d3f0567d367b5e21eeee07ef87a35efc8f3ae64134253972e7099e8b013e9cb";
     buildInputs = [ libxml2 ];
-    broken      = true;
   };
 
   "docbook-sgml" = fetch {
@@ -674,7 +651,6 @@ let
     filename    = "docbook-sgml-4.5-1-any.pkg.tar.xz";
     sha256      = "89cba5e6b4ceb7319c84ad08d6f582ac0933639105a05835c7270cbc297f2bf9";
     buildInputs = [ sgml-common ];
-    broken      = true;
   };
 
   "docbook-sgml31" = fetch {
@@ -683,7 +659,6 @@ let
     filename    = "docbook-sgml31-3.1-1-any.pkg.tar.xz";
     sha256      = "7c10e1ad75147cd0c09b1ccae2eb8a34dc44211435e771c5f7a392ea45328717";
     buildInputs = [ sgml-common ];
-    broken      = true;
   };
 
   "docbook-xml" = fetch {
@@ -692,7 +667,6 @@ let
     filename    = "docbook-xml-4.5-2-any.pkg.tar.xz";
     sha256      = "a01f648a7af372b290528430d3e1768ac3d8aee4c0e74bcf750f646fc8e9948f";
     buildInputs = [ libxml2 ];
-    broken      = true;
   };
 
   "docbook-xsl" = fetch {
@@ -701,7 +675,6 @@ let
     filename    = "docbook-xsl-1.79.2-1-any.pkg.tar.xz";
     sha256      = "ede4fbbc97f1dda1d1640926001d70b0ea4af0ad6f8c20a5d6ce84e501d94045";
     buildInputs = [ libxml2 libxslt docbook-xml ];
-    broken      = true;
   };
 
   "docx2txt" = fetch {
@@ -710,7 +683,6 @@ let
     filename    = "docx2txt-1.4-1-x86_64.pkg.tar.xz";
     sha256      = "736a37af1c54e1d4746c523e105b33e6eccfacdd4a4ac87b1326499ee56c59f1";
     buildInputs = [ perl unzip ];
-    broken      = true;
   };
 
   "dos2unix" = fetch {
@@ -750,7 +722,6 @@ let
     filename    = "ed-1.14.2-1-x86_64.pkg.tar.xz";
     sha256      = "769a2073fcdc30810007b2d7d1f22e998246a973a4debf98a1a77a8555dcd1db";
     buildInputs = [ sh ];
-    broken      = true;
   };
 
   "elinks-git" = fetch {
@@ -768,7 +739,6 @@ let
     filename    = "emacs-26.1-1-x86_64.pkg.tar.xz";
     sha256      = "38d01bc18f46056df858b2e027227c12ccfa7a44752ab3e47fe797e6468b5ee9";
     buildInputs = [ ncurses zlib libxml2 libiconv libcrypt libgnutls glib2 libhogweed ];
-    broken      = true;
   };
 
   "expat" = fetch {
@@ -823,7 +793,6 @@ let
     filename    = "fish-2.7.1-2-x86_64.pkg.tar.xz";
     sha256      = "c8a3a6c0790ed5a8dfddf907bd1941a9386084e42e64644cc186618134c74f09";
     buildInputs = [ gcc-libs ncurses gettext libiconv man-db bc ];
-    broken      = true;
   };
 
   "flex" = fetch {
@@ -832,7 +801,6 @@ let
     filename    = "flex-2.6.4-1-x86_64.pkg.tar.xz";
     sha256      = "dca8b51b1f0f0abf32cdb6b718414fafc6a6849e3feb13b1056ebe092b23a784";
     buildInputs = [ m4 sh libiconv libintl ];
-    broken      = true;
   };
 
   "flexc++" = fetch {
@@ -879,7 +847,6 @@ let
     filename    = "gawk-4.2.1-2-x86_64.pkg.tar.xz";
     sha256      = "8ad327116a180372a5bf79d701527a23d8b106e910e328d5df702f4da38e81aa";
     buildInputs = [ sh mpfr libintl libreadline ];
-    broken      = true;
   };
 
   "gcc" = fetch {
@@ -887,7 +854,7 @@ let
     version     = "7.4.0";
     filename    = "gcc-7.4.0-1-x86_64.pkg.tar.xz";
     sha256      = "53baa2129029a8c9f9244eac1eed5e9cecdb1660e0cf536a8dc49605d6e834d1";
-    buildInputs = [ gcc-libs binutils gmp isl mpc mpfr msys2-runtime-devel msys2-w32api-headers msys2-w32api-runtime windows-default-manifest ];
+    buildInputs = [ (assert gcc-libs.version=="7.4.0"; gcc-libs) binutils gmp isl mpc mpfr msys2-runtime-devel msys2-w32api-headers msys2-w32api-runtime windows-default-manifest ];
   };
 
   "gcc-fortran" = fetch {
@@ -919,7 +886,7 @@ let
     version     = "1.18.1";
     filename    = "gdbm-1.18.1-1-x86_64.pkg.tar.xz";
     sha256      = "e011d1ccac21a2f602b888fe2076a0978d170f0dac97e033422be08bf2a4d5ba";
-    buildInputs = [ libgdbm ];
+    buildInputs = [ (assert libgdbm.version=="1.18.1"; libgdbm) ];
   };
 
   "gengetopt" = fetch {
@@ -943,7 +910,6 @@ let
     filename    = "getopt-1.1.6-1-x86_64.pkg.tar.xz";
     sha256      = "7e1bf432d11f2cd5c6111269efc84c4fd2c5f4dbadd007f87246617878fce121";
     buildInputs = [ msys2-runtime sh ];
-    broken      = true;
   };
 
   "gettext" = fetch {
@@ -959,7 +925,7 @@ let
     version     = "0.19.8.1";
     filename    = "gettext-devel-0.19.8.1-1-x86_64.pkg.tar.xz";
     sha256      = "c484d03b8a4aa48119f2e8796ab7d159a51ce88aa6cd07c444b86ab724b1a48f";
-    buildInputs = [ gettext libiconv-devel ];
+    buildInputs = [ (assert gettext.version=="0.19.8.1"; gettext) libiconv-devel ];
   };
 
   "git" = fetch {
@@ -968,7 +934,6 @@ let
     filename    = "git-2.20.1-1-x86_64.pkg.tar.xz";
     sha256      = "9878bcb483eaf8fa4fac2908f57f7c16ace4d8577d787c99f69c6af96dbe6064";
     buildInputs = [ curl (assert lib.versionAtLeast expat.version "2.20.1"; expat) libpcre2_8 vim openssh openssl perl-Error (assert lib.versionAtLeast perl.version "2.20.1"; perl) perl-Authen-SASL perl-libwww perl-MIME-tools perl-Net-SMTP-SSL perl-TermReadKey ];
-    broken      = true;
   };
 
   "git-bzr-ng-git" = fetch {
@@ -977,7 +942,6 @@ let
     filename    = "git-bzr-ng-git-r61.9878a30-1-any.pkg.tar.xz";
     sha256      = "7f7cb60c7daf50a81ee140a42752689c10bc1eb8b2e2300eb1e97aed51270b15";
     buildInputs = [ python2 git bzr bzr-fastimport ];
-    broken      = true;
   };
 
   "git-extras-git" = fetch {
@@ -986,7 +950,6 @@ let
     filename    = "git-extras-git-4.3.0-1-any.pkg.tar.xz";
     sha256      = "1b67be86d5d68e0bfcca3851e8b7ab14f1121376d636f73c3b7de28193182829";
     buildInputs = [ git ];
-    broken      = true;
   };
 
   "git-flow" = fetch {
@@ -995,7 +958,6 @@ let
     filename    = "git-flow-1.11.0-1-x86_64.pkg.tar.xz";
     sha256      = "2f66c1c84267b6dfa6222bf26f0cfc055c144db361d30311991da8ebe87f7c35";
     buildInputs = [ git util-linux ];
-    broken      = true;
   };
 
   "glib2" = fetch {
@@ -1004,7 +966,6 @@ let
     filename    = "glib2-2.54.3-1-x86_64.pkg.tar.xz";
     sha256      = "0107bfbed3ff4ddb6352b6e2c56755267fbd0711148716e8e7fbab848b688e1b";
     buildInputs = [ libxslt libpcre libffi libiconv zlib ];
-    broken      = true;
   };
 
   "glib2-devel" = fetch {
@@ -1013,7 +974,6 @@ let
     filename    = "glib2-devel-2.54.3-1-x86_64.pkg.tar.xz";
     sha256      = "9f9c9963bb74a815f94679c1116e1487695e1629c7c9c9c5a42fc266d9599a05";
     buildInputs = [ (assert glib2.version=="2.54.3"; glib2) pcre-devel libffi-devel libiconv-devel zlib-devel ];
-    broken      = true;
   };
 
   "glib2-docs" = fetch {
@@ -1044,7 +1004,7 @@ let
     version     = "6.1.2";
     filename    = "gmp-devel-6.1.2-1-x86_64.pkg.tar.xz";
     sha256      = "16d030821d7c5bf416efd007e561daf29d06377540ae4f4c19cebf1455b83afd";
-    buildInputs = [ gmp ];
+    buildInputs = [ (assert gmp.version=="6.1.2"; gmp) ];
   };
 
   "gnome-doc-utils" = fetch {
@@ -1053,7 +1013,6 @@ let
     filename    = "gnome-doc-utils-0.20.10-1-any.pkg.tar.xz";
     sha256      = "155746de7fafa3d12fec3b06ad5cf714ac1036428189fd74fb51e94924ffe856";
     buildInputs = [ libxslt python2 docbook-xml rarian ];
-    broken      = true;
   };
 
   "gnu-netcat" = fetch {
@@ -1070,7 +1029,6 @@ let
     filename    = "gnupg-2.2.12-1-x86_64.pkg.tar.xz";
     sha256      = "0d4714d33a4e8947582386753f8d6354341ff5d03ac00de9d35c6eb82b6c4e94";
     buildInputs = [ bzip2 libassuan libbz2 libcurl libgcrypt libgpg-error libgnutls libiconv libintl libksba libnpth libreadline libsqlite nettle pinentry zlib ];
-    broken      = true;
   };
 
   "gnutls" = fetch {
@@ -1079,7 +1037,6 @@ let
     filename    = "gnutls-3.6.5-1-x86_64.pkg.tar.xz";
     sha256      = "084748721749d9b682023542fd3200780f0d0a78be90fcc6a084e8a60d17f1bf";
     buildInputs = [ (assert libgnutls.version=="3.6.5"; libgnutls) ];
-    broken      = true;
   };
 
   "gperf" = fetch {
@@ -1110,7 +1067,6 @@ let
     filename    = "grep-3.0-2-x86_64.pkg.tar.xz";
     sha256      = "21ef642593ca3e8a5bb70c0ccf3856e550ced9e5d2bcdca0c09a3326ed0fa05e";
     buildInputs = [ libiconv libintl libpcre sh ];
-    broken      = true;
   };
 
   "grml-zsh-config" = fetch {
@@ -1119,7 +1075,6 @@ let
     filename    = "grml-zsh-config-0.15.2-1-any.pkg.tar.xz";
     sha256      = "234181297d69cf3711fe53173e06a6fb265d0151340398b5eb5767ef897aba2b";
     buildInputs = [ zsh coreutils inetutils grep sed procps ];
-    broken      = true;
   };
 
   "groff" = fetch {
@@ -1128,7 +1083,6 @@ let
     filename    = "groff-1.22.3-1-x86_64.pkg.tar.xz";
     sha256      = "7b9d558d1f38d8582d07da46b10bf94b0092919c376f6f059029f413d1eec1be";
     buildInputs = [ perl gcc-libs ];
-    broken      = true;
   };
 
   "gtk-doc" = fetch {
@@ -1170,7 +1124,6 @@ let
     filename    = "heimdal-7.5.0-3-x86_64.pkg.tar.xz";
     sha256      = "27a21844796a7272275f327ea9fb8045fbf0226ade9b7725e001facd923b6180";
     buildInputs = [ heimdal-libs ];
-    broken      = true;
   };
 
   "heimdal-devel" = fetch {
@@ -1179,7 +1132,6 @@ let
     filename    = "heimdal-devel-7.5.0-3-x86_64.pkg.tar.xz";
     sha256      = "916c5ff10126bcabf7c02f8492cd3228f9e110e31c0e25a38ccff277ab5ba1e0";
     buildInputs = [ heimdal-libs libcrypt-devel libedit-devel libdb-devel libsqlite-devel ];
-    broken      = true;
   };
 
   "heimdal-libs" = fetch {
@@ -1188,7 +1140,6 @@ let
     filename    = "heimdal-libs-7.5.0-3-x86_64.pkg.tar.xz";
     sha256      = "6cb684ab0172b36952a6feb181556c4390f54ee7593f03e5b5e0fe1c75e92f06";
     buildInputs = [ libdb libcrypt libedit libsqlite libopenssl ];
-    broken      = true;
   };
 
   "help2man" = fetch {
@@ -1197,7 +1148,6 @@ let
     filename    = "help2man-1.47.8-1-x86_64.pkg.tar.xz";
     sha256      = "5236c051cd89fcfb372dadc293cbf05e64e5ca65988557d71358e947dc245800";
     buildInputs = [ perl-Locale-Gettext libintl ];
-    broken      = true;
   };
 
   "hexcurse" = fetch {
@@ -1221,7 +1171,6 @@ let
     filename    = "icon-naming-utils-0.8.90-1-x86_64.pkg.tar.xz";
     sha256      = "392cd439d442da3d51dd478cafd9c141e8074a53ab28dc3496611bb9985170aa";
     buildInputs = [ perl-XML-Simple ];
-    broken      = true;
   };
 
   "icu" = fetch {
@@ -1269,7 +1218,6 @@ let
     filename    = "intltool-0.51.0-2-x86_64.pkg.tar.xz";
     sha256      = "1e8e894ab102eede0d703908c0d678a28f95f10a3fcb79fd2e4312392019ecb5";
     buildInputs = [ perl-XML-Parser ];
-    broken      = true;
   };
 
   "iperf" = fetch {
@@ -1294,7 +1242,6 @@ let
     filename    = "irssi-1.1.1-2-x86_64.pkg.tar.xz";
     sha256      = "b2730fc86a51d910dfcbccb78cb749ab93830267a6bc99da455ead4952927d50";
     buildInputs = [ openssl gettext perl ncurses glib2 ];
-    broken      = true;
   };
 
   "isl" = fetch {
@@ -1310,7 +1257,7 @@ let
     version     = "0.19";
     filename    = "isl-devel-0.19-1-x86_64.pkg.tar.xz";
     sha256      = "b1cab205f9b8a759d3b56401aec1af151d7aaa78a5a10220e5629d3bda9ee5f2";
-    buildInputs = [ isl gmp-devel ];
+    buildInputs = [ (assert isl.version=="0.19"; isl) gmp-devel ];
   };
 
   "itstool" = fetch {
@@ -1319,7 +1266,6 @@ let
     filename    = "itstool-2.0.4-2-x86_64.pkg.tar.xz";
     sha256      = "cdde4afe6719740dcee32dbe2d060474ca060100e906c9bf0c2f63643978c995";
     buildInputs = [ python2 libxml2 libxml2-python ];
-    broken      = true;
   };
 
   "jansson" = fetch {
@@ -1383,7 +1329,6 @@ let
     filename    = "lftp-4.8.4-1-x86_64.pkg.tar.xz";
     sha256      = "78252e445594a0a1719a6cc32d016104895d912192769afb85558eb64b1f7446";
     buildInputs = [ gcc-libs ca-certificates expat gettext libexpat libgnutls libiconv libidn2 libintl libreadline libunistring openssh zlib ];
-    broken      = true;
   };
 
   "libarchive" = fetch {
@@ -1392,7 +1337,6 @@ let
     filename    = "libarchive-3.3.3-3-x86_64.pkg.tar.xz";
     sha256      = "ea5d7609bd261cf1ece4b0881e5b691f36efc0021b91bef53146e7403eda209e";
     buildInputs = [ gcc-libs libbz2 libiconv libexpat liblzma liblz4 liblzo2 libnettle libxml2 zlib ];
-    broken      = true;
   };
 
   "libarchive-devel" = fetch {
@@ -1401,7 +1345,6 @@ let
     filename    = "libarchive-devel-3.3.3-3-x86_64.pkg.tar.xz";
     sha256      = "f64ddfb3b85f331b988845c9cde58f12af940867322ac084692d4c98b496acbf";
     buildInputs = [ (assert libarchive.version=="3.3.3"; libarchive) libbz2-devel libiconv-devel liblzma-devel liblz4-devel liblzo2-devel libnettle-devel libxml2-devel zlib-devel ];
-    broken      = true;
   };
 
   "libargp" = fetch {
@@ -1434,7 +1377,6 @@ let
     filename    = "libassuan-2.5.2-1-x86_64.pkg.tar.xz";
     sha256      = "ab03785281b41f923e34aa3c3e1acb49ce5a384e7ec99c45dd758665ba2437df";
     buildInputs = [ gcc-libs libgpg-error ];
-    broken      = true;
   };
 
   "libassuan-devel" = fetch {
@@ -1443,7 +1385,6 @@ let
     filename    = "libassuan-devel-2.5.2-1-x86_64.pkg.tar.xz";
     sha256      = "dff04e98d0f7270babc8f98ef431a398ba191f9836290f0fddcf66a980a7a54e";
     buildInputs = [ (assert libassuan.version=="2.5.2"; libassuan) libgpg-error-devel ];
-    broken      = true;
   };
 
   "libatomic_ops" = fetch {
@@ -1532,7 +1473,6 @@ let
     filename    = "libcurl-7.63.0-1-x86_64.pkg.tar.xz";
     sha256      = "c2b6b36389551f7dba17203dde24ab3a85a1f56a9a336f289df9c17ec10fbf5a";
     buildInputs = [ brotli ca-certificates heimdal-libs libcrypt libidn2 libmetalink libnghttp2 libpsl libssh2 openssl zlib ];
-    broken      = true;
   };
 
   "libcurl-devel" = fetch {
@@ -1541,7 +1481,6 @@ let
     filename    = "libcurl-devel-7.63.0-1-x86_64.pkg.tar.xz";
     sha256      = "0ab22842ff4784aac280f333645698ee7af194ac02a2072fe084607311b02800";
     buildInputs = [ (assert libcurl.version=="7.63.0"; libcurl) brotli-devel heimdal-devel libcrypt-devel libidn2-devel libmetalink-devel libnghttp2-devel libpsl-devel libssh2-devel openssl-devel zlib-devel ];
-    broken      = true;
   };
 
   "libdb" = fetch {
@@ -1566,7 +1505,6 @@ let
     filename    = "libedit-3.1-20170329-x86_64.pkg.tar.xz";
     sha256      = "609221c599e437d4b7bd49d0b79a9292be74f03ed4f0214cb1fd8062d0af9803";
     buildInputs = [ msys2-runtime ncurses sh ];
-    broken      = true;
   };
 
   "libedit-devel" = fetch {
@@ -1575,7 +1513,6 @@ let
     filename    = "libedit-devel-3.1-20170329-x86_64.pkg.tar.xz";
     sha256      = "4ed64a24cab940133b0598705dbd203cefa38d64466c493e5ed0135ab0135ca1";
     buildInputs = [ (assert libedit.version=="3.1"; libedit) ncurses-devel ];
-    broken      = true;
   };
 
   "libelf" = fetch {
@@ -1664,7 +1601,6 @@ let
     filename    = "libgcrypt-1.8.4-1-x86_64.pkg.tar.xz";
     sha256      = "23fbe7c52f6d6a3acf11f334925bc71f4b204e566b8f2d2f7e4c5f18194f19a1";
     buildInputs = [ libgpg-error ];
-    broken      = true;
   };
 
   "libgcrypt-devel" = fetch {
@@ -1673,7 +1609,6 @@ let
     filename    = "libgcrypt-devel-1.8.4-1-x86_64.pkg.tar.xz";
     sha256      = "f15dd58e4a1d10c818cfd75f561ff64a8b92a51073713b1fa76a52ebec96b4c1";
     buildInputs = [ (assert libgcrypt.version=="1.8.4"; libgcrypt) libgpg-error-devel ];
-    broken      = true;
   };
 
   "libgdbm" = fetch {
@@ -1706,7 +1641,6 @@ let
     filename    = "libgnutls-3.6.5-1-x86_64.pkg.tar.xz";
     sha256      = "ed68b56950c0a3e1995156bad89a4478faaf8cbfa4afcace9fb293643c0cecdb";
     buildInputs = [ gcc-libs libidn2 libiconv libintl gmp libnettle libp11-kit libtasn1 zlib ];
-    broken      = true;
   };
 
   "libgnutls-devel" = fetch {
@@ -1715,7 +1649,6 @@ let
     filename    = "libgnutls-devel-3.6.5-1-x86_64.pkg.tar.xz";
     sha256      = "e989a06f48c4bfa18e4ced807ce432aeb48a800bdc71fd7c73f12683b395be4a";
     buildInputs = [ (assert libgnutls.version=="3.6.5"; libgnutls) ];
-    broken      = true;
   };
 
   "libgpg-error" = fetch {
@@ -1724,7 +1657,6 @@ let
     filename    = "libgpg-error-1.33-1-x86_64.pkg.tar.xz";
     sha256      = "0a5995d1370bbc80ddedc9fa67ac238ed201aa65e3fc664ef3ebf0ec18d439bb";
     buildInputs = [ msys2-runtime sh libiconv libintl ];
-    broken      = true;
   };
 
   "libgpg-error-devel" = fetch {
@@ -1741,7 +1673,6 @@ let
     filename    = "libgpgme-1.12.0-1-x86_64.pkg.tar.xz";
     sha256      = "47933d0a83b5f82c97e36d9f9d5c94a5dd9e6c75d9d3a6197016b56dd0d91447";
     buildInputs = [ libassuan libgpg-error gnupg ];
-    broken      = true;
   };
 
   "libgpgme-devel" = fetch {
@@ -1750,7 +1681,6 @@ let
     filename    = "libgpgme-devel-1.12.0-1-x86_64.pkg.tar.xz";
     sha256      = "e9de7ee0f7eab75bc5c648b742a6b3d4c69ed3627d9c74ef4e20d0e88ad894ee";
     buildInputs = [ (assert libgpgme.version=="1.12.0"; libgpgme) libassuan-devel libgpg-error-devel ];
-    broken      = true;
   };
 
   "libgpgme-python2" = fetch {
@@ -1759,7 +1689,6 @@ let
     filename    = "libgpgme-python2-1.12.0-1-x86_64.pkg.tar.xz";
     sha256      = "73e388555d73ca74f610b447a932518ff6456436da3fe4a8b946affe09025ef1";
     buildInputs = [ (assert libgpgme.version=="1.12.0"; libgpgme) python2 ];
-    broken      = true;
   };
 
   "libgpgme-python3" = fetch {
@@ -1808,7 +1737,7 @@ let
     version     = "1.15";
     filename    = "libiconv-devel-1.15-1-x86_64.pkg.tar.xz";
     sha256      = "d863a4f988ae3e433a26a33f3ade15aa2268de68f775e8ee8767bb197bc1c2c1";
-    buildInputs = [ libiconv ];
+    buildInputs = [ (assert libiconv.version=="1.15"; libiconv) ];
   };
 
   "libidn" = fetch {
@@ -1857,7 +1786,6 @@ let
     filename    = "libksba-1.3.5-1-x86_64.pkg.tar.xz";
     sha256      = "67a32872737e5d72408ee7e6d059d920b0551837ac5c7f847fa2404b74639a6b";
     buildInputs = [ gcc-libs libgpg-error ];
-    broken      = true;
   };
 
   "libksba-devel" = fetch {
@@ -1866,7 +1794,6 @@ let
     filename    = "libksba-devel-1.3.5-1-x86_64.pkg.tar.xz";
     sha256      = "493ba30889e56cc2b84209849183faf260652a2799ebe0999ff36c23b32e07c3";
     buildInputs = [ (assert libksba.version=="1.3.5"; libksba) libgpg-error-devel ];
-    broken      = true;
   };
 
   "libltdl" = fetch {
@@ -1899,7 +1826,6 @@ let
     filename    = "liblzma-5.2.4-1-x86_64.pkg.tar.xz";
     sha256      = "a75ad414305596127924d5b0df38844b5097bfad4f7a56c355bd03b312818dad";
     buildInputs = [ sh libiconv gettext ];
-    broken      = true;
   };
 
   "liblzma-devel" = fetch {
@@ -1908,7 +1834,6 @@ let
     filename    = "liblzma-devel-5.2.4-1-x86_64.pkg.tar.xz";
     sha256      = "a0e1bb4fc59f89b72885a3713ddea253ff2f397963e2ad108c3fe97909973834";
     buildInputs = [ (assert liblzma.version=="5.2.4"; liblzma) libiconv-devel gettext-devel ];
-    broken      = true;
   };
 
   "liblzo2" = fetch {
@@ -1933,7 +1858,6 @@ let
     filename    = "libmetalink-0.1.3-2-x86_64.pkg.tar.xz";
     sha256      = "c0be5c635768cf04e0cb1b1f4afdb9552368ef0ea665dc516741ed87082f6b4d";
     buildInputs = [ msys2-runtime libexpat sh libxml2 ];
-    broken      = true;
   };
 
   "libmetalink-devel" = fetch {
@@ -1942,7 +1866,6 @@ let
     filename    = "libmetalink-devel-0.1.3-2-x86_64.pkg.tar.xz";
     sha256      = "46593ee1fa92ad506e92108c4de23d4d8299f51f59485e1c6d540fc0e08ddeea";
     buildInputs = [ (assert libmetalink.version=="0.1.3"; libmetalink) libexpat-devel ];
-    broken      = true;
   };
 
   "libneon" = fetch {
@@ -1951,7 +1874,6 @@ let
     filename    = "libneon-0.30.2-2-x86_64.pkg.tar.xz";
     sha256      = "beef751229c5e26098d1374267e8409c6a3cc5549c662a6a8dc376e194e4a060";
     buildInputs = [ libexpat openssl ca-certificates ];
-    broken      = true;
   };
 
   "libneon-devel" = fetch {
@@ -1960,7 +1882,6 @@ let
     filename    = "libneon-devel-0.30.2-2-x86_64.pkg.tar.xz";
     sha256      = "3a926d3da481990ef1e75bd09ad1260d8bab28d6c827e3a0bf592d73988a0c11";
     buildInputs = [ (assert libneon.version=="0.30.2"; libneon) libexpat-devel openssl-devel ];
-    broken      = true;
   };
 
   "libnettle" = fetch {
@@ -2025,7 +1946,6 @@ let
     filename    = "libp11-kit-0.23.14-1-x86_64.pkg.tar.xz";
     sha256      = "162b0ad136df959927e8b13e4fa53a30de1e5d01ddb86091bfd4c6ce6a646d42";
     buildInputs = [ libffi libintl libtasn1 glib2 ];
-    broken      = true;
   };
 
   "libp11-kit-devel" = fetch {
@@ -2034,7 +1954,6 @@ let
     filename    = "libp11-kit-devel-0.23.14-1-x86_64.pkg.tar.xz";
     sha256      = "4a8f8623506c6ce9f101fc8941a200cb84f8a783bac9c1360d3340e70b8fb316";
     buildInputs = [ (assert libp11-kit.version=="0.23.14"; libp11-kit) ];
-    broken      = true;
   };
 
   "libpcre" = fetch {
@@ -2131,7 +2050,6 @@ let
     filename    = "libpsl-0.20.2-1-x86_64.pkg.tar.xz";
     sha256      = "6fbf560aef9f1c75b1ed62d43879b1409a7f9daeeaa5b8d8253471734c6fd56b";
     buildInputs = [ libxslt libidn2 libunistring ];
-    broken      = true;
   };
 
   "libpsl-devel" = fetch {
@@ -2140,7 +2058,6 @@ let
     filename    = "libpsl-devel-0.20.2-1-x86_64.pkg.tar.xz";
     sha256      = "2e6ad7077ce90ee6befd84706dc1eefee2bfa6a94c38b20be1a803acb6c4d3c9";
     buildInputs = [ (assert libpsl.version=="0.20.2"; libpsl) libxslt libidn2-devel libunistring ];
-    broken      = true;
   };
 
   "libqrencode-git" = fetch {
@@ -2163,7 +2080,7 @@ let
     version     = "7.0.005";
     filename    = "libreadline-devel-7.0.005-1-x86_64.pkg.tar.xz";
     sha256      = "f2c5a601d77f9044b78b27a684761492b97437587645e417921daa97a45acc89";
-    buildInputs = [ libreadline ncurses-devel ];
+    buildInputs = [ (assert libreadline.version=="7.0.005"; libreadline) ncurses-devel ];
   };
 
   "librhash" = fetch {
@@ -2188,7 +2105,6 @@ let
     filename    = "libsasl-2.1.27-1-x86_64.pkg.tar.xz";
     sha256      = "f9cea8f5dbe2e6e36adc069bcaeba02e33cdabb6b0babe018d8eb82cdca6011f";
     buildInputs = [ libcrypt libopenssl heimdal-libs libsqlite ];
-    broken      = true;
   };
 
   "libsasl-devel" = fetch {
@@ -2197,7 +2113,6 @@ let
     filename    = "libsasl-devel-2.1.27-1-x86_64.pkg.tar.xz";
     sha256      = "9acd7234fe562a7bc268100453d277cffe05dca25e153445b1d3fd52a1c4ef6f";
     buildInputs = [ (assert libsasl.version=="2.1.27"; libsasl) heimdal-devel openssl-devel libsqlite-devel libcrypt-devel ];
-    broken      = true;
   };
 
   "libserf" = fetch {
@@ -2223,7 +2138,7 @@ let
     version     = "3.21.0";
     filename    = "libsqlite-3.21.0-4-x86_64.pkg.tar.xz";
     sha256      = "b0cbc80d28a491a5034cd52403cd9e3e0fdd9531d9c48ca1c1fa76f6f37ff6c5";
-    buildInputs = [ libreadline icu zlib ];
+    buildInputs = [ libreadline (assert lib.versionAtLeast icu.version "3.21.0"; icu) zlib ];
   };
 
   "libsqlite-devel" = fetch {
@@ -2240,7 +2155,6 @@ let
     filename    = "libssh2-1.8.0-2-x86_64.pkg.tar.xz";
     sha256      = "becb5c7b1a587afcff74894bb9672ca96d6c75c08bcef641d750aaaf46c4d68a";
     buildInputs = [ ca-certificates openssl zlib ];
-    broken      = true;
   };
 
   "libssh2-devel" = fetch {
@@ -2249,7 +2163,6 @@ let
     filename    = "libssh2-devel-1.8.0-2-x86_64.pkg.tar.xz";
     sha256      = "6864e7e367af48d03f40ce8e5f91f8f40a91c27a1c9481cd8fee342671fe3a98";
     buildInputs = [ (assert libssh2.version=="1.8.0"; libssh2) openssl-devel zlib-devel ];
-    broken      = true;
   };
 
   "libtasn1" = fetch {
@@ -2290,7 +2203,6 @@ let
     filename    = "libtool-2.4.6-6-x86_64.pkg.tar.xz";
     sha256      = "53b338d00c9ee3c474dce46cc38ecf6aeccf0d46df9e805d0783491a7770b98a";
     buildInputs = [ sh (assert libltdl.version=="2.4.6"; libltdl) tar ];
-    broken      = true;
   };
 
   "libtre-devel-git" = fetch {
@@ -2378,8 +2290,7 @@ let
     version     = "2.9.8";
     filename    = "libxml2-2.9.8-1-x86_64.pkg.tar.xz";
     sha256      = "9c0543200d15b6717664fc6166f547d3d649d541c08058dd991f82644d0086c7";
-    buildInputs = [ coreutils icu liblzma libreadline ncurses zlib ];
-    broken      = true;
+    buildInputs = [ coreutils (assert lib.versionAtLeast icu.version "2.9.8"; icu) liblzma libreadline ncurses zlib ];
   };
 
   "libxml2-devel" = fetch {
@@ -2388,7 +2299,6 @@ let
     filename    = "libxml2-devel-2.9.8-1-x86_64.pkg.tar.xz";
     sha256      = "b04ee9b456e3c191eed6ea2e829fb09a2d64fd0a7448d7147b6c9f382e96a91f";
     buildInputs = [ (assert libxml2.version=="2.9.8"; libxml2) (assert lib.versionAtLeast icu-devel.version "2.9.8"; icu-devel) libreadline-devel ncurses-devel liblzma-devel zlib-devel ];
-    broken      = true;
   };
 
   "libxml2-python" = fetch {
@@ -2397,7 +2307,6 @@ let
     filename    = "libxml2-python-2.9.8-1-x86_64.pkg.tar.xz";
     sha256      = "7639ccf977ede93dcf663c4adf9aa7bb75a6e0c063042b24e69d928f029ec798";
     buildInputs = [ libxml2 ];
-    broken      = true;
   };
 
   "libxslt" = fetch {
@@ -2406,7 +2315,6 @@ let
     filename    = "libxslt-1.1.32-1-x86_64.pkg.tar.xz";
     sha256      = "3e0dd3abc1f8a20ee09197702f95418dad05b912c2b41310df4a3705c6cd802d";
     buildInputs = [ libxml2 libgcrypt ];
-    broken      = true;
   };
 
   "libxslt-devel" = fetch {
@@ -2415,7 +2323,6 @@ let
     filename    = "libxslt-devel-1.1.32-1-x86_64.pkg.tar.xz";
     sha256      = "9ebab19a8acbbd72c192b78e6aad665e8072b4952ba58c20d9c527362e424619";
     buildInputs = [ (assert libxslt.version=="1.1.32"; libxslt) libxml2-devel libgcrypt-devel ];
-    broken      = true;
   };
 
   "libxslt-python" = fetch {
@@ -2424,7 +2331,6 @@ let
     filename    = "libxslt-python-1.1.32-1-x86_64.pkg.tar.xz";
     sha256      = "49ee76a6afdb0b2024c9a51a2aba0813abe05186b482db4b4f6bcb0d2d8c3843";
     buildInputs = [ (assert libxslt.version=="1.1.32"; libxslt) python2 ];
-    broken      = true;
   };
 
   "libyaml" = fetch {
@@ -2449,7 +2355,6 @@ let
     filename    = "lld-svn-4595.3511ec1-1-x86_64.pkg.tar.xz";
     sha256      = "e901775e6428225f2182761fa058a5a2aab25a1bc68d90dcb55746f42e222277";
     buildInputs = [ llvm-svn ];
-    broken      = true;
   };
 
   "llvm-svn" = fetch {
@@ -2458,7 +2363,6 @@ let
     filename    = "llvm-svn-124592.2aebced-1-x86_64.pkg.tar.xz";
     sha256      = "1eb2b17fc5453709909cedffddaa1eebcb9ad01b03be17a23d4d67c068a2c8cc";
     buildInputs = [ gcc libffi libxml2 ];
-    broken      = true;
   };
 
   "lndir" = fetch {
@@ -2499,7 +2403,6 @@ let
     filename    = "make-4.2.1-1-x86_64.pkg.tar.xz";
     sha256      = "b9f6574a473480a1de8bd2675b2042a9a4c813e6f093f7468ffac09b09c246a0";
     buildInputs = [ msys2-runtime libintl sh ];
-    broken      = true;
   };
 
   "make-git" = fetch {
@@ -2508,7 +2411,6 @@ let
     filename    = "make-git-4.1.8.g292da6f-1-x86_64.pkg.tar.xz";
     sha256      = "d5a64d4d235ce52531d0170d939579bd3e31e2b2d7afc04c0e46de0e882b4dc9";
     buildInputs = [ msys2-runtime sh guile ];
-    broken      = true;
   };
 
   "man-db" = fetch {
@@ -2517,7 +2419,6 @@ let
     filename    = "man-db-2.8.4-1-x86_64.pkg.tar.xz";
     sha256      = "9f7546b79deda6381d12994083435003dc57defd50f6f87293ac4c27224d0e59";
     buildInputs = [ bash gdbm zlib groff libpipeline less ];
-    broken      = true;
   };
 
   "man-pages-posix" = fetch {
@@ -2535,7 +2436,6 @@ let
     filename    = "markdown-1.0.1-1-x86_64.pkg.tar.xz";
     sha256      = "9359cd3b48502c9f2bcb1ee09dffe45f5330f66e8d1ce5b8bd222122631fe58c";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "mc" = fetch {
@@ -2544,7 +2444,6 @@ let
     filename    = "mc-4.8.21-1-x86_64.pkg.tar.xz";
     sha256      = "3c7a870bd325a671a05aeb7fec4c415bc87c71b924812affb8c0b8a6175b2b59";
     buildInputs = [ glib2 libssh2 ];
-    broken      = true;
   };
 
   "mercurial" = fetch {
@@ -2640,7 +2539,6 @@ let
     filename    = "mintty-1~2.9.5-1-x86_64.pkg.tar.xz";
     sha256      = "b446924ca0fa2e3cb404a2ad738ae24aa6631c712c2f5520a2bae4e2f99afcf6";
     buildInputs = [ sh ];
-    broken      = true;
   };
 
   "mksh" = fetch {
@@ -2664,7 +2562,6 @@ let
     filename    = "mosh-1.3.2-3-x86_64.pkg.tar.xz";
     sha256      = "6a7ed58f98ae5a0193f40f952f2cbeabcfb323965219ef1f2f7f0f1bef712ff2";
     buildInputs = [ protobuf ncurses zlib libopenssl openssh perl ];
-    broken      = true;
   };
 
   "mpc" = fetch {
@@ -2672,7 +2569,7 @@ let
     version     = "1.1.0";
     filename    = "mpc-1.1.0-1-x86_64.pkg.tar.xz";
     sha256      = "5368f3aeb9cd3b9fea9a8c52dfbcc2709f911bf0d36bb9786999dcfdd0fdd5ae";
-    buildInputs = [ gmp mpfr ];
+    buildInputs = [ (assert lib.versionAtLeast gmp.version "1.1.0"; gmp) mpfr ];
   };
 
   "mpc-devel" = fetch {
@@ -2704,7 +2601,7 @@ let
     version     = "4.0.1";
     filename    = "mpfr-4.0.1-1-x86_64.pkg.tar.xz";
     sha256      = "69e98d0bd26d381f6661c67353c85ae43360213a19c4287ca6ffb2a2cb7d5662";
-    buildInputs = [ gmp ];
+    buildInputs = [ (assert lib.versionAtLeast gmp.version "4.0.1"; gmp) ];
   };
 
   "mpfr-devel" = fetch {
@@ -2712,7 +2609,7 @@ let
     version     = "4.0.1";
     filename    = "mpfr-devel-4.0.1-1-x86_64.pkg.tar.xz";
     sha256      = "711eda8012ad1f2512d0f574abfacf1aeac3faf53e1cee72b7fbc71a50e8cf8b";
-    buildInputs = [ mpfr gmp-devel ];
+    buildInputs = [ (assert mpfr.version=="4.0.1"; mpfr) gmp-devel ];
   };
 
   "msys2-keyring" = fetch {
@@ -2728,7 +2625,6 @@ let
     filename    = "msys2-launcher-git-0.3.32.56c2ba7-2-x86_64.pkg.tar.xz";
     sha256      = "6a807bcef61c8f72ddb89b67f54edb4093802a46ffdd2bff209b905e16af3f95";
     buildInputs = [ (assert lib.versionAtLeast mintty.version "0.3.32.56c2ba7"; mintty) ];
-    broken      = true;
   };
 
   "msys2-runtime" = fetch {
@@ -2744,7 +2640,7 @@ let
     version     = "2.11.2";
     filename    = "msys2-runtime-devel-2.11.2-1-x86_64.pkg.tar.xz";
     sha256      = "7085c8fa6953d8811866370ed24fc81bc4cf22b0f926724845b409ff8006c6a4";
-    buildInputs = [ msys2-runtime ];
+    buildInputs = [ (assert msys2-runtime.version=="2.11.2"; msys2-runtime) ];
   };
 
   "msys2-w32api-headers" = fetch {
@@ -2769,7 +2665,6 @@ let
     filename    = "mutt-1.11.1-1-x86_64.pkg.tar.xz";
     sha256      = "e375103d02324289a0fcd09613816eba887242678829f6ef8b4aa8a20959ccac";
     buildInputs = [ libgpgme libsasl libgdbm ncurses libgnutls libidn2 ];
-    broken      = true;
   };
 
   "nano" = fetch {
@@ -2778,7 +2673,6 @@ let
     filename    = "nano-3.2-1-x86_64.pkg.tar.xz";
     sha256      = "6428a2a993176a218d8c3df61078ed65ddfba706c5388557fb7bd2e59c505b9c";
     buildInputs = [ file libintl ncurses sh ];
-    broken      = true;
   };
 
   "nano-syntax-highlighting-git" = fetch {
@@ -2787,7 +2681,6 @@ let
     filename    = "nano-syntax-highlighting-git-299.5e776df-1-any.pkg.tar.xz";
     sha256      = "386a1a16a165258287a5c7282e75174b7870bd8dc08876d70932f4e477e1d1dd";
     buildInputs = [ nano ];
-    broken      = true;
   };
 
   "nasm" = fetch {
@@ -2811,7 +2704,7 @@ let
     version     = "6.1.20180908";
     filename    = "ncurses-devel-6.1.20180908-1-x86_64.pkg.tar.xz";
     sha256      = "85e001707a4be9e056582022eb4881591586345411c27544627d645e56765b71";
-    buildInputs = [ ncurses ];
+    buildInputs = [ (assert ncurses.version=="6.1.20180908"; ncurses) ];
   };
 
   "nettle" = fetch {
@@ -2850,7 +2743,6 @@ let
     filename    = "openssh-7.9p1-2-x86_64.pkg.tar.xz";
     sha256      = "9c5d3d4a3824320b3500b73dcc4b7d8e6e7eea4ade42a0d661564864d5b8d61b";
     buildInputs = [ heimdal libedit libcrypt openssl ];
-    broken      = true;
   };
 
   "openssl" = fetch {
@@ -2866,7 +2758,7 @@ let
     version     = "1.1.1.a";
     filename    = "openssl-devel-1.1.1.a-1-x86_64.pkg.tar.xz";
     sha256      = "651ee55a51097526a3533e166b429e5503c4c1569d9660b47e05cffc30091e0b";
-    buildInputs = [ libopenssl zlib-devel ];
+    buildInputs = [ (assert libopenssl.version=="1.1.1.a"; libopenssl) zlib-devel ];
   };
 
   "p11-kit" = fetch {
@@ -2875,7 +2767,6 @@ let
     filename    = "p11-kit-0.23.14-1-x86_64.pkg.tar.xz";
     sha256      = "f230b331374dc5390fc97102e1b0898f8701445d44705e73b3b4f94a14ac73ef";
     buildInputs = [ (assert libp11-kit.version=="0.23.14"; libp11-kit) ];
-    broken      = true;
   };
 
   "p7zip" = fetch {
@@ -2892,7 +2783,6 @@ let
     filename    = "pacman-5.1.1-3-x86_64.pkg.tar.xz";
     sha256      = "a3cbe943768a176ef7211bc45d5fae472cb81f55d7e9bcdb4ea1e0544084bea0";
     buildInputs = [ (assert lib.versionAtLeast bash.version "5.1.1"; bash) gettext gnupg msys2-runtime curl pacman-mirrors msys2-keyring which bzip2 xz ];
-    broken      = true;
   };
 
   "pacman-mirrors" = fetch {
@@ -2900,6 +2790,7 @@ let
     version     = "20180604";
     filename    = "pacman-mirrors-20180604-2-any.pkg.tar.xz";
     sha256      = "cdb631a5d7266b21c3c8145cf4c3f581b1c5d4eec90d0ac4d7b8211caea35f25";
+    buildInputs = [  ];
   };
 
   "pactoys-git" = fetch {
@@ -2917,7 +2808,6 @@ let
     filename    = "parallel-20180922-1-any.pkg.tar.xz";
     sha256      = "4ed01e6add1ac778cd7b7d012de0f169509399fd466d71275189aace98923365";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "pass" = fetch {
@@ -2926,7 +2816,6 @@ let
     filename    = "pass-1.7.3-1-any.pkg.tar.xz";
     sha256      = "f2a63114b033e04d2d6133866df77b9e1932e08fedbaf11a8fd6211c4393386f";
     buildInputs = [ bash gnupg tree ];
-    broken      = true;
   };
 
   "patch" = fetch {
@@ -2991,7 +2880,6 @@ let
     filename    = "perl-5.28.1-1-x86_64.pkg.tar.xz";
     sha256      = "3ac7b37fd217464d37a663251b23522a8c7afcd09d8ff29df2d9b4229ad5f902";
     buildInputs = [ db gdbm libcrypt coreutils msys2-runtime sh ];
-    broken      = true;
   };
 
   "perl-Algorithm-Diff" = fetch {
@@ -3000,7 +2888,6 @@ let
     filename    = "perl-Algorithm-Diff-1.1903-1-any.pkg.tar.xz";
     sha256      = "dea50788bd3c45ad6876cb7f8d47d5c05fa406ef424240fd84011a3481f721d4";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Archive-Zip" = fetch {
@@ -3009,7 +2896,6 @@ let
     filename    = "perl-Archive-Zip-1.64-1-any.pkg.tar.xz";
     sha256      = "1a1c92982851fcc4926ac2e32716dfe92bf3d3ae331327d2856c1997aa60f437";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Authen-SASL" = fetch {
@@ -3018,7 +2904,6 @@ let
     filename    = "perl-Authen-SASL-2.16-2-any.pkg.tar.xz";
     sha256      = "6dfadf705bcb7cd3e147044e9da9bc17fb834d6e8a1353f617ba377d778e2a20";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Benchmark-Timer" = fetch {
@@ -3027,7 +2912,6 @@ let
     filename    = "perl-Benchmark-Timer-0.7107-1-any.pkg.tar.xz";
     sha256      = "91e4b56350cfb6862da64e71a302db0c71164aab28666e33a33e74f3a9479b81";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Capture-Tiny" = fetch {
@@ -3036,7 +2920,6 @@ let
     filename    = "perl-Capture-Tiny-0.48-1-any.pkg.tar.xz";
     sha256      = "e335d1b48950a5f172079426470ba30975053817b5f5362587641cc90a33a973";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Carp-Clan" = fetch {
@@ -3045,7 +2928,6 @@ let
     filename    = "perl-Carp-Clan-6.06-1-any.pkg.tar.xz";
     sha256      = "753836eb3024d57c91bb5f02570c419e79ac67ea35e3ba07d6759b543c8ec2de";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Compress-Bzip2" = fetch {
@@ -3054,7 +2936,6 @@ let
     filename    = "perl-Compress-Bzip2-2.26-2-x86_64.pkg.tar.xz";
     sha256      = "ba7b49a7d19dfe77868dd4c7e9a25795d0e771905f6fb8451c1cc9a407a8dc8c";
     buildInputs = [ perl libbz2 ];
-    broken      = true;
   };
 
   "perl-Convert-BinHex" = fetch {
@@ -3063,7 +2944,6 @@ let
     filename    = "perl-Convert-BinHex-1.125-1-any.pkg.tar.xz";
     sha256      = "08146d9182071521e105beb4c27ae7207874fa31d82b9f9dcc3a5a08eabfcd60";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Crypt-SSLeay" = fetch {
@@ -3072,7 +2952,6 @@ let
     filename    = "perl-Crypt-SSLeay-0.73_06-2-x86_64.pkg.tar.xz";
     sha256      = "e4c4d0904c444a0a221e988316a4acd3eb2f6a965764b446e506fc0f07281e22";
     buildInputs = [ perl-LWP-Protocol-https perl-Try-Tiny perl-Path-Class ];
-    broken      = true;
   };
 
   "perl-DBI" = fetch {
@@ -3081,7 +2960,6 @@ let
     filename    = "perl-DBI-1.642-1-x86_64.pkg.tar.xz";
     sha256      = "12e34a96cae17a8ae4196284eae8b3771332e6fd32a1f3c7fa7c7c2335e3177f";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Date-Calc" = fetch {
@@ -3090,7 +2968,6 @@ let
     filename    = "perl-Date-Calc-6.4-1-any.pkg.tar.xz";
     sha256      = "9a5beed884beb9948f7790a868444d0802e6bd6301316e202c54dc41f1cec914";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Digest-HMAC" = fetch {
@@ -3099,7 +2976,6 @@ let
     filename    = "perl-Digest-HMAC-1.03-2-any.pkg.tar.xz";
     sha256      = "9611d00bf2607f8a656749dca4968e326681dda5e6ff1d66594668d8eebf1a3c";
     buildInputs = [ (assert lib.versionAtLeast perl.version "1.03"; perl) ];
-    broken      = true;
   };
 
   "perl-Digest-MD4" = fetch {
@@ -3108,7 +2984,6 @@ let
     filename    = "perl-Digest-MD4-1.9-3-any.pkg.tar.xz";
     sha256      = "53a6be90008bdbef5c26331faba492d46ebe6583474df5c6210e0ad9062a9ab2";
     buildInputs = [ (assert lib.versionAtLeast perl.version "1.9"; perl) libcrypt ];
-    broken      = true;
   };
 
   "perl-Encode-Locale" = fetch {
@@ -3117,7 +2992,6 @@ let
     filename    = "perl-Encode-Locale-1.05-1-any.pkg.tar.xz";
     sha256      = "56d82c71588c66dbee20e9acc7ed0e9bc09e40654593125b63086b59aeea8002";
     buildInputs = [ (assert lib.versionAtLeast perl.version "1.05"; perl) ];
-    broken      = true;
   };
 
   "perl-Encode-compat" = fetch {
@@ -3126,7 +3000,6 @@ let
     filename    = "perl-Encode-compat-0.07-1-any.pkg.tar.xz";
     sha256      = "b277cf801059356941a7273d76dc67d32c13d136533378d4f2fbee90059c5127";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Error" = fetch {
@@ -3135,7 +3008,6 @@ let
     filename    = "perl-Error-0.17027-1-any.pkg.tar.xz";
     sha256      = "f685e757ebf821204b883f5c5e95ebbe2104b9df781316c0d17f2183b0e97009";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Exporter-Lite" = fetch {
@@ -3144,7 +3016,6 @@ let
     filename    = "perl-Exporter-Lite-0.08-1-any.pkg.tar.xz";
     sha256      = "a027f79533e227a39a7e44325d19ada723d855a7679a7cc95b00b9cfce852f58";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Exporter-Tiny" = fetch {
@@ -3153,7 +3024,6 @@ let
     filename    = "perl-Exporter-Tiny-1.002001-1-any.pkg.tar.xz";
     sha256      = "e69cca9aec8875ac566a51cd9ea4bf220448e8d0323fc8e8517420dbfcbf0db7";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-ExtUtils-Depends" = fetch {
@@ -3162,7 +3032,6 @@ let
     filename    = "perl-ExtUtils-Depends-0.405-1-any.pkg.tar.xz";
     sha256      = "8d4199dd6cb525e12a41c367f01603aa2a6a608e6ddaf045564ffb0f47df7a02";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-ExtUtils-MakeMaker" = fetch {
@@ -3171,7 +3040,6 @@ let
     filename    = "perl-ExtUtils-MakeMaker-7.34-1-any.pkg.tar.xz";
     sha256      = "d2ef0c422ebbd38d0df5bc9ba3e2fa39ce55ccf552db8a68282a7e4629be2e23";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-ExtUtils-PkgConfig" = fetch {
@@ -3180,7 +3048,6 @@ let
     filename    = "perl-ExtUtils-PkgConfig-1.16-1-any.pkg.tar.xz";
     sha256      = "9b076317052f167d610ba8898de7fffbaedd947b04ae4414c1d342080c82619c";
     buildInputs = [ (assert lib.versionAtLeast perl.version "1.16"; perl) ];
-    broken      = true;
   };
 
   "perl-File-Copy-Recursive" = fetch {
@@ -3189,7 +3056,6 @@ let
     filename    = "perl-File-Copy-Recursive-0.44-1-any.pkg.tar.xz";
     sha256      = "4c687e23be720db3156cdda3c72b83fb0beb7874a38aa743403998f531823a27";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-File-Listing" = fetch {
@@ -3198,7 +3064,6 @@ let
     filename    = "perl-File-Listing-6.04-2-any.pkg.tar.xz";
     sha256      = "4f48fe3bde66ab216ae4a5c9ebf83dd4a490033bcdbc7abea26d59346bbb11bb";
     buildInputs = [ (assert lib.versionAtLeast perl.version "6.04"; perl) (assert lib.versionAtLeast perl-HTTP-Date.version "6.04"; perl-HTTP-Date) ];
-    broken      = true;
   };
 
   "perl-File-Next" = fetch {
@@ -3207,7 +3072,6 @@ let
     filename    = "perl-File-Next-1.16-1-any.pkg.tar.xz";
     sha256      = "3f7f5ac5e9f3e29cc3c3ede933dcccb2c6ea5ccc11e4e580e5ebc05d78f19cbe";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-File-Which" = fetch {
@@ -3216,7 +3080,6 @@ let
     filename    = "perl-File-Which-1.22-1-any.pkg.tar.xz";
     sha256      = "9f4c9131d4ee28e2e72c213f82258378b9e4271f7093ee939a5fedceb8c62e4d";
     buildInputs = [ perl (assert lib.versionAtLeast perl-Test-Script.version "1.22"; perl-Test-Script) ];
-    broken      = true;
   };
 
   "perl-Font-TTF" = fetch {
@@ -3225,7 +3088,6 @@ let
     filename    = "perl-Font-TTF-1.06-1-any.pkg.tar.xz";
     sha256      = "f6a455372ce83e89f03958423199cee7c7950210803a7ca9ea5d957b9306f71b";
     buildInputs = [ perl-IO-String ];
-    broken      = true;
   };
 
   "perl-Getopt-ArgvFile" = fetch {
@@ -3234,7 +3096,6 @@ let
     filename    = "perl-Getopt-ArgvFile-1.11-1-any.pkg.tar.xz";
     sha256      = "c9e436c107c11d15576e03252272e156ce308bec624e949b885177d6a140ce59";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Getopt-Tabular" = fetch {
@@ -3243,7 +3104,6 @@ let
     filename    = "perl-Getopt-Tabular-0.3-1-any.pkg.tar.xz";
     sha256      = "d803fcfdf1d0bdfa78a90abc2bf65e7bc54c19ecceecc6ff13d5de3df13798fa";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-HTML-Parser" = fetch {
@@ -3252,7 +3112,6 @@ let
     filename    = "perl-HTML-Parser-3.72-3-x86_64.pkg.tar.xz";
     sha256      = "40625231d3ef737871f47b8d08fe2e0d37876cce0f61543eb2c8e94c260894ce";
     buildInputs = [ perl-HTML-Tagset perl ];
-    broken      = true;
   };
 
   "perl-HTML-Tagset" = fetch {
@@ -3260,8 +3119,7 @@ let
     version     = "3.20";
     filename    = "perl-HTML-Tagset-3.20-2-any.pkg.tar.xz";
     sha256      = "f3b2b1d3c27b2528449c4b09a1a164bfa0b88a75dfea399ef6402fed0d13a66d";
-    buildInputs = [ perl ];
-    broken      = true;
+    buildInputs = [ (assert lib.versionAtLeast perl.version "3.20"; perl) ];
   };
 
   "perl-HTTP-Cookies" = fetch {
@@ -3270,7 +3128,6 @@ let
     filename    = "perl-HTTP-Cookies-6.04-1-any.pkg.tar.xz";
     sha256      = "8e134a1d081e566bc9c1c7279caf8ee26a3cf27117abdcfaf3a5ce8390e9e953";
     buildInputs = [ (assert lib.versionAtLeast perl.version "6.04"; perl) (assert lib.versionAtLeast perl-HTTP-Date.version "6.04"; perl-HTTP-Date) perl-HTTP-Message ];
-    broken      = true;
   };
 
   "perl-HTTP-Daemon" = fetch {
@@ -3279,7 +3136,6 @@ let
     filename    = "perl-HTTP-Daemon-6.01-2-any.pkg.tar.xz";
     sha256      = "cd4c2f337f6e561d74dc87044c3ac00a597f59872e104522051707deb18ca769";
     buildInputs = [ perl perl-HTTP-Date perl-HTTP-Message perl-LWP-MediaTypes ];
-    broken      = true;
   };
 
   "perl-HTTP-Date" = fetch {
@@ -3288,7 +3144,6 @@ let
     filename    = "perl-HTTP-Date-6.02-2-any.pkg.tar.xz";
     sha256      = "ea96e4438838a70b469d75401e9fa733e2200ff90058d0c230bbf3d19345536f";
     buildInputs = [ (assert lib.versionAtLeast perl.version "6.02"; perl) ];
-    broken      = true;
   };
 
   "perl-HTTP-Message" = fetch {
@@ -3297,7 +3152,6 @@ let
     filename    = "perl-HTTP-Message-6.18-1-any.pkg.tar.xz";
     sha256      = "42f7bc0f6a0b747c07dad1145d8b06c0354e56232df1144041b8c61792cde5a4";
     buildInputs = [ (assert lib.versionAtLeast perl.version "6.18"; perl) (assert lib.versionAtLeast perl-Encode-Locale.version "6.18"; perl-Encode-Locale) (assert lib.versionAtLeast perl-HTML-Parser.version "6.18"; perl-HTML-Parser) (assert lib.versionAtLeast perl-HTTP-Date.version "6.18"; perl-HTTP-Date) (assert lib.versionAtLeast perl-LWP-MediaTypes.version "6.18"; perl-LWP-MediaTypes) (assert lib.versionAtLeast perl-URI.version "6.18"; perl-URI) ];
-    broken      = true;
   };
 
   "perl-HTTP-Negotiate" = fetch {
@@ -3306,7 +3160,6 @@ let
     filename    = "perl-HTTP-Negotiate-6.01-2-any.pkg.tar.xz";
     sha256      = "c81c85f2c89d7022d9bc6cd29424b13db94a05dc47c8ca47730cd47d3d8e6be8";
     buildInputs = [ (assert lib.versionAtLeast perl.version "6.01"; perl) perl-HTTP-Message ];
-    broken      = true;
   };
 
   "perl-IO-HTML" = fetch {
@@ -3315,7 +3168,6 @@ let
     filename    = "perl-IO-HTML-1.001-1-any.pkg.tar.xz";
     sha256      = "98b3689bac2cf0ed60c7fe02c2caa441e18e48044b317207a7d502293b291d1b";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-IO-Socket-INET6" = fetch {
@@ -3324,7 +3176,6 @@ let
     filename    = "perl-IO-Socket-INET6-2.72-4-any.pkg.tar.xz";
     sha256      = "2b325a3819720cadbd4c94d00b0c60bba9b83cb4fa7eea7cfeec5cbd62676d90";
     buildInputs = [ (assert lib.versionAtLeast perl-Socket6.version "2.72"; perl-Socket6) ];
-    broken      = true;
   };
 
   "perl-IO-Socket-SSL" = fetch {
@@ -3333,7 +3184,6 @@ let
     filename    = "perl-IO-Socket-SSL-2.060-1-any.pkg.tar.xz";
     sha256      = "97ed3f115bfb2ff9679f265ab4835ddf99dfd5eee67d2c2c33f928e58194679a";
     buildInputs = [ perl-Net-SSLeay perl perl-URI ];
-    broken      = true;
   };
 
   "perl-IO-String" = fetch {
@@ -3341,8 +3191,7 @@ let
     version     = "1.08";
     filename    = "perl-IO-String-1.08-9-x86_64.pkg.tar.xz";
     sha256      = "62e6322c190cfadc6ba8407bdecc6c41c3f304201e5d12cf4525df22893f931a";
-    buildInputs = [ perl ];
-    broken      = true;
+    buildInputs = [ (assert lib.versionAtLeast perl.version "1.08"; perl) ];
   };
 
   "perl-IO-stringy" = fetch {
@@ -3351,7 +3200,6 @@ let
     filename    = "perl-IO-stringy-2.111-1-any.pkg.tar.xz";
     sha256      = "3013c11f3d0f1a52d627a1152efdb35e51d1a8aca7f4a71d950a8f54ea722f89";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-IPC-Run3" = fetch {
@@ -3360,7 +3208,6 @@ let
     filename    = "perl-IPC-Run3-0.048-1-any.pkg.tar.xz";
     sha256      = "926b1daa99c5d33dcca9a5dae8f05b4586fae5ca10f9e100d488ac49a13ca3d6";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-JSON" = fetch {
@@ -3369,7 +3216,6 @@ let
     filename    = "perl-JSON-2.97001-1-any.pkg.tar.xz";
     sha256      = "278294943cea537e673ea11e0cf0043f0cd1e41acb6321b3646941a64e81c3d5";
     buildInputs = [ (assert lib.versionAtLeast perl.version "2.97001"; perl) ];
-    broken      = true;
   };
 
   "perl-LWP-MediaTypes" = fetch {
@@ -3378,7 +3224,6 @@ let
     filename    = "perl-LWP-MediaTypes-6.02-2-any.pkg.tar.xz";
     sha256      = "25a0d4e69aa844edfd27ab28a16488f47ceab1090188bb95a558472d712005be";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-LWP-Protocol-https" = fetch {
@@ -3387,7 +3232,6 @@ let
     filename    = "perl-LWP-Protocol-https-6.07-1-any.pkg.tar.xz";
     sha256      = "572cc085e8a6f67c46aa4ba0f8c71d7408b5473ef3484fef789f04414810c2d5";
     buildInputs = [ perl perl-IO-Socket-SSL perl-Mozilla-CA perl-Net-HTTP perl-libwww ];
-    broken      = true;
   };
 
   "perl-List-MoreUtils" = fetch {
@@ -3396,7 +3240,6 @@ let
     filename    = "perl-List-MoreUtils-0.428-1-any.pkg.tar.xz";
     sha256      = "66f3168737720c973658b748864726044da2fe2e0e0d6732e80fa3bba848e97c";
     buildInputs = [ perl perl-Exporter-Tiny perl-List-MoreUtils-XS ];
-    broken      = true;
   };
 
   "perl-List-MoreUtils-XS" = fetch {
@@ -3405,7 +3248,6 @@ let
     filename    = "perl-List-MoreUtils-XS-0.428-2-x86_64.pkg.tar.xz";
     sha256      = "d930f4746ed67eba21a91dc1de86fa3fbbd8461a1cc4b8c39f874fe1ca3b3133";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Locale-Gettext" = fetch {
@@ -3414,7 +3256,6 @@ let
     filename    = "perl-Locale-Gettext-1.07-3-x86_64.pkg.tar.xz";
     sha256      = "2c3913790de70a1d9d66bcf9ddd5922d85516952196e157554833f742a1a0672";
     buildInputs = [ gettext perl ];
-    broken      = true;
   };
 
   "perl-MIME-Charset" = fetch {
@@ -3423,7 +3264,6 @@ let
     filename    = "perl-MIME-Charset-1.012.2-1-any.pkg.tar.xz";
     sha256      = "cf0e9ffa18dc6063322e94f89320c0f546770dafbe4ab9a583ef50eb8e603d98";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-MIME-tools" = fetch {
@@ -3432,7 +3272,6 @@ let
     filename    = "perl-MIME-tools-5.509-1-any.pkg.tar.xz";
     sha256      = "88459205a2a53d5ef2204d3d9fd7d9c992480f352f3301862a10fc85e2c261c2";
     buildInputs = [ perl-MailTools perl-IO-stringy perl-Convert-BinHex ];
-    broken      = true;
   };
 
   "perl-MailTools" = fetch {
@@ -3441,7 +3280,6 @@ let
     filename    = "perl-MailTools-2.20-1-any.pkg.tar.xz";
     sha256      = "9b486e259642d765843f85a64574596002b1ef3b41c2af3a810800d88655ce5b";
     buildInputs = [ perl-TimeDate ];
-    broken      = true;
   };
 
   "perl-Math-Int64" = fetch {
@@ -3450,7 +3288,6 @@ let
     filename    = "perl-Math-Int64-0.54-2-any.pkg.tar.xz";
     sha256      = "96dcad362f6853fedb266eff9e45f57b8e434d858f8ba726cca41458e0736012";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Module-Build" = fetch {
@@ -3468,7 +3305,6 @@ let
     filename    = "perl-Mozilla-CA-20180117-1-any.pkg.tar.xz";
     sha256      = "1a3c875db1b3d2b2e8082c07a5d918821489ee70d52c20278c7384c788aeb8dc";
     buildInputs = [ (assert lib.versionAtLeast perl.version "20180117"; perl) ];
-    broken      = true;
   };
 
   "perl-Net-DNS" = fetch {
@@ -3477,7 +3313,6 @@ let
     filename    = "perl-Net-DNS-1.19-1-x86_64.pkg.tar.xz";
     sha256      = "62f22b36fbe6a3dbc79a4f32b3ee443f244749693b2eaa952fcafd39896ede79";
     buildInputs = [ perl-Digest-HMAC perl-Net-IP perl ];
-    broken      = true;
   };
 
   "perl-Net-HTTP" = fetch {
@@ -3486,7 +3321,6 @@ let
     filename    = "perl-Net-HTTP-6.18-1-any.pkg.tar.xz";
     sha256      = "325a8c9aa9fde1babdb8e54b9d47211cb6440a3819f64c08d053cfc0eaadbafa";
     buildInputs = [ (assert lib.versionAtLeast perl.version "6.18"; perl) ];
-    broken      = true;
   };
 
   "perl-Net-IP" = fetch {
@@ -3495,7 +3329,6 @@ let
     filename    = "perl-Net-IP-1.26-2-any.pkg.tar.xz";
     sha256      = "d78c5b12885a4bb6cf33d17befde8e4bdcb13d999f500b8c2c81b82d8d1d513e";
     buildInputs = [ (assert lib.versionAtLeast perl.version "1.26"; perl) ];
-    broken      = true;
   };
 
   "perl-Net-SMTP-SSL" = fetch {
@@ -3504,7 +3337,6 @@ let
     filename    = "perl-Net-SMTP-SSL-1.04-1-any.pkg.tar.xz";
     sha256      = "2e92cfa091690aa80ae53042f4434c41356ead5bf6722c12b419bedd731dd235";
     buildInputs = [ perl-IO-Socket-SSL ];
-    broken      = true;
   };
 
   "perl-Net-SSLeay" = fetch {
@@ -3521,7 +3353,6 @@ let
     filename    = "perl-Parallel-ForkManager-1.20-1-any.pkg.tar.xz";
     sha256      = "a2d1db0e4c14c85f0089b4875af4adde4602497b0d7495e3eb1a324145b95ee3";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Path-Class" = fetch {
@@ -3530,7 +3361,6 @@ let
     filename    = "perl-Path-Class-0.37-1-any.pkg.tar.xz";
     sha256      = "b3a24528895ca7e977db5c8b614a757f5a42f68fa00e053c165c26defe620e25";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Probe-Perl" = fetch {
@@ -3539,7 +3369,6 @@ let
     filename    = "perl-Probe-Perl-0.03-2-any.pkg.tar.xz";
     sha256      = "c1c5bc6b216df705a508a2628decc08065d7ae9e006e981d1159ddc8947aa70a";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Regexp-Common" = fetch {
@@ -3548,7 +3377,6 @@ let
     filename    = "perl-Regexp-Common-2017060201-1-any.pkg.tar.xz";
     sha256      = "38b99a97e5374cc1a278ce4b85b54ecc9c444d09ac597a4895a8af7dc97d9734";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Socket6" = fetch {
@@ -3557,7 +3385,6 @@ let
     filename    = "perl-Socket6-0.29-1-x86_64.pkg.tar.xz";
     sha256      = "8cedbf02f3fbdc5004cf2f2c2e639e267c28094e6065960409af1181ebec7efe";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Sort-Versions" = fetch {
@@ -3566,7 +3393,6 @@ let
     filename    = "perl-Sort-Versions-1.62-1-any.pkg.tar.xz";
     sha256      = "dc210b425c8fb5eff83b59470fe77a00fe3820e2000576bcc37e2e7fbcb0ab2e";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Spiffy" = fetch {
@@ -3575,7 +3401,6 @@ let
     filename    = "perl-Spiffy-0.46-1-any.pkg.tar.xz";
     sha256      = "aee7a3e220d1080fac9c92c183164bbd461a5ce796d5102e31df6a8f18e0045e";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Sys-CPU" = fetch {
@@ -3584,7 +3409,6 @@ let
     filename    = "perl-Sys-CPU-0.61-5-x86_64.pkg.tar.xz";
     sha256      = "00fa464a594bd0145439c45449ebe408e801a30e910bf9c00bc57485e43d24c7";
     buildInputs = [ perl libcrypt-devel ];
-    broken      = true;
   };
 
   "perl-TAP-Harness-Archive" = fetch {
@@ -3593,7 +3417,6 @@ let
     filename    = "perl-TAP-Harness-Archive-0.18-1-any.pkg.tar.xz";
     sha256      = "49966dd01f79fb86600cb91cfc2b82ac76418b604c2963f88499ed93d0e46d34";
     buildInputs = [ perl-YAML-Tiny perl ];
-    broken      = true;
   };
 
   "perl-TermReadKey" = fetch {
@@ -3602,7 +3425,6 @@ let
     filename    = "perl-TermReadKey-2.37-3-x86_64.pkg.tar.xz";
     sha256      = "0b8ad806893cf6d43d391250be3d42c9deff9583ca319341fd6e8c7cbc473e51";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Test-Base" = fetch {
@@ -3620,7 +3442,6 @@ let
     filename    = "perl-Test-Deep-1.128-1-any.pkg.tar.xz";
     sha256      = "1aac742afb85b1dcd303efe014389ce0fb1065dab793d7cc004b8564535da8bd";
     buildInputs = [ perl perl-Test-Simple perl-Test-NoWarnings ];
-    broken      = true;
   };
 
   "perl-Test-Fatal" = fetch {
@@ -3629,7 +3450,6 @@ let
     filename    = "perl-Test-Fatal-0.014-1-any.pkg.tar.xz";
     sha256      = "df0e0ffaaf16f3b938ae210beb34f06cfb5e05c036e8efeea9cf334f1dc58773";
     buildInputs = [ perl perl-Try-Tiny ];
-    broken      = true;
   };
 
   "perl-Test-Harness" = fetch {
@@ -3638,7 +3458,6 @@ let
     filename    = "perl-Test-Harness-3.39-1-any.pkg.tar.xz";
     sha256      = "0edd9a3dd20abf0544afcd2b111166f5e55b6957e03126947278e7c94f497e94";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Test-Needs" = fetch {
@@ -3647,7 +3466,6 @@ let
     filename    = "perl-Test-Needs-0.002005-1-any.pkg.tar.xz";
     sha256      = "7f12f098eceb57739e3db2364c9310c697e964a79afe617d8134dd20ede98142";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Test-NoWarnings" = fetch {
@@ -3656,7 +3474,6 @@ let
     filename    = "perl-Test-NoWarnings-1.04-1-any.pkg.tar.xz";
     sha256      = "2ae02b5d0cebd00869c1e102ad147d3a97d2b6dab891a5fd09ada9f214757378";
     buildInputs = [ perl perl-Test-Simple ];
-    broken      = true;
   };
 
   "perl-Test-Pod" = fetch {
@@ -3674,7 +3491,6 @@ let
     filename    = "perl-Test-Requiresinternet-0.05-1-any.pkg.tar.xz";
     sha256      = "d3a7f2b885579245c3119361ae70a5260a8a765fd11b380efaa31db4e4143487";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Test-Script" = fetch {
@@ -3683,7 +3499,6 @@ let
     filename    = "perl-Test-Script-1.23-1-any.pkg.tar.xz";
     sha256      = "1708b159a0ae0aa7f1ea62b4610f70d12dd304e05ad81b6de8b0d2c082c6cf0d";
     buildInputs = [ perl perl-IPC-Run3 perl-Probe-Perl perl-Test-Simple ];
-    broken      = true;
   };
 
   "perl-Test-Simple" = fetch {
@@ -3692,7 +3507,6 @@ let
     filename    = "perl-Test-Simple-1.302122-1-any.pkg.tar.xz";
     sha256      = "69f758769938ad919ac32c2a7b92b40d6ed6ee625990b09e0c992ac20faab301";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Test-YAML" = fetch {
@@ -3710,7 +3524,6 @@ let
     filename    = "perl-Text-CharWidth-0.04-3-any.pkg.tar.xz";
     sha256      = "6ae75963347495e9f901a88e226ec0a1fa0b2135031191d2cba7f0dced32bb27";
     buildInputs = [ perl libcrypt ];
-    broken      = true;
   };
 
   "perl-Text-Diff" = fetch {
@@ -3728,7 +3541,6 @@ let
     filename    = "perl-Text-WrapI18N-0.06-1-any.pkg.tar.xz";
     sha256      = "883e64f5f80446326fdacca0e989aea4e20bb2dafe52eb0347745566a0ce1c36";
     buildInputs = [ perl perl-Text-CharWidth ];
-    broken      = true;
   };
 
   "perl-TimeDate" = fetch {
@@ -3737,7 +3549,6 @@ let
     filename    = "perl-TimeDate-2.30-2-any.pkg.tar.xz";
     sha256      = "9611d18e8c79ee9da21cfeb0e028830006c53cbaa7af585801f6b253228b35d4";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-Try-Tiny" = fetch {
@@ -3746,7 +3557,6 @@ let
     filename    = "perl-Try-Tiny-0.30-1-any.pkg.tar.xz";
     sha256      = "20ac25b02899e85ebab23f5557b5deaacb8c4f18109e67ecd6128a9ddb944341";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-URI" = fetch {
@@ -3755,7 +3565,6 @@ let
     filename    = "perl-URI-1.74-1-any.pkg.tar.xz";
     sha256      = "a606c2a30ff1290265281bffd8433d71e8b3e782a2cac2844930f2d7e5b54874";
     buildInputs = [ (assert lib.versionAtLeast perl.version "1.74"; perl) ];
-    broken      = true;
   };
 
   "perl-Unicode-GCString" = fetch {
@@ -3764,7 +3573,6 @@ let
     filename    = "perl-Unicode-GCString-2018.003-1-any.pkg.tar.xz";
     sha256      = "bfb34cc09cf3739548c6da1492dd0cc5d439e53e4f4498597a43df588ee95148";
     buildInputs = [ perl perl-MIME-Charset libcrypt ];
-    broken      = true;
   };
 
   "perl-WWW-RobotRules" = fetch {
@@ -3773,7 +3581,6 @@ let
     filename    = "perl-WWW-RobotRules-6.02-2-any.pkg.tar.xz";
     sha256      = "740d79af6618e8cb82bc22f2b913abefa14a40360b4e0e40d35522048146d366";
     buildInputs = [ perl perl-URI ];
-    broken      = true;
   };
 
   "perl-XML-LibXML" = fetch {
@@ -3782,7 +3589,6 @@ let
     filename    = "perl-XML-LibXML-2.0132-2-x86_64.pkg.tar.xz";
     sha256      = "c5811752082b153d6b32c380bb8bd58a9b34bc93489d57359be07ada197c66aa";
     buildInputs = [ perl libxml2 perl-XML-SAX ];
-    broken      = true;
   };
 
   "perl-XML-NamespaceSupport" = fetch {
@@ -3791,7 +3597,6 @@ let
     filename    = "perl-XML-NamespaceSupport-1.12-1-any.pkg.tar.xz";
     sha256      = "8134097cbdcc291218536671977a58a1a39be0ad6b941840574b3fc2db4816a1";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-XML-Parser" = fetch {
@@ -3800,7 +3605,6 @@ let
     filename    = "perl-XML-Parser-2.44-4-x86_64.pkg.tar.xz";
     sha256      = "903f04252d1b2d0c859b7f55fbeb8a0f627ff7741be8968c2404292189cf1f21";
     buildInputs = [ perl libexpat libcrypt ];
-    broken      = true;
   };
 
   "perl-XML-SAX" = fetch {
@@ -3809,7 +3613,6 @@ let
     filename    = "perl-XML-SAX-1.00-1-any.pkg.tar.xz";
     sha256      = "3e317e16818f5dcf743081ff0f4d23fb1c73ad0a7296d4f17527f060005c103c";
     buildInputs = [ perl perl-XML-SAX-Base perl-XML-NamespaceSupport ];
-    broken      = true;
   };
 
   "perl-XML-SAX-Base" = fetch {
@@ -3818,7 +3621,6 @@ let
     filename    = "perl-XML-SAX-Base-1.09-1-any.pkg.tar.xz";
     sha256      = "644d2e4427064daf327bb1256b83e88fcd3abc22d16772d10c02b17d14bdff94";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-XML-Simple" = fetch {
@@ -3827,7 +3629,6 @@ let
     filename    = "perl-XML-Simple-2.25-1-any.pkg.tar.xz";
     sha256      = "108ee1a340ff5fdbc5b1c6e864edf766235552ace49829893a17169085579305";
     buildInputs = [ perl-XML-Parser perl ];
-    broken      = true;
   };
 
   "perl-YAML" = fetch {
@@ -3836,7 +3637,6 @@ let
     filename    = "perl-YAML-1.27-1-any.pkg.tar.xz";
     sha256      = "3178b83fcb0875835d5326081c0ebc3ce7d9754b9c7d1340f21e036c4f89ed72";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-YAML-Syck" = fetch {
@@ -3845,7 +3645,6 @@ let
     filename    = "perl-YAML-Syck-1.31-1-x86_64.pkg.tar.xz";
     sha256      = "dfb837fec8fce45f38fe83f9f7596e235069144156eeff09695b241b956763d5";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-YAML-Tiny" = fetch {
@@ -3854,7 +3653,6 @@ let
     filename    = "perl-YAML-Tiny-1.73-1-any.pkg.tar.xz";
     sha256      = "c38a995d3bdbb89c285537a6916c21c4833815a4f744fba6b684c523c29757d7";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-ack" = fetch {
@@ -3863,7 +3661,6 @@ let
     filename    = "perl-ack-2.24-1-any.pkg.tar.xz";
     sha256      = "c2cd6c2fffa392a74ac5d0eb1d404884c334de5fe6ddedc0b33bcad07734e2ff";
     buildInputs = [ perl-File-Next ];
-    broken      = true;
   };
 
   "perl-common-sense" = fetch {
@@ -3872,7 +3669,6 @@ let
     filename    = "perl-common-sense-3.74-1-any.pkg.tar.xz";
     sha256      = "b320e3fb2c5fc87a83d7afbc4e6dede23e11ca8ed9212856c678fd166cee2a5c";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "perl-inc-latest" = fetch {
@@ -3881,7 +3677,6 @@ let
     filename    = "perl-inc-latest-0.500-1-any.pkg.tar.xz";
     sha256      = "2be50e019e7658de5110613701aa853661b4b454ee4e6916268abc079c418974";
     buildInputs = [ (assert lib.versionAtLeast perl.version "0.500"; perl) ];
-    broken      = true;
   };
 
   "perl-libwww" = fetch {
@@ -3890,7 +3685,6 @@ let
     filename    = "perl-libwww-6.36-1-any.pkg.tar.xz";
     sha256      = "1e311a22c6e685292364388b478a5b3384f94bedda60c9b9b73ceabee485eb81";
     buildInputs = [ perl perl-Encode-Locale perl-File-Listing perl-HTML-Parser perl-HTTP-Cookies perl-HTTP-Daemon perl-HTTP-Date perl-HTTP-Negotiate perl-LWP-MediaTypes perl-Net-HTTP perl-URI perl-WWW-RobotRules perl-HTTP-Message perl-Try-Tiny ];
-    broken      = true;
   };
 
   "perl-sgmls" = fetch {
@@ -3899,7 +3693,6 @@ let
     filename    = "perl-sgmls-1.03ii-1-any.pkg.tar.xz";
     sha256      = "2ad1865419b86ca43fc7cf2e4f7151e33c0826891965538b06b26605dcc285f4";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "pinentry" = fetch {
@@ -3908,7 +3701,6 @@ let
     filename    = "pinentry-1.1.0-2-x86_64.pkg.tar.xz";
     sha256      = "3509a73aa5a93994b3714dc4003a628c9a2ab0eb4bde3e4c93c2fc741b5adac3";
     buildInputs = [ ncurses libassuan libgpg-error ];
-    broken      = true;
   };
 
   "pkg-config" = fetch {
@@ -3917,7 +3709,6 @@ let
     filename    = "pkg-config-0.29.2-1-x86_64.pkg.tar.xz";
     sha256      = "6b3fd030412e2fe8d31b227f37df95846387f2c48b5f35f0d9b7b76f6109c689";
     buildInputs = [ glib2 ];
-    broken      = true;
   };
 
   "pkgfile" = fetch {
@@ -3926,7 +3717,6 @@ let
     filename    = "pkgfile-19-1-x86_64.pkg.tar.xz";
     sha256      = "9bf977934a179e5c5105ec0961e9da2ae2037e448f7a698af9bd604b5b24168c";
     buildInputs = [ libarchive curl pcre pacman ];
-    broken      = true;
   };
 
   "po4a" = fetch {
@@ -3935,7 +3725,6 @@ let
     filename    = "po4a-0.55-1-any.pkg.tar.xz";
     sha256      = "d01cb481ca627903189283e2539441aa52876fc7735213ccddaac960064142cf";
     buildInputs = [ perl gettext perl-Text-WrapI18N perl-Locale-Gettext perl-TermReadKey perl-sgmls perl-Unicode-GCString ];
-    broken      = true;
   };
 
   "procps" = fetch {
@@ -4006,7 +3795,6 @@ let
     filename    = "python-3.7.1-2-x86_64.pkg.tar.xz";
     sha256      = "309894cbee284b3548b6e9b10c28cfd73e7ec397a01deabccebf84bc20efac6f";
     buildInputs = [ libbz2 libexpat libffi liblzma ncurses libopenssl libreadline mpdecimal libsqlite zlib ];
-    broken      = true;
   };
 
   "python-brotli" = fetch {
@@ -4015,7 +3803,6 @@ let
     filename    = "python-brotli-1.0.7-1-x86_64.pkg.tar.xz";
     sha256      = "cc40e187e7da13223e4d97806125c1932a76ecf0b9e98207f2c649084b01d73d";
     buildInputs = [ python ];
-    broken      = true;
   };
 
   "python2" = fetch {
@@ -4080,7 +3867,6 @@ let
     filename    = "python2-distutils-extra-2.39-2-any.pkg.tar.xz";
     sha256      = "d9f445df36f71975fbd8a0caf390f4d632390041f6c0a28877800f3d03d504ef";
     buildInputs = [ (assert lib.versionAtLeast python2.version "2.39"; python2) intltool ];
-    broken      = true;
   };
 
   "python2-fastimport" = fetch {
@@ -4088,7 +3874,7 @@ let
     version     = "0.9.8";
     filename    = "python2-fastimport-0.9.8-1-any.pkg.tar.xz";
     sha256      = "10c069e9ca6e81860f5a3383d47825562bd4667b992b9d18a6b008dbcf1f5a31";
-    buildInputs = [ python2 ];
+    buildInputs = [ (assert lib.versionAtLeast python2.version "0.9.8"; python2) ];
   };
 
   "python2-funcsigs" = fetch {
@@ -4308,7 +4094,6 @@ let
     filename    = "python3-beaker-1.10.0-3-x86_64.pkg.tar.xz";
     sha256      = "dbbc8edc917dd5c59be8b79d2f82b480ea694dd470db2cecddb12174726a7395";
     buildInputs = [ (assert lib.versionAtLeast python.version "1.10.0"; python) ];
-    broken      = true;
   };
 
   "python3-colorama" = fetch {
@@ -4326,7 +4111,6 @@ let
     filename    = "python3-distutils-extra-2.39-2-any.pkg.tar.xz";
     sha256      = "caf7e417b247513208c86dbfb7e3cd0c4dbb4cf3d13e303b50a2b66ec0a55499";
     buildInputs = [ (assert lib.versionAtLeast python.version "2.39"; python) intltool ];
-    broken      = true;
   };
 
   "python3-mako" = fetch {
@@ -4488,7 +4272,6 @@ let
     filename    = "quilt-0.65-2-any.pkg.tar.xz";
     sha256      = "ce99682bd6e141a8c4132ecbc8fe77dcc530ca86207436ad7364bf525793698d";
     buildInputs = [ bash bzip2 diffstat diffutils findutils gawk gettext gzip patch perl ];
-    broken      = true;
   };
 
   "rarian" = fetch {
@@ -4545,7 +4328,6 @@ let
     filename    = "rsync-3.1.3-1-x86_64.pkg.tar.xz";
     sha256      = "c397eba60b48227277c8da49f7fabbe9e6af20ee1e68b402e296e672b7a52a6a";
     buildInputs = [ perl ];
-    broken      = true;
   };
 
   "rsync2" = fetch {
@@ -4593,7 +4375,6 @@ let
     filename    = "sed-4.5-1-x86_64.pkg.tar.xz";
     sha256      = "05c98dd399719543892d9a3af852ba5e3e5a4ae393ab40605b59702c0dee296f";
     buildInputs = [ libintl sh ];
-    broken      = true;
   };
 
   "setconf" = fetch {
@@ -4610,7 +4391,6 @@ let
     filename    = "sgml-common-0.6.3-1-any.pkg.tar.xz";
     sha256      = "8468f420528ee8cfa54c60cbe844751bfc9a1c783fc9e7e3b99bdb48c4d319a6";
     buildInputs = [ sh ];
-    broken      = true;
   };
 
   "sharutils" = fetch {
@@ -4619,7 +4399,6 @@ let
     filename    = "sharutils-4.15.2-1-x86_64.pkg.tar.xz";
     sha256      = "6907cb625fe7b200cf03672bf02d15c28d7945a28deb278ac9fe79a530774a6b";
     buildInputs = [ perl gettext texinfo ];
-    broken      = true;
   };
 
   "socat" = fetch {
@@ -4659,7 +4438,6 @@ let
     filename    = "sshpass-1.06-1-x86_64.pkg.tar.xz";
     sha256      = "f7cf610af7d1f47d44a77f7ba9b2d7a4f44b7bb261889a576da4531c5a3b2076";
     buildInputs = [ openssh ];
-    broken      = true;
   };
 
   "subversion" = fetch {
@@ -4685,7 +4463,6 @@ let
     filename    = "tar-1.30-1-x86_64.pkg.tar.xz";
     sha256      = "9993caeb88577f1b7fb03c659e73d9284ed08e0c9f855fc60e5240618091a0d9";
     buildInputs = [ msys2-runtime libiconv libintl sh ];
-    broken      = true;
   };
 
   "task" = fetch {
@@ -4694,7 +4471,6 @@ let
     filename    = "task-2.5.1-2-x86_64.pkg.tar.xz";
     sha256      = "b27aedc77b54fbb9a4c989b379cd9ed1d4a18f74bf7384a448b4b535792c6cae";
     buildInputs = [ gcc-libs libgnutls libutil-linux libhogweed ];
-    broken      = true;
   };
 
   "tcl" = fetch {
@@ -4726,7 +4502,6 @@ let
     filename    = "texinfo-6.5-2-x86_64.pkg.tar.xz";
     sha256      = "e8917402144df8f85f9b2ab4ff61c89325c5fbb0e7b658885b8bd02e02691198";
     buildInputs = [ info perl sh ];
-    broken      = true;
   };
 
   "texinfo-tex" = fetch {
@@ -4735,7 +4510,6 @@ let
     filename    = "texinfo-tex-6.5-2-x86_64.pkg.tar.xz";
     sha256      = "ceaf9f8fff86befd965f3e19c8a441cd43bfc77015e7d5cbfea25e73cf2aca53";
     buildInputs = [ gawk perl sh ];
-    broken      = true;
   };
 
   "tftp-hpa" = fetch {
@@ -4743,7 +4517,7 @@ let
     version     = "5.2";
     filename    = "tftp-hpa-5.2-2-x86_64.pkg.tar.xz";
     sha256      = "a765f0ca3ed795f63bc4919cbcfe1d645a26aa78c41290bec3a229b753322528";
-    buildInputs = [ libreadline ];
+    buildInputs = [ (assert lib.versionAtLeast libreadline.version "5.2"; libreadline) ];
   };
 
   "tig" = fetch {
@@ -4752,7 +4526,6 @@ let
     filename    = "tig-2.4.1-1-x86_64.pkg.tar.xz";
     sha256      = "e5ac2b69a12dcd98781614b04c7507449f05a1a3c5b1f6401492615f94ba06dc";
     buildInputs = [ git libreadline ncurses ];
-    broken      = true;
   };
 
   "time" = fetch {
@@ -4792,7 +4565,6 @@ let
     filename    = "ttyrec-1.0.8-2-x86_64.pkg.tar.xz";
     sha256      = "bd39b20cd48b0735dca56a798ffbd89b63acccfd704c597da6231bf3061c6bec";
     buildInputs = [ sh ];
-    broken      = true;
   };
 
   "txt2html" = fetch {
@@ -4801,7 +4573,6 @@ let
     filename    = "txt2html-2.5201-1-x86_64.pkg.tar.xz";
     sha256      = "7abb65139bf5e4895dc27681948efe0dcb7896913508a49f15bfb2a1d78d24b8";
     buildInputs = [ (assert lib.versionAtLeast perl.version "2.5201"; perl) perl-Getopt-ArgvFile ];
-    broken      = true;
   };
 
   "txt2tags" = fetch {
@@ -4818,7 +4589,6 @@ let
     filename    = "tzcode-2018.c-1-x86_64.pkg.tar.xz";
     sha256      = "679264c690f304f355145ebb362712332c778aae5b53b3c9f362ca48a5ad3d6f";
     buildInputs = [ coreutils gawk sed ];
-    broken      = true;
   };
 
   "ucl" = fetch {
@@ -4897,7 +4667,6 @@ let
     filename    = "vimpager-2.06-1-any.pkg.tar.xz";
     sha256      = "5e281ed9ae9fef50be51ba657586c13944ac2043ecad7bff6facbe87291dd381";
     buildInputs = [ vim sharutils ];
-    broken      = true;
   };
 
   "vimpager-git" = fetch {
@@ -4906,7 +4675,6 @@ let
     filename    = "vimpager-git-r279.bc5548d-1-any.pkg.tar.xz";
     sha256      = "d42d036d94e271fdaa28470dfe1d44cb5a70de51a50cc100d8e28d0b55dd6c00";
     buildInputs = [ vim sharutils ];
-    broken      = true;
   };
 
   "w3m" = fetch {
@@ -4940,7 +4708,6 @@ let
     filename    = "which-2.21-2-x86_64.pkg.tar.xz";
     sha256      = "5514e35834316cfc80e6547de7e570930d0198a633c8b94f45935b231547296d";
     buildInputs = [ msys2-runtime sh ];
-    broken      = true;
   };
 
   "whois" = fetch {
@@ -4979,7 +4746,6 @@ let
     filename    = "xdelta3-3.1.0-1-x86_64.pkg.tar.xz";
     sha256      = "a72fb0a11705523b4e67915c15f294afbefa38ee80fe1bddf653e0b472baeb0b";
     buildInputs = [ xz liblzma ];
-    broken      = true;
   };
 
   "xmlto" = fetch {
@@ -5011,8 +4777,7 @@ let
     version     = "5.2.4";
     filename    = "xz-5.2.4-1-x86_64.pkg.tar.xz";
     sha256      = "78f3e5e6d5147bce228865ef22a6ecbdaabe49c94799707ba34561442011f2f3";
-    buildInputs = [ liblzma libiconv libintl ];
-    broken      = true;
+    buildInputs = [ (assert liblzma.version=="5.2.4"; liblzma) libiconv libintl ];
   };
 
   "yasm" = fetch {
@@ -5035,7 +4800,6 @@ let
     filename    = "yelp-tools-3.28.0-1-any.pkg.tar.xz";
     sha256      = "3490678ffeef32336716d2a7668f2a812e5e5ff741be0d9dcf0e4f1fa9273525";
     buildInputs = [ yelp-xsl itstool libxslt-python libxml2-python ];
-    broken      = true;
   };
 
   "yelp-xsl" = fetch {
@@ -5075,7 +4839,7 @@ let
     version     = "1.2.11";
     filename    = "zlib-devel-1.2.11-1-x86_64.pkg.tar.xz";
     sha256      = "ee3951f7aa3df8c9cfd17f0284b778b351cad8c402d9270cac27816241fcb57b";
-    buildInputs = [ zlib ];
+    buildInputs = [ (assert zlib.version=="1.2.11"; zlib) ];
   };
 
   "znc-git" = fetch {
