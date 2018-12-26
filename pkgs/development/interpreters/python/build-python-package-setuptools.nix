@@ -23,7 +23,7 @@ let
 in attrs // {
   # we copy nix_run_setup over so it's executed relative to the root of the source
   # many project make that assumption
-  buildPhase = attrs.buildPhase or (if python.stdenv.hostPlatform.isMicrosoft then ''
+  buildPhase = attrs.buildPhase or (if python.stdenv.isShellPerl then ''
     runHook 'preBuild';
     copy '${setuppy}', 'nix_run_setup' or die $!;
     system('${python.interpreter} nix_run_setup ${lib.optionalString (setupPyBuildFlags != []) ("build_ext " + (lib.concatStringsSep " " setupPyBuildFlags))} bdist_wheel') == 0 or die;
@@ -35,7 +35,7 @@ in attrs // {
     runHook postBuild
   '');
 
-  installCheckPhase = attrs.checkPhase or (if python.stdenv.hostPlatform.isMicrosoft then ''
+  installCheckPhase = attrs.checkPhase or (if python.stdenv.isShellPerl then ''
     runHook 'preCheck';
     system('${python.interpreter} nix_run_setup test') == 0 or die;
     runHook 'postCheck';
@@ -51,7 +51,7 @@ in attrs // {
   # after the software has been installed.
   doCheck = attrs.doCheck or true;
 
-#  shellHook = attrs.shellHook or (if python.stdenv.hostPlatform.isMicrosoft then ''
+#  shellHook = attrs.shellHook or (if python.stdenv.isShellPerl then ''
 #    #shellHook??
 #  '' else ''
 #    ${preShellHook}

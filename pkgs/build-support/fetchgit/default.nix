@@ -50,14 +50,12 @@ if md5 != "" then
 else
 stdenvNoCC.mkDerivation {
   inherit name;
-  builder = if stdenvNoCC.lib.hasSuffix "perl" stdenvNoCC.shell || stdenvNoCC.lib.hasSuffix "perl.exe" stdenvNoCC.shell then
-              ./builder.pl
-            else
-              ./builder.sh;
-  fetcher = if stdenvNoCC.lib.hasSuffix "perl" stdenvNoCC.shell || stdenvNoCC.lib.hasSuffix "perl.exe" stdenvNoCC.shell then
-              ./nix-prefetch-git.pl
-            else
-              "${./nix-prefetch-git}";  # This must be a string to ensure it's called with bash.
+  builder = if stdenvNoCC.isShellPerl   then ./builder.pl
+       else if stdenvNoCC.isShellCmdExe then throw "unexpected"
+       else                                  ./builder.sh;
+  fetcher = if stdenvNoCC.isShellPerl   then ./nix-prefetch-git.pl
+       else if stdenvNoCC.isShellCmdExe then throw "unexpected"
+       else                                  "${./nix-prefetch-git}";  # This must be a string to ensure it's called with bash.
   nativeBuildInputs = [git];
 
   outputHashAlgo = "sha256";

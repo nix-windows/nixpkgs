@@ -66,7 +66,7 @@ runCommand name
     # XXX: The size is somewhat arbitrary
     passAsFile = if builtins.stringLength pkgs >= 128*1024 then [ "pkgs" ] else null;
   }
-  (if stdenv.hostPlatform.isMicrosoft then ''
+  (if stdenv.isShellPerl then ''
     eval readFile('${./builder.pl}');
     if ($@) { print "$@" ; die; }
 

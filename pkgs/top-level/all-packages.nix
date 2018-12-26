@@ -139,7 +139,7 @@ with pkgs;
 
   diffPlugins = (callPackage ../build-support/plugins.nix {}).diffPlugins;
 
-  dieHook = if stdenv.hostPlatform.isMicrosoft then
+  dieHook = if stdenv.isShellPerl then
               throw "dieHook??"
             else
               makeSetupHook {} ../build-support/setup-hooks/die.sh;
@@ -354,6 +354,8 @@ with pkgs;
 
   makeWrapper = if stdenv.hostPlatform.isMicrosoft then
                   stdenv.cc.makeWrapper
+                else if stdenv.hostPlatform.isPerlShell then
+                  throw "makeWrapper??"
                 else
                   makeSetupHook { deps = [ dieHook ]; }
                               ../build-support/setup-hooks/make-wrapper.sh;

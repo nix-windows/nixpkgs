@@ -6,11 +6,7 @@ let
   version = "3.13.2";
   cmake-bin = fetchzip {
     url = "https://github.com/Kitware/CMake/releases/download/v${version}/cmake-${version}-win64-x64.zip";
-    extraPostFetch = ''
-      move "$ENV{out}/doc", "$ENV{out}/share/doc" or die $!;
-      move "$ENV{out}/man", "$ENV{out}/share/man" or die $!;
-    '';
-    sha256 = "1krzcf4cf3nc04fklq7a2bncq3lq8qz8yna2z06vs3pna3zn9863";
+    sha256 = "19cjsan1hk0mhamp2fqxzmzqsypwydyk8rhdvjq1n2bvkdsjnl99";
   };
 in
   if isBinaryDistribution then
@@ -36,7 +32,6 @@ in
 
       buildPhase = ''
         system("nmake install");
-        move "$ENV{out}/doc", "$ENV{out}/share/doc" or die $!;
       '';
 
       meta = with stdenv.lib; {

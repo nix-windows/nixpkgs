@@ -3,6 +3,7 @@
 }:
 
 assert crossSystem == null;
+assert localSystem.config == "x86_64-pc-windows-msvc";
 
 let
   msvc-version = "14.16.27023";

@@ -14,7 +14,7 @@
 , name ? "source"
 , ... } @ args:
 
-if lib.hasSuffix "perl" stdenv.shell || lib.hasSuffix "perl.exe" stdenv.shell then
+if stdenv.isShellPerl then
 
 # unpackFile() uses 7z.exe (which is part of stdenvNoCC) so it can handle .zip files without pkgs.unzip
 (fetchurl ({

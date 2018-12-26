@@ -60,7 +60,7 @@ rec {
         preferLocalBuild = true;
         allowSubstitutes = false;
       }
-      ( if stdenv.hostPlatform.isMicrosoft then
+      ( if stdenv.isShellPerl then
       ''
         my $n = "$ENV{out}${destination}";
         make_path(dirname($n));
@@ -236,7 +236,7 @@ rec {
    *               } ./myscript.sh;
    */
   makeSetupHook = { name ? "hook", deps ? [], substitutions ? {} }: script:
-    if stdenv.hostPlatform.isMicrosoft then
+    if stdenv.isShellPerl then
       throw "makeSetupHook?? ${name} ${script}"
     else
       runCommand name substitutions

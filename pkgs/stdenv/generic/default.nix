@@ -7,9 +7,7 @@ let lib = import ../../../lib; in lib.makeOverridable (
   # (see all-packages.nix).
   fetchurlBoot
 
-, setupScript ?      if lib.hasSuffix "perl" shell || lib.hasSuffix "perl.exe" shell then ./setup.pm
-                else if lib.hasSuffix "cmd.exe" shell then ./setup.cmd
-                else  ./setup.sh
+, setupScript ? null
 
 , extraNativeBuildInputs ? []
 , extraBuildInputs ? []
@@ -65,6 +63,9 @@ let
         cc
       ];
 
+  isShellPerl   = lib.hasSuffix "perl" shell || lib.hasSuffix "perl.exe" shell;
+  isShellCmdExe = lib.hasSuffix "cmd.exe" shell;
+
   defaultBuildInputs = extraBuildInputs;
 
   # The stdenv that we are producing.
@@ -83,14 +84,15 @@ let
 
       builder = shell;
 
-      args = if lib.hasSuffix "perl" shell || lib.hasSuffix "perl.exe" shell then
-               [     ./builder.pl ]
-             else if lib.hasSuffix "cmd.exe" shell then
-               ["/c" ./builder.cmd]
-             else
-               ["-e" ./builder.sh ];
 
-      setup = setupScript;
+      args = if isShellPerl   then [     ./builder.pl ]
+        else if isShellCmdExe then ["/c" ./builder.cmd]
+        else                       ["-e" ./builder.sh ];
+
+      setup = if setupScript != null then setupScript
+         else if isShellPerl         then ./setup.pm
+         else if isShellCmdExe       then ./setup.cmd
+         else                             ./setup.sh;
 
       # We pretty much never need rpaths on Darwin, since all library path references
       # are absolute unless we go out of our way to make them relative (like with CF)
@@ -110,7 +112,7 @@ let
       # ''
       ;
 
-      inherit initialPath shell
+      inherit initialPath shell isShellPerl isShellCmdExe
         defaultNativeBuildInputs defaultBuildInputs;
     }
     // lib.optionalAttrs buildPlatform.isDarwin {

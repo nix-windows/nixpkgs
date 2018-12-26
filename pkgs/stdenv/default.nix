@@ -34,6 +34,8 @@ let
 
   stagesWindows = import ./windows args;
 
+  stagesMinGW = import ./mingw args;
+
   stagesCustom = import ./custom args;
 
   # Select the appropriate stages for the platform `system'.
@@ -55,5 +57,10 @@ in
     "i686-cygwin" = stagesNative;
     "x86_64-cygwin" = stagesNative;
     "x86_64-freebsd" = stagesFreeBSD;
-    "x86_64-windows" = stagesWindows;
+    "x86_64-windows" = if localSystem.isMicrosoft then
+                         stagesWindows
+                       else if localSystem.isMinGW then
+                         stagesMinGW
+                       else
+                         abort "localSystem=${localSystem}";
   }.${localSystem.system} or stagesNative
