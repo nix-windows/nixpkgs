@@ -1,4 +1,4 @@
-{ stdenv, fetchgit, coreutils, ocaml, zlib, pcre, neko, camlp4 }:
+{ stdenv, fetchgit, fetchurl, coreutils, ocaml, zlib, pcre, neko, camlp4 }:
 
 let
   generic = { version, sha256, prePatch }:
@@ -89,7 +89,25 @@ in {
       sed -i -e 's|"neko"|"${neko}/bin/neko"|g' extra/haxelib_src/src/tools/haxelib/Main.hx
     '';
   };
-  haxe_3_4 = generic {
+  haxe_3_4 = if stdenv.hostPlatform.isMicrosoft then
+    stdenv.mkDerivation rec {
+      name = "haxe-3.4.7";
+      src = fetchurl {
+        url = https://github.com/HaxeFoundation/haxe/releases/download/3.4.7/haxe-3.4.7-win64.zip;
+        sha256 = "1cpix2zays59diqzh0iibwb3944yw7zrbm47fhskw9d2b35wv6k0";
+      };
+      installPhase = ''
+        make_path("$ENV{out}/bin", "$ENV{out}/share/doc");
+        dircopy('std', "$ENV{out}/std");
+        for my $file (glob('*.exe'), glob('*.dll')) {
+          copy($file, "$ENV{out}/bin/");
+        }
+        for my $file (glob('*.txt')) {
+          copy($file, "$ENV{out}/share/doc/");
+        }
+      '';
+    }
+  else generic {
     version = "3.4.6";
     sha256 = "1myc4b8fwp0f9vky17wv45n34a583f5sjvajsc93f5gm1wanp4if";
     prePatch = ''
