@@ -29,12 +29,9 @@ sub okName {
   return shift =~ /^[a-zA-Z_][a-zA-Z_0-9-]*$/;
 }
 
-#my $path = File::Fetch->new(uri => "http://repo.msys2.org/mingw/x86_64/mingw64.db")->fetch(to => $ENV{TMP});
-#print("$path\n");
-my %repo = parseDB('mingw64.db');
-
 
 sub isBroken {
+  my $repo = shift;
   my $name = shift;
   my $seen = shift;
 
@@ -46,28 +43,28 @@ sub isBroken {
   $seen2->{$name} = 1;
 
 # my %desc = %{$repo{$name}};
-  if ($repo{$name}->{broken}) {
+  if ($repo->{$name}->{broken}) {
     print("cached $name\n");
     return 1;
   }
 
-  for my $dep (@{$repo{$name}->{DEPENDS}}) {
+  for my $dep (@{$repo->{$name}->{DEPENDS}}) {
     $dep = $1 if $dep =~ /([^>]+)(>=|=)([^>]+)/;
 #   print("check $name->$dep\n");
-    if (exists($repo{$dep})) {
-      if (isBroken($dep, $seen2)) {
-        $repo{$name}->{broken} = 1;
+    if (exists($repo->{$dep})) {
+      if (isBroken($repo, $dep, $seen2)) {
+        $repo->{$name}->{broken} = 1;
         return 1;
       }
-    } elsif (exists($repo{"$dep-git"})) {
+    } elsif (exists($repo->{"$dep-git"})) {
       $dep = "$dep-git";
-      if (isBroken($dep, $seen2)) {
-        $repo{$name}->{broken} = 1;
+      if (isBroken($repo, $dep, $seen2)) {
+        $repo->{$name}->{broken} = 1;
         return 1;
       }
     } else {
       print STDERR "broken dependency $name -> $dep\n";
-      $repo{$name}->{broken} = 1;
+      $repo->{$name}->{broken} = 1;
       return 1;
     }
   }
@@ -75,8 +72,8 @@ sub isBroken {
 }
 
 
-open(my $out, ">mingw-packages.nix") or die $!;
-binmode $out;
+sub emitNix {
+  my ($out, $baseUrl, $repo) = @_;
 print $out
 qq< # GENERATED FILE
 {config, lib, stdenvNoCC, fetchurl}:
@@ -86,7 +83,7 @@ let
     stdenvNoCC.mkDerivation {
       inherit name version buildInputs;
       src = fetchurl {
-        url = "http://repo.msys2.org/mingw/x86_64/\${filename}";
+        url = "$baseUrl/\${filename}";
         inherit sha256;
       };
       sourceRoot = ".";
@@ -108,9 +105,9 @@ let
   callPackage = pkgs.newScope self;
 >;
 
-for my $name (sort (keys %repo)) {
+for my $name (sort (keys %$repo)) {
 # next unless $name =~ /^curl/;
-  my %desc = %{$repo{$name}};
+  my %desc = %{$repo->{$name}};
   my $version = $desc{VERSION} =~ s/-\d+$//r;
 #  $name = "\"$name\"" unless okName($name);
 # dd \%desc;
@@ -135,8 +132,8 @@ qq<
                                  $ver = $3 =~ s/-\d+$//r;
                                }
 
-                               unless (exists($repo{$dep})) {
-                                 if (exists($repo{"$dep-git"})) {
+                               unless (exists($repo->{$dep})) {
+                                 if (exists($repo->{"$dep-git"})) {
                                    $dep = "$dep-git";
 #                                } elsif ($dep eq 'libjpeg' && exists($repo{"$name-turbo"})) {
 #                                  $dep = "$dep-turbo";
@@ -158,7 +155,7 @@ qq<
                              } @{$desc{DEPENDS}}).
                " ];\n";
   }
-  print $out "    broken      = true;\n" if isBroken($name);
+  print $out "    broken      = true;\n" if isBroken($repo, $name);
   print $out "  };\n";
 }
 
@@ -167,4 +164,23 @@ print $out
 qq<
 }; in self
 >;
+}
+
+
+#my $msysdb = File::Fetch->new(uri => "http://repo.msys2.org/msys/x86_64/msys.db")->fetch(to => $ENV{TMP});
+#print("$msysdb\n");
+my %msys_repo = parseDB('msys.db');
+open(my $out, ">msys-packages.nix") or die $!;
+binmode $out;
+emitNix($out, "http://repo.msys2.org/msys/x86_64", \%msys_repo);
+close($out);
+
+
+#my $mingw64db = File::Fetch->new(uri => "http://repo.msys2.org/mingw/x86_64/mingw64.db")->fetch(to => $ENV{TMP});
+#print("$mingw64db\n");
+my %mingw64db_repo = parseDB('mingw64.db');
+
+open(my $out, ">mingw-packages.nix") or die $!;
+binmode $out;
+emitNix($out, "http://repo.msys2.org/mingw/x86_64", \%mingw64db_repo);
 close($out);
