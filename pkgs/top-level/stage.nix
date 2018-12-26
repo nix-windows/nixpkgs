@@ -160,6 +160,28 @@ let
       };
     } else throw "i686 Linux package set can only be used with the x86 family.";
 
+    # MinGW packages in Windows Nix
+    pkgsMinGW = if stdenv.hostPlatform.isWindows then nixpkgsFun {
+      inherit overlays config;
+      ${if stdenv.hostPlatform == stdenv.buildPlatform
+        then "localSystem" else "crossSystem"} = {
+        parsed = stdenv.hostPlatform.parsed // {
+          abi = lib.systems.parse.abis.gnu;
+        };
+      };
+    } else throw "pkgsMinGW only supports Windows systems.";
+
+    # Native Windows packages in Nix/MinGW
+    pkgsMicrosoft = if stdenv.hostPlatform.isWindows then nixpkgsFun {
+      inherit overlays config;
+      ${if stdenv.hostPlatform == stdenv.buildPlatform
+        then "localSystem" else "crossSystem"} = {
+        parsed = stdenv.hostPlatform.parsed // {
+          abi = lib.systems.parse.abis.msvc;
+        };
+      };
+    } else throw "pkgsMicrosoft only supports Windows systems.";
+
     # Extend the package set with zero or more overlays. This preserves
     # preexisting overlays. Prefer to initialize with the right overlays
     # in one go when calling Nixpkgs, for performance and simplicity.

@@ -7000,9 +7000,13 @@ with pkgs;
     inherit (darwin.apple_sdk.frameworks) Security Foundation;
   };
 
-  go_1_11 = callPackage ../development/compilers/go/1.11.nix {
-    inherit (darwin.apple_sdk.frameworks) Security Foundation;
-  };
+  go_1_11 =
+    if stdenv.hostPlatform.isMicrosoft then
+      callPackage ../development/compilers/go/windows-1.11.nix { }
+    else
+      callPackage ../development/compilers/go/1.11.nix {
+        inherit (darwin.apple_sdk.frameworks) Security Foundation;
+      };
 
   go = go_1_11;
 
@@ -7384,11 +7388,15 @@ with pkgs;
   };
 
   # For beta and nightly releases use the nixpkgs-mozilla overlay
-  rust = callPackage ../development/compilers/rust ({
-    inherit (darwin.apple_sdk.frameworks) CoreFoundation Security;
-  } // stdenv.lib.optionalAttrs (stdenv.cc.isGNU && stdenv.hostPlatform.isi686) {
-    stdenv = overrideCC stdenv gcc6; # with gcc-7: undefined reference to `__divmoddi4'
-  });
+  rust =
+    if stdenv.hostPlatform.isMicrosoft then
+      callPackage ../development/compilers/rust/windows.nix {}
+    else
+      callPackage ../development/compilers/rust ({
+        inherit (darwin.apple_sdk.frameworks) CoreFoundation Security;
+      } // stdenv.lib.optionalAttrs (stdenv.cc.isGNU && stdenv.hostPlatform.isi686) {
+        stdenv = overrideCC stdenv gcc6; # with gcc-7: undefined reference to `__divmoddi4'
+      });
   inherit (rust) cargo rustc;
 
   buildRustCrate = callPackage ../build-support/rust/build-rust-crate { };
@@ -8338,7 +8346,17 @@ with pkgs;
 
   cmake_2_8 = callPackage ../development/tools/build-managers/cmake/2.8.nix { };
 
-  cmake = libsForQt5.callPackage ../development/tools/build-managers/cmake { };
+  cmake-bin =
+    if stdenv.hostPlatform.isMicrosoft then
+      callPackage ../development/tools/build-managers/cmake/windows.nix { isBinaryDistribution = true; }
+    else
+      null;
+
+  cmake =
+    if stdenv.hostPlatform.isMicrosoft then
+      callPackage ../development/tools/build-managers/cmake/windows.nix { }
+    else
+      libsForQt5.callPackage ../development/tools/build-managers/cmake { };
 
   cmakeCurses = cmake.override { useNcurses = true; };
 
@@ -13127,6 +13145,10 @@ with pkgs;
   ack = perlPackages.ack;
 
   perlcritic = perlPackages.PerlCritic;
+
+  msysPackages = recurseIntoAttrs (callPackage ./msys-packages.nix { });
+
+  mingwPackages = recurseIntoAttrs (callPackage ./mingw-packages.nix { });
 
   sqitchPg = callPackage ../development/tools/misc/sqitch {
     name = "sqitch-pg";
