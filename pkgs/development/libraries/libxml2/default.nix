@@ -8,8 +8,6 @@
 
 let
   python = python2;
-
-in stdenv.mkDerivation rec {
   name = "libxml2-${version}";
   version = "2.9.8";
 
@@ -30,6 +28,38 @@ in stdenv.mkDerivation rec {
       sha256 = "19vp7p32vrninnfa7vk9ipw7n4cl1gg16xxbhjy2d0kwp1crvzqh";
     })
   ];
+
+  meta = {
+    homepage = http://xmlsoft.org/;
+    description = "An XML parsing library for C";
+    license = lib.licenses.mit;
+    platforms = lib.platforms.all;
+    maintainers = [ lib.maintainers.eelco ];
+  };
+in if stdenv.hostPlatform.isMicrosoft then
+
+stdenv.mkDerivation {
+  inherit name version src /*patches (fetchpatch does not work yet)*/ meta;
+
+  propagatedBuildInputs = [ zlib ];
+
+  buildPhase = ''
+    chdir("win32");
+    system("cscript configure.js iconv=no") == 0 or die;
+    system("nmake -f Makefile.msvc PREFIX=$ENV{out}") == 0 or die;
+  '';
+
+  installPhase = ''
+    system("nmake -f Makefile.msvc install PREFIX=$ENV{out}") == 0 or die;
+  '';
+
+  passthru = { inherit version; pythonSupport = false; };
+}
+
+else
+
+stdenv.mkDerivation {
+  inherit name version src patches meta;
 
   outputs = [ "bin" "dev" "out" "man" "doc" ]
     ++ lib.optional pythonSupport "py"
@@ -72,12 +102,4 @@ in stdenv.mkDerivation rec {
   '';
 
   passthru = { inherit version; pythonSupport = pythonSupport; };
-
-  meta = {
-    homepage = http://xmlsoft.org/;
-    description = "An XML parsing library for C";
-    license = lib.licenses.mit;
-    platforms = lib.platforms.all;
-    maintainers = [ lib.maintainers.eelco ];
-  };
 }
