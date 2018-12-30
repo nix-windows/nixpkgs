@@ -1,10 +1,63 @@
-{ stdenv, fetchurl, fetchpatch
+{ stdenv, fetchFromGitHub, fetchurl, fetchpatch, buildEnv, msysPackages, mingwPackages
 , autoreconfHook
 
 # libffi is used in darwin stdenv
 # we cannot run checks within it
 , doCheck ? !stdenv.isDarwin, dejagnu
 }:
+
+if stdenv.hostPlatform.isMicrosoft then
+
+# TODO? stdenvMsys.mkDerivation
+stdenv.mkDerivation rec {
+  version = "3.3-rc0";  # 3.2.1 hits https://github.com/libffi/libffi/issues/149
+  name = "libffi-${version}";
+
+  src = fetchFromGitHub {
+    owner = "libffi";
+    repo = "libffi";
+    rev = "v${version}";
+    sha256 = "1nc1jpfm0g6mgkp5xp8m3wjicqnhnszs9wz3wn976s0bwvshq11q";
+  };
+
+  buildPhase = let
+    msysenv = buildEnv {
+      name = "msysenv";
+      paths = with msysPackages; [ automake-wrapper autoconf libtool make coreutils grep sed texinfo ];
+    };
+    mingw64env = buildEnv {
+      name = "mingw64env";
+      paths = [ mingwPackages.binutils ];
+    };
+  in ''
+    # make MSYS FHS with writable /tmp
+    my $msysroot = "$ENV{NIX_BUILD_TOP}/msysroot";
+    make_path("$msysroot/tmp");
+    for my $dirname (glob("${msysenv}/*")) {
+      die "not a dir: $dirname" unless -d $dirname;
+      system('mklink', '/D', ("$msysroot/".basename($dirname)) =~ s|/|\\|gr, $dirname =~ s|/|\\|gr);
+    }
+    system('mklink', '/D', "$msysroot/mingw64" =~ s|/|\\|gr, '${mingw64env}' =~ s|/|\\|gr);
+    $ENV{PATH} = "$msysroot/mingw64/bin;$msysroot/usr/bin;$ENV{PATH}";
+
+    changeFile { s/-nologo -W3/-nologo -W3 -DFFI_BUILDING_DLL/gr; } 'msvcc.sh';
+
+    system('bash.exe -c ./autogen.sh') == 0 or die;
+    system('bash.exe -c "./configure --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32 CC=\"$(pwd)/msvcc.sh -m64\" CXX=\"$(pwd)/msvcc.sh -m64\" LD=link.exe CPP=\"cl -nologo -EP\" CXXCPP=\"cl -nologo -EP\""') == 0 or die;
+    system('bash.exe -c make') == 0 or die;
+  '';
+
+  installPhase = ''
+    make_path("$ENV{out}/bin", "$ENV{out}/include", "$ENV{out}/lib");
+    copy 'x86_64-w64-mingw32/include/ffi.h',                 "$ENV{out}/include/";
+    copy 'x86_64-w64-mingw32/include/ffitarget.h',           "$ENV{out}/include/";
+    copy 'x86_64-w64-mingw32/.libs/libffi-7.dll',            "$ENV{out}/bin/";
+    copy 'x86_64-w64-mingw32/.libs/libffi-7.lib',            "$ENV{out}/lib/";
+    copy 'x86_64-w64-mingw32/.libs/libffi_convenience.lib',  "$ENV{out}/lib/";
+  '';
+}
+
+else
 
 stdenv.mkDerivation rec {
   name = "libffi-3.2.1";
