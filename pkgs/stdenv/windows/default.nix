@@ -36,7 +36,7 @@ let
     name = "msbuild-${msbuild-version}";
     url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/msbuild-${msbuild-version}.nar.xz";
     unpack = true;
-    sha256 = "59538ff87dff578642f606f38325813bf18ea051786954bb6fa3c5a4dd9f9c41";
+    sha256 = "032e6343d55762df6d5c9650d10e125946b7b8e85cc32e126b10b89a7be338ba";
   };
 
   vc1 = import <nix/fetchurl.nix> {
@@ -165,24 +165,19 @@ in
       # this has references to nix store, depends on nix store location and might have problems being fixed-output derivation
       vc = stdenv.mkDerivation {
         name = "vc-${msbuild-version}";
-        buildCommand = ''
+        src = vc1;
+        buildPhase = ''
           dircopy("${vc1}", $ENV{out}) or die "$!";
 
           # so far there is no `substituteInPlace`
           for my $filename (glob("$ENV{out}/VCTargets/*.props"), glob("$ENV{out}/VCTargets/*.targets")) {
-            open(my $in, $filename)         or die "open($filename): $!";
-            open(my $out, ">$filename.new") or die "open(>$filename.new): $!";
-            for my $line (<$in>) {
-              $line =~ s|>(\$\(Registry:HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots\@KitsRoot10\))|>${sdk}/<!-- $1 -->|g;
-              $line =~ s|>(\$\(Registry:HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Microsoft SDKs\\Windows\\v10.0\@InstallationFolder\))|>${sdk}/<!-- $1 -->|g;
-              $line =~ s|\$\(VCToolsInstallDir_150\)|${msvc}/|g;
-              $line =~ s|>(\$\(Registry:[^)]+\))|><!-- $1 -->|g;
-              print $out $line;
-            }
-            close($in);
-            close($out);
-            unlink($filename) or die "unlink($filename): $!";
-            move("$filename.new", $filename) or die "move($filename.new, $filename): $!";
+            changeFile {
+              s|>(\$\(Registry:HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots\@KitsRoot10\))|>${sdk}/<!-- $1 -->|g;
+              s|>(\$\(Registry:HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Microsoft SDKs\\Windows\\v10.0\@InstallationFolder\))|>${sdk}/<!-- $1 -->|g;
+              s|\$\(VCToolsInstallDir_150\)|${msvc}/|g;
+              s|>(\$\(Registry:[^)]+\))|><!-- $1 -->|g;
+              $_;
+            } $filename;
           }
         '';
       };
@@ -209,13 +204,13 @@ in
                   , '--suffix', 'WindowsLibPath',   ';', '${sdk}/UnionMetadata/${sdk-version};${sdk}/References/${sdk-version}'
                   , '--set',    'WindowsSDKLibVersion',  '${sdk-version}'
                   , '--set',    'WindowsSDKVersion',     '${sdk-version}'
-                  , '--set',    'WindowsSdkVerBinPath',  '${sdk}/bin/${sdk-version}'
-                  , '--set',    'WindowsSdkBinPath',     '${sdk}/bin'
+                  , '--set',    'WindowsSdkVerBinPath',  '${sdk}/bin/${sdk-version}/'
+                  , '--set',    'WindowsSdkBinPath',     '${sdk}/bin/'
                   , '--set',    'WindowsSdkDir',         '${sdk}'
                   , '--set',    'VCToolsVersion',        '${msvc-version}'
-                  , '--set',    'VCToolsInstallDir',     '${msvc}'
-                  , '--set',    'VCToolsRedistDir',      '${msvc}'
-                  , '--set',    'VCTargetsPath',         '${vc}/VCTargets'
+                  , '--set',    'VCToolsInstallDir',     '${msvc}/'
+                  , '--set',    'VCToolsRedistDir',      '${msvc}/'
+                  , '--set',    'VCTargetsPath',         '${vc}/VCTargets/'
                   , '--set',    'UCRTVersion',           '${sdk-version}'
                   , '--set',    'UniversalCRTSdkDir',    '${sdk}/'
                   ) == 0 or die "makeWrapper failed: $!";
@@ -230,13 +225,13 @@ in
                     'set WindowsLibPath'        ."=${sdk}/UnionMetadata/${sdk-version};${sdk}/References/${sdk-version}\n".
                     'set WindowsSDKLibVersion'  ."=${sdk-version}\n".
                     'set WindowsSDKVersion'     ."=${sdk-version}\n".
-                    'set WindowsSdkVerBinPath'  ."=${sdk}/bin/${sdk-version}\n".
-                    'set WindowsSdkBinPath'     ."=${sdk}/bin\n".
+                    'set WindowsSdkVerBinPath'  ."=${sdk}/bin/${sdk-version}/\n".
+                    'set WindowsSdkBinPath'     ."=${sdk}/bin/\n".
                     'set WindowsSdkDir'         ."=${sdk}\n".
                     'set VCToolsVersion'        ."=${msvc-version}\n".
-                    'set VCToolsInstallDir'     ."=${msvc}\n".
-                    'set VCToolsRedistDir'      ."=${msvc}\n".
-                    'set VCTargetsPath'         ."=${vc}/VCTargets\n".
+                    'set VCToolsInstallDir'     ."=${msvc}/\n".
+                    'set VCToolsRedistDir'      ."=${msvc}/\n".
+                    'set VCTargetsPath'         ."=${vc}/VCTargets/\n".
                     'set UCRTVersion'           ."=${sdk-version}\n".
                     'set UniversalCRTSdkDir'    ."=${sdk}/\n";
           print $fh ($content =~ s|/|\\|gr);

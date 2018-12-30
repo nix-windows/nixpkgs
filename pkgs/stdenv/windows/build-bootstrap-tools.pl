@@ -208,6 +208,15 @@ unless (-f "msbuild-$msbuild_version.nar.xz") {
 
     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/MSBuild", "msbuild") or die "$!";
 
+    # other files refer to this one so msbuild might be unhappy if there is no file
+    unless(-f 'msbuild/15.0/bin/Microsoft/WindowsXaml/v15.0/Microsoft.Windows.UI.Xaml.Cpp.targets') {
+      make_path('msbuild/15.0/bin/Microsoft/WindowsXaml/v15.0');
+      open(my $fh, '>msbuild/15.0/bin/Microsoft/WindowsXaml/v15.0/Microsoft.Windows.UI.Xaml.Cpp.targets') or die $!;
+      print $fh "<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n";
+      print $fh "</Project>\n";
+      close($fh);
+    }
+
     my $msbuild_nar = writeNar("| 7z a $compression -si msbuild-$msbuild_version.nar.xz", "msbuild", "sha256");
     print qq[
       msbuild = import <nix/fetchurl.nix> {

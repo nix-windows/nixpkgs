@@ -37,6 +37,7 @@ sub changeFile (&@) {
     my $lambda = \&{shift @_};
     for my $filename (@_) {
         $_ = readFile($filename);
+        unlink($filename);
         writeFile($filename, $lambda->($_));
     }
 }
