@@ -25,7 +25,7 @@ let
                 die "bad src: '$src'" unless $src =~ /\/[0-9a-df-np-sv-z]{32}-[^\/]+(.*)/;
                 my $rel = $1;
                 my $tgt = "$ENV{out}$rel";
-                print("${dep} $src -> $tgt\n");
+                print("$src -> $tgt\n");
                 if (-d $src) {
                   make_path($tgt);
                 } else {
@@ -302,9 +302,9 @@ let
 
   "bison" = fetch {
     name        = "bison";
-    version     = "3.2.2";
-    filename    = "bison-3.2.2-1-x86_64.pkg.tar.xz";
-    sha256      = "dc043fb973e6eeb6869e1bb494325b735cc4d47624d1b016c36ce18b836bcd81";
+    version     = "3.2.4";
+    filename    = "bison-3.2.4-1-x86_64.pkg.tar.xz";
+    sha256      = "c76f68eeb6fa9aa00b1bd637a04f0e57b3e119f3d3d05902876a714eb80d4006";
     buildInputs = [ m4 sh ];
   };
 
@@ -996,9 +996,9 @@ let
 
   "global" = fetch {
     name        = "global";
-    version     = "6.6.2";
-    filename    = "global-6.6.2-1-x86_64.pkg.tar.xz";
-    sha256      = "14c52e247ed8169e400982ae1ae9ac80cc4a1a3c29c8863bbcd0dde2c3e1fdd6";
+    version     = "6.6.3";
+    filename    = "global-6.6.3-1-x86_64.pkg.tar.xz";
+    sha256      = "be8ad4242dd0b56b3568a92a13ed622bf659db75dedf38d44bb5e35f1090a592";
     buildInputs = [ libltdl ];
   };
 
@@ -2282,18 +2282,18 @@ let
 
   "libuv" = fetch {
     name        = "libuv";
-    version     = "1.24.0";
-    filename    = "libuv-1.24.0-1-x86_64.pkg.tar.xz";
-    sha256      = "f44068ce31ea31607faaa21e26ccc27cb63e5c2d915440eac57bf1e7d23864e4";
+    version     = "1.24.1";
+    filename    = "libuv-1.24.1-1-x86_64.pkg.tar.xz";
+    sha256      = "79d7b6c07633e13abac6c6fdebdf30e3c7fe424d0f2238271e73c7eb76041489";
     buildInputs = [ gcc-libs ];
   };
 
   "libuv-devel" = fetch {
     name        = "libuv-devel";
-    version     = "1.24.0";
-    filename    = "libuv-devel-1.24.0-1-x86_64.pkg.tar.xz";
-    sha256      = "953a25d5ebcc4b6cdd2e0088ffd92a85ae8269281c392ff107baac44157380c0";
-    buildInputs = [ (assert libuv.version=="1.24.0"; libuv) ];
+    version     = "1.24.1";
+    filename    = "libuv-devel-1.24.1-1-x86_64.pkg.tar.xz";
+    sha256      = "4974c49fafad208dc6123961a4a2a80201182cff0a65b728539772d4fe583b5b";
+    buildInputs = [ (assert libuv.version=="1.24.1"; libuv) ];
   };
 
   "libxml2" = fetch {
@@ -2696,9 +2696,9 @@ let
 
   "nasm" = fetch {
     name        = "nasm";
-    version     = "2.14";
-    filename    = "nasm-2.14-2-x86_64.pkg.tar.xz";
-    sha256      = "eccf97ff32b7e0ffde437b8e9f2f78a5c78d444370fd7db5bf87158cac1e750b";
+    version     = "2.14.01";
+    filename    = "nasm-2.14.01-1-x86_64.pkg.tar.xz";
+    sha256      = "5159f7c5f8e9dc8494916bf2a09494608b2c1827e139e003228a929d55564ed0";
     buildInputs = [ msys2-runtime ];
   };
 
@@ -2790,10 +2790,10 @@ let
 
   "pacman" = fetch {
     name        = "pacman";
-    version     = "5.1.1";
-    filename    = "pacman-5.1.1-3-x86_64.pkg.tar.xz";
-    sha256      = "a3cbe943768a176ef7211bc45d5fae472cb81f55d7e9bcdb4ea1e0544084bea0";
-    buildInputs = [ (assert lib.versionAtLeast bash.version "5.1.1"; bash) gettext gnupg msys2-runtime curl pacman-mirrors msys2-keyring which bzip2 xz ];
+    version     = "5.1.2";
+    filename    = "pacman-5.1.2-1-x86_64.pkg.tar.xz";
+    sha256      = "b15ab8d79e78f0024dc9871375c519f2afdcdc8c710e69efff3ae5c0a5984884";
+    buildInputs = [ (assert lib.versionAtLeast bash.version "5.1.2"; bash) gettext gnupg msys2-runtime curl pacman-mirrors msys2-keyring which bzip2 xz ];
   };
 
   "pacman-mirrors" = fetch {
@@ -3802,9 +3802,9 @@ let
 
   "python" = fetch {
     name        = "python";
-    version     = "3.7.1";
-    filename    = "python-3.7.1-2-x86_64.pkg.tar.xz";
-    sha256      = "309894cbee284b3548b6e9b10c28cfd73e7ec397a01deabccebf84bc20efac6f";
+    version     = "3.7.2";
+    filename    = "python-3.7.2-1-x86_64.pkg.tar.xz";
+    sha256      = "b14ca1bb5beeff82f0643d01ff75b797e75b9f49c06001e76a67fce19a8b7858";
     buildInputs = [ libbz2 libexpat libffi liblzma ncurses libopenssl libreadline mpdecimal libsqlite zlib ];
   };
 
@@ -3976,6 +3976,14 @@ let
     buildInputs = [ python2 python2-setuptools ];
   };
 
+  "python2-pluggy" = fetch {
+    name        = "python2-pluggy";
+    version     = "0.8.0";
+    filename    = "python2-pluggy-0.8.0-1-any.pkg.tar.xz";
+    sha256      = "28f173e0362f4d4df99027aeedc5cec62edd5de852309900ee864126fffbd409";
+    buildInputs = [ python2 ];
+  };
+
   "python2-py" = fetch {
     name        = "python2-py";
     version     = "1.7.0";
@@ -3994,9 +4002,9 @@ let
 
   "python2-pygments" = fetch {
     name        = "python2-pygments";
-    version     = "2.3.0";
-    filename    = "python2-pygments-2.3.0-1-x86_64.pkg.tar.xz";
-    sha256      = "d6c045ce7f37a608f926eeb6d82411d5a3a0f56932fbf7e6a567b2be661e3196";
+    version     = "2.3.1";
+    filename    = "python2-pygments-2.3.1-1-x86_64.pkg.tar.xz";
+    sha256      = "0288b972c3057ffb1aec702ee35a13eb18aafaf21796932bcafa66ac2f56374a";
     buildInputs = [ python2 ];
   };
 
@@ -4196,6 +4204,15 @@ let
     broken      = true;
   };
 
+  "python3-pluggy" = fetch {
+    name        = "python3-pluggy";
+    version     = "0.8.0";
+    filename    = "python3-pluggy-0.8.0-1-any.pkg.tar.xz";
+    sha256      = "737dba7fea01b9ede31e97ec1c55a1e185769618621d73395c77f9f10de029de";
+    buildInputs = [ python3 ];
+    broken      = true;
+  };
+
   "python3-py" = fetch {
     name        = "python3-py";
     version     = "1.7.0";
@@ -4216,9 +4233,9 @@ let
 
   "python3-pygments" = fetch {
     name        = "python3-pygments";
-    version     = "2.3.0";
-    filename    = "python3-pygments-2.3.0-1-x86_64.pkg.tar.xz";
-    sha256      = "06e21cd26610275be6864b57c8ee3a8d16841164001d7d8d8f73f0527ad0f8cf";
+    version     = "2.3.1";
+    filename    = "python3-pygments-2.3.1-1-x86_64.pkg.tar.xz";
+    sha256      = "e813b20a39cf837de5394ed61d6fb301888c88bbd15db2535fab681d4ac0d56c";
     buildInputs = [ python3 ];
     broken      = true;
   };
@@ -4351,17 +4368,17 @@ let
 
   "ruby" = fetch {
     name        = "ruby";
-    version     = "2.4.0";
-    filename    = "ruby-2.4.0-2-x86_64.pkg.tar.xz";
-    sha256      = "787bc3e4a337cf678863c60184404e4cbd033fe3afb992125933a3622ee13301";
+    version     = "2.6.0";
+    filename    = "ruby-2.6.0-1-x86_64.pkg.tar.xz";
+    sha256      = "a700ed69e8ff0ba47a930cbea308b25c65621a6f1f826ec3dec4e710e5cc1a3c";
     buildInputs = [ gcc-libs libopenssl libffi libcrypt gmp libyaml libgdbm libiconv libreadline zlib ];
   };
 
   "ruby-docs" = fetch {
     name        = "ruby-docs";
-    version     = "2.4.0";
-    filename    = "ruby-docs-2.4.0-2-x86_64.pkg.tar.xz";
-    sha256      = "074f0bf6e10da82b808fb79af973608c88efa5f00e9f42d49b8ec406039ef1b5";
+    version     = "2.6.0";
+    filename    = "ruby-docs-2.6.0-1-x86_64.pkg.tar.xz";
+    sha256      = "edf70c0283841766b57fdf626adbf0c4444f260b94158adcaebe2b07540b52b6";
   };
 
   "scons" = fetch {
@@ -4382,9 +4399,9 @@ let
 
   "sed" = fetch {
     name        = "sed";
-    version     = "4.5";
-    filename    = "sed-4.5-1-x86_64.pkg.tar.xz";
-    sha256      = "05c98dd399719543892d9a3af852ba5e3e5a4ae393ab40605b59702c0dee296f";
+    version     = "4.7";
+    filename    = "sed-4.7-1-x86_64.pkg.tar.xz";
+    sha256      = "444408d5b93035e7ab7f4baa7fa825fe5bf95e9873e638e8c44a8bd760460b42";
     buildInputs = [ libintl sh ];
   };
 

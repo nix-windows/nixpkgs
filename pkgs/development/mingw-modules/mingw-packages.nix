@@ -25,7 +25,7 @@ let
                 die "bad src: '$src'" unless $src =~ /\/[0-9a-df-np-sv-z]{32}-[^\/]+(.*)/;
                 my $rel = $1;
                 my $tgt = "$ENV{out}$rel";
-                print("${dep} $src -> $tgt\n");
+                print("$src -> $tgt\n");
                 if (-d $src) {
                   make_path($tgt);
                 } else {
@@ -705,9 +705,9 @@ let
 
   "cego" = fetch {
     name        = "cego";
-    version     = "2.42.12";
-    filename    = "mingw-w64-x86_64-cego-2.42.12-1-any.pkg.tar.xz";
-    sha256      = "4df80c811075d6fedff99d6852c6633fd2841a159a7dfe7445d7a3d0f56c20e9";
+    version     = "2.42.13";
+    filename    = "mingw-w64-x86_64-cego-2.42.13-1-any.pkg.tar.xz";
+    sha256      = "8c39e3dd4cc8e262ec6f54f14cdbe1b1e8bf041561beeb158d3039d712b47dde";
     buildInputs = [ readline lfcbase lfcxml ];
   };
 
@@ -983,9 +983,9 @@ let
 
   "crt-git" = fetch {
     name        = "crt-git";
-    version     = "7.0.0.5275.ad74a50c";
-    filename    = "mingw-w64-x86_64-crt-git-7.0.0.5275.ad74a50c-1-any.pkg.tar.xz";
-    sha256      = "474f99ab2598f2dc8c5d3e6d5f20ba7bc09cf8907b02c5432a24b405cf9b6746";
+    version     = "7.0.0.5285.7b2baaf8";
+    filename    = "mingw-w64-x86_64-crt-git-7.0.0.5285.7b2baaf8-1-any.pkg.tar.xz";
+    sha256      = "6648f736c14326ef0b3cadcc0b936eff2c409e199477c4975567900f7aba95f4";
     buildInputs = [ headers-git ];
   };
 
@@ -2322,10 +2322,10 @@ let
 
   "grpc" = fetch {
     name        = "grpc";
-    version     = "1.17.0";
-    filename    = "mingw-w64-x86_64-grpc-1.17.0-1-any.pkg.tar.xz";
-    sha256      = "40d9facfa30f5681e73566f05e5d8da9a7a61ca1ede862dd0e748ff69c6e3f51";
-    buildInputs = [ gcc-libs c-ares gflags openssl (assert lib.versionAtLeast protobuf.version "1.17.0"; protobuf) zlib ];
+    version     = "1.17.2";
+    filename    = "mingw-w64-x86_64-grpc-1.17.2-1-any.pkg.tar.xz";
+    sha256      = "c722f98f2ad455829f53573284115a22677d22ddce05574992cb83f348872ecd";
+    buildInputs = [ gcc-libs c-ares gflags openssl (assert lib.versionAtLeast protobuf.version "1.17.2"; protobuf) zlib ];
   };
 
   "gsasl" = fetch {
@@ -2693,9 +2693,9 @@ let
 
   "headers-git" = fetch {
     name        = "headers-git";
-    version     = "7.0.0.5275.ad74a50c";
-    filename    = "mingw-w64-x86_64-headers-git-7.0.0.5275.ad74a50c-1-any.pkg.tar.xz";
-    sha256      = "daba5033292534566f12faf7e381dd51c38c0c827619657b05917c6151a76c1a";
+    version     = "7.0.0.5285.7b2baaf8";
+    filename    = "mingw-w64-x86_64-headers-git-7.0.0.5285.7b2baaf8-1-any.pkg.tar.xz";
+    sha256      = "ee31a0a3511035f71e4ffc6c7f85439729069dc3661c948bb78b51e6126007b0";
     buildInputs = [  ];
   };
 
@@ -4576,9 +4576,9 @@ let
 
   "libplacebo" = fetch {
     name        = "libplacebo";
-    version     = "0.6.0";
-    filename    = "mingw-w64-x86_64-libplacebo-0.6.0-1-any.pkg.tar.xz";
-    sha256      = "78bd9d131a029191ce3bf2b6314d92801f6ecbdc0d085f0dd7f35c9cdebba63c";
+    version     = "1.7.0";
+    filename    = "mingw-w64-x86_64-libplacebo-1.7.0-1-any.pkg.tar.xz";
+    sha256      = "799fbb85f3d39683ad3f4d6e24bc420d0e69132a9a3a9b53dc4e32ff2161867c";
     buildInputs = [ vulkan ];
     broken      = true;
   };
@@ -5061,9 +5061,9 @@ let
 
   "libwebsockets" = fetch {
     name        = "libwebsockets";
-    version     = "2.1.0";
-    filename    = "mingw-w64-x86_64-libwebsockets-2.1.0-2-any.pkg.tar.xz";
-    sha256      = "835fb583e1977d2f16a803dbe2e1519e9c61605a6c14004ce6fde38ac97990cb";
+    version     = "3.1.0";
+    filename    = "mingw-w64-x86_64-libwebsockets-3.1.0-1-any.pkg.tar.xz";
+    sha256      = "fcd64e5fdb6c27c4b2630a0d7e12abf2c2e470d623911aa4d1fa1cee380a0dba";
     buildInputs = [ zlib openssl ];
   };
 
@@ -5712,9 +5712,9 @@ let
 
   "nsis" = fetch {
     name        = "nsis";
-    version     = "3.03";
-    filename    = "mingw-w64-x86_64-nsis-3.03-1-any.pkg.tar.xz";
-    sha256      = "deaaeae6a1d6c80bcd3477fbc4a6b6836b37a1f294d68228bcdcebaba7d23f52";
+    version     = "3.04";
+    filename    = "mingw-w64-x86_64-nsis-3.04-1-any.pkg.tar.xz";
+    sha256      = "9708652fd3e7910fa4f16ff0262f5cca0498942350f41b99ed8ac5dd4f75dbc4";
     buildInputs = [ zlib gcc-libs libwinpthread-git ];
   };
 
@@ -6520,9 +6520,9 @@ let
 
   "protobuf" = fetch {
     name        = "protobuf";
-    version     = "3.6.1";
-    filename    = "mingw-w64-x86_64-protobuf-3.6.1-1-any.pkg.tar.xz";
-    sha256      = "9eae543e7c3212578957811e90ea735b96c46a4747f2c861258af44c43222c60";
+    version     = "3.6.1.3";
+    filename    = "mingw-w64-x86_64-protobuf-3.6.1.3-1-any.pkg.tar.xz";
+    sha256      = "1c4d4cdad2656154c95fc50e94a9ca3c8459d0569affaf5c13088ee7154d7f90";
     buildInputs = [ gcc-libs zlib ];
   };
 
@@ -7385,9 +7385,9 @@ let
 
   "python2-h5py" = fetch {
     name        = "python2-h5py";
-    version     = "2.8.0";
-    filename    = "mingw-w64-x86_64-python2-h5py-2.8.0-1-any.pkg.tar.xz";
-    sha256      = "b2442a8bcfd9fc0d99b49a19efadb543e958dcf829fde5d57385763b18db56d2";
+    version     = "2.9.0";
+    filename    = "mingw-w64-x86_64-python2-h5py-2.9.0-1-any.pkg.tar.xz";
+    sha256      = "ddc48dd0117eb7c564ed8240e00d89b4c8a527d44e5b839cb3b0d4e069cff2cc";
     buildInputs = [ python2-numpy python2-six hdf5 ];
   };
 
@@ -8182,9 +8182,9 @@ let
 
   "python2-psycopg2" = fetch {
     name        = "python2-psycopg2";
-    version     = "2.7.5";
-    filename    = "mingw-w64-x86_64-python2-psycopg2-2.7.5-1-any.pkg.tar.xz";
-    sha256      = "6230d75807e911561d20a7c9780408172ea4aad16145383e5b849c402936da5f";
+    version     = "2.7.6.1";
+    filename    = "mingw-w64-x86_64-python2-psycopg2-2.7.6.1-1-any.pkg.tar.xz";
+    sha256      = "343a0e1774aa924bbd8290690be22f5d729b3bac4e56f2291bb27c05f85edfb6";
     buildInputs = [ python2 ];
   };
 
@@ -8269,9 +8269,9 @@ let
 
   "python2-pygments" = fetch {
     name        = "python2-pygments";
-    version     = "2.3.0";
-    filename    = "mingw-w64-x86_64-python2-pygments-2.3.0-1-any.pkg.tar.xz";
-    sha256      = "11636684456a1df0f1a9cf287f4572fbf77f847d57eb82eec4fd43db3c6ca1c1";
+    version     = "2.3.1";
+    filename    = "mingw-w64-x86_64-python2-pygments-2.3.1-1-any.pkg.tar.xz";
+    sha256      = "2e432ff61007c430eee1f0b522b0e1ad56106cdb346a5a1bc3851a43be767908";
     buildInputs = [ python2-setuptools ];
   };
 
@@ -8350,9 +8350,9 @@ let
 
   "python2-pyrsistent" = fetch {
     name        = "python2-pyrsistent";
-    version     = "0.14.7";
-    filename    = "mingw-w64-x86_64-python2-pyrsistent-0.14.7-1-any.pkg.tar.xz";
-    sha256      = "32df01e718daba398e99960738279e4056c945bbe17cf3c8f3d5705315e70246";
+    version     = "0.14.8";
+    filename    = "mingw-w64-x86_64-python2-pyrsistent-0.14.8-1-any.pkg.tar.xz";
+    sha256      = "94c74be7ca2c8c6fe770814284693787449a3951af8942c9c6f49a6f83e2da99";
     buildInputs = [ python2 ];
   };
 
@@ -8537,9 +8537,9 @@ let
 
   "python2-requests" = fetch {
     name        = "python2-requests";
-    version     = "2.20.1";
-    filename    = "mingw-w64-x86_64-python2-requests-2.20.1-1-any.pkg.tar.xz";
-    sha256      = "80784f5190700cbf708e756bb8ca84091ac85f7e0e8d451e06e55a179270fca5";
+    version     = "2.21.0";
+    filename    = "mingw-w64-x86_64-python2-requests-2.21.0-1-any.pkg.tar.xz";
+    sha256      = "9223316e2feb065dfe6e63b782e9e4117e48fa40444fc05a97c9853419660685";
     buildInputs = [ python2-urllib3 python2-chardet python2-idna ];
   };
 
@@ -8699,9 +8699,9 @@ let
 
   "python2-sphinx" = fetch {
     name        = "python2-sphinx";
-    version     = "1.8.2";
-    filename    = "mingw-w64-x86_64-python2-sphinx-1.8.2-1-any.pkg.tar.xz";
-    sha256      = "79919e2414131f426c14157d23882f20aaf9b8c934aa3193e17eed237744f9fe";
+    version     = "1.8.3";
+    filename    = "mingw-w64-x86_64-python2-sphinx-1.8.3-1-any.pkg.tar.xz";
+    sha256      = "f7d962f0f43f3cdcacc756e717fbd466d8b99575bbbd4661e8059c9e0522e784";
     buildInputs = [ python2-babel python2-certifi python2-colorama python2-chardet python2-docutils python2-idna python2-imagesize python2-jinja python2-packaging python2-pygments python2-requests python2-sphinx_rtd_theme python2-snowballstemmer python2-sphinx-alabaster-theme python2-sphinxcontrib-websupport python2-six python2-sqlalchemy python2-urllib3 python2-whoosh python2-typing ];
   };
 
@@ -8899,9 +8899,9 @@ let
 
   "python2-tox" = fetch {
     name        = "python2-tox";
-    version     = "3.6.0";
-    filename    = "mingw-w64-x86_64-python2-tox-3.6.0-1-any.pkg.tar.xz";
-    sha256      = "8ce452e69186fd8613528cf56c5461a3c827dc7648a6c2be45d4df57e203ad0b";
+    version     = "3.6.1";
+    filename    = "mingw-w64-x86_64-python2-tox-3.6.1-1-any.pkg.tar.xz";
+    sha256      = "91cf0250463fc24fd2954cc2e68c2b4263550976854f1d0ba3c6f8988f69e327";
     buildInputs = [ python2 python2-py python2-six python2-virtualenv python2-setuptools python2-setuptools-scm python2-filelock python2-toml python2-pluggy ];
   };
 
@@ -9760,9 +9760,9 @@ let
 
   "python3-h5py" = fetch {
     name        = "python3-h5py";
-    version     = "2.8.0";
-    filename    = "mingw-w64-x86_64-python3-h5py-2.8.0-1-any.pkg.tar.xz";
-    sha256      = "67599eaf036eefe1af466c2bbd21283f3a9f04df73384da33e70cc4d503b0b9f";
+    version     = "2.9.0";
+    filename    = "mingw-w64-x86_64-python3-h5py-2.9.0-1-any.pkg.tar.xz";
+    sha256      = "df375847ea4279e52513c5059e068fef01a45cae636ef88d8e7cc7c503ce0ceb";
     buildInputs = [ python3-numpy python3-six hdf5 ];
   };
 
@@ -10542,9 +10542,9 @@ let
 
   "python3-psycopg2" = fetch {
     name        = "python3-psycopg2";
-    version     = "2.7.5";
-    filename    = "mingw-w64-x86_64-python3-psycopg2-2.7.5-1-any.pkg.tar.xz";
-    sha256      = "94a781f1e0f34b6a7193924630cf0cb60b53bf3f202e943346739c4dda0b2dcd";
+    version     = "2.7.6.1";
+    filename    = "mingw-w64-x86_64-python3-psycopg2-2.7.6.1-1-any.pkg.tar.xz";
+    sha256      = "f1b843d7035d68924d91f260e44ffb9bf7974975a7b3a23eaf1723af3cdacf6f";
     buildInputs = [ python3 ];
   };
 
@@ -10629,9 +10629,9 @@ let
 
   "python3-pygments" = fetch {
     name        = "python3-pygments";
-    version     = "2.3.0";
-    filename    = "mingw-w64-x86_64-python3-pygments-2.3.0-1-any.pkg.tar.xz";
-    sha256      = "940fbdfffe3ad1341b36fff19397dacba253ed359e677868123c1c515cb5b94c";
+    version     = "2.3.1";
+    filename    = "mingw-w64-x86_64-python3-pygments-2.3.1-1-any.pkg.tar.xz";
+    sha256      = "e4a68ff85c5a1c3ea5a914dc6fc426410b96e7645b22a509f2a462ab839a2726";
     buildInputs = [ python3-setuptools ];
   };
 
@@ -10702,9 +10702,9 @@ let
 
   "python3-pyrsistent" = fetch {
     name        = "python3-pyrsistent";
-    version     = "0.14.7";
-    filename    = "mingw-w64-x86_64-python3-pyrsistent-0.14.7-1-any.pkg.tar.xz";
-    sha256      = "9afdfbfd923e1d8901e41d218c15ce4c3f021f4d8d830017bf61489ca0007cff";
+    version     = "0.14.8";
+    filename    = "mingw-w64-x86_64-python3-pyrsistent-0.14.8-1-any.pkg.tar.xz";
+    sha256      = "6237c02531f96444f2dfede5db80ada8005c46e16de46e173bf08dc35b3c3108";
     buildInputs = [ python3 ];
   };
 
@@ -10889,9 +10889,9 @@ let
 
   "python3-requests" = fetch {
     name        = "python3-requests";
-    version     = "2.20.1";
-    filename    = "mingw-w64-x86_64-python3-requests-2.20.1-1-any.pkg.tar.xz";
-    sha256      = "1a0dc3e8a7c1e34a284275416f72614b2436cb64236a0a7c26ad07ef7c56e209";
+    version     = "2.21.0";
+    filename    = "mingw-w64-x86_64-python3-requests-2.21.0-1-any.pkg.tar.xz";
+    sha256      = "009c0ff7cceba879b7f2f23e2e8b5a264d70d0c3c45766204bf8d261c25b154a";
     buildInputs = [ python3-urllib3 python3-chardet python3-idna ];
   };
 
@@ -11043,9 +11043,9 @@ let
 
   "python3-sphinx" = fetch {
     name        = "python3-sphinx";
-    version     = "1.8.2";
-    filename    = "mingw-w64-x86_64-python3-sphinx-1.8.2-1-any.pkg.tar.xz";
-    sha256      = "1290c5e91e121aef8b6cfb819e996c098dde7432b3e4eb17bfa955d372e16d79";
+    version     = "1.8.3";
+    filename    = "mingw-w64-x86_64-python3-sphinx-1.8.3-1-any.pkg.tar.xz";
+    sha256      = "ba671d81ed849489f6f082452c6998d03f2aa1f3244e5eb850f5c911374b3003";
     buildInputs = [ python3-babel python3-certifi python3-chardet python3-colorama python3-docutils python3-idna python3-imagesize python3-jinja python3-packaging python3-pygments python3-requests python3-sphinx_rtd_theme python3-snowballstemmer python3-sphinx-alabaster-theme python3-sphinxcontrib-websupport python3-six python3-sqlalchemy python3-urllib3 python3-whoosh ];
   };
 
@@ -11235,9 +11235,9 @@ let
 
   "python3-tox" = fetch {
     name        = "python3-tox";
-    version     = "3.6.0";
-    filename    = "mingw-w64-x86_64-python3-tox-3.6.0-1-any.pkg.tar.xz";
-    sha256      = "6d68e8f8d870961a0279ca4ccb133e1d5803df73b556621e9775c0f648bd714e";
+    version     = "3.6.1";
+    filename    = "mingw-w64-x86_64-python3-tox-3.6.1-1-any.pkg.tar.xz";
+    sha256      = "080b81175fe599662da1539f21f019c0c65f38c472a1032302f2cac8e7f1b644";
     buildInputs = [ python3 python3-py python2-six python3-virtualenv python3-setuptools python3-setuptools-scm python3-filelock python3-toml python3-pluggy ];
   };
 
@@ -11782,9 +11782,9 @@ let
 
   "ruby" = fetch {
     name        = "ruby";
-    version     = "2.5.3";
-    filename    = "mingw-w64-x86_64-ruby-2.5.3-1-any.pkg.tar.xz";
-    sha256      = "7273e493b58ecc0c256bd0e3a9952fd0ec65987d1cc9f15092f4a46399821188";
+    version     = "2.6.0";
+    filename    = "mingw-w64-x86_64-ruby-2.6.0-1-any.pkg.tar.xz";
+    sha256      = "71e45e48ffd878ff951357c0dcdf4d32c90711c535502942f07c6bc14872ae93";
     buildInputs = [ gcc-libs gdbm libyaml libffi ncurses openssl tk ];
   };
 
@@ -13264,9 +13264,9 @@ let
 
   "universal-ctags-git" = fetch {
     name        = "universal-ctags-git";
-    version     = "r5776.ecad395a";
-    filename    = "mingw-w64-x86_64-universal-ctags-git-r5776.ecad395a-1-any.pkg.tar.xz";
-    sha256      = "4966e9a0ffbb39d803d6f3bcf338a5fd34db41253dbbcd601c8ce29246986aab";
+    version     = "r6369.5728abe4";
+    filename    = "mingw-w64-x86_64-universal-ctags-git-r6369.5728abe4-1-any.pkg.tar.xz";
+    sha256      = "b4a374f99301b6a5ea460de8f8bb4adfb855aa6bce5b99a0fc61f199b3beacc2";
     buildInputs = [ gcc-libs jansson libiconv libxml2 libyaml ];
   };
 
@@ -13382,9 +13382,9 @@ let
 
   "vlc" = fetch {
     name        = "vlc";
-    version     = "3.0.4";
-    filename    = "mingw-w64-x86_64-vlc-3.0.4-1-any.pkg.tar.xz";
-    sha256      = "c847f18938ad6b68482204d11c5c7a99bbee1e9631d2e4d17e440fb6600404e5";
+    version     = "3.0.5";
+    filename    = "mingw-w64-x86_64-vlc-3.0.5-1-any.pkg.tar.xz";
+    sha256      = "8b3ae7717d0a6ec85e3d2fad2ae48a3aba1b9a9dde261fc4e1751df249487ed2";
     buildInputs = [ a52dec aribb24 chromaprint faad2 ffmpeg flac fluidsynth fribidi gnutls gsm libass libbluray libcaca libcddb libcdio libdca libdsm libdvdcss libdvdnav libdvbpsi libgme libgoom2 libmad libmatroska libmicrodns libmpcdec libmpeg2-git libmysofa libnfs libplacebo libproxy librsvg libsamplerate libshout libssh2 libtheora libvpx libxml2 lua51 opencv opus portaudio protobuf pupnp schroedinger speex srt taglib twolame vcdimager x264-git x265 xpm-nox qt5 ];
     broken      = true;
   };
@@ -13789,9 +13789,9 @@ let
 
   "zstd" = fetch {
     name        = "zstd";
-    version     = "1.3.7";
-    filename    = "mingw-w64-x86_64-zstd-1.3.7-1-any.pkg.tar.xz";
-    sha256      = "acbe55a02111a348f655fa6be7a830d0738b3133d5d545e3a45684b69d9cca39";
+    version     = "1.3.8";
+    filename    = "mingw-w64-x86_64-zstd-1.3.8-1-any.pkg.tar.xz";
+    sha256      = "caa96256afae5fcca8f20a185874d4c73db3f75d3dc612a2b3079ba3b100b144";
     buildInputs = [  ];
   };
 
