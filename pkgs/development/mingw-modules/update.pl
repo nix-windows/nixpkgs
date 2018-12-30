@@ -88,26 +88,37 @@ let
         inherit sha256;
       };
       sourceRoot = ".";
-      buildPhase = ''
-        move    'mingw64', "\$ENV{out}";
-        dircopy '.',       "\$ENV{out}/";
-      '' +
-      lib.concatMapStringsSep "\\n" (dep: ''
-        use File::Find qw(find);
-        sub process {
-          my \$src = \$_;
-          my \$rel = substr(\$src, length '\${dep}');
-          my \$tgt = "\$ENV{out}\$rel";
-          return if \$rel =~ /^(\\/\.[A-Z]+|)\$/;
-          print("\$_ -> \$tgt\\n");
-          if (-d \$src) {
-            make_path(\$tgt);
-          } else {
-            system('mklink', \$tgt =~ s|/|\\\\|gr, \$src =~ s|/|\\\\|gr);
-          }
-        };
-        find({ wanted => \\&process, no_chdir => 1}, '\${dep}');
-      '') buildInputs;
+      buildPhase = if stdenvNoCC.isShellPerl /* on native windows */ then
+        ''
+          move    'mingw64', "\$ENV{out}";
+          dircopy '.',       "\$ENV{out}/";
+          unlink "\$ENV{out}/.BUILDINFO";
+          unlink "\$ENV{out}/.INSTALL";
+          unlink "\$ENV{out}/.MTREE";
+          unlink "\$ENV{out}/.PKGINFO";
+          use File::Find qw(find);
+        '' + lib.concatMapStringsSep "\\n" (dep: ''
+              sub process {
+                my \$src = \$_;
+                die "bad src: '\$src'" unless \$src =~ /\\/[0-9a-df-np-sv-z]{32}-[^\\/]+(.*)/;
+                my \$rel = \$1;
+                my \$tgt = "\$ENV{out}\$rel";
+                print("\${dep} \$src -> \$tgt\\n");
+                if (-d \$src) {
+                  make_path(\$tgt);
+                } else {
+                  system('mklink', \$tgt =~ s|/|\\\\|gr, \$src =~ s|/|\\\\|gr);
+                }
+              };
+              find({ wanted => \\&process, no_chdir => 1}, '\${dep}');
+            '') buildInputs
+      else if stdenvNoCC.isShellCmdExe /* on mingw bootstrap */ then
+        ''
+          echo yay
+          exit 1
+        ''
+      else /* on mingw or linux */
+        throw "todo";
       meta.broken = broken;
     };
   self = _self;
