@@ -103,7 +103,7 @@ let
                 die "bad src: '\$src'" unless \$src =~ /\\/[0-9a-df-np-sv-z]{32}-[^\\/]+(.*)/;
                 my \$rel = \$1;
                 my \$tgt = "\$ENV{out}\$rel";
-                print("\${dep} \$src -> \$tgt\\n");
+                print("\$src -> \$tgt\\n");
                 if (-d \$src) {
                   make_path(\$tgt);
                 } else {
