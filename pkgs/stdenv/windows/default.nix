@@ -191,8 +191,8 @@ in
       # this has references to nix store, depends on nix store location and might have problems being fixed-output derivation
       vc = stdenv.mkDerivation {
         name = "vc-${msbuild.version}";
-        src = vc1;
-        buildPhase = ''
+        buildInputs = [ vc1 ];
+        buildCommand = ''
           dircopy("${vc1}", $ENV{out}) or die "$!";
 
           # so far there is no `substituteInPlace`
@@ -210,6 +210,7 @@ in
 
       cc-wrapper = { msvc, sdk }: stdenv.mkDerivation {
         name = "${msvc.name}+${sdk.name}+${msbuild.name}";
+        buildInputs = [ msvc sdk msbuild vc ];
         buildCommand = ''
           make_path("$ENV{out}/bin", "$ENV{out}/VC/Tools/MSVC") or die "make_path: $!";
 
@@ -242,7 +243,7 @@ in
                   ) == 0 or die "makeWrapper failed: $!";
           }
 
-          # for those who want to deal with vcvarsall.bat (chromium, boost, ...)
+          # for those who want to deal with (execute or even parse) vcvarsall.bat (chromium, boost, ...)
           open(my $fh, ">$ENV{out}/VC/vcvarsall.bat") or die $!;
           my $content = 'PATH'                  ."=${msvc.PATH};${sdk.PATH};${msbuild.PATH};%PATH%\n".
                     'set INCLUDE'               ."=%INCLUDE%;${msvc.INCLUDE};${sdk.INCLUDE}\n".
