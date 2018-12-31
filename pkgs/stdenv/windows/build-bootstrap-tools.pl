@@ -21,7 +21,8 @@ die unless -f '7z.exe' && digest_file_hex('7z.exe', "SHA-256") eq '47462483fe547
 
 my $msvc_version = "14.16.27023";
 my $redist_version = "14.16.27012";
-my $sdk_version = "10.0.17763.0";
+my $sdk_8_1_version = "8.1";
+my $sdk_10_version = "10.0.17763.0";
 my $msbuild_version = "15.0";
 
 # there seems to be no simple way to compress a directory to a nar file
@@ -122,13 +123,7 @@ my $wd = getcwd();
 #my $compression = '-mx1'; # fast
 my $compression = '';
 
-print qq[
-      msvc-version = "$msvc_version";
-      redist-version = "$redist_version";
-      sdk-version = "$sdk_version";
-      msbuild-version = "$msbuild_version";
-];
-
+if (0) {
 unless (-d "msvc-$msvc_version.nar.xz") {
     remove_tree("msvc");
     make_path("msvc");
@@ -141,12 +136,14 @@ unless (-d "msvc-$msvc_version.nar.xz") {
 
     my $msvc_nar    = writeNar("| 7z a $compression -si msvc-$msvc_version.nar.xz",       "msvc",    "sha256");
     print qq[
-      msvc = import <nix/fetchurl.nix> {
+      msvc = (import <nix/fetchurl.nix> {
         name = "msvc-\${msvc-version}";
         url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/msvc-\${msvc-version}.nar.xz";
         #url = "file://$wd/msvc-\${msvc-version}.nar.xz";
         unpack = true;
         sha256 = "$msvc_nar->{NarHash}";
+      }) // {
+        version = "$msvc_version";
       };
     ];
 }
@@ -159,25 +156,49 @@ unless (-d "redist-$redist_version.nar.xz") {
 
     my $redist_nar    = writeNar("| 7z a $compression -si redist-$redist_version.nar.xz",       "redist",    "sha256");
     print qq[
-      redist = import <nix/fetchurl.nix> {
+      redist = (import <nix/fetchurl.nix> {
         name = "redist-\${redist-version}";
         url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/redist-\${redist-version}.nar.xz";
         #url = "file://$wd/redist-\${redist-version}.nar.xz";
         unpack = true;
         sha256 = "$redist_nar->{NarHash}";
+      }) // {
+        version = "$redist_version";
+      };
+    ];
+}
+}
+
+unless (-f "sdk-$sdk_8_1_version.nar.xz") {
+    remove_tree("sdk_8_1");
+    make_path("sdk_8_1");
+
+    dircopy("C:/Program Files (x86)/Windows Kits/8.1",                                  "sdk_8_1") or die "$!";
+
+    my $sdk_nar     = writeNar("| 7z a $compression -si sdk-$sdk_8_1_version.nar.xz",   "sdk_8_1",     "sha256");
+    print qq[
+      sdk_8_1 = (import <nix/fetchurl.nix> {
+        name = "sdk-\${sdk_8_1.version}";
+        url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/sdk-\${sdk_8_1.version}.nar.xz";
+        #url = "file://$wd/sdk-\${sdk_8_1.version}.nar.xz";
+        unpack = true;
+        sha256 = "$sdk_nar->{NarHash}";
+      }) // {
+        version = "$sdk_8_1_version";
       };
     ];
 }
 
-unless (-f "sdk-$sdk_version.nar.xz") {
-    remove_tree("sdk");
-    make_path("sdk");
+if (0) {
+unless (-f "sdk-$sdk_10_version.nar.xz") {
+    remove_tree("sdk_10");
+    make_path("sdk_10");
 
-    dircopy("C:/Program Files (x86)/Windows Kits/10",                                   "sdk") or die "$!";
-    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/DIA SDK", "sdk/DIA SDK") or die "$!"; # for chromium?
+    dircopy("C:/Program Files (x86)/Windows Kits/10",                                   "sdk_10") or die "$!";
+    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/DIA SDK", "sdk_10/DIA SDK") or die "$!"; # for chromium?
 
     # so far there is no `substituteInPlace`
-    for my $filename (glob("sdk/DesignTime/CommonConfiguration/Neutral/*.props")) {
+    for my $filename (glob("sdk_10/DesignTime/CommonConfiguration/Neutral/*.props")) {
         open(my $in, $filename) or die $!;
         open(my $out, ">$filename.new") or die $!;
         for my $line (<$in>) {
@@ -190,14 +211,16 @@ unless (-f "sdk-$sdk_version.nar.xz") {
         move("$filename.new", $filename) or die $!;
     }
 
-    my $sdk_nar     = writeNar("| 7z a $compression -si sdk-$sdk_version.nar.xz",         "sdk",     "sha256");
+    my $sdk_nar     = writeNar("| 7z a $compression -si sdk-$sdk_10_version.nar.xz",    "sdk_10",     "sha256");
     print qq[
-      sdk = import <nix/fetchurl.nix> {
-        name = "sdk-\${sdk-version}";
-        url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/sdk-\${sdk-version}.nar.xz";
-        #url = "file://$wd/sdk-\${sdk-version}.nar.xz";
+      sdk_10 = (import <nix/fetchurl.nix> {
+        name = "sdk-\${sdk_10.version}";
+        url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/sdk-\${sdk_10.version}.nar.xz";
+        #url = "file://$wd/sdk-\${sdk_10.version}.nar.xz";
         unpack = true;
         sha256 = "$sdk_nar->{NarHash}";
+      }) // {
+        version = "$sdk_10_version";
       };
     ];
 }
@@ -219,12 +242,14 @@ unless (-f "msbuild-$msbuild_version.nar.xz") {
 
     my $msbuild_nar = writeNar("| 7z a $compression -si msbuild-$msbuild_version.nar.xz", "msbuild", "sha256");
     print qq[
-      msbuild = import <nix/fetchurl.nix> {
+      msbuild = (import <nix/fetchurl.nix> {
         name = "msbuild-\${msbuild-version}";
         url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/msbuild-\${msbuild-version}.nar.xz";
         #url = "file://$wd/msbuild-\${msbuild-version}.nar.xz";
         unpack = true;
         sha256 = "$msbuild_nar->{NarHash}";
+      }) // {
+        version = "$msbuild_version";
       };
     ];
 }
@@ -245,4 +270,5 @@ unless (-f "vc1-$msbuild_version.nar.xz") {
         sha256 = "$vc1_nar->{NarHash}";
       };
     ];
+}
 }

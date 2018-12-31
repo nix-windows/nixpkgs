@@ -6,50 +6,84 @@ assert crossSystem == null;
 assert localSystem.config == "x86_64-pc-windows-msvc";
 
 let
-  msvc-version = "14.16.27023";
-  redist-version = "14.16.27012";
-  sdk-version = "10.0.17763.0";
-  msbuild-version = "15.0";
+# msvc-version = "14.16.27023";
+# redist-version = "14.16.27012";
+# sdk_10-version = "10.0.17763.0";
+# msbuild-version = "15.0";
 
-  msvc = import <nix/fetchurl.nix> {
-    name = "msvc-${msvc-version}";
-    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/msvc-${msvc-version}.nar.xz";
+  msvc = (import <nix/fetchurl.nix> {
+    name = "msvc-${msvc.version}";
+    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/msvc-${msvc.version}.nar.xz";
     unpack = true;
     sha256 = "2c3307db0c7f9b6f2a93f147da22960440aec9070a8916dfac7d5651b0e700da";
+  }) // {
+    version = "14.16.27023";
+    INCLUDE = "${msvc}/include;${msvc}/atlmfc/include";
+    LIB     = "${msvc}/lib/x64;${msvc}/atlmfc/lib/x64";
+    LIBPATH = "${msvc}/lib/x64;${msvc}/atlmfc/lib/x64;${msvc}/lib/x86/store/references";
+    PATH    = "${msvc}/bin/HostX64/x64";
   };
 
-  redist = import <nix/fetchurl.nix> {
-    name = "redist-${redist-version}";
-    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/redist-${redist-version}.nar.xz";
+  redist = (import <nix/fetchurl.nix> {
+    name = "redist-${redist.version}";
+    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/redist-${redist.version}.nar.xz";
     unpack = true;
     sha256 = "5efca79f200c6a0795e3fd00544723aee42c2e502f77fe74edc7ecd77ac61578";
+  }) // {
+    version = "14.16.27012";
   };
 
-  sdk = import <nix/fetchurl.nix> {
-    name = "sdk-${sdk-version}";
-    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/sdk-${sdk-version}.nar.xz";
+  # Windows XP
+  sdk_7_1 = throw "todo: SDK 7.1";
+
+  # Windows 7 (it has no UCRT (<stdio.h> etc) so is not usable yet)
+  sdk_8_1 = (import <nix/fetchurl.nix> {
+    name = "sdk-${sdk_8_1.version}";
+    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/sdk-${sdk_8_1.version}.nar.xz";
+    unpack = true;
+    sha256 = "d1299b8399ad22fdb2303ca38f2a51fea5b94577b0de8bd7c238291c8d76d877";
+  }) // {
+    version = "8.1";
+    INCLUDE = "${sdk_8_1}/include/shared;${sdk_8_1}/include/um;${sdk_8_1}/include/winrt";
+    LIB     = "${sdk_8_1}/Lib/winv6.3/um";
+    LIBPATH = "";
+    PATH    = "${sdk_8_1}/bin/x64";
+  };
+
+  # Windows 10
+  sdk_10 = (import <nix/fetchurl.nix> {
+    name = "sdk-${sdk_10.version}";
+    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/sdk-${sdk_10.version}.nar.xz";
     unpack = true;
     sha256 = "ae43ffd01f53bef2ef6f2056dd87da30e46f02fdbcd2719dc382292106279369";
+  }) // {
+    version = "10.0.17763.0";
+    INCLUDE = "${sdk_10}/include/${sdk_10.version}/ucrt;${sdk_10}/include/${sdk_10.version}/shared;${sdk_10}/include/${sdk_10.version}/um;${sdk_10}/include/${sdk_10.version}/winrt;${sdk_10}/include/${sdk_10.version}/cppwinrt";
+    LIB     = "${sdk_10}/lib/${sdk_10.version}/ucrt/x64;${sdk_10}/lib/${sdk_10.version}/um/x64";
+    LIBPATH = "${sdk_10}/UnionMetadata/${sdk_10.version};${sdk_10}/References/${sdk_10.version}";
+    PATH    = "${sdk_10}/bin/${sdk_10.version}/x64;${sdk_10}/bin/x64";
   };
 
-  msbuild = import <nix/fetchurl.nix> {
-    name = "msbuild-${msbuild-version}";
-    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/msbuild-${msbuild-version}.nar.xz";
+  msbuild = (import <nix/fetchurl.nix> {
+    name = "msbuild-${msbuild.version}";
+    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/msbuild-${msbuild.version}.nar.xz";
     unpack = true;
     sha256 = "032e6343d55762df6d5c9650d10e125946b7b8e85cc32e126b10b89a7be338ba";
+  }) // {
+    version = "15.0";
   };
 
   vc1 = import <nix/fetchurl.nix> {
-    name = "vc1-${msbuild-version}";
-    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/vc1-${msbuild-version}.nar.xz";
+    name = "vc1-${msbuild.version}";
+    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/vc1-${msbuild.version}.nar.xz";
     unpack = true;
     sha256 = "0d861aeb29a9d88746a70c9d89007639c7d9107cfba8fa1139f68ee21ddf744b";
   };
 
-  msvc-INCLUDE = "${msvc}/include;${msvc}/atlmfc/include;${sdk}/include/${sdk-version}/ucrt;${sdk}/include/${sdk-version}/shared;${sdk}/include/${sdk-version}/um;${sdk}/include/${sdk-version}/winrt;${sdk}/include/${sdk-version}/cppwinrt";
-  msvc-LIB     = "${msvc}/lib/x64;${msvc}/atlmfc/lib/x64;${sdk}/lib/${sdk-version}/ucrt/x64;${sdk}/lib/${sdk-version}/um/x64";
-  msvc-LIBPATH = "${msvc}/lib/x64;${msvc}/atlmfc/lib/x64;${msvc}/lib/x86/store/references;${sdk}/UnionMetadata/${sdk-version};${sdk}/References/${sdk-version}";
-  msvc-PATH    = "${msvc}/bin/HostX64/x64;${sdk}/bin/${sdk-version}/x64;${sdk}/bin/x64";
+# msvc-INCLUDE = "${msvc}/include;${msvc}/atlmfc/include;${sdk_10}/include/${sdk_10.version}/ucrt;${sdk_10}/include/${sdk_10.version}/shared;${sdk_10}/include/${sdk_10.version}/um;${sdk_10}/include/${sdk_10.version}/winrt;${sdk_10}/include/${sdk_10.version}/cppwinrt";
+# msvc-LIB     = "${msvc}/lib/x64;${msvc}/atlmfc/lib/x64;${sdk_10}/lib/${sdk_10.version}/ucrt/x64;${sdk_10}/lib/${sdk_10.version}/um/x64";
+# msvc-LIBPATH = "${msvc}/lib/x64;${msvc}/atlmfc/lib/x64;${msvc}/lib/x86/store/references;${sdk_10}/UnionMetadata/${sdk_10.version};${sdk_10}/References/${sdk_10.version}";
+# msvc-PATH    = "${msvc}/bin/HostX64/x64;${sdk_10}/bin/${sdk_10.version}/x64;${sdk_10}/bin/x64";
 in
 
 [
@@ -93,9 +127,9 @@ in
         url = "https://curl.haxx.se/download/${name}.tar.bz2";
         sha256 = "084niy7cin13ba65p8x38w2xcyc54n3fgzbin40fa2shfr0ca0kq";
       };
-      INCLUDE = msvc-INCLUDE;
-      LIB     = msvc-LIB;
-      PATH    = "${msvc-PATH};${p7zip-static}/bin";
+      INCLUDE = "${msvc.INCLUDE};${sdk_10.INCLUDE}";
+      LIB     = "${msvc.LIB};${sdk_10.LIB}";
+      PATH    = "${msvc.PATH};${sdk_10.PATH};${p7zip-static}/bin";
       builder = lib.concatStringsSep " & " [ ''7z x %src% -so  |  7z x -aoa -si -ttar''
                                              ''cd ${name}\winbuild''
                                              ''nmake /f Makefile.vc mode=static VC=15''
@@ -120,9 +154,9 @@ in
         url = "https://www.cpan.org/src/5.0/perl-${version}.tar.gz";
         sha256 = "0iy3as4hnbjfyws4in3j9d6zhhjxgl5m95i5n9jy2bnzcpz8bgry";
       };
-      INCLUDE = msvc-INCLUDE;
-      LIB     = msvc-LIB;
-      PATH    = "${msvc-PATH};${p7zip-static}/bin";
+      INCLUDE = "${msvc.INCLUDE};${sdk_10.INCLUDE}";
+      LIB     = "${msvc.LIB};${sdk_10.LIB}";
+      PATH    = "${msvc.PATH};${sdk_10.PATH};${p7zip-static}/bin";
       builder = lib.concatStringsSep " & " [ ''7z x %src%                         -so  |  7z x -aoa -si -ttar''
                                              ''7z x ${perl-CaptureTiny-src}       -so  |  7z x -aoa -si -ttar -operl-${version}\ext''
                                              ''7z x ${perl-FileCopyRecursive-src} -so  |  7z x -aoa -si -ttar -operl-${version}\ext''
@@ -132,9 +166,9 @@ in
 
     makeWrapper = stdenv.mkDerivation rec {
       name = "makeWrapper";
-      INCLUDE = msvc-INCLUDE;
-      LIB     = msvc-LIB;
-      PATH    = msvc-PATH;
+      INCLUDE = "${msvc.INCLUDE};${sdk_10.INCLUDE}";
+      LIB     = "${msvc.LIB};${sdk_10.LIB}";
+      PATH    = "${msvc.PATH};${sdk_10.PATH}";
       builder = lib.concatStringsSep " & " [ ''md %out%\bin''
                                              ''cl /O2 /MT /EHsc /Fe:%out%\bin\makeWrapper.exe /DINCLUDE=${INCLUDE} /DLIB=${LIB} /DCC=${msvc}/bin/HostX64/x64/cl.exe ${./makeWrapper.cpp}'' ];
     };
@@ -164,7 +198,7 @@ in
     cc = let
       # this has references to nix store, depends on nix store location and might have problems being fixed-output derivation
       vc = stdenv.mkDerivation {
-        name = "vc-${msbuild-version}";
+        name = "vc-${msbuild.version}";
         src = vc1;
         buildPhase = ''
           dircopy("${vc1}", $ENV{out}) or die "$!";
@@ -172,8 +206,8 @@ in
           # so far there is no `substituteInPlace`
           for my $filename (glob("$ENV{out}/VCTargets/*.props"), glob("$ENV{out}/VCTargets/*.targets")) {
             changeFile {
-              s|>(\$\(Registry:HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots\@KitsRoot10\))|>${sdk}/<!-- $1 -->|g;
-              s|>(\$\(Registry:HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Microsoft SDKs\\Windows\\v10.0\@InstallationFolder\))|>${sdk}/<!-- $1 -->|g;
+              s|>(\$\(Registry:HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots\@KitsRoot10\))|>${sdk_10}/<!-- $1 -->|g;
+              s|>(\$\(Registry:HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Microsoft SDKs\\Windows\\v10.0\@InstallationFolder\))|>${sdk_10}/<!-- $1 -->|g;
               s|\$\(VCToolsInstallDir_150\)|${msvc}/|g;
               s|>(\$\(Registry:[^)]+\))|><!-- $1 -->|g;
               $_;
@@ -182,7 +216,7 @@ in
         '';
       };
 
-      cc-wrapper = stdenv.mkDerivation {
+      cc-wrapper = { sdk }: stdenv.mkDerivation {
         name = "${msvc.name}+${sdk.name}+${msbuild.name}";
         buildCommand = ''
           make_path("$ENV{out}/bin", "$ENV{out}/VC/Tools/MSVC") or die "make_path: $!";
@@ -190,73 +224,73 @@ in
           for my $name ('cl', 'ml64', 'lib', 'link', 'nmake', 'mc', 'mt', 'rc', 'dumpbin', 'csc', 'msbuild') {
             my $target;
             $target = "${msvc}/bin/HostX64/x64/$name.exe"                   if !$target && -f "${msvc}/bin/HostX64/x64/$name.exe";
-            $target = "${sdk}/bin/${sdk-version}/x64/$name.exe"             if !$target && -f "${sdk}/bin/${sdk-version}/x64/$name.exe";
+            $target = "${sdk}/bin/${sdk.version}/x64/$name.exe"             if !$target && -f "${sdk}/bin/${sdk.version}/x64/$name.exe";
             $target = "${sdk}/bin/x64/$name.exe"                            if !$target && -f "${sdk}/bin/x64/$name.exe";
-            $target = "${msbuild}/${msbuild-version}/bin/Roslyn/$name.exe"  if !$target && -f "${msbuild}/${msbuild-version}/bin/Roslyn/$name.exe";
-            $target = "${msbuild}/${msbuild-version}/bin/$name.exe"         if !$target && -f "${msbuild}/${msbuild-version}/bin/$name.exe";
+            $target = "${msbuild}/${msbuild.version}/bin/Roslyn/$name.exe"  if !$target && -f "${msbuild}/${msbuild.version}/bin/Roslyn/$name.exe";
+            $target = "${msbuild}/${msbuild.version}/bin/$name.exe"         if !$target && -f "${msbuild}/${msbuild.version}/bin/$name.exe";
             die "no target $target"                                         if !$target;
 
             system( "makeWrapper.exe", $target, "$ENV{out}/bin/$name.exe"
-                  , '--prefix', 'PATH',             ';', '${msvc-PATH};${msbuild}/${msbuild-version}/bin/Roslyn;${msbuild}/${msbuild-version}/bin'
-                  , '--suffix', 'INCLUDE',          ';', '${msvc-INCLUDE}'
-                  , '--suffix', 'LIB',              ';', '${msvc-LIB}'
-                  , '--suffix', 'LIBPATH',          ';', '${msvc-LIBPATH}'
-                  , '--suffix', 'WindowsLibPath',   ';', '${sdk}/UnionMetadata/${sdk-version};${sdk}/References/${sdk-version}'
-                  , '--set',    'WindowsSDKLibVersion',  '${sdk-version}'
-                  , '--set',    'WindowsSDKVersion',     '${sdk-version}'
-                  , '--set',    'WindowsSdkVerBinPath',  '${sdk}/bin/${sdk-version}/'
+                  , '--prefix', 'PATH',             ';', '${msvc.PATH};${sdk.PATH};${msbuild}/${msbuild.version}/bin/Roslyn;${msbuild}/${msbuild.version}/bin'
+                  , '--suffix', 'INCLUDE',          ';', '${msvc.INCLUDE};${sdk.INCLUDE}'
+                  , '--suffix', 'LIB',              ';', '${msvc.LIB};${sdk.LIB}'
+                  , '--suffix', 'LIBPATH',          ';', '${msvc.LIBPATH};${sdk.LIBPATH}'
+                  , '--suffix', 'WindowsLibPath',   ';', '${sdk}/UnionMetadata/${sdk.version};${sdk}/References/${sdk.version}'
+                  , '--set',    'WindowsSDKLibVersion',  '${sdk.version}'
+                  , '--set',    'WindowsSDKVersion',     '${sdk.version}'
+                  , '--set',    'WindowsSdkVerBinPath',  '${sdk}/bin/${sdk.version}/'
                   , '--set',    'WindowsSdkBinPath',     '${sdk}/bin/'
                   , '--set',    'WindowsSdkDir',         '${sdk}'
-                  , '--set',    'VCToolsVersion',        '${msvc-version}'
+                  , '--set',    'VCToolsVersion',        '${msvc.version}'
                   , '--set',    'VCToolsInstallDir',     '${msvc}/'
                   , '--set',    'VCToolsRedistDir',      '${msvc}/'
                   , '--set',    'VCTargetsPath',         '${vc}/VCTargets/'
-                  , '--set',    'UCRTVersion',           '${sdk-version}'
+                  , '--set',    'UCRTVersion',           '${sdk.version}'
                   , '--set',    'UniversalCRTSdkDir',    '${sdk}/'
                   ) == 0 or die "makeWrapper failed: $!";
           }
 
           # for those who want to deal with vcvarsall.bat (chromium, boost, ...)
           open(my $fh, ">$ENV{out}/VC/vcvarsall.bat") or die $!;
-          my $content = 'PATH'                  ."=${msvc-PATH};${msbuild}/${msbuild-version}/bin/Roslyn;${msbuild}/${msbuild-version}/bin;%PATH%\n".
-                    'set INCLUDE'               ."=%INCLUDE%;${msvc-INCLUDE}\n".
-                    'set LIB'                   ."=%LIB%;${msvc-LIB}\n".
-                    'set LIBPATH'               ."=%LIBPATH%;${msvc}/lib/x64;${msvc}/lib/x86/store/references;${sdk}/UnionMetadata/${sdk-version};${sdk}/References/${sdk-version}\n".
-                    'set WindowsLibPath'        ."=${sdk}/UnionMetadata/${sdk-version};${sdk}/References/${sdk-version}\n".
-                    'set WindowsSDKLibVersion'  ."=${sdk-version}\n".
-                    'set WindowsSDKVersion'     ."=${sdk-version}\n".
-                    'set WindowsSdkVerBinPath'  ."=${sdk}/bin/${sdk-version}/\n".
+          my $content = 'PATH'                  ."=${msvc.PATH};${sdk.PATH};${msbuild}/${msbuild.version}/bin/Roslyn;${msbuild}/${msbuild.version}/bin;%PATH%\n".
+                    'set INCLUDE'               ."=%INCLUDE%;${msvc.INCLUDE};${sdk.INCLUDE}\n".
+                    'set LIB'                   ."=%LIB%;${msvc.LIB};${sdk.LIB}\n".
+                    'set LIBPATH'               ."=%LIBPATH%;${msvc.LIBPATH};${sdk.LIBPATH}\n".
+                    'set WindowsLibPath'        ."=${sdk}/UnionMetadata/${sdk.version};${sdk}/References/${sdk.version}\n".
+                    'set WindowsSDKLibVersion'  ."=${sdk.version}\n".
+                    'set WindowsSDKVersion'     ."=${sdk.version}\n".
+                    'set WindowsSdkVerBinPath'  ."=${sdk}/bin/${sdk.version}/\n".
                     'set WindowsSdkBinPath'     ."=${sdk}/bin/\n".
                     'set WindowsSdkDir'         ."=${sdk}\n".
-                    'set VCToolsVersion'        ."=${msvc-version}\n".
+                    'set VCToolsVersion'        ."=${msvc.version}\n".
                     'set VCToolsInstallDir'     ."=${msvc}/\n".
                     'set VCToolsRedistDir'      ."=${msvc}/\n".
                     'set VCTargetsPath'         ."=${vc}/VCTargets/\n".
-                    'set UCRTVersion'           ."=${sdk-version}\n".
+                    'set UCRTVersion'           ."=${sdk.version}\n".
                     'set UniversalCRTSdkDir'    ."=${sdk}/\n";
           print $fh ($content =~ s|/|\\|gr);
           close($fh);
 
           # make symlinks to help chromium builder which expects a particular directory structure (todo: move to chromium.nix)
           system('mklink /D '.escapeWindowsArg("$ENV{out}/DIA SDK"                       =~ s|/|\\|gr).' '.escapeWindowsArg('${sdk}/DIA SDK' =~ s|/|\\|gr)) == 0 or die;
-          system('mklink /D '.escapeWindowsArg("$ENV{out}/VC/Tools/MSVC/${msvc-version}" =~ s|/|\\|gr).' '.escapeWindowsArg('${msvc}'        =~ s|/|\\|gr)) == 0 or die;
+          system('mklink /D '.escapeWindowsArg("$ENV{out}/VC/Tools/MSVC/${msvc.version}" =~ s|/|\\|gr).' '.escapeWindowsArg('${msvc}'        =~ s|/|\\|gr)) == 0 or die;
         '';
 
         passthru = {
           targetPrefix = "";
           isClang = false;
           isGNU = false;
-          inherit msvc msvc-version  redist redist-version  sdk sdk-version  msbuild msbuild-version vc /*vc1*/ /*perl-for-stdenv-shell*/;
-          INCLUDE = msvc-INCLUDE;
-          LIB     = msvc-LIB;
-          LIBPATH = msvc-LIBPATH;
+          inherit msvc redist sdk msbuild vc /*vc1*/;
+#         INCLUDE = "${msvc.INCLUDE};${sdk.INCLUDE}";
+#         LIB     = "${msvc.LIB};${sdk.LIB}";
+#         PATH    = "${msvc.PATH};${sdk.PATH}";
           makeWrapper = prevStage.makeWrapper;
-#         perl-for-stdenv-shell = prevStage.perl-for-stdenv-shell;
+          perl-for-stdenv-shell = prevStage.perl-for-stdenv-shell;
 #         p7zip-static = prevStage.p7zip-static;
-#         curl = prevStage.curl-static;
+          curl-static = prevStage.curl-static;
         };
       };
-    in cc-wrapper;
+    in cc-wrapper { sdk = sdk_10; };
   })
 
 
