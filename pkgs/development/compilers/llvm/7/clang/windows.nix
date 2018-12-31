@@ -22,13 +22,13 @@ let
     ];
 
     # use ninja instead of nmake for multicore build
-    # $ENV{CMAKE_PREFIX_PATH} = "${llvm}";                                                # TODO: setup hook should handle this (cmake knowns about llvm and llvm on $PATH is enough for it)
-    # $ENV{INCLUDE} = "${llvm}/include;${zlib}/include;${libxml2}/include;$ENV{INCLUDE}"; # TODO: setup hook should handle this (zlib is propagated)
-    # $ENV{LIB}     = "${llvm}/lib;${zlib}/lib;${libxml2}/lib;$ENV{LIB}";                 # TODO: setup hook should handle this
+    # $ENV{CMAKE_PREFIX_PATH} = "${llvm}";                                                # TODO: setup hook should handle this (useless here: cmake knowns about llvm-config and llvm on $PATH is enough for it)
     configurePhase = ''
-      mkdir("build");                                                                                                                 # -\
-      chdir("build");                                                                                                                 #   >- TODO: cmake setup hook should handle this
-      system("cmake -GNinja -Thost=x64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$ENV{out} $ENV{cmakeFlags} ..") == 0 or die; # -/
+      $ENV{INCLUDE} = "${llvm}/include;${zlib}/include;${libxml2}/include;$ENV{INCLUDE}"; # TODO: setup hook should handle this (zlib is propagated)
+      $ENV{LIB}     = "${llvm}/lib;${zlib}/lib;${libxml2}/lib;$ENV{LIB}";                 # TODO: setup hook should handle this
+      mkdir("build");                                                                                                      # -\
+      chdir("build");                                                                                                      #   >- TODO: cmake setup hook should handle this
+      system("cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$ENV{out} $ENV{cmakeFlags} ..") == 0 or die; # -/
     '';
 
     buildPhase = ''

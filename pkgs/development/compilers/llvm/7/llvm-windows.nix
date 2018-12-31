@@ -43,9 +43,9 @@ in
   configurePhase = ''
     $ENV{INCLUDE} = "${zlib}/include;${libxml2}/include;$ENV{INCLUDE}"; # TODO: setup hook should handle this
     $ENV{LIB}     = "${zlib}/lib;${libxml2}/lib;$ENV{LIB}";             # TODO: setup hook should handle this
-    mkdir("build");                                                                                                                 # -\
-    chdir("build");                                                                                                                 #   >- TODO: cmake setup hook should handle this
-    system("cmake -GNinja -Thost=x64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$ENV{out} $ENV{cmakeFlags} ..") == 0 or die; # -/
+    mkdir("build");                                                                                                      # -\
+    chdir("build");                                                                                                      #   >- TODO: cmake setup hook should handle this
+    system("cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$ENV{out} $ENV{cmakeFlags} ..") == 0 or die; # -/
   '';
 
   buildPhase = ''
