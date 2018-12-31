@@ -54,6 +54,8 @@ stdenv.mkDerivation rec {
     copy 'x86_64-w64-mingw32/.libs/libffi-7.dll',            "$ENV{out}/bin/";
     copy 'x86_64-w64-mingw32/.libs/libffi-7.lib',            "$ENV{out}/lib/";
     copy 'x86_64-w64-mingw32/.libs/libffi_convenience.lib',  "$ENV{out}/lib/";
+    copy 'x86_64-w64-mingw32/.libs/libffi-7.dll',            "$ENV{out}/bin/ffi.dll";  # when building llvm, cmake is unable to find libffi-7.lib, only ffi.lib
+    copy 'x86_64-w64-mingw32/.libs/libffi-7.lib',            "$ENV{out}/lib/ffi.lib";
   '';
 }
 

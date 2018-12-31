@@ -28,11 +28,11 @@ stdenv.mkDerivation rec {
       my $content = readFile('${./msvc.py}');
       $content =~ s|\@\@cc\@\@|${               builtins.replaceStrings [''/'' ''\''] [''\\'' ''\\''] "${stdenv.cc}"}|g;
       $content =~ s|\@\@msvc\@\@|${             builtins.replaceStrings [''/'' ''\''] [''\\'' ''\\''] "${stdenv.cc.msvc}"}|g;
-      $content =~ s|\@\@msvc-version\@\@|${     builtins.replaceStrings [''/'' ''\''] [''\\'' ''\\''] "${stdenv.cc.msvc-version}"}|g;
+      $content =~ s|\@\@msvc-version\@\@|${     builtins.replaceStrings [''/'' ''\''] [''\\'' ''\\''] "${stdenv.cc.msvc.version}"}|g;
       $content =~ s|\@\@sdk\@\@|${              builtins.replaceStrings [''/'' ''\''] [''\\'' ''\\''] "${stdenv.cc.sdk}"}|g;
-      $content =~ s|\@\@sdk-version\@\@|${      builtins.replaceStrings [''/'' ''\''] [''\\'' ''\\''] "${stdenv.cc.sdk-version}"}|g;
+      $content =~ s|\@\@sdk-version\@\@|${      builtins.replaceStrings [''/'' ''\''] [''\\'' ''\\''] "${stdenv.cc.sdk.version}"}|g;
       $content =~ s|\@\@msbuild\@\@|${          builtins.replaceStrings [''/'' ''\''] [''\\'' ''\\''] "${stdenv.cc.msbuild}"}|g;
-      $content =~ s|\@\@msbuild-version\@\@|${  builtins.replaceStrings [''/'' ''\''] [''\\'' ''\\''] "${stdenv.cc.msbuild-version}"}|g;
+      $content =~ s|\@\@msbuild-version\@\@|${  builtins.replaceStrings [''/'' ''\''] [''\\'' ''\\''] "${stdenv.cc.msbuild.version}"}|g;
       writeFile('setuptools/msvc.py', $content);
 
 

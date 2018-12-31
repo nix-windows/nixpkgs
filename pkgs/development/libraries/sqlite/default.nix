@@ -24,15 +24,7 @@ stdenv.mkDerivation rec {
   buildPhase = ''
     # fix 'sqlite3.lo : error LNK2019: unresolved external symbol _guard_dispatch_icall referenced in function winShmUnmap'
     # https://github.com/Microsoft/angle/issues/150#issuecomment-416317269
-    open (my $in, "Makefile.msc") or die $!;
-    open (my $out, ">Makefile.msc.new") or die $!;
-    for my $line (<$in>) {
-      $line =~ s|/d2guard4|/d2guard4 /guard:cf|g;
-      print $out $line;
-    }
-    close($in) or die $!;
-    close($out) or die $!;
-    move("Makefile.msc.new", "Makefile.msc") or die $!;
+    changeFile { s|/d2guard4|/d2guard4 /guard:cf|gr } "Makefile.msc";
 
     system("nmake /f Makefile.msc core FOR_WIN10=1 PLATFORM=x64") == 0 or die $!;
   '';

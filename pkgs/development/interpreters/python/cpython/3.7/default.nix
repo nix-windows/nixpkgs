@@ -102,16 +102,11 @@ in stdenv.mkDerivation rec {
     }
 
     for my $filename (glob('PCbuild/*.vcxproj')) {
-      open(my $in, $filename) or die $!;
-      open(my $out, ">$filename.new") or die $!;
-      for my $line (<$in>) {
-        $line =~ s|(<PropertyGroup Label="Globals">)|\1<WindowsTargetPlatformVersion>${stdenv.cc.sdk-version}</WindowsTargetPlatformVersion>|g;
-        $line =~ s|ToolsVersion="4\.0"|ToolsVersion="${stdenv.cc.msbuild-version}"|g;
-        print $out $line;
-      }
-      close($in);
-      close($out);
-      move("$filename.new", $filename) or die $!;
+      changeFile {
+        s|(<PropertyGroup Label="Globals">)|\1<WindowsTargetPlatformVersion>${stdenv.cc.sdk.version}</WindowsTargetPlatformVersion>|g;
+        s|ToolsVersion="4\.0"|ToolsVersion="${stdenv.cc.msbuild.version}"|g;
+        $_;
+      } $filename;
     }
 
     chdir('PCbuild');
