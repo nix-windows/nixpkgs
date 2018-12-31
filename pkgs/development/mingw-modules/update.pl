@@ -90,8 +90,7 @@ let
       sourceRoot = ".";
       buildPhase = if stdenvNoCC.isShellPerl /* on native windows */ then
         ''
-          move    'mingw64', "\$ENV{out}";
-          dircopy '.',       "\$ENV{out}/";
+          dircopy '.',       "\$ENV{out}";
           unlink "\$ENV{out}/.BUILDINFO";
           unlink "\$ENV{out}/.INSTALL";
           unlink "\$ENV{out}/.MTREE";

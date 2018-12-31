@@ -23,11 +23,7 @@ stdenv.mkDerivation rec {
   buildPhase = let
     msysenv = buildEnv {
       name = "msysenv";
-      paths = with msysPackages; [ automake-wrapper autoconf libtool make coreutils grep sed texinfo ];
-    };
-    mingw64env = buildEnv {
-      name = "mingw64env";
-      paths = [ mingwPackages.binutils ];
+      paths = [ mingwPackages.binutils ] ++ (with msysPackages; [ automake-wrapper autoconf libtool make coreutils grep sed texinfo ]);
     };
   in ''
     # make MSYS FHS with writable /tmp
@@ -37,7 +33,6 @@ stdenv.mkDerivation rec {
       die "not a dir: $dirname" unless -d $dirname;
       system('mklink', '/D', ("$msysroot/".basename($dirname)) =~ s|/|\\|gr, $dirname =~ s|/|\\|gr);
     }
-    system('mklink', '/D', "$msysroot/mingw64" =~ s|/|\\|gr, '${mingw64env}' =~ s|/|\\|gr);
     $ENV{PATH} = "$msysroot/mingw64/bin;$msysroot/usr/bin;$ENV{PATH}";
 
     changeFile { s/-nologo -W3/-nologo -W3 -DFFI_BUILDING_DLL/gr; } 'msvcc.sh';
@@ -54,8 +49,7 @@ stdenv.mkDerivation rec {
     copy 'x86_64-w64-mingw32/.libs/libffi-7.dll',            "$ENV{out}/bin/";
     copy 'x86_64-w64-mingw32/.libs/libffi-7.lib',            "$ENV{out}/lib/";
     copy 'x86_64-w64-mingw32/.libs/libffi_convenience.lib',  "$ENV{out}/lib/";
-    copy 'x86_64-w64-mingw32/.libs/libffi-7.dll',            "$ENV{out}/bin/ffi.dll";  # when building llvm, cmake is unable to find libffi-7.lib, only ffi.lib
-    copy 'x86_64-w64-mingw32/.libs/libffi-7.lib',            "$ENV{out}/lib/ffi.lib";
+    copy 'x86_64-w64-mingw32/.libs/libffi-7.lib',            "$ENV{out}/lib/ffi.lib";  # when building llvm, cmake is unable to find libffi-7.lib, only ffi.lib
   '';
 }
 
