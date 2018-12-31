@@ -40,15 +40,7 @@ stdenv.mkDerivation rec {
   dontConfigure = true;
   buildPhase = ''
     for my $filename (glob('windows/vs2017/*.vcxproj')) {
-      open(my $in, $filename) or die $!;
-      open(my $out, ">$filename.new") or die $!;
-      for my $line (<$in>) {
-        $line =~ s|<WindowsTargetPlatformVersion>10\.[0-9.]+<|<WindowsTargetPlatformVersion>${stdenv.cc.sdk-version}<|g;
-        print $out $line;
-      }
-      close($in);
-      close($out);
-      move("$filename.new", $filename) or die $!;
+      changeFile { s|<WindowsTargetPlatformVersion>10\.[0-9.]+<|<WindowsTargetPlatformVersion>${stdenv.cc.sdk.version}<|gr } $filename;
     }
     system('msbuild windows\vs2017\xz_win.sln /p:Configuration=Release /p:Platform=x64') == 0 or die;
   '';
@@ -56,16 +48,9 @@ stdenv.mkDerivation rec {
   installPhase = ''
     make_path("$ENV{out}/lib", "$ENV{out}/include") or die $!;
     ${if enableStatic then ''
-        copy("windows/vs2017/Release/x64/liblzma/liblzma.lib",     "$ENV{out}/lib") or die $!; # static lib
-
-        open (my $in, "src/liblzma/api/lzma.h") or die $!;
-        open (my $out, ">$ENV{out}/include/lzma.h") or die $!;
-        print $out "#define LZMA_API_STATIC 1\n";
-        for my $line (<$in>) {
-          print $out $line;
-        }
-        close($in) or die $!;
-        close($out) or die $!;
+        copy("windows/vs2017/Release/x64/liblzma/liblzma.lib",     "$ENV{out}/lib")            or die $!; # static lib
+        copy("src/liblzma/api/lzma.h",                             "$ENV{out}/include/lzma.h") or die $!; # static lib
+        changeFile { "#define LZMA_API_STATIC 1\n".$_ }            "$ENV{out}/include/lzma.h";
       '' else ''
         make_path("$ENV{out}/bin") or die $!;
         copy("windows/vs2017/Release/x64/liblzma_dll/liblzma.dll", "$ENV{out}/bin") or die $!;
