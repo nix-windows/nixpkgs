@@ -10197,11 +10197,14 @@ with pkgs;
     (stdenv.lib.optionalAttrs (stdenv.cc.isGNU && stdenv.hostPlatform.isi686) {
       stdenv = overrideCC stdenv gcc6; # with gcc-7: undefined reference to `__divmoddi4'
     }));
-  icu59 = callPackage ../development/libraries/icu/59.nix ({
-    nativeBuildRoot = buildPackages.icu59.override { buildRootOnly = true; };
-  } // (stdenv.lib.optionalAttrs (stdenv.cc.isGNU && stdenv.hostPlatform.isi686) {
-      stdenv = overrideCC stdenv gcc6; # with gcc-7: undefined reference to `__divmoddi4'
-    }));
+  icu59 = if stdenv.hostPlatform.isMicrosoft then
+      callPackage ../development/libraries/icu/59-windows.nix  {}
+    else
+      callPackage ../development/libraries/icu/59.nix ({
+        nativeBuildRoot = buildPackages.icu59.override { buildRootOnly = true; };
+      } // (stdenv.lib.optionalAttrs (stdenv.cc.isGNU && stdenv.hostPlatform.isi686) {
+          stdenv = overrideCC stdenv gcc6; # with gcc-7: undefined reference to `__divmoddi4'
+        }));
   icu60 = callPackage ../development/libraries/icu/60.nix ({
     nativeBuildRoot = buildPackages.icu60.override { buildRootOnly = true; };
   } // (stdenv.lib.optionalAttrs (stdenv.cc.isGNU && stdenv.hostPlatform.isi686) {
