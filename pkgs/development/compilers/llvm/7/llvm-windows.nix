@@ -1,4 +1,5 @@
 { stdenv
+, lib
 , fetch
 , cmake
 , python
@@ -9,28 +10,52 @@
 , libxml2
 #, ncurses
 , version
-, release_version
 , zlib
 , debugVersion ? false
 #, enableManpages ? false
 #, enableSharedLibraries ? true
 , enableWasm ? true
 #, enablePFM ? !stdenv.isDarwin
+, buildType
 }:
 
-
 let
-  src = fetch "llvm" "16s196wqzdw4pmri15hadzqgdi926zln3an2viwyq0kini6zr3d3";
-in
-  stdenv.mkDerivation (rec {
-  name = "llvm-${version}";
+  buildTargets = { llvm  = [ "llc" "lld" "lli" "llvm-lib" "llvm-ar" /* more?*/ ];
+                   clang = [ "clang" ];
+                   lld   = [ "lld" ];
+                   lldb  = [ "lldb" ];
+                   all   = [ "all" ];
+                 }.${buildType};
+in stdenv.mkDerivation rec {
+  name = "llvm-${buildType}-${version}";
 
-  inherit src;
-  unpackPhase = ''
-    unpackFile $ENV{src};
-    move('llvm-${version}.src', 'llvm') or die "move('llvm-${version}.src', 'llvm'): $!";
-    $ENV{sourceRoot} = getcwd()."/llvm";
-  '';
+  src = let
+    llvm_src              = fetch "llvm"              "16s196wqzdw4pmri15hadzqgdi926zln3an2viwyq0kini6zr3d3";
+    lld_src               = fetch "lld"               "0ca0qygrk87lhjk6cpv1wbmdfnficqqjsda3k7b013idvnralsc8";
+    lldb_src              = fetch "lldb"              "10k9lyk3i72j9hca523r9pz79qp7d8q7jqnjy0i3saj1bgknpd3n";
+    clang_src             = fetch "cfe"               "067lwggnbg0w1dfrps790r5l6k8n5zwhlsw7zb6zvmfpwpfn4nx4";
+    clang-tools-extra_src = fetch "clang-tools-extra" "1v9vc7id1761qm7mywlknsp810232iwyz8rd4y5km4h7pg9cg4sc";
+  in stdenv.mkDerivation {
+    name = "${name}-src";
+    buildCommand = ''
+      unpackFile '${llvm_src}';
+      unpackFile '${lld_src}';
+      unpackFile '${lldb_src}';
+      unpackFile '${clang_src}';
+      unpackFile '${clang-tools-extra_src}';
+      move('llvm-${version}.src',              "$ENV{out}"                        ) or die "move: $!";
+      move('lld-${version}.src',               "$ENV{out}/tools/lld"              ) or die "move: $!";
+      move('lldb-${version}.src',              "$ENV{out}/tools/lldb"             ) or die "move: $!";
+      move('cfe-${version}.src',               "$ENV{out}/tools/clang"            ) or die "move: $!";
+      move('clang-tools-extra-${version}.src', "$ENV{out}/tools/clang/tools/extra") or die "move: $!";
+
+      # 1: $ENV{out}/tools/lldb/test/testcases is a directory symlink to '..\packages\Python\lldbsuite\test'
+      #    7z wrongly unpacks it as a file symlink (https://sourceforge.net/p/sevenzip/bugs/2174/)
+      # 2: Perl's unlink() is unable to delete symlink
+      system("del $ENV{out}/tools/lldb/test/testcases" =~ s|/|\\|gr) == 0                                   or die "unlink: $!";
+      dircopy("$ENV{out}/tools/lldb/packages/Python/lldbsuite/test", "$ENV{out}/tools/lldb/test/testcases") or die "dircopy: $!";
+    '';
+  };
 
   nativeBuildInputs = [ cmake python ninja ];
 
@@ -49,17 +74,22 @@ in
   '';
 
   buildPhase = ''
-    system("ninja") == 0 or die;
+    system("ninja ${lib.concatStringsSep " " buildTargets}") == 0 or die;
+  '';
+
+  doCheck = false; # it needs coreutils&findutils (cp, touch, chmod, rm, find, ...)
+  checkPhase = ''
+    system("ninja ${lib.concatMapStringsSep " " (x: "check-${x}") buildTargets}") == 0 or die;
   '';
 
   installPhase = ''
-    system("ninja install") == 0 or die;
+    system("ninja ${lib.concatMapStringsSep " " (x: if x == "all" then "install" else "install-${x}") buildTargets}") == 0 or die;
   '';
 
   cmakeFlags = with stdenv; [
     "-DCMAKE_BUILD_TYPE=${if debugVersion then "Debug" else "Release"}"
     "-DLLVM_INSTALL_UTILS=ON"  # Needed by rustc
-    "-DLLVM_BUILD_TESTS=ON"
+    "-DLLVM_BUILD_TESTS=${if doCheck then "ON" else "OFF"}"
     "-DLLVM_ENABLE_RTTI=ON"
 
     "-DLLVM_ENABLE_FFI=ON"
@@ -80,8 +110,6 @@ in
    "-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly"
   ;
 
-  passthru.src = src;
-
   meta = {
     description = "Collection of modular and reusable compiler and toolchain technologies";
     homepage    = http://llvm.org/;
@@ -89,4 +117,4 @@ in
     maintainers = with stdenv.lib.maintainers; [ lovek323 raskin dtzWill ];
     platforms   = stdenv.lib.platforms.all;
   };
-})
+}

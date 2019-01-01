@@ -5,18 +5,15 @@
 }:
 
 let
-  release_version = "7.0.1";
-  version = release_version; # differentiating these is important for rc's
+  version = "7.0.1";
 
   fetch = name: sha256: fetchurl {
-    url = "https://releases.llvm.org/${release_version}/${name}-${version}.src.tar.xz";
+    url = "https://releases.llvm.org/${version}/${name}-${version}.src.tar.xz";
     inherit sha256;
   };
 
-  clang-tools-extra_src = fetch "clang-tools-extra" "1v9vc7id1761qm7mywlknsp810232iwyz8rd4y5km4h7pg9cg4sc";
-
   tools = stdenv.lib.makeExtensible (tools: let
-    callPackage = newScope (tools // { inherit stdenv cmake libxml2 python isl release_version version fetch; });
+    callPackage = newScope (tools // { inherit stdenv cmake libxml2 python isl version fetch; });
 #   mkExtraBuildCommands = cc: ''
 #     rsrc="$out/resource-root"
 #     mkdir "$rsrc"
@@ -26,7 +23,7 @@ let
 #   '' + stdenv.lib.optionalString stdenv.targetPlatform.isLinux ''
 #     echo "--gcc-toolchain=${tools.clang-unwrapped.gcc}" >> $out/nix-support/cc-cflags
 #   '';
-  in {
+  in rec {
 
     # These binaries include Clang, LLD, compiler-rt, various LLVM tools, etc. varying slightly between platforms.
     llvm-bin = stdenv.mkDerivation {
@@ -46,12 +43,15 @@ let
     };
 
 
+    llvm-all = callPackage ./llvm-windows.nix { buildType = "all"; };
 
-    llvm = callPackage ./llvm-windows.nix { };
+    llvm = llvm-all; # callPackage ./llvm-windows.nix { buildType = "llvm"; };
 
-    clang-unwrapped = callPackage ./clang/windows.nix {
-      inherit clang-tools-extra_src;
-    };
+    clang-unwrapped = llvm-all; # callPackage ./llvm-windows.nix { buildType = "clang"; };
+
+#    clang-unwrapped = callPackage ./clang/windows.nix {
+#     inherit clang-tools-extra_src;
+#    };
 #
 #   llvm-manpages = lowPrio (tools.llvm.override {
 #     enableManpages = true;
@@ -92,7 +92,7 @@ let
   });
 
   libraries = stdenv.lib.makeExtensible (libraries: let
-    callPackage = newScope (libraries // buildLlvmTools // { inherit stdenv cmake libxml2 python isl release_version version fetch; });
+    callPackage = newScope (libraries // buildLlvmTools // { inherit stdenv cmake libxml2 python isl version fetch; });
   in {
 #
 #   compiler-rt = callPackage ./compiler-rt.nix {};
