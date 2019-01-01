@@ -868,7 +868,10 @@ sub _defaultUnpack {
         # introduced by store optimization, which might break things
         # in the build.
         #cp -pr --reflink=auto -- "$fn" "$(stripHash "$fn")"
-        dircopy($fn, stripHash($fn)) or die "dircopy($fn, ".stripHash($fn)."): $!";
+        #dircopy($fn, stripHash($fn)) or die "dircopy($fn, ".stripHash($fn)."): $!";
+
+        # dircopy is unable to copy symlinks
+        system('xcopy', '/E/H/B/F/I', $fn =~ s|/|\\|gr, stripHash($fn) =~ s|/|\\|gr) == 0 or die "xcopy($fn, ".stripHash($fn)."): $!";
         return 0;
     } else {
         # Win10 has native C:\Windows\System32\curl.exe and C:\Windows\System32\tar.exe, but not bzip2
