@@ -7251,11 +7251,7 @@ with pkgs;
 
   llvmPackages_7 =
     if stdenv.hostPlatform.isMicrosoft then
-      callPackage ../development/compilers/llvm/7/windows.nix {
-        inherit (stdenvAdapters) overrideCC;
-        buildLlvmTools = buildPackages.llvmPackages_7.tools;
-        targetLlvmLibraries = targetPackages.llvmPackages_7.libraries;
-      }
+      callPackage ../development/compilers/llvm/7/windows.nix {}
     else
       callPackage ../development/compilers/llvm/7 ({
         inherit (stdenvAdapters) overrideCC;
@@ -7264,6 +7260,12 @@ with pkgs;
       } // stdenv.lib.optionalAttrs (stdenv.cc.isGNU && stdenv.hostPlatform.isi686) {
         stdenv = overrideCC stdenv buildPackages.gcc6; # with gcc-7: undefined reference to `__divmoddi4'
       });
+
+  llvmPackages_8 =
+    if stdenv.hostPlatform.isMicrosoft then
+      callPackage ../development/compilers/llvm/8/windows.nix {}
+    else
+      throw "llvm8";
 
   manticore = callPackage ../development/compilers/manticore { };
 
