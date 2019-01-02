@@ -178,14 +178,14 @@ stdenv.mkDerivation {
       my @cmd = ("cl.exe", '-c', '-MD', '-Zi', '-GL', '-Fo:gitobjs/',    (map { escapeWindowsArg("-D$_=$defines{$_}") } keys %defines), @git_srcs);
       print(join(' ', @cmd), "\n");
       system(@cmd);
-      system("link.exe", "/out:git.exe",              '/DEBUG', '/LTCG', '/SUBSYSTEM:CONSOLE', glob('gitobjs/*.obj'),   "libgit.lib", "xdiff.lib", 'advapi32.lib', 'ws2_32.lib', 'user32.lib', "${zlib}/lib/zlib.lib");
+      system("link.exe", "/out:git.exe",              '/DEBUG', '/LTCG', '/SUBSYSTEM:CONSOLE', glob('gitobjs/*.obj'),   "libgit.lib", "xdiff.lib", 'advapi32.lib', 'ws2_32.lib', 'user32.lib', "${zlib}/lib/zdll.lib");
 
       mkdir('gitrhobjs') or die $!;
       my @cmd = ("cl.exe", '-c', '-MD', '-Zi', '-GL', '-Fo:gitrhobjs/',  (map { escapeWindowsArg("-D$_=$defines{$_}") } keys %defines), @git_remote_http_srcs);
       print(join(' ', @cmd), "\n");
       system(@cmd);
-      system("link.exe", "/out:git-remote-http.exe",  '/DEBUG', '/LTCG', '/SUBSYSTEM:CONSOLE', glob('gitrhobjs/*.obj'), "libgit.lib", "xdiff.lib", 'advapi32.lib', 'ws2_32.lib', 'user32.lib', "${zlib}/lib/zlib.lib", "${curl}/lib/libcurl.lib");
-      system("link.exe", "/out:git-remote-https.exe", '/DEBUG', '/LTCG', '/SUBSYSTEM:CONSOLE', glob('gitrhobjs/*.obj'), "libgit.lib", "xdiff.lib", 'advapi32.lib', 'ws2_32.lib', 'user32.lib', "${zlib}/lib/zlib.lib", "${curl}/lib/libcurl.lib");
+      system("link.exe", "/out:git-remote-http.exe",  '/DEBUG', '/LTCG', '/SUBSYSTEM:CONSOLE', glob('gitrhobjs/*.obj'), "libgit.lib", "xdiff.lib", 'advapi32.lib', 'ws2_32.lib', 'user32.lib', "${zlib}/lib/zdll.lib", "${curl}/lib/libcurl.lib");
+      system("link.exe", "/out:git-remote-https.exe", '/DEBUG', '/LTCG', '/SUBSYSTEM:CONSOLE', glob('gitrhobjs/*.obj'), "libgit.lib", "xdiff.lib", 'advapi32.lib', 'ws2_32.lib', 'user32.lib', "${zlib}/lib/zdll.lib", "${curl}/lib/libcurl.lib");
   '';
   installPhase = ''
     make_path("$ENV{out}/bin")                         or die "make_path $ENV{out}/bin: $!";
