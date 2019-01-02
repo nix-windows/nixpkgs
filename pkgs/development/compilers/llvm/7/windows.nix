@@ -1,19 +1,25 @@
 { lowPrio, newScope, pkgs, stdenv, cmake, libstdcxxHook, fetchzip, perl
-, libxml2, python, isl, fetchurl, overrideCC, wrapCCWith
+, libxml2, python, isl, fetchurl, fetchFromGitHub, overrideCC, wrapCCWith
 , buildLlvmTools # tools, but from the previous stage, for cross
 , targetLlvmLibraries # libraries, but from the next stage, for cross
 }:
 
 let
-  version = "7.0.1";
+# version = "7.0.1";
+  version = "8.0.0";
 
   fetch = name: sha256: fetchurl {
     url = "https://releases.llvm.org/${version}/${name}-${version}.src.tar.xz";
     inherit sha256;
   };
 
+  fetchGit = repo: rev: sha256: fetchFromGitHub {
+    owner = "llvm-mirror";
+    inherit repo rev sha256;
+  };
+
   tools = stdenv.lib.makeExtensible (tools: let
-    callPackage = newScope (tools // { inherit stdenv cmake libxml2 python isl version fetch; });
+    callPackage = newScope (tools // { inherit stdenv cmake libxml2 python isl version fetch fetchGit; });
 #   mkExtraBuildCommands = cc: ''
 #     rsrc="$out/resource-root"
 #     mkdir "$rsrc"
@@ -91,9 +97,9 @@ let
 #   lldb = callPackage ./lldb.nix {};
   });
 
-  libraries = stdenv.lib.makeExtensible (libraries: let
-    callPackage = newScope (libraries // buildLlvmTools // { inherit stdenv cmake libxml2 python isl version fetch; });
-  in {
+# libraries = stdenv.lib.makeExtensible (libraries: let
+#   callPackage = newScope (libraries // buildLlvmTools // { inherit stdenv cmake libxml2 python isl version fetch; });
+# in {
 #
 #   compiler-rt = callPackage ./compiler-rt.nix {};
 #
@@ -106,6 +112,6 @@ let
 #   libcxxabi = callPackage ./libc++abi.nix {};
 #
 #   openmp = callPackage ./openmp.nix {};
-  });
+# });
 
-in { inherit tools libraries; } // libraries // tools
+in { inherit tools /*libraries*/; } /* // libraries*/ // tools
