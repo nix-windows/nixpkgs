@@ -75,7 +75,7 @@ sub tryHashedMirrors() {
 
 my @urls2 = ();
 for my $url (split / /, $ENV{urls}) {
-    if ($url =~ /^mirror:\/\/([a-z0-9]+)(\/.+)/) {
+    if ($url =~ /^mirror:\/\/([a-z0-9]+)\/(.+)/) {
         my $site = $1;
         my $filename = $2;
         warn "unknown mirror:// site $site; not in mirrorsFile $ENV{mirrorsFile}" unless defined $mirrors{$site};
