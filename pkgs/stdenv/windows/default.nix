@@ -130,15 +130,22 @@ in
 
     perl-for-stdenv-shell = let
       # useful libs not included by default
-      perl-CaptureTiny-src = fetchurlBoot {
-        url = "https://cpan.metacpan.org/authors/id/D/DA/DAGOLDEN/Capture-Tiny-0.48.tar.gz";
-        sha256 = "069yrikrrb4vqzc3hrkkfj96apsh7q0hg8lhihq97lxshwz128vc";
-      };
-      # File::Copy::Recursive is not able to copy Windows symlinks!
-      perl-FileCopyRecursive-src = fetchurlBoot {
-        url = "https://cpan.metacpan.org/authors/id/D/DM/DMUEY/File-Copy-Recursive-0.44.tar.gz";
-        sha256 = "1r3frbl61kr7ig9bzd60fka772cd504v3kx9kgnwvcy1inss06df";
-      };
+      extraModules = [
+        (fetchurlBoot {
+          url = "https://cpan.metacpan.org/authors/id/D/DA/DAGOLDEN/Capture-Tiny-0.48.tar.gz";
+          sha256 = "069yrikrrb4vqzc3hrkkfj96apsh7q0hg8lhihq97lxshwz128vc";
+        })
+        # File::Copy::Recursive is not able to copy Windows symlinks!
+        (fetchurlBoot {
+          url = "https://cpan.metacpan.org/authors/id/D/DM/DMUEY/File-Copy-Recursive-0.44.tar.gz";
+          sha256 = "1r3frbl61kr7ig9bzd60fka772cd504v3kx9kgnwvcy1inss06df";
+        })
+        # Win32-Symlink cannot be compiled together with perl
+        #(fetchurlBoot {
+        #  url = "https://cpan.metacpan.org/authors/id/A/AU/AUDREYT/Win32-Symlink-0.06.tar.gz";
+        #  sha256 = "0i34dkwa722saf0zjxd6l0kw94divyxjkwcnbsagk7pnnaacxjbj";
+        #})
+      ];
       version = "5.28.1";
     in stdenv.mkDerivation {
       name = "perl-for-stdenv-shell-${version}";
@@ -149,11 +156,11 @@ in
       INCLUDE = "${msvc_2017.INCLUDE};${sdk_10.INCLUDE}";
       LIB     = "${msvc_2017.LIB};${sdk_10.LIB}";
       PATH    = "${msvc_2017.PATH};${sdk_10.PATH};${p7zip-static}/bin";
-      builder = lib.concatStringsSep " & " [ ''7z x %src%                         -so  |  7z x -aoa -si -ttar''
-                                             ''7z x ${perl-CaptureTiny-src}       -so  |  7z x -aoa -si -ttar -operl-${version}\ext''
-                                             ''7z x ${perl-FileCopyRecursive-src} -so  |  7z x -aoa -si -ttar -operl-${version}\ext''
-                                             ''cd perl-${version}\win32''
-                                             ''nmake install INST_TOP=%out% CCTYPE=MSVC141${if stdenv.is64bit then " WIN64=define" else ""}'' ];
+      builder = lib.concatStringsSep " & " (        [ ''7z x %src%                         -so  |  7z x -aoa -si -ttar'' ]
+                                          ++ (map (m: ''7z x ${m}                          -so  |  7z x -aoa -si -ttar -operl-${version}\ext'') extraModules)
+                                          ++        [ ''cd perl-${version}\win32''
+                                                      ''nmake install INST_TOP=%out% CCTYPE=MSVC141${if stdenv.is64bit then " WIN64=define" else ""}'' ]
+                                           );
     };
 
     makeWrapper = stdenv.mkDerivation rec {
