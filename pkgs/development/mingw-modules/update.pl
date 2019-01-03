@@ -76,7 +76,7 @@ sub emitNix {
   my ($out, $baseUrl, $repo) = @_;
 print $out
 qq[ # GENERATED FILE
-{config, lib, stdenvNoCC, fetchurl}:
+{stdenvNoCC, fetchurl}:
 
 let
   fetch = { name, version, filename, sha256, buildInputs ? [], broken ? false }:
@@ -95,7 +95,7 @@ let
           unlink "\$ENV{out}/.MTREE";
           unlink "\$ENV{out}/.PKGINFO";
           use File::Find qw(find);
-        '' + lib.concatMapStringsSep "\\n" (dep: ''
+        '' + stdenvNoCC.lib.concatMapStringsSep "\\n" (dep: ''
               sub process {
                 my \$src = \$_;
                 die "bad src: '\$src'" unless \$src =~ /\\/[0-9a-df-np-sv-z]{32}-[^\\/]+(.*)/;
@@ -167,7 +167,7 @@ qq<
                                my $refdep = okName($dep) ? $dep : "self.\"$dep\"";
 
                                if ($op eq '>=') { # todo: check version right here
-                                 "(assert lib.versionAtLeast $refdep.version \"$ver\"; $refdep)";
+                                 "(assert stdenvNoCC.lib.versionAtLeast $refdep.version \"$ver\"; $refdep)";
                                } elsif ($op eq '=') {
                                  "(assert $refdep.version==\"$ver\"; $refdep)";
                                } elsif ($op eq '') {

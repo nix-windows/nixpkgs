@@ -1,5 +1,5 @@
  # GENERATED FILE
-{config, lib, stdenvNoCC, fetchurl}:
+{stdenvNoCC, fetchurl}:
 
 let
   fetch = { name, version, filename, sha256, buildInputs ? [], broken ? false }:
@@ -18,7 +18,7 @@ let
           unlink "$ENV{out}/.MTREE";
           unlink "$ENV{out}/.PKGINFO";
           use File::Find qw(find);
-        '' + lib.concatMapStringsSep "\n" (dep: ''
+        '' + stdenvNoCC.lib.concatMapStringsSep "\n" (dep: ''
               sub process {
                 my $src = $_;
                 die "bad src: '$src'" unless $src =~ /\/[0-9a-df-np-sv-z]{32}-[^\/]+(.*)/;
@@ -436,7 +436,7 @@ let
     version     = "2.30.0";
     filename    = "mingw-w64-x86_64-atk-2.30.0-1-any.pkg.tar.xz";
     sha256      = "67ecf29d4d3b90c616222f0b9b3495935ab933bf0be3485d8b7e4f942c067433";
-    buildInputs = [ gcc-libs (assert lib.versionAtLeast glib2.version "2.46.0"; glib2) ];
+    buildInputs = [ gcc-libs (assert stdenvNoCC.lib.versionAtLeast glib2.version "2.46.0"; glib2) ];
   };
 
   "atkmm" = fetch {
@@ -1524,7 +1524,7 @@ let
     version     = "1.2.0";
     filename    = "mingw-w64-x86_64-fgsl-1.2.0-2-any.pkg.tar.xz";
     sha256      = "185e1c8c0cac837f6d975eedec07b445c4b21b6abbc8dd8e2a753af9d4935866";
-    buildInputs = [ gcc-libs gcc-libgfortran (assert lib.versionAtLeast gsl.version "2.3"; gsl) ];
+    buildInputs = [ gcc-libs gcc-libgfortran (assert stdenvNoCC.lib.versionAtLeast gsl.version "2.3"; gsl) ];
   };
 
   "field3d" = fetch {
@@ -1620,7 +1620,7 @@ let
     version     = "2.13.1";
     filename    = "mingw-w64-x86_64-fontconfig-2.13.1-1-any.pkg.tar.xz";
     sha256      = "e2becfc6fd1b0ef3e1b3875abb9adf7a47c06957a82419668436b699318903e4";
-    buildInputs = [ gcc-libs (assert lib.versionAtLeast expat.version "2.1.0"; expat) (assert lib.versionAtLeast freetype.version "2.3.11"; freetype) (assert lib.versionAtLeast bzip2.version "1.0.6"; bzip2) libiconv ];
+    buildInputs = [ gcc-libs (assert stdenvNoCC.lib.versionAtLeast expat.version "2.1.0"; expat) (assert stdenvNoCC.lib.versionAtLeast freetype.version "2.3.11"; freetype) (assert stdenvNoCC.lib.versionAtLeast bzip2.version "1.0.6"; bzip2) libiconv ];
   };
 
   "fossil" = fetch {
@@ -1805,7 +1805,7 @@ let
     version     = "2.38.0";
     filename    = "mingw-w64-x86_64-gdk-pixbuf2-2.38.0-2-any.pkg.tar.xz";
     sha256      = "6a8968e5c89b3626420b8f9573028fd1ae49d4ee5888d03f50048db47e9d1356";
-    buildInputs = [ gcc-libs (assert lib.versionAtLeast glib2.version "2.37.2"; glib2) jasper libjpeg-turbo libpng libtiff ];
+    buildInputs = [ gcc-libs (assert stdenvNoCC.lib.versionAtLeast glib2.version "2.37.2"; glib2) jasper libjpeg-turbo libpng libtiff ];
   };
 
   "gdl" = fetch {
@@ -1845,7 +1845,7 @@ let
     version     = "1.34.0";
     filename    = "mingw-w64-x86_64-geany-plugins-1.34.0-1-any.pkg.tar.xz";
     sha256      = "012ad3e95b3f27e397d05e0c08f32bdf2c4df25b328128dccce9517f622d825a";
-    buildInputs = [ (assert lib.versionAtLeast geany.version "1.34.0"; geany) discount gtkspell3 webkitgtk3 ctpl-git gpgme lua51 gtk3 hicolor-icon-theme python2 ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast geany.version "1.34.0"; geany) discount gtkspell3 webkitgtk3 ctpl-git gpgme lua51 gtk3 hicolor-icon-theme python2 ];
     broken      = true;
   };
 
@@ -2206,7 +2206,7 @@ let
     version     = "3.6.5";
     filename    = "mingw-w64-x86_64-gnutls-3.6.5-1-any.pkg.tar.xz";
     sha256      = "14b4cd4972e7e38d1ee282340c9a7f4e99469092675bcf26f63fd73640cfc1d5";
-    buildInputs = [ gcc-libs gmp libidn2 libsystre libtasn1 (assert lib.versionAtLeast nettle.version "3.1"; nettle) (assert lib.versionAtLeast p11-kit.version "0.23.1"; p11-kit) libunistring zlib ];
+    buildInputs = [ gcc-libs gmp libidn2 libsystre libtasn1 (assert stdenvNoCC.lib.versionAtLeast nettle.version "3.1"; nettle) (assert stdenvNoCC.lib.versionAtLeast p11-kit.version "0.23.1"; p11-kit) libunistring zlib ];
   };
 
   "go" = fetch {
@@ -2324,7 +2324,7 @@ let
     version     = "1.17.2";
     filename    = "mingw-w64-x86_64-grpc-1.17.2-1-any.pkg.tar.xz";
     sha256      = "c722f98f2ad455829f53573284115a22677d22ddce05574992cb83f348872ecd";
-    buildInputs = [ gcc-libs c-ares gflags openssl (assert lib.versionAtLeast protobuf.version "3.5.0"; protobuf) zlib ];
+    buildInputs = [ gcc-libs c-ares gflags openssl (assert stdenvNoCC.lib.versionAtLeast protobuf.version "3.5.0"; protobuf) zlib ];
   };
 
   "gsasl" = fetch {
@@ -2513,7 +2513,7 @@ let
     version     = "2.21.0";
     filename    = "mingw-w64-x86_64-gtk-engines-2.21.0-2-any.pkg.tar.xz";
     sha256      = "296d8067242d7a533770d0900da4e45c6d63fb010784d977d7e7d529b61fda01";
-    buildInputs = [ (assert lib.versionAtLeast gtk2.version "2.22.0"; gtk2) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast gtk2.version "2.22.0"; gtk2) ];
   };
 
   "gtk-vnc" = fetch {
@@ -2529,7 +2529,7 @@ let
     version     = "2.24.32";
     filename    = "mingw-w64-x86_64-gtk2-2.24.32-3-any.pkg.tar.xz";
     sha256      = "fb2a15d96b2ab10196823775eb300eb04a13f6b42ea37e318a74877f265c399c";
-    buildInputs = [ gcc-libs adwaita-icon-theme (assert lib.versionAtLeast atk.version "1.29.2"; atk) (assert lib.versionAtLeast cairo.version "1.6"; cairo) (assert lib.versionAtLeast gdk-pixbuf2.version "2.21.0"; gdk-pixbuf2) (assert lib.versionAtLeast glib2.version "2.28.0"; glib2) (assert lib.versionAtLeast pango.version "1.20"; pango) shared-mime-info ];
+    buildInputs = [ gcc-libs adwaita-icon-theme (assert stdenvNoCC.lib.versionAtLeast atk.version "1.29.2"; atk) (assert stdenvNoCC.lib.versionAtLeast cairo.version "1.6"; cairo) (assert stdenvNoCC.lib.versionAtLeast gdk-pixbuf2.version "2.21.0"; gdk-pixbuf2) (assert stdenvNoCC.lib.versionAtLeast glib2.version "2.28.0"; glib2) (assert stdenvNoCC.lib.versionAtLeast pango.version "1.20"; pango) shared-mime-info ];
   };
 
   "gtk3" = fetch {
@@ -2577,7 +2577,7 @@ let
     version     = "2.10.5";
     filename    = "mingw-w64-x86_64-gtksourceview2-2.10.5-3-any.pkg.tar.xz";
     sha256      = "b4bc77c7101252b89927304b91d45a87dfcbdff103bbefb964c692633bc1ae46";
-    buildInputs = [ (assert lib.versionAtLeast gtk2.version "2.22.0"; gtk2) (assert lib.versionAtLeast libxml2.version "2.7.7"; libxml2) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast gtk2.version "2.22.0"; gtk2) (assert stdenvNoCC.lib.versionAtLeast libxml2.version "2.7.7"; libxml2) ];
   };
 
   "gtksourceview3" = fetch {
@@ -2601,7 +2601,7 @@ let
     version     = "2.10.3";
     filename    = "mingw-w64-x86_64-gtksourceviewmm2-2.10.3-2-any.pkg.tar.xz";
     sha256      = "2294da508d600ba7b869f358271e578952ebf637300cb43c0b8bf6bbb84c3c23";
-    buildInputs = [ (assert lib.versionAtLeast gtk2.version "2.22.0"; gtk2) (assert lib.versionAtLeast libxml2.version "2.7.7"; libxml2) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast gtk2.version "2.22.0"; gtk2) (assert stdenvNoCC.lib.versionAtLeast libxml2.version "2.7.7"; libxml2) ];
   };
 
   "gtksourceviewmm3" = fetch {
@@ -2656,7 +2656,7 @@ let
     version     = "0.16.3";
     filename    = "mingw-w64-x86_64-gxml-0.16.3-1-any.pkg.tar.xz";
     sha256      = "19c70d017ef5ffe32a5981d46eeb07f08801cfb6f400fed8634677cc4d77c822";
-    buildInputs = [ gcc-libs gettext (assert lib.versionAtLeast glib2.version "2.34.0"; glib2) libgee libxml2 xz zlib ];
+    buildInputs = [ gcc-libs gettext (assert stdenvNoCC.lib.versionAtLeast glib2.version "2.34.0"; glib2) libgee libxml2 xz zlib ];
   };
 
   "harfbuzz" = fetch {
@@ -2981,7 +2981,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kactivities-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "9824074cc656ba408ba8a1f756d0ac13ea1cd75a85d1c85bc6c21ff3c29d26b0";
-    buildInputs = [ qt5 (assert lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) (assert lib.versionAtLeast kconfig-qt5.version "5.50.0"; kconfig-qt5) (assert lib.versionAtLeast kwindowsystem-qt5.version "5.50.0"; kwindowsystem-qt5) ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) (assert stdenvNoCC.lib.versionAtLeast kconfig-qt5.version "5.50.0"; kconfig-qt5) (assert stdenvNoCC.lib.versionAtLeast kwindowsystem-qt5.version "5.50.0"; kwindowsystem-qt5) ];
     broken      = true;
   };
 
@@ -3008,7 +3008,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kauth-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "b8f74c9c0253177b9272496c2abc42df1522e5583244251a43388ed3b85b906c";
-    buildInputs = [ qt5 (assert lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) ];
     broken      = true;
   };
 
@@ -3017,7 +3017,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kbookmarks-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "4a39eb2125f55027fecce54bf1c0f699a03e5ccf76d97207ed960d0d4d69c67e";
-    buildInputs = [ qt5 (assert lib.versionAtLeast kxmlgui-qt5.version "5.50.0"; kxmlgui-qt5) ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kxmlgui-qt5.version "5.50.0"; kxmlgui-qt5) ];
     broken      = true;
   };
 
@@ -3044,7 +3044,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kcompletion-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "71f79491898da54ef48595e7b7a6359a720fdfb4c8fbe33bbb24349fb29a8f40";
-    buildInputs = [ qt5 (assert lib.versionAtLeast kconfig-qt5.version "5.50.0"; kconfig-qt5) (assert lib.versionAtLeast kwidgetsaddons-qt5.version "5.50.0"; kwidgetsaddons-qt5) ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kconfig-qt5.version "5.50.0"; kconfig-qt5) (assert stdenvNoCC.lib.versionAtLeast kwidgetsaddons-qt5.version "5.50.0"; kwidgetsaddons-qt5) ];
     broken      = true;
   };
 
@@ -3062,7 +3062,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kconfigwidgets-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "ed4c0c70009e48e308d84610c57abc29d0721f751c038895b87e9fb5bcc1cfd2";
-    buildInputs = [ qt5 (assert lib.versionAtLeast kauth-qt5.version "5.50.0"; kauth-qt5) (assert lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) (assert lib.versionAtLeast kcodecs-qt5.version "5.50.0"; kcodecs-qt5) (assert lib.versionAtLeast kconfig-qt5.version "5.50.0"; kconfig-qt5) (assert lib.versionAtLeast kguiaddons-qt5.version "5.50.0"; kguiaddons-qt5) (assert lib.versionAtLeast ki18n-qt5.version "5.50.0"; ki18n-qt5) (assert lib.versionAtLeast kwidgetsaddons-qt5.version "5.50.0"; kwidgetsaddons-qt5) ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kauth-qt5.version "5.50.0"; kauth-qt5) (assert stdenvNoCC.lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) (assert stdenvNoCC.lib.versionAtLeast kcodecs-qt5.version "5.50.0"; kcodecs-qt5) (assert stdenvNoCC.lib.versionAtLeast kconfig-qt5.version "5.50.0"; kconfig-qt5) (assert stdenvNoCC.lib.versionAtLeast kguiaddons-qt5.version "5.50.0"; kguiaddons-qt5) (assert stdenvNoCC.lib.versionAtLeast ki18n-qt5.version "5.50.0"; ki18n-qt5) (assert stdenvNoCC.lib.versionAtLeast kwidgetsaddons-qt5.version "5.50.0"; kwidgetsaddons-qt5) ];
     broken      = true;
   };
 
@@ -3080,7 +3080,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kcrash-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "61da03be82ff2ae3244f82b46d67862ebe16565b612c4f2b9bb3a507c8989930";
-    buildInputs = [ qt5 (assert lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) (assert lib.versionAtLeast kwindowsystem-qt5.version "5.50.0"; kwindowsystem-qt5) ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) (assert stdenvNoCC.lib.versionAtLeast kwindowsystem-qt5.version "5.50.0"; kwindowsystem-qt5) ];
     broken      = true;
   };
 
@@ -3125,7 +3125,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kdoctools-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "5bcb289c9a329c85e9f96c76d91f66b31b4f5a135afa4b6dfc00e27b1c4b0324";
-    buildInputs = [ qt5 libxslt docbook-xsl (assert lib.versionAtLeast ki18n-qt5.version "5.50.0"; ki18n-qt5) (assert lib.versionAtLeast karchive-qt5.version "5.50.0"; karchive-qt5) ];
+    buildInputs = [ qt5 libxslt docbook-xsl (assert stdenvNoCC.lib.versionAtLeast ki18n-qt5.version "5.50.0"; ki18n-qt5) (assert stdenvNoCC.lib.versionAtLeast karchive-qt5.version "5.50.0"; karchive-qt5) ];
     broken      = true;
   };
 
@@ -3134,7 +3134,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kfilemetadata-qt5-5.50.0-4-any.pkg.tar.xz";
     sha256      = "ce4f49cf9f3c630d8971203cf9e88013e8b8728b7d8cbce3c48851de75bd8fbb";
-    buildInputs = [ qt5 (assert lib.versionAtLeast ki18n-qt5.version "5.50.0"; ki18n-qt5) (assert lib.versionAtLeast karchive-qt5.version "5.50.0"; karchive-qt5) exiv2 poppler taglib ffmpeg ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast ki18n-qt5.version "5.50.0"; ki18n-qt5) (assert stdenvNoCC.lib.versionAtLeast karchive-qt5.version "5.50.0"; karchive-qt5) exiv2 poppler taglib ffmpeg ];
     broken      = true;
   };
 
@@ -3143,7 +3143,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kglobalaccel-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "90e3e4d33be2791664253431fcf7fd6b04f100b753ad5ab907b79ccf3086ae25";
-    buildInputs = [ qt5 (assert lib.versionAtLeast kconfig-qt5.version "5.50.0"; kconfig-qt5) (assert lib.versionAtLeast kcrash-qt5.version "5.50.0"; kcrash-qt5) (assert lib.versionAtLeast kdbusaddons-qt5.version "5.50.0"; kdbusaddons-qt5) ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kconfig-qt5.version "5.50.0"; kconfig-qt5) (assert stdenvNoCC.lib.versionAtLeast kcrash-qt5.version "5.50.0"; kcrash-qt5) (assert stdenvNoCC.lib.versionAtLeast kdbusaddons-qt5.version "5.50.0"; kdbusaddons-qt5) ];
     broken      = true;
   };
 
@@ -3310,7 +3310,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kiconthemes-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "e0d07d734e58ddfea4efa23de5dcc252e2348e77b4920d677d366642028ae08e";
-    buildInputs = [ qt5 (assert lib.versionAtLeast kconfigwidgets-qt5.version "5.50.0"; kconfigwidgets-qt5) (assert lib.versionAtLeast kitemviews-qt5.version "5.50.0"; kitemviews-qt5) (assert lib.versionAtLeast karchive-qt5.version "5.50.0"; karchive-qt5) ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kconfigwidgets-qt5.version "5.50.0"; kconfigwidgets-qt5) (assert stdenvNoCC.lib.versionAtLeast kitemviews-qt5.version "5.50.0"; kitemviews-qt5) (assert stdenvNoCC.lib.versionAtLeast karchive-qt5.version "5.50.0"; karchive-qt5) ];
     broken      = true;
   };
 
@@ -3328,7 +3328,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kimageformats-qt5-5.50.0-3-any.pkg.tar.xz";
     sha256      = "28b0a012e4ef383eb69393e4ea105fc825ed29ceabe116529f4fe07d17e0cc56";
-    buildInputs = [ qt5 openexr (assert lib.versionAtLeast karchive-qt5.version "5.50.0"; karchive-qt5) ];
+    buildInputs = [ qt5 openexr (assert stdenvNoCC.lib.versionAtLeast karchive-qt5.version "5.50.0"; karchive-qt5) ];
     broken      = true;
   };
 
@@ -3337,7 +3337,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kinit-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "63e56c255240a7392354f459208b94e1a7df237239ad493a9aebc4cc9002c7c6";
-    buildInputs = [ qt5 (assert lib.versionAtLeast kio-qt5.version "5.50.0"; kio-qt5) ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kio-qt5.version "5.50.0"; kio-qt5) ];
     broken      = true;
   };
 
@@ -3346,7 +3346,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kio-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "b9115f1dcc7c5e77d0b2cec0cc3e840192e94a443caa79ed412a62f40b4a4e0b";
-    buildInputs = [ qt5 (assert lib.versionAtLeast solid-qt5.version "5.50.0"; solid-qt5) (assert lib.versionAtLeast kjobwidgets-qt5.version "5.50.0"; kjobwidgets-qt5) (assert lib.versionAtLeast kbookmarks-qt5.version "5.50.0"; kbookmarks-qt5) (assert lib.versionAtLeast kwallet-qt5.version "5.50.0"; kwallet-qt5) libxslt ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast solid-qt5.version "5.50.0"; solid-qt5) (assert stdenvNoCC.lib.versionAtLeast kjobwidgets-qt5.version "5.50.0"; kjobwidgets-qt5) (assert stdenvNoCC.lib.versionAtLeast kbookmarks-qt5.version "5.50.0"; kbookmarks-qt5) (assert stdenvNoCC.lib.versionAtLeast kwallet-qt5.version "5.50.0"; kwallet-qt5) libxslt ];
     broken      = true;
   };
 
@@ -3389,7 +3389,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kjobwidgets-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "81ad6883c0f2ee9087406152219be59ba1e7b81b51b61a2a93ef6c01d52ecc5e";
-    buildInputs = [ qt5 (assert lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) (assert lib.versionAtLeast kwidgetsaddons-qt5.version "5.50.0"; kwidgetsaddons-qt5) ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) (assert stdenvNoCC.lib.versionAtLeast kwidgetsaddons-qt5.version "5.50.0"; kwidgetsaddons-qt5) ];
     broken      = true;
   };
 
@@ -3398,7 +3398,7 @@ let
     version     = "5.42.0";
     filename    = "mingw-w64-x86_64-kjs-qt5-5.42.0-1-any.pkg.tar.xz";
     sha256      = "1e32db6056ce5c8d170c1bb33e06c74bec139d71c42e56cd11d678b7d3924476";
-    buildInputs = [ qt5 bzip2 pcre (assert lib.versionAtLeast kdoctools-qt5.version "5.42.0"; kdoctools-qt5) ];
+    buildInputs = [ qt5 bzip2 pcre (assert stdenvNoCC.lib.versionAtLeast kdoctools-qt5.version "5.42.0"; kdoctools-qt5) ];
     broken      = true;
   };
 
@@ -3407,7 +3407,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-knewstuff-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "eec5da591ec2f0914533141057f6607881da51e4b7b3005b8fa81318580c45e0";
-    buildInputs = [ qt5 (assert lib.versionAtLeast kio-qt5.version "5.50.0"; kio-qt5) ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kio-qt5.version "5.50.0"; kio-qt5) ];
     broken      = true;
   };
 
@@ -3416,7 +3416,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-knotifications-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "bb7d06ecf43b52143aa82c33c069df981d0584ed0f9c37b76637ca8271a2c396";
-    buildInputs = [ qt5 phonon-qt5 (assert lib.versionAtLeast kcodecs-qt5.version "5.50.0"; kcodecs-qt5) (assert lib.versionAtLeast kconfig-qt5.version "5.50.0"; kconfig-qt5) (assert lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) (assert lib.versionAtLeast kwindowsystem-qt5.version "5.50.0"; kwindowsystem-qt5) ];
+    buildInputs = [ qt5 phonon-qt5 (assert stdenvNoCC.lib.versionAtLeast kcodecs-qt5.version "5.50.0"; kcodecs-qt5) (assert stdenvNoCC.lib.versionAtLeast kconfig-qt5.version "5.50.0"; kconfig-qt5) (assert stdenvNoCC.lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) (assert stdenvNoCC.lib.versionAtLeast kwindowsystem-qt5.version "5.50.0"; kwindowsystem-qt5) ];
     broken      = true;
   };
 
@@ -3425,7 +3425,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kpackage-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "90b5e6e0f8793e02b21e209de25c37dceb87e1a5fb94e3ec0a28403951ec3cb2";
-    buildInputs = [ qt5 (assert lib.versionAtLeast karchive-qt5.version "5.50.0"; karchive-qt5) (assert lib.versionAtLeast ki18n-qt5.version "5.50.0"; ki18n-qt5) (assert lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast karchive-qt5.version "5.50.0"; karchive-qt5) (assert stdenvNoCC.lib.versionAtLeast ki18n-qt5.version "5.50.0"; ki18n-qt5) (assert stdenvNoCC.lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) ];
     broken      = true;
   };
 
@@ -3434,7 +3434,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kparts-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "452e9d2f5c791eacb31ad5165dfae20e92998e7367ad464206cabccd0da74ebb";
-    buildInputs = [ qt5 (assert lib.versionAtLeast kio-qt5.version "5.50.0"; kio-qt5) ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kio-qt5.version "5.50.0"; kio-qt5) ];
     broken      = true;
   };
 
@@ -3460,7 +3460,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kservice-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "fdf314d754b0c2f207a4eaa7084f3bfa842a33fe3f5c41f0945323f7bcb96406";
-    buildInputs = [ qt5 (assert lib.versionAtLeast ki18n-qt5.version "5.50.0"; ki18n-qt5) (assert lib.versionAtLeast kconfig-qt5.version "5.50.0"; kconfig-qt5) (assert lib.versionAtLeast kcrash-qt5.version "5.50.0"; kcrash-qt5) (assert lib.versionAtLeast kdbusaddons-qt5.version "5.50.0"; kdbusaddons-qt5) ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast ki18n-qt5.version "5.50.0"; ki18n-qt5) (assert stdenvNoCC.lib.versionAtLeast kconfig-qt5.version "5.50.0"; kconfig-qt5) (assert stdenvNoCC.lib.versionAtLeast kcrash-qt5.version "5.50.0"; kcrash-qt5) (assert stdenvNoCC.lib.versionAtLeast kdbusaddons-qt5.version "5.50.0"; kdbusaddons-qt5) ];
     broken      = true;
   };
 
@@ -3469,7 +3469,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-ktexteditor-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "657a4fccd37fd3496664aabc1938b8af692a4b3c122dcc4ff238ca334d66c69b";
-    buildInputs = [ qt5 (assert lib.versionAtLeast kparts-qt5.version "5.50.0"; kparts-qt5) (assert lib.versionAtLeast syntax-highlighting-qt5.version "5.50.0"; syntax-highlighting-qt5) libgit2 editorconfig-core-c ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kparts-qt5.version "5.50.0"; kparts-qt5) (assert stdenvNoCC.lib.versionAtLeast syntax-highlighting-qt5.version "5.50.0"; syntax-highlighting-qt5) libgit2 editorconfig-core-c ];
     broken      = true;
   };
 
@@ -3478,7 +3478,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-ktextwidgets-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "d03f5b5976f7b9e8039c99e2315a249291fea7660cddb7a4771c822a423d73c8";
-    buildInputs = [ qt5 (assert lib.versionAtLeast kcompletion-qt5.version "5.50.0"; kcompletion-qt5) (assert lib.versionAtLeast kservice-qt5.version "5.50.0"; kservice-qt5) (assert lib.versionAtLeast kiconthemes-qt5.version "5.50.0"; kiconthemes-qt5) (assert lib.versionAtLeast sonnet-qt5.version "5.50.0"; sonnet-qt5) ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kcompletion-qt5.version "5.50.0"; kcompletion-qt5) (assert stdenvNoCC.lib.versionAtLeast kservice-qt5.version "5.50.0"; kservice-qt5) (assert stdenvNoCC.lib.versionAtLeast kiconthemes-qt5.version "5.50.0"; kiconthemes-qt5) (assert stdenvNoCC.lib.versionAtLeast sonnet-qt5.version "5.50.0"; sonnet-qt5) ];
     broken      = true;
   };
 
@@ -3487,7 +3487,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kunitconversion-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "e5ad117027f35a2d285bca5979efd9e750f890f8c4f3fbd540c64044ca737820";
-    buildInputs = [ qt5 (assert lib.versionAtLeast ki18n-qt5.version "5.50.0"; ki18n-qt5) ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast ki18n-qt5.version "5.50.0"; ki18n-qt5) ];
     broken      = true;
   };
 
@@ -3504,7 +3504,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kwallet-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "38752c816cbb8ceb2fdce01151c13412ed68105c69aadbb916345f7ee2a98d9c";
-    buildInputs = [ qt5 (assert lib.versionAtLeast knotifications-qt5.version "5.50.0"; knotifications-qt5) (assert lib.versionAtLeast kiconthemes-qt5.version "5.50.0"; kiconthemes-qt5) (assert lib.versionAtLeast kservice-qt5.version "5.50.0"; kservice-qt5) gpgme ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast knotifications-qt5.version "5.50.0"; knotifications-qt5) (assert stdenvNoCC.lib.versionAtLeast kiconthemes-qt5.version "5.50.0"; kiconthemes-qt5) (assert stdenvNoCC.lib.versionAtLeast kservice-qt5.version "5.50.0"; kservice-qt5) gpgme ];
     broken      = true;
   };
 
@@ -3540,7 +3540,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-kxmlgui-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "4f26604bce61419a5f62957b5a97bf15f253ca77bef1ad4421b42e5b1c5846c6";
-    buildInputs = [ qt5 (assert lib.versionAtLeast kglobalaccel-qt5.version "5.50.0"; kglobalaccel-qt5) (assert lib.versionAtLeast ktextwidgets-qt5.version "5.50.0"; ktextwidgets-qt5) (assert lib.versionAtLeast attica-qt5.version "5.50.0"; attica-qt5) ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kglobalaccel-qt5.version "5.50.0"; kglobalaccel-qt5) (assert stdenvNoCC.lib.versionAtLeast ktextwidgets-qt5.version "5.50.0"; ktextwidgets-qt5) (assert stdenvNoCC.lib.versionAtLeast attica-qt5.version "5.50.0"; attica-qt5) ];
     broken      = true;
   };
 
@@ -3712,7 +3712,7 @@ let
     version     = "0.1.2";
     filename    = "mingw-w64-x86_64-libbdplus-0.1.2-1-any.pkg.tar.xz";
     sha256      = "fcdb0b575ec1b3178637b7be94164660338fd7858c83f5592f29d1f5deead22d";
-    buildInputs = [ (assert lib.versionAtLeast libaacs.version "0.7.0"; libaacs) libgpg-error ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast libaacs.version "0.7.0"; libaacs) libgpg-error ];
   };
 
   "libblocksruntime" = fetch {
@@ -4060,7 +4060,7 @@ let
     version     = "0.27.7";
     filename    = "mingw-w64-x86_64-libgit2-glib-0.27.7-1-any.pkg.tar.xz";
     sha256      = "1aa6c6af9384a9d3cc4a90832dee26b240cddb2f19e8c11840440ba295f62cee";
-    buildInputs = [ (assert lib.versionAtLeast libgit2.version "0.23"; libgit2) libssh2 glib2 ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast libgit2.version "0.23"; libgit2) libssh2 glib2 ];
   };
 
   "libglade" = fetch {
@@ -4068,7 +4068,7 @@ let
     version     = "2.6.4";
     filename    = "mingw-w64-x86_64-libglade-2.6.4-5-any.pkg.tar.xz";
     sha256      = "03471470d46b5ea62cd0824cd50c3dd71765690e8d46cfd519a5b36245374515";
-    buildInputs = [ (assert lib.versionAtLeast gtk2.version "2.16.0"; gtk2) (assert lib.versionAtLeast libxml2.version "2.7.3"; libxml2) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast gtk2.version "2.16.0"; gtk2) (assert stdenvNoCC.lib.versionAtLeast libxml2.version "2.7.3"; libxml2) ];
   };
 
   "libgme" = fetch {
@@ -4635,7 +4635,7 @@ let
     version     = "0.3.3";
     filename    = "mingw-w64-x86_64-librescl-0.3.3-1-any.pkg.tar.xz";
     sha256      = "32d83e1c3003cd9b86d733e0713ccf405a6df3fe9e30c2fb89f0078fd45037b7";
-    buildInputs = [ gcc-libs gettext (assert lib.versionAtLeast glib2.version "2.34.0"; glib2) gobject-introspection gxml libgee libxml2 vala xz zlib ];
+    buildInputs = [ gcc-libs gettext (assert stdenvNoCC.lib.versionAtLeast glib2.version "2.34.0"; glib2) gobject-introspection gxml libgee libxml2 vala xz zlib ];
   };
 
   "libressl" = fetch {
@@ -7146,7 +7146,7 @@ let
     version     = "2.39";
     filename    = "mingw-w64-x86_64-python2-distutils-extra-2.39-4-any.pkg.tar.xz";
     sha256      = "5d83a7ce5ed5ad85aea6895c367d8196cbc0b94cb8c811ce0b7102e545405583";
-    buildInputs = [ (assert lib.versionAtLeast python2.version "2.7"; python2) intltool ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast python2.version "2.7"; python2) intltool ];
     broken      = true;
   };
 
@@ -8080,7 +8080,7 @@ let
     version     = "0.7.5";
     filename    = "mingw-w64-x86_64-python2-pickleshare-0.7.5-1-any.pkg.tar.xz";
     sha256      = "c4fceca804eaef16ff7237e5040cbcd1a3ee1f1584c49e15967e53b47f0974ec";
-    buildInputs = [ (assert lib.versionAtLeast python2-path.version "8.1"; python2-path) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast python2-path.version "8.1"; python2-path) ];
   };
 
   "python2-pillow" = fetch {
@@ -8128,7 +8128,7 @@ let
     version     = "0.6.10";
     filename    = "mingw-w64-x86_64-python2-pptx-0.6.10-1-any.pkg.tar.xz";
     sha256      = "f01e5bad07b6691e81422f20313db7ddbc4455725f15ee647139265b494a2411";
-    buildInputs = [ (assert lib.versionAtLeast python2-lxml.version "3.1.0"; python2-lxml) (assert lib.versionAtLeast python2-pillow.version "2.6.1"; python2-pillow) (assert lib.versionAtLeast python2-xlsxwriter.version "0.5.7"; python2-xlsxwriter) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast python2-lxml.version "3.1.0"; python2-lxml) (assert stdenvNoCC.lib.versionAtLeast python2-pillow.version "2.6.1"; python2-pillow) (assert stdenvNoCC.lib.versionAtLeast python2-xlsxwriter.version "0.5.7"; python2-xlsxwriter) ];
   };
 
   "python2-pretend" = fetch {
@@ -8579,7 +8579,7 @@ let
     version     = "0.93";
     filename    = "mingw-w64-x86_64-python2-rst2pdf-0.93-4-any.pkg.tar.xz";
     sha256      = "17c19ab03246e91bfb762747a9948c0ed6998c5e0f29e8e23c6b4e0ccfec3013";
-    buildInputs = [ python2 python2-docutils python2-pdfrw python2-pygments (assert lib.versionAtLeast python2-reportlab.version "2.4"; python2-reportlab) python2-setuptools ];
+    buildInputs = [ python2 python2-docutils python2-pdfrw python2-pygments (assert stdenvNoCC.lib.versionAtLeast python2-reportlab.version "2.4"; python2-reportlab) python2-setuptools ];
     broken      = true;
   };
 
@@ -8628,7 +8628,7 @@ let
     version     = "40.6.3";
     filename    = "mingw-w64-x86_64-python2-setuptools-40.6.3-1-any.pkg.tar.xz";
     sha256      = "f178eb1e7b31932499e98cc1bbbed1b24cc54cb2029e8993dcf9e69d376e9b02";
-    buildInputs = [ (assert lib.versionAtLeast python2.version "2.7"; python2) python2-packaging python2-pyparsing python2-appdirs python2-six ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast python2.version "2.7"; python2) python2-packaging python2-pyparsing python2-appdirs python2-six ];
   };
 
   "python2-setuptools-git" = fetch {
@@ -9546,7 +9546,7 @@ let
     version     = "2.39";
     filename    = "mingw-w64-x86_64-python3-distutils-extra-2.39-4-any.pkg.tar.xz";
     sha256      = "b3eb2b1d6b7f1c3a35579eb798351f5068eea046f19c24aa4745ba272f5cf346";
-    buildInputs = [ (assert lib.versionAtLeast python3.version "3.3"; python3) intltool ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast python3.version "3.3"; python3) intltool ];
     broken      = true;
   };
 
@@ -9867,7 +9867,7 @@ let
     version     = "7.1.1";
     filename    = "mingw-w64-x86_64-python3-ipython-7.1.1-1-any.pkg.tar.xz";
     sha256      = "c9b035e7f81b993bbeaa315cb95e18bbb54ead7a80cda9c45512b7833be2cdd0";
-    buildInputs = [ winpty sqlite3 python3-jedi python3-decorator python3-pickleshare python3-simplegeneric python3-traitlets (assert lib.versionAtLeast python3-prompt_toolkit.version "2.0"; python3-prompt_toolkit) python3-pygments python3-simplegeneric python3-backcall python3-pexpect python3-colorama python3-win_unicode_console ];
+    buildInputs = [ winpty sqlite3 python3-jedi python3-decorator python3-pickleshare python3-simplegeneric python3-traitlets (assert stdenvNoCC.lib.versionAtLeast python3-prompt_toolkit.version "2.0"; python3-prompt_toolkit) python3-pygments python3-simplegeneric python3-backcall python3-pexpect python3-colorama python3-win_unicode_console ];
     broken      = true;
   };
 
@@ -10440,7 +10440,7 @@ let
     version     = "0.7.5";
     filename    = "mingw-w64-x86_64-python3-pickleshare-0.7.5-1-any.pkg.tar.xz";
     sha256      = "69fe098c556a663b204ce316e63c72b2b4bc82d3f1818341a10dd6215535c836";
-    buildInputs = [ (assert lib.versionAtLeast python3-path.version "8.1"; python3-path) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast python3-path.version "8.1"; python3-path) ];
   };
 
   "python3-pillow" = fetch {
@@ -10488,7 +10488,7 @@ let
     version     = "0.6.10";
     filename    = "mingw-w64-x86_64-python3-pptx-0.6.10-1-any.pkg.tar.xz";
     sha256      = "f02fbc79606954546f53656686c5d9bf884b972a334139aae2575d022d457b36";
-    buildInputs = [ (assert lib.versionAtLeast python3-lxml.version "3.1.0"; python3-lxml) (assert lib.versionAtLeast python3-pillow.version "2.6.1"; python3-pillow) (assert lib.versionAtLeast python3-xlsxwriter.version "0.5.7"; python3-xlsxwriter) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast python3-lxml.version "3.1.0"; python3-lxml) (assert stdenvNoCC.lib.versionAtLeast python3-pillow.version "2.6.1"; python3-pillow) (assert stdenvNoCC.lib.versionAtLeast python3-xlsxwriter.version "0.5.7"; python3-xlsxwriter) ];
   };
 
   "python3-pretend" = fetch {
@@ -10931,7 +10931,7 @@ let
     version     = "0.93";
     filename    = "mingw-w64-x86_64-python3-rst2pdf-0.93-4-any.pkg.tar.xz";
     sha256      = "991f6e54d35fd8384052fdcf44c35771d1069ee9369e50b2f635c91423bdc16d";
-    buildInputs = [ python3 python3-docutils python3-pdfrw python3-pygments (assert lib.versionAtLeast python3-reportlab.version "2.4"; python3-reportlab) python3-setuptools ];
+    buildInputs = [ python3 python3-docutils python3-pdfrw python3-pygments (assert stdenvNoCC.lib.versionAtLeast python3-reportlab.version "2.4"; python3-reportlab) python3-setuptools ];
     broken      = true;
   };
 
@@ -10980,7 +10980,7 @@ let
     version     = "40.6.3";
     filename    = "mingw-w64-x86_64-python3-setuptools-40.6.3-1-any.pkg.tar.xz";
     sha256      = "0effbfda73ba3e6fe46ce61e5d92a4d2a5fc5bc8b3fff2716d40834d27054383";
-    buildInputs = [ (assert lib.versionAtLeast python3.version "3.3"; python3) python3-packaging python3-pyparsing python3-appdirs python3-six ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast python3.version "3.3"; python3) python3-packaging python3-pyparsing python3-appdirs python3-six ];
   };
 
   "python3-setuptools-git" = fetch {
@@ -11511,7 +11511,7 @@ let
     version     = "1.0.1";
     filename    = "mingw-w64-x86_64-qhttpengine-1.0.1-1-any.pkg.tar.xz";
     sha256      = "85ec8eb589999175786e8bddab1831c61b24ff4864f7da0377e69cba6ea78b83";
-    buildInputs = [ (assert lib.versionAtLeast qt5.version "5.4"; qt5) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast qt5.version "5.4"; qt5) ];
     broken      = true;
   };
 
@@ -11536,7 +11536,7 @@ let
     version     = "0.1.0";
     filename    = "mingw-w64-x86_64-qmdnsengine-0.1.0-1-any.pkg.tar.xz";
     sha256      = "17432b651fb1889cb5f03e96b34932f6f4b236b1589d0f2a44a0d47b7fa46fd6";
-    buildInputs = [ (assert lib.versionAtLeast qt5.version "5.4"; qt5) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast qt5.version "5.4"; qt5) ];
     broken      = true;
   };
 
@@ -12203,7 +12203,7 @@ let
     version     = "5.50.0";
     filename    = "mingw-w64-x86_64-syndication-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "bb262bb4b2a7aa8c037acc31980a93dc564c1549220af82434384b0ef4cdd4ad";
-    buildInputs = [ qt5 (assert lib.versionAtLeast kcodecs-qt5.version "5.50.0"; kcodecs-qt5) ];
+    buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kcodecs-qt5.version "5.50.0"; kcodecs-qt5) ];
     broken      = true;
   };
 
@@ -13107,7 +13107,7 @@ let
     version     = "8.6.9.1";
     filename    = "mingw-w64-x86_64-tk-8.6.9.1-1-any.pkg.tar.xz";
     sha256      = "8305bb8c363e5b44c9538a788811aef9f71ec2442209401be9d37f47343db209";
-    buildInputs = [ (assert lib.versionAtLeast tcl.version "8.6.9"; tcl) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast tcl.version "8.6.9"; tcl) ];
   };
 
   "tkimg" = fetch {

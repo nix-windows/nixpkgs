@@ -1,5 +1,5 @@
  # GENERATED FILE
-{config, lib, stdenvNoCC, fetchurl}:
+{stdenvNoCC, fetchurl}:
 
 let
   fetch = { name, version, filename, sha256, buildInputs ? [], broken ? false }:
@@ -18,7 +18,7 @@ let
           unlink "$ENV{out}/.MTREE";
           unlink "$ENV{out}/.PKGINFO";
           use File::Find qw(find);
-        '' + lib.concatMapStringsSep "\n" (dep: ''
+        '' + stdenvNoCC.lib.concatMapStringsSep "\n" (dep: ''
               sub process {
                 my $src = $_;
                 die "bad src: '$src'" unless $src =~ /\/[0-9a-df-np-sv-z]{32}-[^\/]+(.*)/;
@@ -114,7 +114,7 @@ let
     version     = "2018.04.16";
     filename    = "aspell6-en-2018.04.16-1-x86_64.pkg.tar.xz";
     sha256      = "903e52d67f00d0c8179c0f489df31405111885256f1e8d3dbf82a3fe4e8d8ccb";
-    buildInputs = [ (assert lib.versionAtLeast aspell.version "0.60"; aspell) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast aspell.version "0.60"; aspell) ];
   };
 
   "atool" = fetch {
@@ -312,7 +312,7 @@ let
     version     = "6.02.01";
     filename    = "bisonc++-6.02.01-1-x86_64.pkg.tar.xz";
     sha256      = "0f672e5cc22038dd565bce5663481b2fedca7f0e86ee46d1f1cfc5f310b81e28";
-    buildInputs = [ (assert lib.versionAtLeast libbobcat.version "4.02.00"; libbobcat) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast libbobcat.version "4.02.00"; libbobcat) ];
   };
 
   "brotli" = fetch {
@@ -818,7 +818,7 @@ let
     version     = "2.07.02";
     filename    = "flexc++-2.07.02-1-x86_64.pkg.tar.xz";
     sha256      = "39f908aaf265d4761fd95d737ad69759ebd807c4e030a87d0c08d93353d66aca";
-    buildInputs = [ (assert lib.versionAtLeast libbobcat.version "4.01.00"; libbobcat) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast libbobcat.version "4.01.00"; libbobcat) ];
   };
 
   "fzy" = fetch {
@@ -943,7 +943,7 @@ let
     version     = "2.20.1";
     filename    = "git-2.20.1-1-x86_64.pkg.tar.xz";
     sha256      = "9878bcb483eaf8fa4fac2908f57f7c16ace4d8577d787c99f69c6af96dbe6064";
-    buildInputs = [ curl (assert lib.versionAtLeast expat.version "2.0"; expat) libpcre2_8 vim openssh openssl perl-Error (assert lib.versionAtLeast perl.version "5.14.0"; perl) perl-Authen-SASL perl-libwww perl-MIME-tools perl-Net-SMTP-SSL perl-TermReadKey ];
+    buildInputs = [ curl (assert stdenvNoCC.lib.versionAtLeast expat.version "2.0"; expat) libpcre2_8 vim openssh openssl perl-Error (assert stdenvNoCC.lib.versionAtLeast perl.version "5.14.0"; perl) perl-Authen-SASL perl-libwww perl-MIME-tools perl-Net-SMTP-SSL perl-TermReadKey ];
   };
 
   "git-bzr-ng-git" = fetch {
@@ -2148,7 +2148,7 @@ let
     version     = "3.21.0";
     filename    = "libsqlite-3.21.0-4-x86_64.pkg.tar.xz";
     sha256      = "b0cbc80d28a491a5034cd52403cd9e3e0fdd9531d9c48ca1c1fa76f6f37ff6c5";
-    buildInputs = [ libreadline (assert lib.versionAtLeast icu.version "59.1"; icu) zlib ];
+    buildInputs = [ libreadline (assert stdenvNoCC.lib.versionAtLeast icu.version "59.1"; icu) zlib ];
   };
 
   "libsqlite-devel" = fetch {
@@ -2300,7 +2300,7 @@ let
     version     = "2.9.8";
     filename    = "libxml2-2.9.8-1-x86_64.pkg.tar.xz";
     sha256      = "9c0543200d15b6717664fc6166f547d3d649d541c08058dd991f82644d0086c7";
-    buildInputs = [ coreutils (assert lib.versionAtLeast icu.version "59.1"; icu) liblzma libreadline ncurses zlib ];
+    buildInputs = [ coreutils (assert stdenvNoCC.lib.versionAtLeast icu.version "59.1"; icu) liblzma libreadline ncurses zlib ];
   };
 
   "libxml2-devel" = fetch {
@@ -2308,7 +2308,7 @@ let
     version     = "2.9.8";
     filename    = "libxml2-devel-2.9.8-1-x86_64.pkg.tar.xz";
     sha256      = "b04ee9b456e3c191eed6ea2e829fb09a2d64fd0a7448d7147b6c9f382e96a91f";
-    buildInputs = [ (assert libxml2.version=="2.9.8"; libxml2) (assert lib.versionAtLeast icu-devel.version "59.1"; icu-devel) libreadline-devel ncurses-devel liblzma-devel zlib-devel ];
+    buildInputs = [ (assert libxml2.version=="2.9.8"; libxml2) (assert stdenvNoCC.lib.versionAtLeast icu-devel.version "59.1"; icu-devel) libreadline-devel ncurses-devel liblzma-devel zlib-devel ];
   };
 
   "libxml2-python" = fetch {
@@ -2579,7 +2579,7 @@ let
     version     = "1.1.0";
     filename    = "mpc-1.1.0-1-x86_64.pkg.tar.xz";
     sha256      = "5368f3aeb9cd3b9fea9a8c52dfbcc2709f911bf0d36bb9786999dcfdd0fdd5ae";
-    buildInputs = [ (assert lib.versionAtLeast gmp.version "5.0"; gmp) mpfr ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast gmp.version "5.0"; gmp) mpfr ];
   };
 
   "mpc-devel" = fetch {
@@ -2611,7 +2611,7 @@ let
     version     = "4.0.1";
     filename    = "mpfr-4.0.1-1-x86_64.pkg.tar.xz";
     sha256      = "69e98d0bd26d381f6661c67353c85ae43360213a19c4287ca6ffb2a2cb7d5662";
-    buildInputs = [ (assert lib.versionAtLeast gmp.version "5.0"; gmp) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast gmp.version "5.0"; gmp) ];
   };
 
   "mpfr-devel" = fetch {
@@ -2634,7 +2634,7 @@ let
     version     = "0.3.32.56c2ba7";
     filename    = "msys2-launcher-git-0.3.32.56c2ba7-2-x86_64.pkg.tar.xz";
     sha256      = "6a807bcef61c8f72ddb89b67f54edb4093802a46ffdd2bff209b905e16af3f95";
-    buildInputs = [ (assert lib.versionAtLeast mintty.version "1~2.2.1"; mintty) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast mintty.version "1~2.2.1"; mintty) ];
   };
 
   "msys2-runtime" = fetch {
@@ -2792,7 +2792,7 @@ let
     version     = "5.1.2";
     filename    = "pacman-5.1.2-1-x86_64.pkg.tar.xz";
     sha256      = "b15ab8d79e78f0024dc9871375c519f2afdcdc8c710e69efff3ae5c0a5984884";
-    buildInputs = [ (assert lib.versionAtLeast bash.version "4.2.045"; bash) gettext gnupg msys2-runtime curl pacman-mirrors msys2-keyring which bzip2 xz ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast bash.version "4.2.045"; bash) gettext gnupg msys2-runtime curl pacman-mirrors msys2-keyring which bzip2 xz ];
   };
 
   "pacman-mirrors" = fetch {
@@ -2985,7 +2985,7 @@ let
     version     = "1.03";
     filename    = "perl-Digest-HMAC-1.03-2-any.pkg.tar.xz";
     sha256      = "9611d00bf2607f8a656749dca4968e326681dda5e6ff1d66594668d8eebf1a3c";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.10.0"; perl) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.10.0"; perl) ];
   };
 
   "perl-Digest-MD4" = fetch {
@@ -2993,7 +2993,7 @@ let
     version     = "1.9";
     filename    = "perl-Digest-MD4-1.9-3-any.pkg.tar.xz";
     sha256      = "53a6be90008bdbef5c26331faba492d46ebe6583474df5c6210e0ad9062a9ab2";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.10.0"; perl) libcrypt ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.10.0"; perl) libcrypt ];
   };
 
   "perl-Encode-Locale" = fetch {
@@ -3001,7 +3001,7 @@ let
     version     = "1.05";
     filename    = "perl-Encode-Locale-1.05-1-any.pkg.tar.xz";
     sha256      = "56d82c71588c66dbee20e9acc7ed0e9bc09e40654593125b63086b59aeea8002";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.008"; perl) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.008"; perl) ];
   };
 
   "perl-Encode-compat" = fetch {
@@ -3057,7 +3057,7 @@ let
     version     = "1.16";
     filename    = "perl-ExtUtils-PkgConfig-1.16-1-any.pkg.tar.xz";
     sha256      = "9b076317052f167d610ba8898de7fffbaedd947b04ae4414c1d342080c82619c";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.10.0"; perl) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.10.0"; perl) ];
   };
 
   "perl-File-Copy-Recursive" = fetch {
@@ -3073,7 +3073,7 @@ let
     version     = "6.04";
     filename    = "perl-File-Listing-6.04-2-any.pkg.tar.xz";
     sha256      = "4f48fe3bde66ab216ae4a5c9ebf83dd4a490033bcdbc7abea26d59346bbb11bb";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.8.8"; perl) (assert lib.versionAtLeast perl-HTTP-Date.version "6"; perl-HTTP-Date) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.8.8"; perl) (assert stdenvNoCC.lib.versionAtLeast perl-HTTP-Date.version "6"; perl-HTTP-Date) ];
   };
 
   "perl-File-Next" = fetch {
@@ -3089,7 +3089,7 @@ let
     version     = "1.22";
     filename    = "perl-File-Which-1.22-1-any.pkg.tar.xz";
     sha256      = "9f4c9131d4ee28e2e72c213f82258378b9e4271f7093ee939a5fedceb8c62e4d";
-    buildInputs = [ perl (assert lib.versionAtLeast perl-Test-Script.version "1.05"; perl-Test-Script) ];
+    buildInputs = [ perl (assert stdenvNoCC.lib.versionAtLeast perl-Test-Script.version "1.05"; perl-Test-Script) ];
   };
 
   "perl-Font-TTF" = fetch {
@@ -3129,7 +3129,7 @@ let
     version     = "3.20";
     filename    = "perl-HTML-Tagset-3.20-2-any.pkg.tar.xz";
     sha256      = "f3b2b1d3c27b2528449c4b09a1a164bfa0b88a75dfea399ef6402fed0d13a66d";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.10.0"; perl) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.10.0"; perl) ];
   };
 
   "perl-HTTP-Cookies" = fetch {
@@ -3137,7 +3137,7 @@ let
     version     = "6.04";
     filename    = "perl-HTTP-Cookies-6.04-1-any.pkg.tar.xz";
     sha256      = "8e134a1d081e566bc9c1c7279caf8ee26a3cf27117abdcfaf3a5ce8390e9e953";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.8.8"; perl) (assert lib.versionAtLeast perl-HTTP-Date.version "6"; perl-HTTP-Date) perl-HTTP-Message ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.8.8"; perl) (assert stdenvNoCC.lib.versionAtLeast perl-HTTP-Date.version "6"; perl-HTTP-Date) perl-HTTP-Message ];
   };
 
   "perl-HTTP-Daemon" = fetch {
@@ -3153,7 +3153,7 @@ let
     version     = "6.02";
     filename    = "perl-HTTP-Date-6.02-2-any.pkg.tar.xz";
     sha256      = "ea96e4438838a70b469d75401e9fa733e2200ff90058d0c230bbf3d19345536f";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.8.8"; perl) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.8.8"; perl) ];
   };
 
   "perl-HTTP-Message" = fetch {
@@ -3161,7 +3161,7 @@ let
     version     = "6.18";
     filename    = "perl-HTTP-Message-6.18-1-any.pkg.tar.xz";
     sha256      = "42f7bc0f6a0b747c07dad1145d8b06c0354e56232df1144041b8c61792cde5a4";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.8.8"; perl) (assert lib.versionAtLeast perl-Encode-Locale.version "1"; perl-Encode-Locale) (assert lib.versionAtLeast perl-HTML-Parser.version "3.33"; perl-HTML-Parser) (assert lib.versionAtLeast perl-HTTP-Date.version "6"; perl-HTTP-Date) (assert lib.versionAtLeast perl-LWP-MediaTypes.version "6"; perl-LWP-MediaTypes) (assert lib.versionAtLeast perl-URI.version "1.10"; perl-URI) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.8.8"; perl) (assert stdenvNoCC.lib.versionAtLeast perl-Encode-Locale.version "1"; perl-Encode-Locale) (assert stdenvNoCC.lib.versionAtLeast perl-HTML-Parser.version "3.33"; perl-HTML-Parser) (assert stdenvNoCC.lib.versionAtLeast perl-HTTP-Date.version "6"; perl-HTTP-Date) (assert stdenvNoCC.lib.versionAtLeast perl-LWP-MediaTypes.version "6"; perl-LWP-MediaTypes) (assert stdenvNoCC.lib.versionAtLeast perl-URI.version "1.10"; perl-URI) ];
   };
 
   "perl-HTTP-Negotiate" = fetch {
@@ -3169,7 +3169,7 @@ let
     version     = "6.01";
     filename    = "perl-HTTP-Negotiate-6.01-2-any.pkg.tar.xz";
     sha256      = "c81c85f2c89d7022d9bc6cd29424b13db94a05dc47c8ca47730cd47d3d8e6be8";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.8.8"; perl) perl-HTTP-Message ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.8.8"; perl) perl-HTTP-Message ];
   };
 
   "perl-IO-HTML" = fetch {
@@ -3185,7 +3185,7 @@ let
     version     = "2.72";
     filename    = "perl-IO-Socket-INET6-2.72-4-any.pkg.tar.xz";
     sha256      = "2b325a3819720cadbd4c94d00b0c60bba9b83cb4fa7eea7cfeec5cbd62676d90";
-    buildInputs = [ (assert lib.versionAtLeast perl-Socket6.version "0.12"; perl-Socket6) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl-Socket6.version "0.12"; perl-Socket6) ];
   };
 
   "perl-IO-Socket-SSL" = fetch {
@@ -3201,7 +3201,7 @@ let
     version     = "1.08";
     filename    = "perl-IO-String-1.08-9-x86_64.pkg.tar.xz";
     sha256      = "62e6322c190cfadc6ba8407bdecc6c41c3f304201e5d12cf4525df22893f931a";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.10.0"; perl) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.10.0"; perl) ];
   };
 
   "perl-IO-stringy" = fetch {
@@ -3225,7 +3225,7 @@ let
     version     = "2.97001";
     filename    = "perl-JSON-2.97001-1-any.pkg.tar.xz";
     sha256      = "278294943cea537e673ea11e0cf0043f0cd1e41acb6321b3646941a64e81c3d5";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.10.0"; perl) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.10.0"; perl) ];
   };
 
   "perl-LWP-MediaTypes" = fetch {
@@ -3305,7 +3305,7 @@ let
     version     = "0.4224";
     filename    = "perl-Module-Build-0.4224-1-any.pkg.tar.xz";
     sha256      = "16479b2820d4554ffbff6f403433a5ac957576c74a2f47988096c21f5131dac3";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.8.0"; perl) (assert lib.versionAtLeast perl-CPAN-Meta.version "2.142060"; perl-CPAN-Meta) perl-inc-latest ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.8.0"; perl) (assert stdenvNoCC.lib.versionAtLeast perl-CPAN-Meta.version "2.142060"; perl-CPAN-Meta) perl-inc-latest ];
     broken      = true;
   };
 
@@ -3314,7 +3314,7 @@ let
     version     = "20180117";
     filename    = "perl-Mozilla-CA-20180117-1-any.pkg.tar.xz";
     sha256      = "1a3c875db1b3d2b2e8082c07a5d918821489ee70d52c20278c7384c788aeb8dc";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.006"; perl) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.006"; perl) ];
   };
 
   "perl-Net-DNS" = fetch {
@@ -3330,7 +3330,7 @@ let
     version     = "6.18";
     filename    = "perl-Net-HTTP-6.18-1-any.pkg.tar.xz";
     sha256      = "325a8c9aa9fde1babdb8e54b9d47211cb6440a3819f64c08d053cfc0eaadbafa";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.6.2"; perl) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.6.2"; perl) ];
   };
 
   "perl-Net-IP" = fetch {
@@ -3338,7 +3338,7 @@ let
     version     = "1.26";
     filename    = "perl-Net-IP-1.26-2-any.pkg.tar.xz";
     sha256      = "d78c5b12885a4bb6cf33d17befde8e4bdcb13d999f500b8c2c81b82d8d1d513e";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.10.0"; perl) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.10.0"; perl) ];
   };
 
   "perl-Net-SMTP-SSL" = fetch {
@@ -3574,7 +3574,7 @@ let
     version     = "1.74";
     filename    = "perl-URI-1.74-1-any.pkg.tar.xz";
     sha256      = "a606c2a30ff1290265281bffd8433d71e8b3e782a2cac2844930f2d7e5b54874";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.10.0"; perl) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.10.0"; perl) ];
   };
 
   "perl-Unicode-GCString" = fetch {
@@ -3686,7 +3686,7 @@ let
     version     = "0.500";
     filename    = "perl-inc-latest-0.500-1-any.pkg.tar.xz";
     sha256      = "2be50e019e7658de5110613701aa853661b4b454ee4e6916268abc079c418974";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.8.8"; perl) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.8.8"; perl) ];
   };
 
   "perl-libwww" = fetch {
@@ -3852,7 +3852,7 @@ let
     version     = "1.10.0";
     filename    = "python2-beaker-1.10.0-3-x86_64.pkg.tar.xz";
     sha256      = "76d0071bd8e69ee36238e0dacfff082a1841b6e02a02f3fc910712a7f4d645ed";
-    buildInputs = [ (assert lib.versionAtLeast python2.version "2.7"; python2) python2-funcsigs ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast python2.version "2.7"; python2) python2-funcsigs ];
   };
 
   "python2-brotli" = fetch {
@@ -3876,7 +3876,7 @@ let
     version     = "2.39";
     filename    = "python2-distutils-extra-2.39-2-any.pkg.tar.xz";
     sha256      = "d9f445df36f71975fbd8a0caf390f4d632390041f6c0a28877800f3d03d504ef";
-    buildInputs = [ (assert lib.versionAtLeast python2.version "2.7"; python2) intltool ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast python2.version "2.7"; python2) intltool ];
   };
 
   "python2-fastimport" = fetch {
@@ -3884,7 +3884,7 @@ let
     version     = "0.9.8";
     filename    = "python2-fastimport-0.9.8-1-any.pkg.tar.xz";
     sha256      = "10c069e9ca6e81860f5a3383d47825562bd4667b992b9d18a6b008dbcf1f5a31";
-    buildInputs = [ (assert lib.versionAtLeast python2.version "2.7"; python2) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast python2.version "2.7"; python2) ];
   };
 
   "python2-funcsigs" = fetch {
@@ -4111,7 +4111,7 @@ let
     version     = "1.10.0";
     filename    = "python3-beaker-1.10.0-3-x86_64.pkg.tar.xz";
     sha256      = "dbbc8edc917dd5c59be8b79d2f82b480ea694dd470db2cecddb12174726a7395";
-    buildInputs = [ (assert lib.versionAtLeast python.version "3.3"; python) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast python.version "3.3"; python) ];
   };
 
   "python3-colorama" = fetch {
@@ -4128,7 +4128,7 @@ let
     version     = "2.39";
     filename    = "python3-distutils-extra-2.39-2-any.pkg.tar.xz";
     sha256      = "caf7e417b247513208c86dbfb7e3cd0c4dbb4cf3d13e303b50a2b66ec0a55499";
-    buildInputs = [ (assert lib.versionAtLeast python.version "3.3"; python) intltool ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast python.version "3.3"; python) intltool ];
   };
 
   "python3-mako" = fetch {
@@ -4544,7 +4544,7 @@ let
     version     = "5.2";
     filename    = "tftp-hpa-5.2-2-x86_64.pkg.tar.xz";
     sha256      = "a765f0ca3ed795f63bc4919cbcfe1d645a26aa78c41290bec3a229b753322528";
-    buildInputs = [ (assert lib.versionAtLeast libreadline.version "6.0.00"; libreadline) ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast libreadline.version "6.0.00"; libreadline) ];
   };
 
   "tig" = fetch {
@@ -4599,7 +4599,7 @@ let
     version     = "2.5201";
     filename    = "txt2html-2.5201-1-x86_64.pkg.tar.xz";
     sha256      = "7abb65139bf5e4895dc27681948efe0dcb7896913508a49f15bfb2a1d78d24b8";
-    buildInputs = [ (assert lib.versionAtLeast perl.version "5.10.0"; perl) perl-Getopt-ArgvFile ];
+    buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.10.0"; perl) perl-Getopt-ArgvFile ];
   };
 
   "txt2tags" = fetch {

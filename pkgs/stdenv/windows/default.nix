@@ -181,6 +181,26 @@ in
       shell = "${prevStage.perl-for-stdenv-shell}/bin/perl.exe";
     };
 
+    # todo: build coreutils from sources
+    coreutils = let
+      inherit (import <nixpkgs/pkgs/development/mingw-modules/msys-packages.nix> {
+                 stdenvNoCC = stdenv;
+                 fetchurl = fetchurl-curl-static;
+               }) patch grep sed;
+    in stdenv.mkDerivation {
+      name = "coreutils";
+      buildInputs = [ patch grep sed ];
+      buildCommand = ''
+        make_path("$ENV{out}/bin");
+        for my $target (map { glob "$_/usr/bin/*" }('${sed}', '${grep}', '${patch}')) {
+          my $name = basename($target);
+          if ($name =~ /(\.dll|(sed|grep|patch)\.exe)$/ && ! -e "$ENV{out}/bin/$name") {
+            system("mklink", "$ENV{out}/bin/$name" =~ s|/|\\|gr, $target =~ s|/|\\|gr) == 0 or die "mklink($ENV{out}/bin/$name, $target): $!";
+          }
+        }
+      '';
+    };
+
     fetchurl-curl-static = import ../../build-support/fetchurl {
       inherit lib;
       stdenvNoCC = stdenv; # with perl as .shell
@@ -293,7 +313,8 @@ in
       name = "stdenv-windows-boot-3";
       inherit config;
 
-      inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform initialPath shell;
+      inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform shell;
+      initialPath = prevStage.stdenv.initialPath ++ [ prevStage.coreutils ];
       cc = prevStage.cc2017;
       fetchurlBoot = prevStage.fetchurl-curl-static;
     };
