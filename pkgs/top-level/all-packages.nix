@@ -16111,7 +16111,7 @@ with pkgs;
 
   chromium =
     if stdenv.hostPlatform.isMicrosoft then
-      callPackage ../applications/networking/browsers/chromium/windows.nix {}
+      callPackage ../applications/networking/browsers/chromium-git/windows.nix {}
     else
       callPackage ../applications/networking/browsers/chromium ({
         channel = "stable";
