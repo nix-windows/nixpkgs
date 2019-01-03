@@ -1,5 +1,5 @@
 { lowPrio, newScope, pkgs, stdenv, cmake, libstdcxxHook, fetchzip, perl
-, libxml2, python, isl, fetchurl, fetchFromGitHub#, overrideCC, wrapCCWith
+, libxml2, python, isl, fetchurl, fetchgit, overrideCC, wrapCCWith
 #, buildLlvmTools # tools, but from the previous stage, for cross
 #, targetLlvmLibraries # libraries, but from the next stage, for cross
 }:
@@ -7,9 +7,9 @@
 let
   version = "8.0.0";
 
-  fetchGit = repo: rev: sha256: fetchFromGitHub {
-    owner = "llvm-mirror";
-    inherit repo rev sha256;
+  fetchGit = repo: rev: sha256: /*fetchFromGitHub*/fetchgit /*force using git.exe to workaround 7z bug with symlinkshttps://sourceforge.net/p/sevenzip/bugs/2174/ */ {
+    url = "https://github.com/llvm-mirror/${repo}";
+    inherit rev sha256;
   };
 
   tools = stdenv.lib.makeExtensible (tools: let

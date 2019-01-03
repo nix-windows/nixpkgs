@@ -39,7 +39,7 @@ in stdenv.mkDerivation rec {
     compiler-rt_src       = fetchGit "compiler-rt"       "3d5a3668ac1501c6af00507d8349b6d09445639f" "15n41y2y41l7fmankicvl2gy9zpqr07z4m5hhplwzv83hcq79jw9";
     libunwind_src         = fetchGit "libunwind"         "9defb52f575beff21b646e60e63f72ad1ac7cf54" "0kc5z0lvfg8f90swdg5p2kl4kvmhxbdld876rmfkracdvswvc63r";
     libcxxabi_src         = fetchGit "libcxxabi"         "307bb62985575b2e3216a8cfd7e122e0574f33a9" "1wklsrmbczlf7h0z8y6m6kwdnbqh18rz5dkk9ifgj7wq0nq9r5yi";
-    libcxx_src            = fetchGit "libcxx"            "51895bf735478464eaf17643e1235921594927f6" "0j8a6wj1qk4h07zd7npyinm9sjbwnlmdjc1prxsyxl9i0mrp5nlw";
+    libcxx_src            = fetchGit "libcxx"            "51895bf735478464eaf17643e1235921594927f6" "1w3pjx47m3xci3k7ah21ms4y2n0ggwqqbs4bd7a0fbc6ns2i89jn";
     openmp_src            = fetchGit "openmp"            "a04cc5ff8bac7736c7bf5d9a8114ee1aa67e1ccc" "0cqdzyihgxf6kaax6yk9k231ih32c1m34j8262ymfghlic4sbb3n";
   in stdenv.mkDerivation {
     name = "${name}-src";
@@ -54,14 +54,6 @@ in stdenv.mkDerivation rec {
       system('xcopy', '/E/H/B/F/I', '${libcxxabi_src        }' =~ s|/|\\|gr, "$ENV{out}/projects/libcxxabi"      =~ s|/|\\|gr) == 0 or die "xcopy: $!";
       system('xcopy', '/E/H/B/F/I', '${libcxx_src           }' =~ s|/|\\|gr, "$ENV{out}/projects/libcxx"         =~ s|/|\\|gr) == 0 or die "xcopy: $!";
       system('xcopy', '/E/H/B/F/I', '${openmp_src           }' =~ s|/|\\|gr, "$ENV{out}/projects/openmp"         =~ s|/|\\|gr) == 0 or die "xcopy: $!";
-
-      # https://sourceforge.net/p/sevenzip/bugs/2174/ workaround
-      system('del',          "$ENV{out}/tools/lldb/test/testcases"                                                                          =~ s|/|\\|gr                                     ) == 0 or die "unlink: $!";
-      system('mklink', '/D', "$ENV{out}/tools/lldb/test/testcases"                                                                          =~ s|/|\\|gr, '..\packages\Python\lldbsuite\test') == 0 or die "mklink: $!";
-      system('del',          "$ENV{out}/projects/libcxx/test/std/input.output/filesystems/Inputs/static_test_env/symlink_to_dir"            =~ s|/|\\|gr                                     ) == 0 or die "unlink: $!";
-      system('mklink', '/D', "$ENV{out}/projects/libcxx/test/std/input.output/filesystems/Inputs/static_test_env/symlink_to_dir"            =~ s|/|\\|gr, 'dir1'                             ) == 0 or die "mklink: $!";
-      system('del',          "$ENV{out}/projects/libcxx/test/std/input.output/filesystems/Inputs/static_test_env/dir1/dir2/symlink_to_dir3" =~ s|/|\\|gr                                     ) == 0 or die "unlink: $!";
-      system('mklink', '/D', "$ENV{out}/projects/libcxx/test/std/input.output/filesystems/Inputs/static_test_env/dir1/dir2/symlink_to_dir3" =~ s|/|\\|gr, 'dir3'                             ) == 0 or die "mklink: $!";
     '';
   };
 
