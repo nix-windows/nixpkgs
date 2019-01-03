@@ -436,7 +436,7 @@ let
     version     = "2.30.0";
     filename    = "mingw-w64-x86_64-atk-2.30.0-1-any.pkg.tar.xz";
     sha256      = "67ecf29d4d3b90c616222f0b9b3495935ab933bf0be3485d8b7e4f942c067433";
-    buildInputs = [ gcc-libs (assert lib.versionAtLeast glib2.version "2.30.0"; glib2) ];
+    buildInputs = [ gcc-libs (assert lib.versionAtLeast glib2.version "2.46.0"; glib2) ];
   };
 
   "atkmm" = fetch {
@@ -1524,7 +1524,7 @@ let
     version     = "1.2.0";
     filename    = "mingw-w64-x86_64-fgsl-1.2.0-2-any.pkg.tar.xz";
     sha256      = "185e1c8c0cac837f6d975eedec07b445c4b21b6abbc8dd8e2a753af9d4935866";
-    buildInputs = [ gcc-libs gcc-libgfortran (assert lib.versionAtLeast gsl.version "1.2.0"; gsl) ];
+    buildInputs = [ gcc-libs gcc-libgfortran (assert lib.versionAtLeast gsl.version "2.3"; gsl) ];
   };
 
   "field3d" = fetch {
@@ -1620,7 +1620,7 @@ let
     version     = "2.13.1";
     filename    = "mingw-w64-x86_64-fontconfig-2.13.1-1-any.pkg.tar.xz";
     sha256      = "e2becfc6fd1b0ef3e1b3875abb9adf7a47c06957a82419668436b699318903e4";
-    buildInputs = [ gcc-libs (assert lib.versionAtLeast expat.version "2.13.1"; expat) (assert lib.versionAtLeast freetype.version "2.13.1"; freetype) (assert lib.versionAtLeast bzip2.version "2.13.1"; bzip2) libiconv ];
+    buildInputs = [ gcc-libs (assert lib.versionAtLeast expat.version "2.1.0"; expat) (assert lib.versionAtLeast freetype.version "2.3.11"; freetype) (assert lib.versionAtLeast bzip2.version "1.0.6"; bzip2) libiconv ];
   };
 
   "fossil" = fetch {
@@ -1805,7 +1805,7 @@ let
     version     = "2.38.0";
     filename    = "mingw-w64-x86_64-gdk-pixbuf2-2.38.0-2-any.pkg.tar.xz";
     sha256      = "6a8968e5c89b3626420b8f9573028fd1ae49d4ee5888d03f50048db47e9d1356";
-    buildInputs = [ gcc-libs (assert lib.versionAtLeast glib2.version "2.38.0"; glib2) jasper libjpeg-turbo libpng libtiff ];
+    buildInputs = [ gcc-libs (assert lib.versionAtLeast glib2.version "2.37.2"; glib2) jasper libjpeg-turbo libpng libtiff ];
   };
 
   "gdl" = fetch {
@@ -2206,7 +2206,7 @@ let
     version     = "3.6.5";
     filename    = "mingw-w64-x86_64-gnutls-3.6.5-1-any.pkg.tar.xz";
     sha256      = "14b4cd4972e7e38d1ee282340c9a7f4e99469092675bcf26f63fd73640cfc1d5";
-    buildInputs = [ gcc-libs gmp libidn2 libsystre libtasn1 (assert lib.versionAtLeast nettle.version "3.6.5"; nettle) (assert lib.versionAtLeast p11-kit.version "3.6.5"; p11-kit) libunistring zlib ];
+    buildInputs = [ gcc-libs gmp libidn2 libsystre libtasn1 (assert lib.versionAtLeast nettle.version "3.1"; nettle) (assert lib.versionAtLeast p11-kit.version "0.23.1"; p11-kit) libunistring zlib ];
   };
 
   "go" = fetch {
@@ -2324,7 +2324,7 @@ let
     version     = "1.17.2";
     filename    = "mingw-w64-x86_64-grpc-1.17.2-1-any.pkg.tar.xz";
     sha256      = "c722f98f2ad455829f53573284115a22677d22ddce05574992cb83f348872ecd";
-    buildInputs = [ gcc-libs c-ares gflags openssl (assert lib.versionAtLeast protobuf.version "1.17.2"; protobuf) zlib ];
+    buildInputs = [ gcc-libs c-ares gflags openssl (assert lib.versionAtLeast protobuf.version "3.5.0"; protobuf) zlib ];
   };
 
   "gsasl" = fetch {
@@ -2513,7 +2513,7 @@ let
     version     = "2.21.0";
     filename    = "mingw-w64-x86_64-gtk-engines-2.21.0-2-any.pkg.tar.xz";
     sha256      = "296d8067242d7a533770d0900da4e45c6d63fb010784d977d7e7d529b61fda01";
-    buildInputs = [ (assert lib.versionAtLeast gtk2.version "2.21.0"; gtk2) ];
+    buildInputs = [ (assert lib.versionAtLeast gtk2.version "2.22.0"; gtk2) ];
   };
 
   "gtk-vnc" = fetch {
@@ -2529,7 +2529,7 @@ let
     version     = "2.24.32";
     filename    = "mingw-w64-x86_64-gtk2-2.24.32-3-any.pkg.tar.xz";
     sha256      = "fb2a15d96b2ab10196823775eb300eb04a13f6b42ea37e318a74877f265c399c";
-    buildInputs = [ gcc-libs adwaita-icon-theme (assert lib.versionAtLeast atk.version "2.24.32"; atk) (assert lib.versionAtLeast cairo.version "2.24.32"; cairo) (assert lib.versionAtLeast gdk-pixbuf2.version "2.24.32"; gdk-pixbuf2) (assert lib.versionAtLeast glib2.version "2.24.32"; glib2) (assert lib.versionAtLeast pango.version "2.24.32"; pango) shared-mime-info ];
+    buildInputs = [ gcc-libs adwaita-icon-theme (assert lib.versionAtLeast atk.version "1.29.2"; atk) (assert lib.versionAtLeast cairo.version "1.6"; cairo) (assert lib.versionAtLeast gdk-pixbuf2.version "2.21.0"; gdk-pixbuf2) (assert lib.versionAtLeast glib2.version "2.28.0"; glib2) (assert lib.versionAtLeast pango.version "1.20"; pango) shared-mime-info ];
   };
 
   "gtk3" = fetch {
@@ -2577,7 +2577,7 @@ let
     version     = "2.10.5";
     filename    = "mingw-w64-x86_64-gtksourceview2-2.10.5-3-any.pkg.tar.xz";
     sha256      = "b4bc77c7101252b89927304b91d45a87dfcbdff103bbefb964c692633bc1ae46";
-    buildInputs = [ (assert lib.versionAtLeast gtk2.version "2.10.5"; gtk2) (assert lib.versionAtLeast libxml2.version "2.10.5"; libxml2) ];
+    buildInputs = [ (assert lib.versionAtLeast gtk2.version "2.22.0"; gtk2) (assert lib.versionAtLeast libxml2.version "2.7.7"; libxml2) ];
   };
 
   "gtksourceview3" = fetch {
@@ -2601,7 +2601,7 @@ let
     version     = "2.10.3";
     filename    = "mingw-w64-x86_64-gtksourceviewmm2-2.10.3-2-any.pkg.tar.xz";
     sha256      = "2294da508d600ba7b869f358271e578952ebf637300cb43c0b8bf6bbb84c3c23";
-    buildInputs = [ (assert lib.versionAtLeast gtk2.version "2.10.3"; gtk2) (assert lib.versionAtLeast libxml2.version "2.10.3"; libxml2) ];
+    buildInputs = [ (assert lib.versionAtLeast gtk2.version "2.22.0"; gtk2) (assert lib.versionAtLeast libxml2.version "2.7.7"; libxml2) ];
   };
 
   "gtksourceviewmm3" = fetch {
@@ -2656,7 +2656,7 @@ let
     version     = "0.16.3";
     filename    = "mingw-w64-x86_64-gxml-0.16.3-1-any.pkg.tar.xz";
     sha256      = "19c70d017ef5ffe32a5981d46eeb07f08801cfb6f400fed8634677cc4d77c822";
-    buildInputs = [ gcc-libs gettext (assert lib.versionAtLeast glib2.version "0.16.3"; glib2) libgee libxml2 xz zlib ];
+    buildInputs = [ gcc-libs gettext (assert lib.versionAtLeast glib2.version "2.34.0"; glib2) libgee libxml2 xz zlib ];
   };
 
   "harfbuzz" = fetch {
@@ -3712,7 +3712,7 @@ let
     version     = "0.1.2";
     filename    = "mingw-w64-x86_64-libbdplus-0.1.2-1-any.pkg.tar.xz";
     sha256      = "fcdb0b575ec1b3178637b7be94164660338fd7858c83f5592f29d1f5deead22d";
-    buildInputs = [ (assert lib.versionAtLeast libaacs.version "0.1.2"; libaacs) libgpg-error ];
+    buildInputs = [ (assert lib.versionAtLeast libaacs.version "0.7.0"; libaacs) libgpg-error ];
   };
 
   "libblocksruntime" = fetch {
@@ -4060,7 +4060,7 @@ let
     version     = "0.27.7";
     filename    = "mingw-w64-x86_64-libgit2-glib-0.27.7-1-any.pkg.tar.xz";
     sha256      = "1aa6c6af9384a9d3cc4a90832dee26b240cddb2f19e8c11840440ba295f62cee";
-    buildInputs = [ (assert lib.versionAtLeast libgit2.version "0.27.7"; libgit2) libssh2 glib2 ];
+    buildInputs = [ (assert lib.versionAtLeast libgit2.version "0.23"; libgit2) libssh2 glib2 ];
   };
 
   "libglade" = fetch {
@@ -4068,7 +4068,7 @@ let
     version     = "2.6.4";
     filename    = "mingw-w64-x86_64-libglade-2.6.4-5-any.pkg.tar.xz";
     sha256      = "03471470d46b5ea62cd0824cd50c3dd71765690e8d46cfd519a5b36245374515";
-    buildInputs = [ (assert lib.versionAtLeast gtk2.version "2.6.4"; gtk2) (assert lib.versionAtLeast libxml2.version "2.6.4"; libxml2) ];
+    buildInputs = [ (assert lib.versionAtLeast gtk2.version "2.16.0"; gtk2) (assert lib.versionAtLeast libxml2.version "2.7.3"; libxml2) ];
   };
 
   "libgme" = fetch {
@@ -4635,7 +4635,7 @@ let
     version     = "0.3.3";
     filename    = "mingw-w64-x86_64-librescl-0.3.3-1-any.pkg.tar.xz";
     sha256      = "32d83e1c3003cd9b86d733e0713ccf405a6df3fe9e30c2fb89f0078fd45037b7";
-    buildInputs = [ gcc-libs gettext (assert lib.versionAtLeast glib2.version "0.3.3"; glib2) gobject-introspection gxml libgee libxml2 vala xz zlib ];
+    buildInputs = [ gcc-libs gettext (assert lib.versionAtLeast glib2.version "2.34.0"; glib2) gobject-introspection gxml libgee libxml2 vala xz zlib ];
   };
 
   "libressl" = fetch {
@@ -7146,7 +7146,7 @@ let
     version     = "2.39";
     filename    = "mingw-w64-x86_64-python2-distutils-extra-2.39-4-any.pkg.tar.xz";
     sha256      = "5d83a7ce5ed5ad85aea6895c367d8196cbc0b94cb8c811ce0b7102e545405583";
-    buildInputs = [ (assert lib.versionAtLeast python2.version "2.39"; python2) intltool ];
+    buildInputs = [ (assert lib.versionAtLeast python2.version "2.7"; python2) intltool ];
     broken      = true;
   };
 
@@ -8080,7 +8080,7 @@ let
     version     = "0.7.5";
     filename    = "mingw-w64-x86_64-python2-pickleshare-0.7.5-1-any.pkg.tar.xz";
     sha256      = "c4fceca804eaef16ff7237e5040cbcd1a3ee1f1584c49e15967e53b47f0974ec";
-    buildInputs = [ (assert lib.versionAtLeast python2-path.version "0.7.5"; python2-path) ];
+    buildInputs = [ (assert lib.versionAtLeast python2-path.version "8.1"; python2-path) ];
   };
 
   "python2-pillow" = fetch {
@@ -8128,7 +8128,7 @@ let
     version     = "0.6.10";
     filename    = "mingw-w64-x86_64-python2-pptx-0.6.10-1-any.pkg.tar.xz";
     sha256      = "f01e5bad07b6691e81422f20313db7ddbc4455725f15ee647139265b494a2411";
-    buildInputs = [ (assert lib.versionAtLeast python2-lxml.version "0.6.10"; python2-lxml) (assert lib.versionAtLeast python2-pillow.version "0.6.10"; python2-pillow) (assert lib.versionAtLeast python2-xlsxwriter.version "0.6.10"; python2-xlsxwriter) ];
+    buildInputs = [ (assert lib.versionAtLeast python2-lxml.version "3.1.0"; python2-lxml) (assert lib.versionAtLeast python2-pillow.version "2.6.1"; python2-pillow) (assert lib.versionAtLeast python2-xlsxwriter.version "0.5.7"; python2-xlsxwriter) ];
   };
 
   "python2-pretend" = fetch {
@@ -8579,7 +8579,7 @@ let
     version     = "0.93";
     filename    = "mingw-w64-x86_64-python2-rst2pdf-0.93-4-any.pkg.tar.xz";
     sha256      = "17c19ab03246e91bfb762747a9948c0ed6998c5e0f29e8e23c6b4e0ccfec3013";
-    buildInputs = [ python2 python2-docutils python2-pdfrw python2-pygments (assert lib.versionAtLeast python2-reportlab.version "0.93"; python2-reportlab) python2-setuptools ];
+    buildInputs = [ python2 python2-docutils python2-pdfrw python2-pygments (assert lib.versionAtLeast python2-reportlab.version "2.4"; python2-reportlab) python2-setuptools ];
     broken      = true;
   };
 
@@ -8628,7 +8628,7 @@ let
     version     = "40.6.3";
     filename    = "mingw-w64-x86_64-python2-setuptools-40.6.3-1-any.pkg.tar.xz";
     sha256      = "f178eb1e7b31932499e98cc1bbbed1b24cc54cb2029e8993dcf9e69d376e9b02";
-    buildInputs = [ (assert lib.versionAtLeast python2.version "40.6.3"; python2) python2-packaging python2-pyparsing python2-appdirs python2-six ];
+    buildInputs = [ (assert lib.versionAtLeast python2.version "2.7"; python2) python2-packaging python2-pyparsing python2-appdirs python2-six ];
   };
 
   "python2-setuptools-git" = fetch {
@@ -9546,7 +9546,7 @@ let
     version     = "2.39";
     filename    = "mingw-w64-x86_64-python3-distutils-extra-2.39-4-any.pkg.tar.xz";
     sha256      = "b3eb2b1d6b7f1c3a35579eb798351f5068eea046f19c24aa4745ba272f5cf346";
-    buildInputs = [ (assert lib.versionAtLeast python3.version "2.39"; python3) intltool ];
+    buildInputs = [ (assert lib.versionAtLeast python3.version "3.3"; python3) intltool ];
     broken      = true;
   };
 
@@ -9867,7 +9867,7 @@ let
     version     = "7.1.1";
     filename    = "mingw-w64-x86_64-python3-ipython-7.1.1-1-any.pkg.tar.xz";
     sha256      = "c9b035e7f81b993bbeaa315cb95e18bbb54ead7a80cda9c45512b7833be2cdd0";
-    buildInputs = [ winpty sqlite3 python3-jedi python3-decorator python3-pickleshare python3-simplegeneric python3-traitlets (assert lib.versionAtLeast python3-prompt_toolkit.version "7.1.1"; python3-prompt_toolkit) python3-pygments python3-simplegeneric python3-backcall python3-pexpect python3-colorama python3-win_unicode_console ];
+    buildInputs = [ winpty sqlite3 python3-jedi python3-decorator python3-pickleshare python3-simplegeneric python3-traitlets (assert lib.versionAtLeast python3-prompt_toolkit.version "2.0"; python3-prompt_toolkit) python3-pygments python3-simplegeneric python3-backcall python3-pexpect python3-colorama python3-win_unicode_console ];
     broken      = true;
   };
 
@@ -10440,7 +10440,7 @@ let
     version     = "0.7.5";
     filename    = "mingw-w64-x86_64-python3-pickleshare-0.7.5-1-any.pkg.tar.xz";
     sha256      = "69fe098c556a663b204ce316e63c72b2b4bc82d3f1818341a10dd6215535c836";
-    buildInputs = [ (assert lib.versionAtLeast python3-path.version "0.7.5"; python3-path) ];
+    buildInputs = [ (assert lib.versionAtLeast python3-path.version "8.1"; python3-path) ];
   };
 
   "python3-pillow" = fetch {
@@ -10488,7 +10488,7 @@ let
     version     = "0.6.10";
     filename    = "mingw-w64-x86_64-python3-pptx-0.6.10-1-any.pkg.tar.xz";
     sha256      = "f02fbc79606954546f53656686c5d9bf884b972a334139aae2575d022d457b36";
-    buildInputs = [ (assert lib.versionAtLeast python3-lxml.version "0.6.10"; python3-lxml) (assert lib.versionAtLeast python3-pillow.version "0.6.10"; python3-pillow) (assert lib.versionAtLeast python3-xlsxwriter.version "0.6.10"; python3-xlsxwriter) ];
+    buildInputs = [ (assert lib.versionAtLeast python3-lxml.version "3.1.0"; python3-lxml) (assert lib.versionAtLeast python3-pillow.version "2.6.1"; python3-pillow) (assert lib.versionAtLeast python3-xlsxwriter.version "0.5.7"; python3-xlsxwriter) ];
   };
 
   "python3-pretend" = fetch {
@@ -10931,7 +10931,7 @@ let
     version     = "0.93";
     filename    = "mingw-w64-x86_64-python3-rst2pdf-0.93-4-any.pkg.tar.xz";
     sha256      = "991f6e54d35fd8384052fdcf44c35771d1069ee9369e50b2f635c91423bdc16d";
-    buildInputs = [ python3 python3-docutils python3-pdfrw python3-pygments (assert lib.versionAtLeast python3-reportlab.version "0.93"; python3-reportlab) python3-setuptools ];
+    buildInputs = [ python3 python3-docutils python3-pdfrw python3-pygments (assert lib.versionAtLeast python3-reportlab.version "2.4"; python3-reportlab) python3-setuptools ];
     broken      = true;
   };
 
@@ -10980,7 +10980,7 @@ let
     version     = "40.6.3";
     filename    = "mingw-w64-x86_64-python3-setuptools-40.6.3-1-any.pkg.tar.xz";
     sha256      = "0effbfda73ba3e6fe46ce61e5d92a4d2a5fc5bc8b3fff2716d40834d27054383";
-    buildInputs = [ (assert lib.versionAtLeast python3.version "40.6.3"; python3) python3-packaging python3-pyparsing python3-appdirs python3-six ];
+    buildInputs = [ (assert lib.versionAtLeast python3.version "3.3"; python3) python3-packaging python3-pyparsing python3-appdirs python3-six ];
   };
 
   "python3-setuptools-git" = fetch {
@@ -11511,7 +11511,7 @@ let
     version     = "1.0.1";
     filename    = "mingw-w64-x86_64-qhttpengine-1.0.1-1-any.pkg.tar.xz";
     sha256      = "85ec8eb589999175786e8bddab1831c61b24ff4864f7da0377e69cba6ea78b83";
-    buildInputs = [ (assert lib.versionAtLeast qt5.version "1.0.1"; qt5) ];
+    buildInputs = [ (assert lib.versionAtLeast qt5.version "5.4"; qt5) ];
     broken      = true;
   };
 
@@ -11536,7 +11536,7 @@ let
     version     = "0.1.0";
     filename    = "mingw-w64-x86_64-qmdnsengine-0.1.0-1-any.pkg.tar.xz";
     sha256      = "17432b651fb1889cb5f03e96b34932f6f4b236b1589d0f2a44a0d47b7fa46fd6";
-    buildInputs = [ (assert lib.versionAtLeast qt5.version "0.1.0"; qt5) ];
+    buildInputs = [ (assert lib.versionAtLeast qt5.version "5.4"; qt5) ];
     broken      = true;
   };
 
@@ -13107,7 +13107,7 @@ let
     version     = "8.6.9.1";
     filename    = "mingw-w64-x86_64-tk-8.6.9.1-1-any.pkg.tar.xz";
     sha256      = "8305bb8c363e5b44c9538a788811aef9f71ec2442209401be9d37f47343db209";
-    buildInputs = [ (assert lib.versionAtLeast tcl.version "8.6.9.1"; tcl) ];
+    buildInputs = [ (assert lib.versionAtLeast tcl.version "8.6.9"; tcl) ];
   };
 
   "tkimg" = fetch {

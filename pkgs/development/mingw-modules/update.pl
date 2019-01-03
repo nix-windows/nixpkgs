@@ -1,7 +1,6 @@
 use warnings;
 use strict;
 use File::Fetch;
-use Data::Dump;
 use Archive::Tar;
 
 sub parseDesc {
@@ -168,9 +167,9 @@ qq<
                                my $refdep = okName($dep) ? $dep : "self.\"$dep\"";
 
                                if ($op eq '>=') { # todo: check version right here
-                                 "(assert lib.versionAtLeast $refdep.version \"$version\"; $refdep)";
+                                 "(assert lib.versionAtLeast $refdep.version \"$ver\"; $refdep)";
                                } elsif ($op eq '=') {
-                                 "(assert $refdep.version==\"$version\"; $refdep)";
+                                 "(assert $refdep.version==\"$ver\"; $refdep)";
                                } elsif ($op eq '') {
                                  $refdep;
                                } else {
