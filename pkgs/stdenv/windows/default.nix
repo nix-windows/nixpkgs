@@ -102,11 +102,11 @@ in
     };
 
     p7zip-static = stdenv.mkDerivation {
-      name = "7z-18.05-static";
+      name = "7za-18.06-static";
       src = fetchurlBoot {
-       #url = "file://C:/Program%20Files/7-Zip/7z.exe";
-        url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/7z.exe";
-        sha256 = "1lzjk0pzc549hx6salnq04gkyb5zsngzzf6fv00nwxslzs1j8ij7";
+        # from https://www.7-zip.org/a/7z1806-extra.7z
+        url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/7za.exe";
+        sha256 = "1g8bkyqx9xrq0kzc0n3avj931zkvvrwwlrk2v7x3sgshpa3ryrwf";
       };
       builder = lib.concatStringsSep " & " [ ''md %out%\bin''
                                              ''copy %src% %out%\bin\7z.exe'' ];
