@@ -28,22 +28,22 @@ let
     version = "14.16.27012";
   };
 
-  # Windows XP
-  sdk_7_1 = throw "todo: SDK 7.1";
-
-  # Windows 7 (it has no UCRT (<stdio.h> etc) so is not usable yet)
-  sdk_8_1 = (import <nix/fetchurl.nix> {
-    name = "sdk-${sdk_8_1.version}";
-    url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/sdk-${sdk_8_1.version}.nar.xz";
-    unpack = true;
-    sha256 = "d1299b8399ad22fdb2303ca38f2a51fea5b94577b0de8bd7c238291c8d76d877";
-  }) // {
-    version = "8.1";
-    INCLUDE = "${sdk_8_1}/include/shared;${sdk_8_1}/include/um;${sdk_8_1}/include/winrt";
-    LIB     = "${sdk_8_1}/Lib/winv6.3/um";
-    LIBPATH = "";
-    PATH    = "${sdk_8_1}/bin/x64";
-  };
+# # Windows XP
+# sdk_7_1 = throw "todo: SDK 7.1";
+#
+# # Windows 7 (it has no UCRT (<stdio.h> etc) so is not usable yet)
+# sdk_8_1 = (import <nix/fetchurl.nix> {
+#   name = "sdk-${sdk_8_1.version}";
+#   url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/sdk-${sdk_8_1.version}.nar.xz";
+#   unpack = true;
+#   sha256 = "d1299b8399ad22fdb2303ca38f2a51fea5b94577b0de8bd7c238291c8d76d877";
+# }) // {
+#   version = "8.1";
+#   INCLUDE = "${sdk_8_1}/include/shared;${sdk_8_1}/include/um;${sdk_8_1}/include/winrt";
+#   LIB     = "${sdk_8_1}/Lib/winv6.3/um";
+#   LIBPATH = "";
+#   PATH    = "${sdk_8_1}/bin/x64";
+# };
 
   # Windows 10
   sdk_10 = (import <nix/fetchurl.nix> {
@@ -84,7 +84,7 @@ in
     __raw = true;
 
     stdenv = import ../generic {
-      name = "stdenv-windows-boot-0";
+      name = "stdenv-windows-boot-1";
       inherit config;
       buildPlatform = localSystem;
       hostPlatform = localSystem;
@@ -93,74 +93,21 @@ in
       initialPath = [];
 
       cc = null;
-      fetchurlBoot = null;
+      fetchurlBoot = import ../../build-support/fetchurl/boot.nix {
+        system = localSystem;
+      };
       shell = builtins.getEnv "COMSPEC"; # "C:/Windows/System32/cmd.exe"; TODO: download some command-interpreter? maybe perl-static.exe?
-    };
-
-    fetchurlBoot = import ../../build-support/fetchurl/boot.nix {
-      system = localSystem;
     };
 
     p7zip-static = stdenv.mkDerivation {
       name = "7za-18.06-static";
-      src = fetchurlBoot {
+      src = stdenv.fetchurlBoot {
         # from https://www.7-zip.org/a/7z1806-extra.7z
         url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/7za.exe";
         sha256 = "1g8bkyqx9xrq0kzc0n3avj931zkvvrwwlrk2v7x3sgshpa3ryrwf";
       };
       builder = lib.concatStringsSep " & " [ ''md %out%\bin''
                                              ''copy %src% %out%\bin\7z.exe'' ];
-    };
-
-    # it uses Windows's SSL libs, not openssl
-    curl-static = stdenv.mkDerivation rec {
-      name = "curl-7.62.0";
-      src = fetchurlBoot {
-        url = "https://curl.haxx.se/download/${name}.tar.bz2";
-        sha256 = "084niy7cin13ba65p8x38w2xcyc54n3fgzbin40fa2shfr0ca0kq";
-      };
-      INCLUDE = "${msvc_2017.INCLUDE};${sdk_10.INCLUDE}";
-      LIB     = "${msvc_2017.LIB};${sdk_10.LIB}";
-      PATH    = "${msvc_2017.PATH};${sdk_10.PATH};${p7zip-static}/bin";
-      builder = lib.concatStringsSep " & " [ ''7z x %src% -so  |  7z x -aoa -si -ttar''
-                                             ''cd ${name}\winbuild''
-                                             ''nmake /f Makefile.vc mode=static VC=15''
-                                             ''xcopy /E/I ..\builds\libcurl-vc15-x64-release-static-ipv6-sspi-winssl\bin %out%\bin'' ];
-    };
-
-    perl-for-stdenv-shell = let
-      # useful libs not included by default
-      extraModules = [
-        (fetchurlBoot {
-          url = "https://cpan.metacpan.org/authors/id/D/DA/DAGOLDEN/Capture-Tiny-0.48.tar.gz";
-          sha256 = "069yrikrrb4vqzc3hrkkfj96apsh7q0hg8lhihq97lxshwz128vc";
-        })
-        # File::Copy::Recursive is not able to copy Windows symlinks!
-        (fetchurlBoot {
-          url = "https://cpan.metacpan.org/authors/id/D/DM/DMUEY/File-Copy-Recursive-0.44.tar.gz";
-          sha256 = "1r3frbl61kr7ig9bzd60fka772cd504v3kx9kgnwvcy1inss06df";
-        })
-        # Win32-Symlink cannot be compiled together with perl
-        #(fetchurlBoot {
-        #  url = "https://cpan.metacpan.org/authors/id/A/AU/AUDREYT/Win32-Symlink-0.06.tar.gz";
-        #  sha256 = "0i34dkwa722saf0zjxd6l0kw94divyxjkwcnbsagk7pnnaacxjbj";
-        #})
-      ];
-      version = "5.28.1";
-    in stdenv.mkDerivation {
-      name = "perl-for-stdenv-shell-${version}";
-      src = fetchurlBoot {
-        url = "https://www.cpan.org/src/5.0/perl-${version}.tar.gz";
-        sha256 = "0iy3as4hnbjfyws4in3j9d6zhhjxgl5m95i5n9jy2bnzcpz8bgry";
-      };
-      INCLUDE = "${msvc_2017.INCLUDE};${sdk_10.INCLUDE}";
-      LIB     = "${msvc_2017.LIB};${sdk_10.LIB}";
-      PATH    = "${msvc_2017.PATH};${sdk_10.PATH};${p7zip-static}/bin";
-      builder = lib.concatStringsSep " & " (        [ ''7z x %src%                         -so  |  7z x -aoa -si -ttar'' ]
-                                          ++ (map (m: ''7z x ${m}                          -so  |  7z x -aoa -si -ttar -operl-${version}\ext'') extraModules)
-                                          ++        [ ''cd perl-${version}\win32''
-                                                      ''nmake install INST_TOP=%out% CCTYPE=MSVC141${if stdenv.is64bit then " WIN64=define" else ""}'' ]
-                                           );
     };
 
     makeWrapper = stdenv.mkDerivation rec {
@@ -178,34 +125,100 @@ in
     __raw = true;
 
     stdenv = import ../generic {
-      name = "stdenv-windows-boot-1";
+      name = "stdenv-windows-boot-2";
+      inherit config;
+      inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform fetchurlBoot cc shell;
+
+      initialPath = [ prevStage.p7zip-static prevStage.makeWrapper ];
+    };
+
+    # it uses Windows's SSL libs, not openssl
+    curl-static = stdenv.mkDerivation rec {
+      name = "curl-7.62.0";
+      src = stdenv.fetchurlBoot {
+        url = "https://curl.haxx.se/download/${name}.tar.bz2";
+        sha256 = "084niy7cin13ba65p8x38w2xcyc54n3fgzbin40fa2shfr0ca0kq";
+      };
+      INCLUDE = "${msvc_2017.INCLUDE};${sdk_10.INCLUDE}";
+      LIB     = "${msvc_2017.LIB};${sdk_10.LIB}";
+      PATH    = "${msvc_2017.PATH};${sdk_10.PATH};${prevStage.p7zip-static}/bin"; # initialPath does not work because it is set up in setup.pm which is not involved here
+      builder = lib.concatStringsSep " & " [ ''7z x %src% -so  |  7z x -aoa -si -ttar''
+                                             ''cd ${name}\winbuild''
+                                             ''nmake /f Makefile.vc mode=static VC=15''
+                                             ''xcopy /E/I ..\builds\libcurl-vc15-x64-release-static-ipv6-sspi-winssl\bin %out%\bin'' ];
+    };
+
+    # TODO: build from source
+    gnu-utils = let
+      inherit (import <nixpkgs/pkgs/development/mingw-modules/msys-packages.nix> {
+                 stdenvNoCC = stdenv; # with 7z.exe
+                 fetchurl = stdenv.fetchurlBoot;
+               }) patch grep gawk sed;
+    in stdenv.mkDerivation {
+      name = "gnu-utils";
+      buildInputs = [ patch grep sed gawk ];
+      builder = lib.concatStringsSep " & " [ ''md %out%\bin''
+                                             ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${sed  }/usr/bin/sed.exe  "} %out%\bin''
+                                             ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${grep }/usr/bin/grep.exe "} %out%\bin''
+                                             ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${gawk }/usr/bin/gawk.exe "} %out%\bin''
+                                             ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${patch}/usr/bin/patch.exe"} %out%\bin''
+                                             ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${sed  }/usr/bin/*.dll"    } %out%\bin''
+                                             ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${grep }/usr/bin/*.dll"    } %out%\bin''
+                                             ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${gawk }/usr/bin/*.dll"    } %out%\bin''
+                                             ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${patch}/usr/bin/*.dll"    } %out%\bin''
+                                           ];
+    };
+
+    perl-for-stdenv-shell = let
+      # useful libs not included by default
+      extraModules = [
+        (stdenv.fetchurlBoot {
+          url = "https://cpan.metacpan.org/authors/id/D/DA/DAGOLDEN/Capture-Tiny-0.48.tar.gz";
+          sha256 = "069yrikrrb4vqzc3hrkkfj96apsh7q0hg8lhihq97lxshwz128vc";
+        })
+        # File::Copy::Recursive is not able to copy Windows symlinks!
+        # ALSO: File::Path::remove_tree unable to remove dangling symlinks
+        (stdenv.fetchurlBoot {
+          url = "https://cpan.metacpan.org/authors/id/D/DM/DMUEY/File-Copy-Recursive-0.44.tar.gz";
+          sha256 = "1r3frbl61kr7ig9bzd60fka772cd504v3kx9kgnwvcy1inss06df";
+        })
+        # Win32-Symlink cannot be compiled together with perl
+        #(fetchurlBoot {
+        #  url = "https://cpan.metacpan.org/authors/id/A/AU/AUDREYT/Win32-Symlink-0.06.tar.gz";
+        #  sha256 = "0i34dkwa722saf0zjxd6l0kw94divyxjkwcnbsagk7pnnaacxjbj";
+        #})
+      ];
+      version = "5.28.1";
+    in stdenv.mkDerivation {
+      name = "perl-for-stdenv-shell-${version}";
+      src = stdenv.fetchurlBoot {
+        url = "https://www.cpan.org/src/5.0/perl-${version}.tar.gz";
+        sha256 = "0iy3as4hnbjfyws4in3j9d6zhhjxgl5m95i5n9jy2bnzcpz8bgry";
+      };
+      INCLUDE = "${msvc_2017.INCLUDE};${sdk_10.INCLUDE}";
+      LIB     = "${msvc_2017.LIB};${sdk_10.LIB}";
+      PATH    = "${msvc_2017.PATH};${sdk_10.PATH};${prevStage.p7zip-static}/bin";
+      builder = lib.concatStringsSep " & " (        [ ''7z x %src%                         -so  |  7z x -aoa -si -ttar'' ]
+                                          ++ (map (m: ''7z x ${m}                          -so  |  7z x -aoa -si -ttar -operl-${version}\ext'') extraModules)
+                                          ++        [ ''cd perl-${version}\win32''
+                                                      ''nmake install INST_TOP=%out% CCTYPE=MSVC141${if stdenv.is64bit then " WIN64=define" else ""}'' ]
+                                           );
+    };
+  })
+
+
+  (prevStage: rec {
+    __raw = true;
+
+    stdenv = import ../generic {
+      name = "stdenv-windows-boot-3";
       inherit config;
       inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform;
 
-      initialPath = [ prevStage.makeWrapper prevStage.p7zip-static ];
+      initialPath = prevStage.stdenv.initialPath ++ [ prevStage.curl-static prevStage.gnu-utils ];
       cc = null;
       fetchurlBoot = null;
       shell = "${prevStage.perl-for-stdenv-shell}/bin/perl.exe";
-    };
-
-    # todo: build coreutils from sources
-    coreutils = let
-      inherit (import <nixpkgs/pkgs/development/mingw-modules/msys-packages.nix> {
-                 stdenvNoCC = stdenv;
-                 fetchurl = fetchurl-curl-static;
-               }) patch grep sed;
-    in stdenv.mkDerivation {
-      name = "coreutils";
-      buildInputs = [ patch grep sed ];
-      buildCommand = ''
-        make_path("$ENV{out}/bin");
-        for my $target (map { glob "$_/usr/bin/*" }('${sed}', '${grep}', '${patch}')) {
-          my $name = basename($target);
-          if ($name =~ /(\.dll|(sed|grep|patch)\.exe)$/ && ! -e "$ENV{out}/bin/$name") {
-            system("mklink", "$ENV{out}/bin/$name" =~ s|/|\\|gr, $target =~ s|/|\\|gr) == 0 or die "mklink($ENV{out}/bin/$name, $target): $!";
-          }
-        }
-      '';
     };
 
     fetchurl-curl-static = import ../../build-support/fetchurl {
@@ -308,6 +321,7 @@ in
           perl-for-stdenv-shell = prevStage.perl-for-stdenv-shell;
 #         p7zip-static = prevStage.p7zip-static;
           curl-static = prevStage.curl-static;
+          gnu-utils = prevStage.gnu-utils;
         };
       };
     in cc-wrapper { msvc = msvc_2017; sdk = sdk_10; };
@@ -317,11 +331,10 @@ in
   (prevStage: {
     inherit config overlays;
     stdenv = import ../generic {
-      name = "stdenv-windows-boot-3";
+      name = "stdenv-windows-boot-4";
       inherit config;
 
-      inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform shell;
-      initialPath = prevStage.stdenv.initialPath ++ [ prevStage.coreutils ];
+      inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform shell initialPath;
       cc = prevStage.cc2017;
       fetchurlBoot = prevStage.fetchurl-curl-static;
     };
