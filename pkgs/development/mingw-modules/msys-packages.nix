@@ -56,10 +56,6 @@ let
               };
               find({ wanted => \&process, no_chdir => 1}, '${dep}');
             '') buildInputs
-        ''
-          echo yay
-          exit 1
-        ''
       else /* on mingw or linux */
         throw "todo";
       meta.broken = broken;
