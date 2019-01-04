@@ -8,7 +8,7 @@ print("I am nix-prefetch-git.pl ".(join ' ', @ARGV)."\n");
 
 
 use Cwd;
-use File::Path qw(remove_tree);
+use File::Path qw(remove_tree make_path);
 use File::Find qw(find);
 use File::Basename qw(basename);
 
@@ -78,12 +78,19 @@ while (@ARGV) {
 
 usage() unless $url;
 
+sub escapeWindowsArg {
+    my ($s) = @_;
+    $s =~ s|\\$|\\\\|g;
+    $s =~ s|\\"|\\\\"|g;
+    $s =~ s|\"|\\"|g;
+    return "\"$s\"";
+}
 
 sub init_remote {
   my ($url) = @_;
-  system("git init"                             ) == 0 or die;
-  system("git remote add origin \"$url\""       ) == 0 or die;
-  system("git config http.proxy \"$http_proxy\"") == 0 or die if $http_proxy;
+  system("git init"                                            ) == 0 or die;
+  system("git remote add origin ".escapeWindowsArg($url)       ) == 0 or die;
+  system("git config http.proxy ".escapeWindowsArg($http_proxy)) == 0 or die if $http_proxy;
 }
 
 # Return the reference of an hash if it exists on the remote repository.
@@ -119,8 +126,8 @@ sub checkout_hash {
 
   print("checkout_hash($hash, $ref)\n");
 
-  if (system("git fetch -t".($builder ? ' --progress' : '')." origin") != 0) { print STDERR "git fetch    failed\n\n\n"; return 1; }
-  if (system("git checkout -b \"$branchName\" \"$hash\""             ) != 0) { print STDERR "git checkout failed\n\n\n"; return 1; }
+  if (system("git fetch -t".($builder ? ' --progress' : '')." origin"                    ) != 0) { print STDERR "git fetch    failed\n\n\n"; return 1; }
+  if (system("git checkout -b ".escapeWindowsArg($branchName)." ".escapeWindowsArg($hash)) != 0) { print STDERR "git checkout failed\n\n\n"; return 1; }
   return 0;
 }
 
@@ -142,41 +149,32 @@ sub checkout_ref {
   return 1 unless $ref;
 
   # --depth option is ignored on http repository.
-  if (system("git fetch".($builder ? ' --progress' : '')." --depth 1 origin \"+$ref\"") != 0) { print STDERR "git fetch    failed\n\n\n"; exit(1); return 1; }
-  if (system("git checkout -b \"$branchName\" FETCH_HEAD"                             ) != 0) { print STDERR "git checkout failed\n\n\n"; return 1; }
+  if (system("git fetch".($builder ? ' --progress' : '')." --depth 1 origin ".escapeWindowsArg($ref)) != 0) { print STDERR "git fetch    failed\n\n\n"; return 1; }
+  if (system("git checkout -b ".escapeWindowsArg($branchName)." FETCH_HEAD"                         ) != 0) { print STDERR "git checkout failed\n\n\n"; return 1; }
   return 0;
 }
 
-# Update submodules TODO: git-submodule is written in bash
+# Update submodules
 sub init_submodules {
   # Add urls into .git/config file
-#  system("git submodule init") == 0 or die $!;
-#
-#  my $dump = `git submodule status`;
-#
-#  if ($dump) {
-#    print("dump4='$dump'\n");
-#    die 'todo: init_submodules';
-#  }
+  system("git submodule init") == 0 or die $!;
 
-##  # list submodule directories and their hashes
-##  git submodule status |
-##  while read -r l; do
-##      local hash
-##      local dir
-##      local name
-##      local url
-##
-##      # checkout each submodule
-##      hash=$(echo "$l" | awk '{print $1}' | tr -d '-')
-##      dir=$(echo "$l" | sed -n 's/^.[0-9a-f]\+ \(.*[^)]*\)\( (.*)\)\?$/\1/p')
-##      name=$(
-##          git config -f .gitmodules --get-regexp submodule\..*\.path |
-##          sed -n "s,^\(.*\)\.path $dir\$,\\1,p")
-##      url=$(git config --get "${name}.url")
-##
-##      clone "$dir" "$url" "$hash" ""
-##  done
+  my %dirToName;
+  for (split /\n/, `git config -f .gitmodules --get-regexp submodule\..*\.path`) {
+    my ($name, $dir) = /^submodule\.(.+)\.path (.+)$/;
+    die unless $name;
+    $dirToName{$dir} = $name;
+  }
+
+  for (split /\n/, `git submodule status`) {
+    my ($hash, $dir) = /^\s*([0-9a-f]{40})\s+(.+)\s*$/;
+    die unless $hash;
+    my $name = $dirToName{$dir};
+    die unless $name;
+    my $url = `git config --get "submodule.$name.url"` =~ s|\s+$||gr;
+    die unless $url;
+    clone($dir, $url, $hash, "");
+  }
 }
 
 sub clone {
@@ -269,18 +267,18 @@ sub _clone_user_rev {
     my $top = getcwd();
     chdir($dir);
 
-    if (system("git rev-parse \"$rev\"") == 0) {
+    if (system("git rev-parse ".escapeWindowsArg($rev)) == 0) {
       $fullRev = `git rev-parse "$rev"`;
-    } elsif (system("git rev-parse \"refs/heads/$branchName\"") == 0) {
+    } elsif (system("git rev-parse ".escapeWindowsArg("refs/heads/$branchName")) == 0) {
       $fullRev = `git rev-parse "refs/heads/$branchName"`;
     } else {
       die 'unable to get $fullRev';
     }
     chomp($fullRev);
     die "fullRev=$fullRev" if $fullRev =~ /\n/;
-    if (system("git describe \"$fullRev\"") == 0) {
+    if (system("git describe ".escapeWindowsArg($fullRev)) == 0) {
       $humanReadableRev = `git describe \"$fullRev\"`;
-    } elsif (system("git describe --tags \"$fullRev\"") == 0) {
+    } elsif (system("git describe --tags ".escapeWindowsArg($fullRev)) == 0) {
       $humanReadableRev = `git describe --tags \"$fullRev\"`;
     } else {
       $humanReadableRev = '-- none --';
@@ -358,10 +356,11 @@ $branchName = 'fetchgit' unless $branchName;
 
 if ($builder) {
   usage() unless $out && $url && $rev;
-  if (-e $out) {
-      remove_tree($out); sleep(1);
+  while (-e $out) {
+      remove_tree($out) or die "remove_tree($out): $!";
+      sleep(1); # Windows bug? make_path just after remove_tree() might fail
   }
-  mkdir($out) or die "mkdir($out): $!";
+  make_path($out) or die "make_path($out): $!";
   clone_user_rev($out, $url, $rev);
 } else {
   $hashType = 'sha256' unless $hashType;
