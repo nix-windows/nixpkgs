@@ -3,6 +3,29 @@
 
 let
   fetch = { name, version, filename, sha256, buildInputs ? [], broken ? false }:
+    if stdenvNoCC.isShellCmdExe /* on mingw bootstrap */ then
+      stdenvNoCC.mkDerivation {
+        inherit name version buildInputs;
+        src = fetchurl {
+          url = "http://repo.msys2.org/mingw/x86_64/${filename}";
+          inherit sha256;
+        };
+        PATH = stdenvNoCC.lib.concatMapStringsSep ";" (x: "${x}\\bin") stdenvNoCC.initialPath; # it adds 7z.exe to PATH
+        builder = stdenvNoCC.lib.concatStringsSep " & " ( [ ''echo PATH=%PATH%''
+                                                            ''7z x %src% -so  |  7z x -aoa -si -ttar -o%out%''
+                                                            ''pushd %out%''
+                                                            ''del .BUILDINFO .INSTALL .MTREE .PKGINFO''
+                                                          ]
+                                                       ++ stdenvNoCC.lib.concatMap (dep: let
+                                                            tgt = stdenvNoCC.lib.replaceStrings ["/"] ["\\"] "${dep}";
+                                                          in [
+#                                                           ''FOR /R ${tgt} %G in (*) DO (set localname=%G???? if not exist %localname% mklink %localname% ${tgt})''
+                                                            ''xcopy /E/H/B/F/I/Y ${tgt} .''
+                                                          ]) buildInputs
+                                                       ++ [ ''popd'' ]
+                                                        );
+      }
+    else
     stdenvNoCC.mkDerivation {
       inherit name version buildInputs;
       src = fetchurl {
@@ -33,7 +56,6 @@ let
               };
               find({ wanted => \&process, no_chdir => 1}, '${dep}');
             '') buildInputs
-      else if stdenvNoCC.isShellCmdExe /* on mingw bootstrap */ then
         ''
           echo yay
           exit 1
@@ -42,6 +64,7 @@ let
         throw "todo";
       meta.broken = broken;
     };
+
   self = _self;
   _self = with self;
 {
