@@ -4,13 +4,17 @@ use Cwd;
 use File::Path qw(remove_tree make_path);
 use File::Basename qw(dirname);
 
-my $nix     = "$ENV{NIX}/bin/nix.exe";         die "no nix"     unless -f $nix;
-my $git     = "$ENV{GIT}/bin/git.exe";         die "no git"     unless -f $git;
-my $perl    = "$ENV{PERL}/bin/perl.exe";       die "no perl"    unless -f $perl;
-my $python2 = "$ENV{PYTHON2}/bin/python.exe";  die "no python2" unless -f $python2;
+my $nix              = "$ENV{NIX}/bin/nix.exe";         die "no nix"     unless -f $nix;
+my $git              = "$ENV{GIT}/bin/git.exe";         die "no git"     unless -f $git;
+my $perl             = "$ENV{PERL}/bin/perl.exe";       die "no perl"    unless -f $perl;
+my $python2          = "$ENV{PYTHON2}/bin/python.exe";  die "no python2" unless -f $python2;
+my $nix_prefetch_url = File::Spec->rel2abs("$0/../../../../../build-support/fetchgit/nix-prefetch-git.pl"); die "no nix-prefetch-git.pl at $nix_prefetch_url" unless -f $nix_prefetch_url;
 
 my $version = $ARGV[0];                        die "bad version `$version'" unless defined($version) && $version =~ /^\d+(\.\d+)+$/;
 my $basedir = "c:/tmp"; # short dir to avoid "filename too long" error
+
+# gclient.py and nix-prefetch-git.pl expect git on patch
+$ENV{PATH} = dirname($git) . ';' . $ENV{PATH};
 
 sub checkout {
   my ($url, $rev, $dir) = @_;
@@ -19,15 +23,12 @@ sub checkout {
   if (-d $dir) {
     print("already exist $dir\n");
   } else {
-    make_path($dir) or die "make_path: $!";
-    my $top = getcwd();
-    chdir($dir);
-    system("$git init"                                       ) == 0 or die;
-    system("$git remote add origin \"$url\""                 ) == 0 or die;
-    system("$git fetch --progress --depth 1 origin \"+$rev\"") == 0 or die;
-    system("$git checkout -b \"fetchgit\" FETCH_HEAD"        ) == 0 or die;
-    remove_tree(".git");
-    chdir($top);
+    system($perl, $nix_prefetch_url,
+           '--builder',
+           '--url', $url,
+           '--out', $dir,
+           '--rev', $rev,
+           '--fetch-submodules') == 0 or die;
   }
 
   my $hash = `$nix hash-path --base32 --type sha256 $dir` =~ s|\s+$||r;
@@ -80,7 +81,6 @@ sub parsedeps {
 
   my $top = getcwd();
   chdir($basedir);
-  $ENV{PATH} = dirname($git) . ';' . $ENV{PATH};
   system("$python2 depot_tools/gclient.py config https://chromium.googlesource.com/chromium/src.git") == 0 or die;
   system("$python2 depot_tools/gclient.py flatten --pin-all-deps > flat"                            ) == 0 or die;
 
@@ -107,39 +107,3 @@ sub parsedeps {
 
 parsedeps();
 
-exit(1);
-=cut
-
-#..\..\..\..\build-support\fetchgit\nix-prefetch-git.pl  --builder --url https://chromium.googlesource.com/chromium/tools/depot_tools.git --out .\tmp --rev db0055dc786a71fe81e720bad2b1acb0e133a291 --fetch-submodules
-
-#git clone https://chromium.googlesource.com/chromium/tools/depot_tools
-#git clone https://chromium.googlesource.com/chromium/src.git
-#pushd src & git checkout 73.0.3659.1 & popd
-
-#C:\nix\store\15viai4ccpr2yfcdvfyar4rwfsxz8xvz-perl-for-stdenv-shell-5.28.1\bin\perl.exe ..\..\..\..\build-support\fetchgit\nix-prefetch-git.pl  --builder --url https://chromium.googlesource.com/chromium/tools/depot_tools.git --out .\tmp --rev db0055dc786a71fe81e720bad2b1acb0e133a291 --fetch-submodules
-#C:\nix-windows\bin\nix.exe hash-path --base32 --type sha256 tmp
-
-
-
-#C:\nix\store\hlbxsrw1l2c3q152z4bmih3zfmdmhfi4-python-2.7.15\bin\python.exe depot_tools\gclient.py config https://chromium.googlesource.com/chromium/src.git
-#C:\nix\store\hlbxsrw1l2c3q152z4bmih3zfmdmhfi4-python-2.7.15\bin\python.exe depot_tools\gclient.py flatten --pin-all-deps > flat
-
-sub xxx {
-  local $/ = undef;
-  open(my $fh, 'flat') or die;
-  my $content = <$fh>;
-  while ($content =~ /"([^"]+)":\s*\{\s*"url":\s*"(.+)@(.+)"/gm) {
-    my $url = $2;
-    my $rev = $3;
-    my $path = $1 =~ s|/|\\|gr;
-    next if $url =~ /chrome-internal\.googlesource\.com/;
-    #print("rem $path $url $rev\n");
-    print("git clone $url $path\n");
-    print("pushd $path\n");
-    print("git checkout $rev\n");
-    print("popd\n");
-
-  }
-}
-
-xxx();
