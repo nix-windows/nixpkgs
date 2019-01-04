@@ -180,10 +180,10 @@ in
         })
         # File::Copy::Recursive is not able to copy Windows symlinks!
         # ALSO: File::Path::remove_tree unable to remove dangling symlinks
-        (stdenv.fetchurlBoot {
-          url = "https://cpan.metacpan.org/authors/id/D/DM/DMUEY/File-Copy-Recursive-0.44.tar.gz";
-          sha256 = "1r3frbl61kr7ig9bzd60fka772cd504v3kx9kgnwvcy1inss06df";
-        })
+        #(stdenv.fetchurlBoot {
+        #  url = "https://cpan.metacpan.org/authors/id/D/DM/DMUEY/File-Copy-Recursive-0.44.tar.gz";
+        #  sha256 = "1r3frbl61kr7ig9bzd60fka772cd504v3kx9kgnwvcy1inss06df";
+        #})
         # Win32-Symlink cannot be compiled together with perl
         #(fetchurlBoot {
         #  url = "https://cpan.metacpan.org/authors/id/A/AU/AUDREYT/Win32-Symlink-0.06.tar.gz";

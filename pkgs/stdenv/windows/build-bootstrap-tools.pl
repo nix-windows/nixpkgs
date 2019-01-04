@@ -9,10 +9,13 @@ use Math::BigInt;
 use Digest::SHA             qw(sha256_hex);
 use Digest::file            qw(digest_file_hex);
 use File::Copy              qw(copy move);
-use File::Copy::Recursive   qw(dircopy);
 use File::Path              qw(make_path remove_tree);
 use File::Fetch;
 
+sub dircopy {
+  my ($from, $to) = @_;
+  return system('robocopy', $from =~ s|/|\\|gr, $to =~ s|/|\\|gr, '/E', '/SL', '/LOG:nul') == 0;
+}
 
 unless (-f '7z.exe' && digest_file_hex('7z.exe', "SHA-256") eq '47462483fe54776e01d8ceb8ff9fd5bf2c3f1f01d852a54d878914f62f98f2d3') {
   File::Fetch->new(uri => "https://github.com/volth/nixpkgs/releases/download/windows-0.3/7z.exe")->fetch(to=>"./");
@@ -123,7 +126,6 @@ my $wd = getcwd();
 #my $compression = '-mx1'; # fast
 my $compression = '';
 
-if (0) {
 unless (-d "msvc-$msvc_version.nar.xz") {
     remove_tree("msvc");
     make_path("msvc");
@@ -167,7 +169,6 @@ unless (-d "redist-$redist_version.nar.xz") {
       };
     ];
 }
-}
 
 unless (-f "sdk-$sdk_8_1_version.nar.xz") {
     remove_tree("sdk_8_1");
@@ -189,7 +190,6 @@ unless (-f "sdk-$sdk_8_1_version.nar.xz") {
     ];
 }
 
-if (0) {
 unless (-f "sdk-$sdk_10_version.nar.xz") {
     remove_tree("sdk_10");
     make_path("sdk_10");
@@ -270,5 +270,4 @@ unless (-f "vc1-$msbuild_version.nar.xz") {
         sha256 = "$vc1_nar->{NarHash}";
       };
     ];
-}
 }

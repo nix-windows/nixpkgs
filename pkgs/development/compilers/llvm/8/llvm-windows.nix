@@ -44,16 +44,16 @@ in stdenv.mkDerivation rec {
   in stdenv.mkDerivation {
     name = "${name}-src";
     buildCommand = ''
-      system('xcopy', '/E/H/B/F/I', '${llvm_src             }' =~ s|/|\\|gr, "$ENV{out}"                         =~ s|/|\\|gr) == 0 or die "xcopy: $!";
-      system('xcopy', '/E/H/B/F/I', '${lld_src              }' =~ s|/|\\|gr, "$ENV{out}/tools/lld"               =~ s|/|\\|gr) == 0 or die "xcopy: $!";
-      system('xcopy', '/E/H/B/F/I', '${lldb_src             }' =~ s|/|\\|gr, "$ENV{out}/tools/lldb"              =~ s|/|\\|gr) == 0 or die "xcopy: $!";
-      system('xcopy', '/E/H/B/F/I', '${clang_src            }' =~ s|/|\\|gr, "$ENV{out}/tools/clang"             =~ s|/|\\|gr) == 0 or die "xcopy: $!";
-      system('xcopy', '/E/H/B/F/I', '${clang-tools-extra_src}' =~ s|/|\\|gr, "$ENV{out}/tools/clang/tools/extra" =~ s|/|\\|gr) == 0 or die "xcopy: $!";
-      system('xcopy', '/E/H/B/F/I', '${compiler-rt_src      }' =~ s|/|\\|gr, "$ENV{out}/projects/compiler-rt"    =~ s|/|\\|gr) == 0 or die "xcopy: $!";
-      system('xcopy', '/E/H/B/F/I', '${libunwind_src        }' =~ s|/|\\|gr, "$ENV{out}/projects/libunwind"      =~ s|/|\\|gr) == 0 or die "xcopy: $!";
-      system('xcopy', '/E/H/B/F/I', '${libcxxabi_src        }' =~ s|/|\\|gr, "$ENV{out}/projects/libcxxabi"      =~ s|/|\\|gr) == 0 or die "xcopy: $!";
-      system('xcopy', '/E/H/B/F/I', '${libcxx_src           }' =~ s|/|\\|gr, "$ENV{out}/projects/libcxx"         =~ s|/|\\|gr) == 0 or die "xcopy: $!";
-      system('xcopy', '/E/H/B/F/I', '${openmp_src           }' =~ s|/|\\|gr, "$ENV{out}/projects/openmp"         =~ s|/|\\|gr) == 0 or die "xcopy: $!";
+      dircopy('${llvm_src             }', "$ENV{out}"                        ) or die "dircopy";
+      dircopy('${lld_src              }', "$ENV{out}/tools/lld"              ) or die "dircopy";
+      dircopy('${lldb_src             }', "$ENV{out}/tools/lldb"             ) or die "dircopy";
+      dircopy('${clang_src            }', "$ENV{out}/tools/clang"            ) or die "dircopy";
+      dircopy('${clang-tools-extra_src}', "$ENV{out}/tools/clang/tools/extra") or die "dircopy";
+      dircopy('${compiler-rt_src      }', "$ENV{out}/projects/compiler-rt"   ) or die "dircopy";
+      dircopy('${libunwind_src        }', "$ENV{out}/projects/libunwind"     ) or die "dircopy";
+      dircopy('${libcxxabi_src        }', "$ENV{out}/projects/libcxxabi"     ) or die "dircopy";
+      dircopy('${libcxx_src           }', "$ENV{out}/projects/libcxx"        ) or die "dircopy";
+      dircopy('${openmp_src           }', "$ENV{out}/projects/openmp"        ) or die "dircopy";
     '';
   };
 

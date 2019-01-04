@@ -2,7 +2,6 @@
 use Cwd qw(getcwd);
 use File::Basename qw(dirname basename);
 use File::Copy qw(copy move);
-use File::Copy::Recursive qw(dircopy);
 use File::Path qw(make_path remove_tree);
 #use Win32::Symlink qw(readlink symlink);
 
@@ -856,6 +855,10 @@ sub stripHash {
     return basename(shift) =~ s/^[a-z0-9]{32}-//r;
 }
 
+sub dircopy {
+  my ($from, $to) = @_;
+  return system('robocopy', $from =~ s|/|\\|gr, $to =~ s|/|\\|gr, '/E', '/SL', '/LOG:nul') == 0;
+}
 
 
 $ENV{unpackCmdHooks} = ($ENV{unpackCmdHooks} || "") . " _defaultUnpack";
@@ -872,7 +875,7 @@ sub _defaultUnpack {
         #dircopy($fn, stripHash($fn)) or die "dircopy($fn, ".stripHash($fn)."): $!";
 
         # dircopy is unable to copy symlinks
-        system('xcopy', '/E/H/B/F/I', $fn =~ s|/|\\|gr, stripHash($fn) =~ s|/|\\|gr) == 0 or die "xcopy($fn, ".stripHash($fn)."): $!";
+        dircopy($fn, stripHash($fn)) == 0 or die "dircopy($fn, ".stripHash($fn).")";
         return 0;
     } else {
         # Win10 has native C:\Windows\System32\curl.exe and C:\Windows\System32\tar.exe, but not bzip2

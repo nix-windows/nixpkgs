@@ -46,8 +46,7 @@ if stdenv.isShellPerl then
         mkdir($ENV{out}) or die $!;
         copy($fn, "$ENV{out}/") or die $!;
       } else {
-        #dircopy($fn, $ENV{out}) or die $!;
-        system('xcopy', '/E/H/B/F/I', $fn =~ s|/|\\|gr, $ENV{out} =~ s|/|\\|gr) == 0 or die "xcopy($fn, $ENV{out}): $!";
+        dircopy($fn, $ENV{out}) or die "robocopy";
       }
     '' else ''
       dircopy($unpackDir, $ENV{out});
