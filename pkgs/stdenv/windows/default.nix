@@ -19,6 +19,7 @@ let
     PATH    = "${msvc_2017}/bin/HostX64/x64";
   };
 
+  # TODO: include VCRUNTIME140D.dll and MSVCP140D.dll and add redist to stdenv.cc's $PATH (boost makes /MDd binaries during configuration phase)
   redist = (import <nix/fetchurl.nix> {
     name = "redist-${redist.version}";
     url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/redist-${redist.version}.nar.xz";
@@ -131,6 +132,7 @@ in
 
       initialPath = [ prevStage.p7zip-static prevStage.makeWrapper ];
     };
+    inherit prevStage;
 
     # it uses Windows's SSL libs, not openssl
     curl-static = stdenv.mkDerivation rec {
@@ -317,9 +319,9 @@ in
 #         INCLUDE = "${msvc.INCLUDE};${sdk.INCLUDE}";
 #         LIB     = "${msvc.LIB};${sdk.LIB}";
 #         PATH    = "${msvc.PATH};${sdk.PATH}";
-          makeWrapper = prevStage.makeWrapper;
+#         p7zip-static = prevStage.prevStage.p7zip-static;
+          makeWrapper = prevStage.prevStage.makeWrapper;
           perl-for-stdenv-shell = prevStage.perl-for-stdenv-shell;
-#         p7zip-static = prevStage.p7zip-static;
           curl-static = prevStage.curl-static;
           gnu-utils = prevStage.gnu-utils;
         };
