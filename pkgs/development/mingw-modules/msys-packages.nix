@@ -52,7 +52,7 @@ let
                   if (-d $src) {
                     make_path($tgt) or die "$!";
                   } else {
-                    symlink(readlink_f($src) => $tgt) or die "$!";
+                    relsymlink($src => $tgt) or die "$!";
                   }
                 }
               };

@@ -336,10 +336,8 @@ in
           close($fh);
 
           # make symlinks to help chromium builder which expects a particular directory structure (todo: move to chromium.nix)
-          #system('mklink /D '.escapeWindowsArg("$ENV{out}/DIA SDK"                       =~ s|/|\\|gr).' '.escapeWindowsArg('${sdk}/DIA SDK' =~ s|/|\\|gr)) == 0 or die;
-          #system('mklink /D '.escapeWindowsArg("$ENV{out}/VC/Tools/MSVC/${msvc.version}" =~ s|/|\\|gr).' '.escapeWindowsArg('${msvc}'        =~ s|/|\\|gr)) == 0 or die;
-          symlink('${sdk}/DIA SDK' => "$ENV{out}/DIA SDK"                      ) or die $!;
-          symlink('${msvc}'        => "$ENV{out}/VC/Tools/MSVC/${msvc.version}") or die $!;
+          relsymlink('${sdk}/DIA SDK' => "$ENV{out}/DIA SDK"                      ) or die $!;
+          relsymlink('${msvc}'        => "$ENV{out}/VC/Tools/MSVC/${msvc.version}") or die $!;
         '';
 
         passthru = {

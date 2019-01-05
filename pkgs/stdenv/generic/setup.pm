@@ -61,14 +61,23 @@ sub dircopy {
 }
 
 sub readlink_f {
-  my $src = shift;
-  my %seen = ();
-  while (is_ntfs_symlink($src)) {
-     $src = readlink($src);
-     die "readlink_f: cycle" if $seen{$src};
-     $seen{$src} = 1;
-  }
-  return $src;
+    my $src = shift;
+    my %seen = ();
+    while (is_ntfs_symlink($src)) {
+        $src = readlink($src);
+        die "readlink_f: cycle" if $seen{$src};
+        $seen{$src} = 1;
+    }
+    return $src;
+}
+
+# The canonical form for symlinks inside Nix Store (it can hit 254-char limit, they \\?\ form will take place)
+sub relsymlink {
+    my ($src, $tgt) = @_;
+    my $top = getcwd(); # symlink is unable to create link to non-existent file, so chdir() is to rescue
+    chdir(dirname($tgt));
+    symlink(File::Spec->abs2rel(readlink_f($src), dirname($tgt)) => $tgt) or die "symlink: $!";
+    chdir($top);
 }
 
 
