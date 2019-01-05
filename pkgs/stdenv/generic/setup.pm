@@ -55,9 +55,15 @@ sub escapeWindowsArg {
 
 sub dircopy {
     my ($from, $to) = @_;
-    my $ec = system('robocopy', $from =~ s|/|\\|gr, $to =~ s|/|\\|gr, '/E', '/SL', '/LOG:nul') >> 8;
-    # https://blogs.technet.microsoft.com/deploymentguys/2008/06/16/robocopy-exit-codes/
-    return $ec == 0 || $ec == 1;
+    my $logfile = "$ENV{TMP}/robocopy-$$.log";
+    my $exitCode = system('robocopy', $from =~ s|/|\\|gr, $to =~ s|/|\\|gr, '/E', '/SL', "/LOG:$logfile") >> 8;
+    if ($exitCode == 0 || $exitCode == 1) { # success https://blogs.technet.microsoft.com/deploymentguys/2008/06/16/robocopy-exit-codes/
+        unlink($logfile);
+        return 1;
+    } else {
+        print("robocopy's exitCode=$exitCode logfile=$logfile\n");
+        return 0;
+    }
 }
 
 sub readlink_f {
@@ -907,7 +913,7 @@ sub _defaultUnpack {
         #dircopy($fn, stripHash($fn)) or die "dircopy($fn, ".stripHash($fn)."): $!";
 
         # dircopy is unable to copy symlinks
-        dircopy($fn, stripHash($fn)) == 0 or die "dircopy($fn, ".stripHash($fn).")";
+        dircopy($fn, stripHash($fn)) or die "dircopy($fn, ".stripHash($fn).")";
         return 0;
     } else {
         # Win10 has native C:\Windows\System32\curl.exe and C:\Windows\System32\tar.exe, but not bzip2

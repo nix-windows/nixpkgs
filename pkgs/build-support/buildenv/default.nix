@@ -70,8 +70,8 @@ runCommand name
     eval readFile('${./builder.pl}');
     if ($@) { print "$@" ; die; }
 
-    print("postBuild to eval='$postBuild'\n");
-    eval "$postBuild";
+    print("postBuild to eval='$ENV{postBuild}'\n");
+    eval "$ENV{postBuild}";
     if ($@) { print "$@" ; die; }
   '' else
   ''
