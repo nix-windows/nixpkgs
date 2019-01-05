@@ -26,12 +26,12 @@ stdenv.mkDerivation rec {
       paths = [ mingwPackages.binutils ] ++ (with msysPackages; [ automake-wrapper autoconf libtool make coreutils grep sed texinfo ]);
     };
   in ''
-    # make MSYS FHS with writable /tmp
+    # make MSYS FHS with writable /tmp (todo?: use symlinktree_* functions)
     my $msysroot = "$ENV{NIX_BUILD_TOP}/msysroot";
     make_path("$msysroot/tmp");
     for my $dirname (glob("${msysenv}/*")) {
       die "not a dir: $dirname" unless -d $dirname;
-      system('mklink', '/D', ("$msysroot/".basename($dirname)) =~ s|/|\\|gr, $dirname =~ s|/|\\|gr);
+      symlink($dirname => "$msysroot/".basename($dirname)) or die $!;
     }
     $ENV{PATH} = "$msysroot/mingw64/bin;$msysroot/usr/bin;$ENV{PATH}";
 

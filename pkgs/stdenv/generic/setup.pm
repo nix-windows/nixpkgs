@@ -6,7 +6,7 @@ use Cwd qw(getcwd);
 use File::Basename qw(dirname basename);
 use File::Copy qw(copy move);
 use File::Path qw(make_path remove_tree);
-use Win32::NTFS::Symlink qw(readlink symlink is_ntfs_symlink);
+use Win32::LongPath qw(readlinkL symlinkL testL);
 
 # set -eu
 # set -o pipefail
@@ -63,21 +63,27 @@ sub dircopy {
 sub readlink_f {
     my $src = shift;
     my %seen = ();
-    while (is_ntfs_symlink($src)) {
-        $src = readlink($src);
+    while (testL('l', $src)) {
+        $src = readlinkL($src);
         die "readlink_f: cycle" if $seen{$src};
         $seen{$src} = 1;
     }
     return $src;
 }
 
-# The canonical form for symlinks inside Nix Store (it can hit 254-char limit, they \\?\ form will take place)
 sub relsymlink {
     my ($src, $tgt) = @_;
-    my $top = getcwd(); # symlink is unable to create link to non-existent file, so chdir() is to rescue
-    chdir(dirname($tgt));
-    symlink(File::Spec->abs2rel(readlink_f($src), dirname($tgt)) => $tgt) or die "symlink: $!";
-    chdir($top);
+    $src = File::Spec->abs2rel(readlink_f($src), dirname($tgt));
+    symlinkL($src => $tgt) or die "symlinkL($src => $tgt): $!";
+}
+
+sub uncsymlink {
+    my ($src, $tgt) = @_;
+    $src = readlink_f($src);
+    $src =~ s|[/\\]+|\\|g;
+    $src =  "\\\\?\\$src" if $src !~ /^\\/;
+    $src =~ s/^(\\\\\?\\)([a-z])(:.+)$/$1.uc($2).$3/e;
+    symlinkL($src => $tgt) or die "symlinkL($src => $tgt): $!";
 }
 
 

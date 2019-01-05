@@ -129,7 +129,7 @@ let
                   if (-d \$src) {
                     make_path(\$tgt) or die "\$!";
                   } else {
-                    relsymlink(\$src => \$tgt) or die "\$!";
+                    uncsymlink(\$src => \$tgt) or die "\$!";
                   }
                 }
               };

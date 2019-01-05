@@ -7,6 +7,27 @@ use File::Path;
 use File::Basename;
 use File::Compare;
 use JSON::PP;
+use Win32::LongPath qw(readlinkL symlinkL testL);
+
+sub readlink_f {
+    my $src = shift;
+    my %seen = ();
+    while (testL('l', $src)) {
+        $src = readlinkL($src);
+        die "readlink_f: cycle" if $seen{$src};
+        $seen{$src} = 1;
+    }
+    return $src;
+}
+
+sub uncsymlink {
+    my ($src, $tgt) = @_;
+    $src = readlink_f($src);
+    $src =~ s|[/\\]+|\\|g;
+    $src =  "\\\\?\\$src" if $src !~ /^\\/;
+    $src =~ s/^(\\\\\?\\)([a-z])(:.+)$/$1.uc($2).$3/e;
+    symlinkL($src => $tgt) or die "symlinkL($src => $tgt): $!";
+}
 
 STDOUT->autoflush(1);
 
@@ -201,9 +222,7 @@ foreach my $relName (sort keys %symlinks) {
     } else {
         #print "creating symlink $relName to $target\n";
         if ($^O eq 'MSWin32') {
-            $target =~ s#[/\\]+#\\#g; # sanitize mklink's input
-            $abs    =~ s#[/\\]+#\\#g;
-            system('mklink', -d $target ? '/D' : (), $abs, $target) == 0 ||
+            uncsymlink $target, $abs ||
                 die "error creating link `$abs': $!";
         } else {
             symlink $target, $abs ||

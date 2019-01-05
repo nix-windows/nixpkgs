@@ -189,11 +189,10 @@ in
 
     perl-for-stdenv-shell = let
       # useful libs not included by default
-      extraModules = [
-        (stdenv.fetchurlBoot {
-          url = "https://cpan.metacpan.org/authors/id/D/DA/DAGOLDEN/Capture-Tiny-0.48.tar.gz";
-          sha256 = "069yrikrrb4vqzc3hrkkfj96apsh7q0hg8lhihq97lxshwz128vc";
-        })
+      cpan-Capture-Tiny = stdenv.fetchurlBoot {
+        url = "https://cpan.metacpan.org/authors/id/D/DA/DAGOLDEN/Capture-Tiny-0.48.tar.gz";
+        sha256 = "069yrikrrb4vqzc3hrkkfj96apsh7q0hg8lhihq97lxshwz128vc";
+      };
         # File::Copy::Recursive is not able to copy Windows symlinks!
         # ALSO: File::Path::remove_tree unable to remove dangling symlinks
         #(stdenv.fetchurlBoot {
@@ -208,16 +207,10 @@ in
 #         url = "https://cpan.metacpan.org/authors/id/S/SH/SHAY/Win32-UTCFileTime-1.59.tar.gz";
 #         sha256 = "1a3yn46pwcfna0z8pi288ayda8s0zgy30z7v7fan1pvgajdbmhh9";
 #       })
-#       (stdenv.fetchurlBoot {
-#         url = "https://cpan.metacpan.org/authors/id/R/RB/RBOISVERT/Win32-LongPath-1.0.tar.gz";
-#         sha256 = "1wnfy43i3h5c9xq4lw47qalgfi5jq5z01sv6sb6r3qcb75y3zflx";
-#       })
-
-        (stdenv.fetchurlBoot {
-          url = "https://cpan.metacpan.org/authors/id/B/BA/BAYMAX/Win32-NTFS-Symlink-0.10.tar.gz";
-          sha256 = "0inr9f6glbf0a98bfmzcv6a6d3glkfbg0rqy21h9a3man6ln9731";
-        })
-      ];
+      cpan-Win32-LongPath = stdenv.fetchurlBoot {
+        url = "https://cpan.metacpan.org/authors/id/R/RB/RBOISVERT/Win32-LongPath-1.0.tar.gz";
+        sha256 = "1wnfy43i3h5c9xq4lw47qalgfi5jq5z01sv6sb6r3qcb75y3zflx";
+      };
       version = "5.28.1";
     in stdenv.mkDerivation {
       name = "perl-for-stdenv-shell-${version}";
@@ -228,11 +221,19 @@ in
       INCLUDE = "${msvc_2017.INCLUDE};${sdk_10.INCLUDE}";
       LIB     = "${msvc_2017.LIB};${sdk_10.LIB}";
       PATH    = "${msvc_2017.PATH};${sdk_10.PATH};${prevStage.p7zip-static}/bin";
-      builder = lib.concatStringsSep " & " (        [ ''7z x %src%                         -so  |  7z x -aoa -si -ttar'' ]
-                                          ++ (map (m: ''7z x ${m}                          -so  |  7z x -aoa -si -ttar -operl-${version}\ext'') extraModules)
-                                          ++        [ ''cd perl-${version}\win32''
-                                                      ''nmake install INST_TOP=%out% CCTYPE=MSVC141${if stdenv.is64bit then " WIN64=define" else ""}'' ]
-                                           );
+      PERL_USE_UNSAFE_INC = "1"; # env var needed to build Win32-LongPath-1.0
+      builder = lib.concatStringsSep " & " [ ''7z x %src%                         -so  |  7z x -aoa -si -ttar''
+                                             ''7z x ${cpan-Capture-Tiny}          -so  |  7z x -aoa -si -ttar -operl-${version}\cpan''
+                                             ''cd perl-${version}\win32''
+                                             ''nmake install INST_TOP=%out% CCTYPE=MSVC141${if stdenv.is64bit then " WIN64=define" else ""}''
+                                             # it does not built being copied to \cpan or \ext
+                                             ''7z x ${cpan-Win32-LongPath}        -so  |  7z x -aoa -si -ttar''
+                                             ''cd Win32-LongPath-1.0''
+                                             ''%out%\bin\perl Makefile.PL''
+                                             ''nmake''
+                                             ''nmake test''
+                                             ''nmake install''
+                                           ];
     };
   })
 
@@ -245,7 +246,7 @@ in
       inherit config;
       inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform;
 
-      initialPath = prevStage.stdenv.initialPath ++ [ prevStage.curl-static prevStage.gnu-utils ];
+      initialPath = prevStage.stdenv.initialPath ++ [ prevStage.curl-static prevStage.gnu-utils prevStage.schinagl-ln ];
       cc = null;
       fetchurlBoot = null;
       shell = "${prevStage.perl-for-stdenv-shell}/bin/perl.exe";
@@ -336,8 +337,8 @@ in
           close($fh);
 
           # make symlinks to help chromium builder which expects a particular directory structure (todo: move to chromium.nix)
-          relsymlink('${sdk}/DIA SDK' => "$ENV{out}/DIA SDK"                      ) or die $!;
-          relsymlink('${msvc}'        => "$ENV{out}/VC/Tools/MSVC/${msvc.version}") or die $!;
+          uncsymlink('${sdk}/DIA SDK' => "$ENV{out}/DIA SDK"                      ) or die $!;
+          uncsymlink('${msvc}'        => "$ENV{out}/VC/Tools/MSVC/${msvc.version}") or die $!;
         '';
 
         passthru = {
