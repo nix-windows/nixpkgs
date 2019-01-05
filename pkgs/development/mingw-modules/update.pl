@@ -124,11 +124,13 @@ let
                 die "bad src: '\$src'" unless \$src =~ /\\/[0-9a-df-np-sv-z]{32}-[^\\/]+(.*)/;
                 my \$rel = \$1;
                 my \$tgt = "\$ENV{out}\$rel";
-                print("\$src -> \$tgt\\n");
-                if (-d \$src) {
-                  make_path(\$tgt);
-                } else {
-                  system('mklink', \$tgt =~ s|/|\\\\|gr, \$src =~ s|/|\\\\|gr);
+                unless (-e \$tgt) {
+                  print("\$src -> \$tgt\\n");
+                  if (-d \$src) {
+                    make_path(\$tgt) or die "\$!";
+                  } else {
+                    symlink(readlink_f(\$src) => \$tgt) or die "\$!";
+                  }
                 }
               };
               find({ wanted => \\&process, no_chdir => 1}, '\${dep}');

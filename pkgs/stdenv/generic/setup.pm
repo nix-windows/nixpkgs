@@ -6,7 +6,7 @@ use Cwd qw(getcwd);
 use File::Basename qw(dirname basename);
 use File::Copy qw(copy move);
 use File::Path qw(make_path remove_tree);
-use Win32::NTFS::Symlink qw(readlink symlink);
+use Win32::NTFS::Symlink qw(readlink symlink is_ntfs_symlink);
 
 # set -eu
 # set -o pipefail
@@ -58,6 +58,17 @@ sub dircopy {
     my $ec = system('robocopy', $from =~ s|/|\\|gr, $to =~ s|/|\\|gr, '/E', '/SL', '/LOG:nul') >> 8;
     # https://blogs.technet.microsoft.com/deploymentguys/2008/06/16/robocopy-exit-codes/
     return $ec == 0 || $ec == 1;
+}
+
+sub readlink_f {
+  my $src = shift;
+  my %seen = ();
+  while (is_ntfs_symlink($src)) {
+     $src = readlink($src);
+     die "readlink_f: cycle" if $seen{$src};
+     $seen{$src} = 1;
+  }
+  return $src;
 }
 
 
