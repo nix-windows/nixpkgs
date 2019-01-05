@@ -55,7 +55,7 @@ sub escapeWindowsArg {
 
 sub dircopy {
     my ($from, $to) = @_;
-    my $logfile = "$ENV{TMP}/robocopy-$$.log";
+    my $logfile = "nul"; # "C:/tmp/robocopy-$$.log";
     my $exitCode = system('robocopy', $from =~ s|/|\\|gr, $to =~ s|/|\\|gr, '/E', '/SL', "/LOG:$logfile") >> 8;
     if ($exitCode == 0 || $exitCode == 1) { # success https://blogs.technet.microsoft.com/deploymentguys/2008/06/16/robocopy-exit-codes/
         unlink($logfile);
