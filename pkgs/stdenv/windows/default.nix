@@ -150,6 +150,22 @@ in
                                              ''xcopy /E/I ..\builds\libcurl-vc15-x64-release-static-ipv6-sspi-winssl\bin %out%\bin'' ];
     };
 
+    # a symlink utility
+    # not compatible with coreutils' ln !
+    # not open-source :-(
+    schinagl-ln = stdenv.mkDerivation rec {
+      name = "ln-2.9.0.2";
+      src = stdenv.fetchurlBoot {
+        url = "http://www.schinagl.priv.at/nt/ln/ln.zip";
+        sha256 = "1f9mx8q679i4abdmjk01hrzdyjwj08m229fp00mvj25q5xi030y1";
+      };
+      PATH    = "${prevStage.p7zip-static}/bin";
+      builder = lib.concatStringsSep " & " [ ''7z x %src% ln.exe -o%out%\bin''
+                                             ''xcopy /E/I ${lib.replaceStrings ["/"] ["\\"] "${redist}/x64/Microsoft.VC141.CRT/msvcp140.dll"    } %out%\bin''
+                                             ''xcopy /E/I ${lib.replaceStrings ["/"] ["\\"] "${redist}/x64/Microsoft.VC141.CRT/vcruntime140.dll"} %out%\bin''
+                                           ];
+    };
+
     # TODO: build from source
     gnu-utils = let
       inherit (import <nixpkgs/pkgs/development/mingw-modules/msys-packages.nix> {
@@ -184,11 +200,23 @@ in
         #  url = "https://cpan.metacpan.org/authors/id/D/DM/DMUEY/File-Copy-Recursive-0.44.tar.gz";
         #  sha256 = "1r3frbl61kr7ig9bzd60fka772cd504v3kx9kgnwvcy1inss06df";
         #})
-        # Win32-Symlink cannot be compiled together with perl
-        #(fetchurlBoot {
-        #  url = "https://cpan.metacpan.org/authors/id/A/AU/AUDREYT/Win32-Symlink-0.06.tar.gz";
-        #  sha256 = "0i34dkwa722saf0zjxd6l0kw94divyxjkwcnbsagk7pnnaacxjbj";
-        #})
+#       (stdenv.fetchurlBoot {
+#         url = "https://cpan.metacpan.org/authors/id/J/JD/JDB/Win32-0.52.tar.gz";
+#         sha256 = "0xsy52qi7glffznil5sxaccldxpn0fvcwz706lgdbcx80dw1jq7g";
+#       })
+#       (stdenv.fetchurlBoot {
+#         url = "https://cpan.metacpan.org/authors/id/S/SH/SHAY/Win32-UTCFileTime-1.59.tar.gz";
+#         sha256 = "1a3yn46pwcfna0z8pi288ayda8s0zgy30z7v7fan1pvgajdbmhh9";
+#       })
+#       (stdenv.fetchurlBoot {
+#         url = "https://cpan.metacpan.org/authors/id/R/RB/RBOISVERT/Win32-LongPath-1.0.tar.gz";
+#         sha256 = "1wnfy43i3h5c9xq4lw47qalgfi5jq5z01sv6sb6r3qcb75y3zflx";
+#       })
+
+        (stdenv.fetchurlBoot {
+          url = "https://cpan.metacpan.org/authors/id/B/BA/BAYMAX/Win32-NTFS-Symlink-0.10.tar.gz";
+          sha256 = "0inr9f6glbf0a98bfmzcv6a6d3glkfbg0rqy21h9a3man6ln9731";
+        })
       ];
       version = "5.28.1";
     in stdenv.mkDerivation {
@@ -235,7 +263,8 @@ in
         name = "vc-${msbuild.version}";
         buildInputs = [ vc1 ];
         buildCommand = ''
-          dircopy("${vc1}", $ENV{out}) or die "$!";
+          #
+          dircopy("${vc1}", $ENV{out}) or die "dircopy: $!";
 
           # so far there is no `substituteInPlace`
           for my $filename (glob("$ENV{out}/VCTargets/*.props"), glob("$ENV{out}/VCTargets/*.targets")) {
@@ -307,8 +336,10 @@ in
           close($fh);
 
           # make symlinks to help chromium builder which expects a particular directory structure (todo: move to chromium.nix)
-          system('mklink /D '.escapeWindowsArg("$ENV{out}/DIA SDK"                       =~ s|/|\\|gr).' '.escapeWindowsArg('${sdk}/DIA SDK' =~ s|/|\\|gr)) == 0 or die;
-          system('mklink /D '.escapeWindowsArg("$ENV{out}/VC/Tools/MSVC/${msvc.version}" =~ s|/|\\|gr).' '.escapeWindowsArg('${msvc}'        =~ s|/|\\|gr)) == 0 or die;
+          #system('mklink /D '.escapeWindowsArg("$ENV{out}/DIA SDK"                       =~ s|/|\\|gr).' '.escapeWindowsArg('${sdk}/DIA SDK' =~ s|/|\\|gr)) == 0 or die;
+          #system('mklink /D '.escapeWindowsArg("$ENV{out}/VC/Tools/MSVC/${msvc.version}" =~ s|/|\\|gr).' '.escapeWindowsArg('${msvc}'        =~ s|/|\\|gr)) == 0 or die;
+          symlink('${sdk}/DIA SDK' => "$ENV{out}/DIA SDK"                      ) or die $!;
+          symlink('${msvc}'        => "$ENV{out}/VC/Tools/MSVC/${msvc.version}") or die $!;
         '';
 
         passthru = {
@@ -324,6 +355,7 @@ in
           perl-for-stdenv-shell = prevStage.perl-for-stdenv-shell;
           curl-static = prevStage.curl-static;
           gnu-utils = prevStage.gnu-utils;
+          schinagl-ln = prevStage.schinagl-ln;
         };
       };
     in cc-wrapper { msvc = msvc_2017; sdk = sdk_10; };

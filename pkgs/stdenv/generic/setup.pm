@@ -1,9 +1,12 @@
 # make these function available in builder code without explicit `use`
+use strict;
+use warnings;
+use feature 'unicode_strings';
 use Cwd qw(getcwd);
 use File::Basename qw(dirname basename);
 use File::Copy qw(copy move);
 use File::Path qw(make_path remove_tree);
-#use Win32::Symlink qw(readlink symlink);
+use Win32::NTFS::Symlink qw(readlink symlink);
 
 # set -eu
 # set -o pipefail
@@ -49,6 +52,14 @@ sub escapeWindowsArg {
     $s =~ s|\"|\\"|g;
     return "\"$s\"";
 }
+
+sub dircopy {
+    my ($from, $to) = @_;
+    my $ec = system('robocopy', $from =~ s|/|\\|gr, $to =~ s|/|\\|gr, '/E', '/SL', '/LOG:nul') >> 8;
+    # https://blogs.technet.microsoft.com/deploymentguys/2008/06/16/robocopy-exit-codes/
+    return $ec == 0 || $ec == 1;
+}
+
 
 ######################################################################
 # Hook handling.
@@ -132,7 +143,7 @@ sub runOneHook {
             print("BUILTIN hook=$hook\n");
             if (&{$builtinHooks{$hook}}(@rest) == 0) { # todo check hook type
                 $ret = 0;
-                break;
+                last;
             }
         } else {
             print("IGNORE hook=$hook ref(hook)=[".ref($hook)."]\n");
@@ -491,7 +502,7 @@ sub findInputs {
             my $file = $files->[$relTargetOffset - $relHostOffset];
             # Target offset relative to the package currently being
             # built.
-            my $targetOffsetNext = mapOffset(relTargetOffset);
+            my $targetOffsetNext = mapOffset($relTargetOffset);
 #           print("targetOffsetNext=$targetOffsetNext\n");
             # Once again, ensure we're in bounds relative to the
             # package currently being built.
@@ -855,11 +866,6 @@ sub stripHash {
     return basename(shift) =~ s/^[a-z0-9]{32}-//r;
 }
 
-sub dircopy {
-  my ($from, $to) = @_;
-  return system('robocopy', $from =~ s|/|\\|gr, $to =~ s|/|\\|gr, '/E', '/SL', '/LOG:nul') == 0;
-}
-
 
 $ENV{unpackCmdHooks} = ($ENV{unpackCmdHooks} || "") . " _defaultUnpack";
 sub _defaultUnpack {
@@ -913,10 +919,10 @@ sub unpackPhase() {
     # source archives, we record the contents of the current
     # directory, then look below which directory got added.  Yeah,
     # it's rather hacky.
-    my %dirsBefore = map { $_ => 1 } grep { -d $_ } glob("*");
+    my %dirsBefore = map { $_ => 1 } (grep { -d $_ } glob("*"));
 
     # Unpack all source archives.
-    for $i (split / /, $ENV{srcs}) {
+    for my $i (split / /, $ENV{srcs}) {
         unpackFile($i);
     }
 
@@ -928,7 +934,7 @@ sub unpackPhase() {
     if ($ENV{setSourceRoot}) {
         runOneHook('setSourceRoot');
     } elsif (!$ENV{sourceRoot}) {
-        for $i (glob('*')) {
+        for my $i (glob('*')) {
             next unless -d $i;
             next if exists($dirsBefore{$i});
             die "unpacker produced multiple directories" if $ENV{sourceRoot};
@@ -957,7 +963,7 @@ sub unpackPhase() {
 sub patchPhase() {
     runHook 'prePatch';
 #
-    for $i (split / +/, $ENV{patches}) {
+    for my $i (split / +/, $ENV{patches}) {
         print("applying patch $i\n");
         die "patch file `$i' does not exist" unless -f $i;
         if ($i =~ /\.(gz|bz2|xz|lzma|7z)$/) {
@@ -1274,7 +1280,7 @@ sub showPhaseHeader {
 #
 my $phases;
 sub genericBuild() {
-    for $k (sort (keys %ENV)) {
+    for my $k (sort (keys %ENV)) {
       print("genericBuild env: $k=$ENV{$k};\n");
     }
 
@@ -1300,7 +1306,7 @@ sub genericBuild() {
     $phases =~ s/^\s+|\s+$//;
     print("phases=$phases\n");
 
-    for $curPhase (split / +/, $phases) {
+    for my $curPhase (split / +/, $phases) {
         print("curPhase1=$curPhase\n");
         next if $curPhase eq "buildPhase"           && $ENV{dontBuild};
         next if $curPhase eq "checkPhase"           && !$ENV{doCheck};
