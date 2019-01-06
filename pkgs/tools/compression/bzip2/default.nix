@@ -36,11 +36,11 @@ stdenv.mkDerivation rec {
     system("nmake -f makefile.msc") == 0 or die $!;
   '';
   installPhase = ''
-    make_path("$ENV{out}/bin", "$ENV{out}/include", "$ENV{out}/lib") or die $!;
-    copy('bzip2.exe',         "$ENV{out}/bin"    )                   or die $!;
-    copy('bzip2recover.exe',  "$ENV{out}/bin"    )                   or die $!;
-    copy('bzlib.h',           "$ENV{out}/include")                   or die $!;
-    copy('libbz2.lib',        "$ENV{out}/lib"    )                   or die $!;
+    make_pathL("$ENV{out}/bin", "$ENV{out}/include", "$ENV{out}/lib") or die $!;
+    copyL('bzip2.exe',         "$ENV{out}/bin/bzip2.exe"        )     or die $!;
+    copyL('bzip2recover.exe',  "$ENV{out}/bin/bzip2recover.exe" )     or die $!;
+    copyL('bzlib.h',           "$ENV{out}/include/bzlib.h"      )     or die $!;
+    copyL('libbz2.lib',        "$ENV{out}/lib/libbz2.lib"       )     or die $!;
   '';
 }
 

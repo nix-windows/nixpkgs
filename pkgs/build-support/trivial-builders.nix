@@ -63,13 +63,11 @@ rec {
       ( if stdenv.isShellPerl then
       ''
         my $n = "$ENV{out}${destination}";
-        make_path(dirname($n));
+        make_pathL(dirname($n));
         if (-e $ENV{textPath}) {
-          move($ENV{textPath}, $n) or die "move($ENV{textPath}, $n): $!";
+          copyL($ENV{textPath}, $n) or die "copyL($ENV{textPath}, $n): $!"; # renameL() won't work across disks
         } else {
-          open(my $fh, ">$n") or die "open(>$n): $!";
-          print $fh $ENV{textPath};
-          close($fh);
+          writeFile($n, $ENV{text});
         }
         ${checkPhase}
       ''

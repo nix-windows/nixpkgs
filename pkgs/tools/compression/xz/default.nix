@@ -46,16 +46,16 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-    make_path("$ENV{out}/lib", "$ENV{out}/include") or die $!;
+    make_pathL("$ENV{out}/lib", "$ENV{out}/include") or die $!;
     ${if enableStatic then ''
-        copy("windows/vs2017/Release/x64/liblzma/liblzma.lib",     "$ENV{out}/lib")            or die $!; # static lib
-        copy("src/liblzma/api/lzma.h",                             "$ENV{out}/include/lzma.h") or die $!; # static lib
-        changeFile { "#define LZMA_API_STATIC 1\n".$_ }            "$ENV{out}/include/lzma.h";
+        copyL("windows/vs2017/Release/x64/liblzma/liblzma.lib",     "$ENV{out}/lib/liblzma.lib") or die $!; # static lib
+        copyL("src/liblzma/api/lzma.h",                             "$ENV{out}/include/lzma.h" ) or die $!; # static lib
+        changeFile { "#define LZMA_API_STATIC 1\n".$_ }             "$ENV{out}/include/lzma.h";
       '' else ''
-        make_path("$ENV{out}/bin") or die $!;
-        copy("windows/vs2017/Release/x64/liblzma_dll/liblzma.dll", "$ENV{out}/bin") or die $!;
-        copy("windows/vs2017/Release/x64/liblzma_dll/liblzma.lib", "$ENV{out}/lib") or die $!;
-        copy("src/liblzma/api/lzma.h",                             "$ENV{out}/include") or die $!;
+        make_pathL("$ENV{out}/bin") or die $!;
+        copyL("windows/vs2017/Release/x64/liblzma_dll/liblzma.dll", "$ENV{out}/bin/liblzma.dll") or die $!;
+        copyL("windows/vs2017/Release/x64/liblzma_dll/liblzma.lib", "$ENV{out}/lib/liblzma.lib") or die $!;
+        copyL("src/liblzma/api/lzma.h",                             "$ENV{out}/include/lzma.h" ) or die $!;
       ''}
     dircopy("src/liblzma/api/lzma", "$ENV{out}/include/lzma") or die $!;
   '';

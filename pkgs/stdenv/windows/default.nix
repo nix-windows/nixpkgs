@@ -193,6 +193,10 @@ in
         url = "https://cpan.metacpan.org/authors/id/D/DA/DAGOLDEN/Capture-Tiny-0.48.tar.gz";
         sha256 = "069yrikrrb4vqzc3hrkkfj96apsh7q0hg8lhihq97lxshwz128vc";
       };
+      cpan-Data-Dump = stdenv.fetchurlBoot {
+        url = "https://cpan.metacpan.org/authors/id/G/GA/GAAS/Data-Dump-1.23.tar.gz";
+        sha256 = "0r9ba52b7p8nnn6nw0ygm06lygi8g68piri78jmlqyrqy5gb0lxg";
+      };
         # File::Copy::Recursive is not able to copy Windows symlinks!
         # ALSO: File::Path::remove_tree unable to remove dangling symlinks
         #(stdenv.fetchurlBoot {
@@ -224,6 +228,7 @@ in
       PERL_USE_UNSAFE_INC = "1"; # env var needed to build Win32-LongPath-1.0
       builder = lib.concatStringsSep " & " [ ''7z x %src%                         -so  |  7z x -aoa -si -ttar''
                                              ''7z x ${cpan-Capture-Tiny}          -so  |  7z x -aoa -si -ttar -operl-${version}\cpan''
+                                             ''7z x ${cpan-Data-Dump}             -so  |  7z x -aoa -si -ttar -operl-${version}\cpan''
                                              ''cd perl-${version}\win32''
                                              ''nmake install INST_TOP=%out% CCTYPE=MSVC141${if stdenv.is64bit then " WIN64=define" else ""}''
                                              # it does not built being copied to \cpan or \ext
@@ -284,7 +289,7 @@ in
         name = "${msvc.name}+${sdk.name}+${msbuild.name}";
         buildInputs = [ msvc sdk msbuild vc ];
         buildCommand = ''
-          make_path("$ENV{out}/bin", "$ENV{out}/VC/Tools/MSVC") or die "make_path: $!";
+          make_pathL("$ENV{out}/bin", "$ENV{out}/VC/Tools/MSVC") or die "make_pathL: $!";
 
           for my $name ('cl', 'ml64', 'lib', 'link', 'nmake', 'mc', 'mt', 'rc', 'dumpbin', 'csc', 'msbuild') {
             my $target;
@@ -316,8 +321,8 @@ in
           }
 
           # for those who want to deal with (execute or even parse) vcvarsall.bat (chromium, boost, ...)
-          open(my $fh, ">$ENV{out}/VC/vcvarsall.bat") or die $!;
-          my $content = 'PATH'                  ."=${msvc.PATH};${sdk.PATH};${msbuild.PATH};%PATH%\n".
+          writeFile("$ENV{out}/VC/vcvarsall.bat",
+                       ('PATH'                  ."=${msvc.PATH};${sdk.PATH};${msbuild.PATH};%PATH%\n".
                     'set INCLUDE'               ."=%INCLUDE%;${msvc.INCLUDE};${sdk.INCLUDE}\n".
                     'set LIB'                   ."=%LIB%;${msvc.LIB};${sdk.LIB}\n".
                     'set LIBPATH'               ."=%LIBPATH%;${msvc.LIBPATH};${sdk.LIBPATH}\n".
@@ -332,9 +337,7 @@ in
                     'set VCToolsRedistDir'      ."=${msvc}/\n".
                     'set VCTargetsPath'         ."=${vc}/VCTargets/\n".
                     'set UCRTVersion'           ."=${sdk.version}\n".
-                    'set UniversalCRTSdkDir'    ."=${sdk}/\n";
-          print $fh ($content =~ s|/|\\|gr);
-          close($fh);
+                    'set UniversalCRTSdkDir'    ."=${sdk}/\n") =~ s|/|\\|gr);
 
           # make symlinks to help chromium builder which expects a particular directory structure (todo: move to chromium.nix)
           uncsymlink('${sdk}/DIA SDK' => "$ENV{out}/DIA SDK"                      ) or die $!;

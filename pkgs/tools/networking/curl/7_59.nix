@@ -41,20 +41,20 @@ stdenv.mkDerivation rec {
   buildPhase = ''
     chdir("winbuild");
     # TODO? buildenv
-    make_path("devel/include", "devel/lib");
-    dircopy('${zlib}/lib/*', 'devel/lib/');
-    dircopy('${zlib}/include/*', 'devel/include/');
-    dircopy('${openssl}/lib/*', 'devel/lib/');
+    make_pathL("devel/include", "devel/lib");
+    dircopy('${zlib}/lib/*',        'devel/lib/'    );
+    dircopy('${zlib}/include/*',    'devel/include/');
+    dircopy('${openssl}/lib/*',     'devel/lib/'    );
     dircopy('${openssl}/include/*', 'devel/include/');
-    system("nmake /f Makefile.vc mode=dll VC=15 USE_SSL=true USE_SSPI=false WITH_SSL=dll WITH_ZLIB=dll WITH_DEVEL=./devel");
+    system("nmake /f Makefile.vc mode=dll VC=15 USE_SSL=true USE_SSPI=false WITH_SSL=dll WITH_ZLIB=dll WITH_DEVEL=./devel") == 0 or die;
   '';
   installPhase = ''
     for my $dir (glob('../builds/*')) {
       dircopy($dir, $ENV{out}) or die "$!" if -f "$dir/bin/curl.exe";
     }
-    copy('${openssl}/bin/libeay32.dll', "$ENV{out}/bin/LIBEAY32.dll");
-    copy('${openssl}/bin/ssleay32.dll', "$ENV{out}/bin/SSLEAY32.dll");
-    copy('${zlib}/bin/zlib1.dll',       "$ENV{out}/bin/zlib1.dll");
+    copyL('${openssl}/bin/libeay32.dll', "$ENV{out}/bin/LIBEAY32.dll");
+    copyL('${openssl}/bin/ssleay32.dll', "$ENV{out}/bin/SSLEAY32.dll");
+    copyL('${zlib}/bin/zlib1.dll',       "$ENV{out}/bin/zlib1.dll");
   '';
 }
 else

@@ -56,13 +56,13 @@ buildPythonPackage rec {
 
   postInstall = ''
     # ActivePython puts these files (and also msvcp140.dll and vcruntime140.dll) next to python.exe, let's do the same
-    make_path "$ENV{out}/bin";
+    make_pathL "$ENV{out}/bin";
     for my $file (glob("$ENV{out}/${python.sitePackages}/pywin32_system32/*.dll"),
                        "$ENV{out}/${python.sitePackages}/win32/pythonservice.exe") {
-        move($file, "$ENV{out}/bin/") or die "move($file): $!";
+      renameL($file, "$ENV{out}/bin/".basename($file)) or die "renameL($file): $!";
     }
 
-    copy('${stdenv.cc.redist}/x64/Microsoft.VC141.MFC/mfc140.dll', "$ENV{out}/${python.sitePackages}/pythonwin") or die "copy(mfc140.dll): $!";
+    copyL('${stdenv.cc.redist}/x64/Microsoft.VC141.MFC/mfc140.dll', "$ENV{out}/${python.sitePackages}/pythonwin/mfc140.dll") or die "copyL(mfc140.dll): $!";
   '';
 
   meta = with lib; {

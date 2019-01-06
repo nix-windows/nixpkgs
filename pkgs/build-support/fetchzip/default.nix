@@ -30,7 +30,7 @@ if stdenv.isShellPerl then
     chdir($unpackDir) or die "chdir: $!";
 
     my $renamed = "$ENV{TMPDIR}/${baseNameOf url}";
-    move($ENV{downloadedFile}, $renamed) or die "move: $!";
+    renameL($ENV{downloadedFile}, $renamed) or die "renameL: $!";
     unpackFile($renamed);
   ''
   + (if stripRoot then ''
@@ -44,7 +44,7 @@ if stdenv.isShellPerl then
       my $fn = shift @ls;
       if (-f $fn) {
         mkdir($ENV{out}) or die $!;
-        copy($fn, "$ENV{out}/") or die $!;
+        copyL($fn, "$ENV{out}/".basename($fn)) or die $!;
       } else {
         dircopy($fn, $ENV{out}) or die "robocopy";
       }

@@ -42,7 +42,7 @@ let
     '';
 
     installPhase = ''
-      make_path($ENV{out})                       or die "make_path($ENV{out}): $!";
+      make_pathL($ENV{out})                      or die "make_pathL($ENV{out}): $!";
       dircopy('../bin64',   "$ENV{out}/bin")     or die "dircopy(../bin64,   $ENV{out}/bin): $!";
       dircopy('../lib64',   "$ENV{out}/lib")     or die "dircopy(../lib64,   $ENV{out}/lib): $!";
       dircopy('../include', "$ENV{out}/include") or die "dircopy(../include, $ENV{out}/include): $!";

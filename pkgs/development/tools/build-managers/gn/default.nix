@@ -47,7 +47,7 @@ stdenv.mkDerivation rec {
 
   buildPhase = if stdenv.hostPlatform.isMicrosoft then ''
     system('python build/gen.py --no-sysroot --no-last-commit-position') == 0 or die;
-    copy('${lastCommitPosition}', 'out/last_commit_position.h') or die;
+    copyL('${lastCommitPosition}', 'out/last_commit_position.h') or die;
     system("ninja -j $ENV{NIX_BUILD_CORES} -C out gn.exe") == 0 or die;
   '' else ''
     python build/gen.py --no-sysroot --no-last-commit-position
@@ -56,8 +56,8 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = if stdenv.hostPlatform.isMicrosoft then ''
-    make_path("$ENV{out}/bin") or die $!;
-    copy("out/gn.exe", "$ENV{out}/bin/") or die $!;
+    make_pathL("$ENV{out}/bin") or die $!;
+    copyL("out/gn.exe", "$ENV{out}/bin/gn.exe") or die $!;
   '' else ''
     install -vD out/gn "$out/bin/gn"
   '';

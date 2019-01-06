@@ -28,10 +28,10 @@ stdenv.mkDerivation rec {
   in ''
     # make MSYS FHS with writable /tmp (todo?: use symlinktree_* functions)
     my $msysroot = "$ENV{NIX_BUILD_TOP}/msysroot";
-    make_path("$msysroot/tmp");
+    make_pathL("$msysroot/tmp");
     for my $dirname (glob("${msysenv}/*")) {
       die "not a dir: $dirname" unless -d $dirname;
-      symlink($dirname => "$msysroot/".basename($dirname)) or die $!;
+      uncsymlink($dirname => "$msysroot/".basename($dirname)) or die $!;
     }
     $ENV{PATH} = "$msysroot/mingw64/bin;$msysroot/usr/bin;$ENV{PATH}";
 
@@ -43,13 +43,13 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-    make_path("$ENV{out}/bin", "$ENV{out}/include", "$ENV{out}/lib");
-    copy 'x86_64-w64-mingw32/include/ffi.h',                 "$ENV{out}/include/";
-    copy 'x86_64-w64-mingw32/include/ffitarget.h',           "$ENV{out}/include/";
-    copy 'x86_64-w64-mingw32/.libs/libffi-7.dll',            "$ENV{out}/bin/";
-    copy 'x86_64-w64-mingw32/.libs/libffi-7.lib',            "$ENV{out}/lib/";
-    copy 'x86_64-w64-mingw32/.libs/libffi_convenience.lib',  "$ENV{out}/lib/";
-    copy 'x86_64-w64-mingw32/.libs/libffi-7.lib',            "$ENV{out}/lib/ffi.lib";  # when building llvm, cmake is unable to find libffi-7.lib, only ffi.lib
+    make_pathL("$ENV{out}/bin", "$ENV{out}/include", "$ENV{out}/lib");
+    copyL 'x86_64-w64-mingw32/include/ffi.h',                 "$ENV{out}/include/ffi.h";
+    copyL 'x86_64-w64-mingw32/include/ffitarget.h',           "$ENV{out}/include/ffitarget.h";
+    copyL 'x86_64-w64-mingw32/.libs/libffi-7.dll',            "$ENV{out}/bin/libffi-7.dll";
+    copyL 'x86_64-w64-mingw32/.libs/libffi-7.lib',            "$ENV{out}/lib/libffi-7.lib";
+    copyL 'x86_64-w64-mingw32/.libs/libffi_convenience.lib',  "$ENV{out}/lib/libffi_convenience.lib";
+    copyL 'x86_64-w64-mingw32/.libs/libffi-7.lib',            "$ENV{out}/lib/ffi.lib";  # when building llvm, cmake is unable to find libffi-7.lib, only ffi.lib
   '';
 }
 

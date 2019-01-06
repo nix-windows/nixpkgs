@@ -109,11 +109,11 @@ stdenv.mkDerivation rec {
       my @git_remote_http_srcs = ("common-main.c", "http-walker.c", "http.c", "remote-curl.c");
 
       # `./command-list.h` needs `bash` to generate (todo: do it once `stdenvMinGW` will work)
-      copy('${./command-list-2.19.1.h}', './command-list.h') or die;
+      copyL('${./command-list-2.19.1.h}', './command-list.h') or die;
 
       # fetch-pack does `close(1)` so the receiving party gets unexpected EOF
       # TODO: use .patch
-      copy('${./fetch-pack.c}', './builtin/fetch-pack.c') or die;
+      copyL('${./fetch-pack.c}', './builtin/fetch-pack.c') or die;
 
       # VS2017's msvcrt.lib has no __wgetmainargs
       open(my $fh, ">>compat/mingw.c");
@@ -157,14 +157,14 @@ stdenv.mkDerivation rec {
       system("link.exe", "/out:git-remote-https.exe", '/DEBUG', '/LTCG', '/SUBSYSTEM:CONSOLE', glob('gitrhobjs/*.obj'), "libgit.lib", "xdiff.lib", 'advapi32.lib', 'ws2_32.lib', 'user32.lib', "${zlib}/lib/zdll.lib", "${curl}/lib/libcurl.lib");
   '';
   installPhase = ''
-    make_path("$ENV{out}/bin")                         or die "make_path $ENV{out}/bin: $!";
-    copy("git.exe",                  "$ENV{out}/bin/") or die "copy git.exe: $!";
-    copy("git.pdb",                  "$ENV{out}/bin/") or die "copy git.pdb: $!";
-    copy("git-remote-http.exe",      "$ENV{out}/bin/") or die "copy git-remote-http.exe: $!";
-    copy("git-remote-https.exe",     "$ENV{out}/bin/") or die "copy git-remote-https.exe: $!";
-    copy('${curl}/bin/libcurl.dll',  "$ENV{out}/bin/") or die "copy libcurl.dll: $!";
-    copy('${curl}/bin/LIBEAY32.dll', "$ENV{out}/bin/") or die "copy LIBEAY32.dll: $!";
-    copy('${curl}/bin/SSLEAY32.dll', "$ENV{out}/bin/") or die "copy SSLEAY32.dll: $!";
-    copy('${curl}/bin/zlib1.dll',    "$ENV{out}/bin/") or die "copy zlib1.dll: $!";
+    make_pathL("$ENV{out}/bin")                                             or die "make_pathL $ENV{out}/bin: $!";
+    copyL("git.exe",                  "$ENV{out}/bin/git.exe"             ) or die "copyL git.exe: $!";
+    copyL("git.pdb",                  "$ENV{out}/bin/git.pdb"             ) or die "copyL git.pdb: $!";
+    copyL("git-remote-http.exe",      "$ENV{out}/bin/git-remote-http.exe" ) or die "copyL git-remote-http.exe: $!";
+    copyL("git-remote-https.exe",     "$ENV{out}/bin/git-remote-https.exe") or die "copyL git-remote-https.exe: $!";
+    copyL('${curl}/bin/libcurl.dll',  "$ENV{out}/bin/libcurl.dll"         ) or die "copyL libcurl.dll: $!";
+    copyL('${curl}/bin/LIBEAY32.dll', "$ENV{out}/bin/LIBEAY32.dll"        ) or die "copyL LIBEAY32.dll: $!";
+    copyL('${curl}/bin/SSLEAY32.dll', "$ENV{out}/bin/SSLEAY32.dll"        ) or die "copyL SSLEAY32.dll: $!";
+    copyL('${curl}/bin/zlib1.dll',    "$ENV{out}/bin/zlib1.dll"           ) or die "copyL zlib1.dll: $!";
   '';
 }

@@ -97,13 +97,13 @@ in {
         sha256 = "1cpix2zays59diqzh0iibwb3944yw7zrbm47fhskw9d2b35wv6k0";
       };
       installPhase = ''
-        make_path("$ENV{out}/bin", "$ENV{out}/share/doc");
+        make_pathL("$ENV{out}/bin", "$ENV{out}/share/doc");
         dircopy('std', "$ENV{out}/std");
         for my $file (glob('*.exe'), glob('*.dll')) {
-          copy($file, "$ENV{out}/bin/");
+          copyL($file, "$ENV{out}/bin/".basename($file));
         }
         for my $file (glob('*.txt')) {
-          copy($file, "$ENV{out}/share/doc/");
+          copyL($file, "$ENV{out}/share/doc/".basename($file));
         }
       '';
     }

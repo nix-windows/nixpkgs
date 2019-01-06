@@ -41,23 +41,9 @@ let
           unlink "$ENV{out}/.MTREE";
           unlink "$ENV{out}/.PKGINFO";
           use File::Find qw(find);
-        '' + stdenvNoCC.lib.concatMapStringsSep "\n" (dep: ''
-              sub process {
-                my $src = $_;
-                die "bad src: '$src'" unless $src =~ /\/[0-9a-df-np-sv-z]{32}-[^\/]+(.*)/;
-                my $rel = $1;
-                my $tgt = "$ENV{out}$rel";
-                unless (-e $tgt) {
-                  print("$src -> $tgt\n");
-                  if (-d $src) {
-                    make_path($tgt) or die "$!";
-                  } else {
-                    uncsymlink($src => $tgt) or die "$!";
-                  }
-                }
-              };
-              find({ wanted => \&process, no_chdir => 1}, '${dep}');
-            '') buildInputs
+        '' + stdenvNoCC.lib.concatMapStringsSep "\n" (dep:
+               ''symtree_link($ENV{out}, '${dep}', $ENV{out});''
+             ) buildInputs
       else /* on mingw or linux */
         throw "todo";
       meta.broken = broken;

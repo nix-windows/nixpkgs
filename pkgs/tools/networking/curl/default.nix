@@ -45,9 +45,9 @@ stdenv.mkDerivation rec {
     for my $dir (glob('../builds/*')) {
       dircopy($dir, $ENV{out}) or die "$!" if -f "$dir/bin/curl.exe";
     }
-    copy('${openssl}/bin/libeay32.dll', "$ENV{out}/bin/LIBEAY32.dll");
-    copy('${openssl}/bin/ssleay32.dll', "$ENV{out}/bin/SSLEAY32.dll");
-    copy('${zlib}/bin/zlib1.dll',       "$ENV{out}/bin/zlib1.dll");
+    copyL('${openssl}/bin/libeay32.dll', "$ENV{out}/bin/LIBEAY32.dll");
+    copyL('${openssl}/bin/ssleay32.dll', "$ENV{out}/bin/SSLEAY32.dll");
+    copyL('${zlib}/bin/zlib1.dll',       "$ENV{out}/bin/zlib1.dll");
   '';
 }
 else

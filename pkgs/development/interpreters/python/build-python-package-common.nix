@@ -23,7 +23,7 @@ attrs // {
   installPhase = attrs.installPhase or (if python.stdenv.isShellPerl then ''
     runHook 'preInstall';
 
-    make_path "$ENV{out}/${python.sitePackages}";
+    make_pathL("$ENV{out}/${python.sitePackages}");
     $ENV{PYTHONPATH} = "$ENV{out}/${python.sitePackages}:$ENV{PYTHONPATH}";
 
     my $oldwd = getcwd();

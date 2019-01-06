@@ -11,6 +11,7 @@ use Win32::LongPath qw(readlinkL symlinkL testL);
 
 sub readlink_f {
     my $src = shift;
+    die "readlink_f: '$src' does not exist" unless -e $src;
     my %seen = ();
     while (testL('l', $src)) {
         $src = readlinkL($src);
@@ -26,7 +27,7 @@ sub uncsymlink {
     $src =~ s|[/\\]+|\\|g;
     $src =  "\\\\?\\$src" if $src !~ /^\\/;
     $src =~ s/^(\\\\\?\\)([a-z])(:.+)$/$1.uc($2).$3/e;
-    symlinkL($src => $tgt) or die "symlinkL($src => $tgt): $!";
+    return symlinkL($src => $tgt);
 }
 
 STDOUT->autoflush(1);

@@ -39,8 +39,8 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-    make_path("$ENV{out}/bin") or die "make_path: $!";
-    copy("ninja.exe", "$ENV{out}/bin") or die "copy: $!";
+    make_pathL("$ENV{out}/bin")                   or die "make_pathL: $!";
+    copyL("ninja.exe", "$ENV{out}/bin/ninja.exe") or die "copyL: $!";
   '';
 
 # setupHook = ./setup-hook.pl;

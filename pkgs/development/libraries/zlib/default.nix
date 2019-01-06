@@ -26,16 +26,16 @@ stdenv.mkDerivation (rec {
     system('nmake -f win32/Makefile.msc') == 0 or die;
   '';
   installPhase = if static then ''
-    make_path("$ENV{out}/include", "$ENV{out}/lib") or die $!;
-    copy('zlib.h',    "$ENV{out}/include/")                          or die $!;
-    copy('zconf.h',   "$ENV{out}/include/")                          or die $!;
-    copy('zlib.lib',  "$ENV{out}/lib/"    )                          or die $!;
+    make_pathL("$ENV{out}/include", "$ENV{out}/lib")                  or die $!;
+    copyL('zlib.h',    "$ENV{out}/include/zlib.h" )                   or die $!;
+    copyL('zconf.h',   "$ENV{out}/include/zconf.h")                   or die $!;
+    copyL('zlib.lib',  "$ENV{out}/lib/zlib.lib"   )                   or die $!;
   '' else ''
-    make_path("$ENV{out}/bin", "$ENV{out}/include", "$ENV{out}/lib") or die $!;
-    copy('zlib1.dll', "$ENV{out}/bin/"     )                         or die $!;
-    copy('zlib.h',    "$ENV{out}/include/")                          or die $!;
-    copy('zconf.h',   "$ENV{out}/include/")                          or die $!;
-    copy('zdll.lib',  "$ENV{out}/lib/"    )                          or die $!;
+    make_pathL("$ENV{out}/bin", "$ENV{out}/include", "$ENV{out}/lib") or die $!;
+    copyL('zlib1.dll', "$ENV{out}/bin/zlib1.dll"  )                   or die $!;
+    copyL('zlib.h',    "$ENV{out}/include/zlib.h" )                   or die $!;
+    copyL('zconf.h',   "$ENV{out}/include/zconf.h")                   or die $!;
+    copyL('zdll.lib',  "$ENV{out}/lib/zdll.lib"   )                   or die $!;
   '';
 })
 

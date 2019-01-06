@@ -84,7 +84,7 @@ in rec {
     # wrappers are not really needed, only for .obj cache to work, for the hashes not be depended on $ENV{out}
     installPhase = ''
       system("nmake ${nmakeFlags} install") == 0 or die;
-      copy("${config-nix}", "$ENV{out}/share/nix/corepkgs/config.nix") or die "copy config.nix $!";
+      copyL("${config-nix}", "$ENV{out}/share/nix/corepkgs/config.nix") or die "copyL(config.nix) $!";
     '';
     passthru = {
     # fromGit = false;

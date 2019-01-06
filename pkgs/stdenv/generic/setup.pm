@@ -3,10 +3,9 @@ use strict;
 use warnings;
 use feature 'unicode_strings';
 use Cwd qw(getcwd);
-use File::Basename qw(dirname basename);
-use File::Copy qw(copy move);
-use File::Path qw(make_path remove_tree);
-use Win32::LongPath qw(readlinkL symlinkL testL);
+use Digest::file    qw(digest_file_hex);
+use File::Basename  qw(dirname basename);
+use Win32::LongPath qw(readlinkL testL symlinkL unlinkL renameL copyL mkdirL rmdirL openL chdirL getcwdL attribL statL);
 
 # set -eu
 # set -o pipefail
@@ -19,7 +18,8 @@ use Win32::LongPath qw(readlinkL symlinkL testL);
 #
 #
 sub readFile {
-    open(my $fh, shift) or die $!;
+    my $fh;
+    openL(\$fh, '<:encoding(UTF-8)', shift) or die $!;
     binmode $fh;
     local $/ = undef;
     my $content = <$fh>;
@@ -29,8 +29,14 @@ sub readFile {
 
 sub writeFile {
     my ($filename, $content) = @_;
-    make_path(dirname($filename)) or die "$!" unless -d dirname($filename);
-    open my $fh, ">$filename" or die "writeFile($filename) failed: $!";
+    make_pathL(dirname($filename)) or die "$!" unless -d dirname($filename);
+    if (-e $filename) {
+      attribL('-r', $filename) or die "writeFile($filename) attribL: $!";
+      unlinkL($filename)       or die "writeFile($filename) unlinkL: $!" if -f $filename;
+      rmdirL ($filename)       or die "writeFile($filename) rmdirL: $!"  if -d $filename;
+    }
+    my $fh;
+    openL(\$fh, '>:encoding(UTF-8)', $filename) or die "writeFile($filename) openL: $!";
     binmode $fh; # do not emit \r
     print $fh $content;
     close $fh;
@@ -40,7 +46,6 @@ sub changeFile (&@) {
     my $lambda = \&{shift @_};
     for my $filename (@_) {
         $_ = readFile($filename);
-        unlink($filename);
         writeFile($filename, $lambda->($_));
     }
 }
@@ -68,6 +73,7 @@ sub dircopy {
 
 sub readlink_f {
     my $src = shift;
+    die "readlink_f: '$src' does not exist" unless -e $src;
     my %seen = ();
     while (testL('l', $src)) {
         $src = readlinkL($src);
@@ -89,7 +95,137 @@ sub uncsymlink {
     $src =~ s|[/\\]+|\\|g;
     $src =  "\\\\?\\$src" if $src !~ /^\\/;
     $src =~ s/^(\\\\\?\\)([a-z])(:.+)$/$1.uc($2).$3/e;
-    symlinkL($src => $tgt) or die "symlinkL($src => $tgt): $!";
+    return symlinkL($src => $tgt);
+}
+
+ # make them comparable using `ne` and `eq`
+sub uniform_path {
+    my $path = shift;
+    $path =~ s|[\\/]+|/|g;
+    $path =~ s/^([a-z])(:.+)$/uc($1).$2/e;
+    return $path;
+}
+
+# if $path exists: if it is reachable via symlink, make it real
+# otherwise:       ensure dirname($path) is a directory, so a dir or file $path could be created
+sub symtree_reify {
+    my ($treeroot, $path, $cache) = @_;
+    $treeroot = uniform_path($treeroot); # make them comparable using `ne` and `eq`
+    $path     = uniform_path($path    ); # make them comparable using `ne` and `eq`
+    my %newhash = ();
+    $cache ||= \%newhash;
+
+    return 1 if $cache->{$path}; # already reified
+
+    print("symtree_reify($treeroot, $path)\n");
+    $path =~ /^\Q$treeroot\E([\/\\].+|)$/ or die "'$path' must be under '$treeroot'";
+
+    symtree_reify($treeroot, dirname($path), $cache) if $treeroot ne $path; # reify parent dirs
+    die "not dir '".dirname(dirname($path))."'" unless          -d dirname(dirname($path));
+    die "symlink '".dirname(dirname($path))."'" unless !testL('l', dirname(dirname($path)));
+    unless(-e dirname($path)) {
+        return 0 unless mkdirL(dirname($path));
+    }
+    die "not dir '".dirname($path)."'" unless          -d dirname($path);
+    die "symlink '".dirname($path)."'" unless !testL('l', dirname($path));
+
+    if (-d $path) {
+        if (testL('l', $path)) {
+            my $target = readlinkL($path);
+            -d $target or die "$target is not a dir";
+            return 0 unless rmdirL($path) or die "$!";
+            return 0 unless mkdirL($path) or die "$!";
+            # populate dir with links to $target/*
+            for my $t (glob("$target/*")) {
+                #symtree_link($treeroot, $t, $path.'/'.basename($t));
+                return 0 unless uncsymlink($t, "$path/".basename($t));
+            }
+        } else {
+            # nothing to do
+        }
+    } elsif (-f $path) {
+        if (testL('l', $path)) {
+            my $target = readlinkL($path);
+            -f $target or die "$target is not a file";
+            return 0 unless unlinkL($path);
+            return 0 unless copyL($target, $path);
+        } else {
+            # nothing to do
+        }
+    } else {
+        die "wtf2 $path" if -e $path;
+    }
+    $cache->{$path} = 1;
+}
+
+# add a link to symlink tree
+sub symtree_link {
+    my ($treeroot, $from, $to, $cache) = @_;
+    $treeroot = uniform_path($treeroot); # make them comparable using `ne` and `eq`
+    $from     = uniform_path($from    ); # make them comparable using `ne` and `eq`
+    $to       = uniform_path($to      ); # make them comparable using `ne` and `eq`
+    my %newhash = ();
+    $cache ||= \%newhash;
+
+    print("symtree_link($treeroot, $from, $to)\n");
+    $to =~ /^\Q$treeroot\E([\/\\].+|)$/ or die "'$to' must be under '$treeroot'";
+
+    if (! -e $to) {
+        return 0 unless symtree_reify($treeroot, $to, $cache);
+        die unless ! -e $to && -d dirname($to) && !testL('l', dirname($to));
+        return uncsymlink($from => $to);
+    } elsif (-d $from) {
+        die unless -d $to;
+        return 0 unless symtree_reify($treeroot, $to, $cache); #if testL('l', $to);
+        die unless -d $to && !testL('l', $to);
+
+        for my $t (glob("$from/*")) {
+          return 0 unless symtree_link($treeroot, $t, $to.'/'.basename($t), $cache);
+        }
+        return 1;
+    } elsif (-f $from) {
+        # the only way to merge files is linking to the same file
+        die if !testL('l', $to);
+        my $fromf = uniform_path(readlink_f($from));
+        my $tof   = uniform_path(readlink_f($to  ));
+        return 1 if                 $fromf             eq                 $tof;
+        return 1 if digest_file_hex($fromf, 'SHA-256') eq digest_file_hex($tof, 'SHA-256');
+        die "cannot merge files\n  $from ($fromf)\n  $to ($tof)";
+    } else {
+        die "$from does exist but not a directory";
+    }
+}
+
+# recursively makes path
+sub make_pathL {
+    for my $path (@_) {
+        my $parent = dirname($path);
+        unless (-d $parent) {
+            return 0 unless make_pathL($parent);
+        }
+        return 0 unless mkdirL($path);
+    }
+    return 1;
+}
+
+# remove tree not following symlinks
+sub remove_treeL {
+    for my $path (@_) {
+        #print("remove_treeL($path)\n");
+        if (-d $path) { # dir | symlink to dir
+            if (!testL('l', $path)) {
+                for my $t (glob("$path/*")) {
+                    return 0 unless remove_treeL($t);
+                }
+            }
+            #print("rmdirL($path)\n");
+            return 0 unless rmdirL($path);
+        } else { # file | symlink to file | not exist
+            #print("unlinkL($path)\n");
+            return 0 unless unlinkL($path);
+        }
+    }
+    return 1;
 }
 
 

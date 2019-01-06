@@ -29,12 +29,12 @@ stdenv.mkDerivation rec {
     system("nmake /f Makefile.msc core FOR_WIN10=1 PLATFORM=x64") == 0 or die $!;
   '';
   installPhase = ''
-    make_path("$ENV{out}/bin", "$ENV{out}/lib", "$ENV{out}/include");
-    copy 'winsqlite3shell.exe', "$ENV{out}/bin/";
-    copy 'winsqlite3.dll',      "$ENV{out}/bin/";
-    copy 'winsqlite3.lib',      "$ENV{out}/lib/";
-    copy 'sqlite3.h',           "$ENV{out}/include/";
-    copy 'sqlite3ext.h',        "$ENV{out}/include/";
+    make_pathL("$ENV{out}/bin", "$ENV{out}/lib", "$ENV{out}/include");
+    copyL 'winsqlite3shell.exe', "$ENV{out}/bin/winsqlite3shell.exe";
+    copyL 'winsqlite3.dll',      "$ENV{out}/bin/winsqlite3.dll";
+    copyL 'winsqlite3.lib',      "$ENV{out}/lib/winsqlite3.lib";
+    copyL 'sqlite3.h',           "$ENV{out}/include/sqlite3.h";
+    copyL 'sqlite3ext.h',        "$ENV{out}/include/sqlite3ext.h";
   '';
 }
 else

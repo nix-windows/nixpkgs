@@ -50,7 +50,7 @@ let
     outputHash = "0gwfisipw6c0qq36fhbpgnlpc1d6hgxgvkpqqjh9pxbz9a1g1ccf";
   } ''
     system("${nuget-bin} install pythonx86 -Version 3.7.1 -NoCache -Verbosity detailed -ExcludeVersion -OutputDirectory .") == 0 or die $!;
-    move('pythonx86', $ENV{out}) or die $!;
+    dircopy('pythonx86', $ENV{out}) or die $!;
   '';
 
   #  todo: use pkgs.
@@ -127,27 +127,27 @@ stdenv.mkDerivation ({
   '';
 
   installPhase = ''
-    make_path("$ENV{out}/bin", "$ENV{out}/DLLs", "$ENV{out}/libs");
+    make_pathL("$ENV{out}/bin", "$ENV{out}/DLLs", "$ENV{out}/libs");
     for my $name ('python.exe', 'python.pdb', 'pythonw.exe', 'pythonw.pdb', 'python27.dll', 'python27.pdb') {
-      copy("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/bin/" ) or die "copy $name: $!";
+      copyL("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/bin/$name" ) or die "copy $name: $!";
     }
     for my $name ('pyexpat.pyd', 'select.pyd', 'unicodedata.pyd', 'winsound.pyd',
                   '_ctypes.pyd', '_elementtree.pyd', '_msi.pyd', '_multiprocessing.pyd', '_socket.pyd',
                   ${stdenv.lib.optionalString withExternals ", 'sqlite3.dll', '_sqlite3.pyd', '_bsddb.pyd', '_hashlib.pyd', 'bz2.pyd', '_ssl.pyd'"}
                   ) {
-      copy("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/DLLs/") or die "copy $name: $!";
+      copyL("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/DLLs/$name") or die "copy $name: $!";
     }
     for my $name ('pyexpat.lib', 'python27.lib', 'select.lib', 'unicodedata.lib', 'winsound.lib',
                   '_ctypes.lib', '_elementtree.lib', '_msi.lib', '_multiprocessing.lib', '_socket.lib',
                   ${stdenv.lib.optionalString withExternals ", 'sqlite3.lib', '_bsddb.lib', '_hashlib.lib', 'bz2.lib', '_ssl.lib'"}
                  ) {
-      copy("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/libs/") or die "copy $name: $!";
+      copyL("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/libs/$name") or die "copy $name: $!";
     }
-    dircopy '../Include',                                         "$ENV{out}/Include"  or die "dircopy Include: $!";
-       copy '../PC/pyconfig.h',                                   "$ENV{out}/Include/" or die "copy PC/pyconfig.h: $!";
-    dircopy '../Lib',                                             "$ENV{out}/Lib"      or die "dircopy Lib: $!";
-    dircopy '../Tools',                                           "$ENV{out}/Tools"    or die "dircopy Tools: $!";
-       copy '${stdenv.cc.msvc}/bin/Hostx64/x64/vcruntime140.dll', "$ENV{out}/bin/"     or die "dircopy vcruntime140.dll: $!";
+    dircopy '../Include',                                         "$ENV{out}/include"               or die "dircopy Include: $!";
+      copyL '../PC/pyconfig.h',                                   "$ENV{out}/include/pyconfig.h"    or die "copy PC/pyconfig.h: $!";
+    dircopy '../Lib',                                             "$ENV{out}/lib"                   or die "dircopy Lib: $!";
+    dircopy '../Tools',                                           "$ENV{out}/tools"                 or die "dircopy Tools: $!";
+      copyL '${stdenv.cc.msvc}/bin/Hostx64/x64/vcruntime140.dll', "$ENV{out}/bin/vcruntime140.dll"  or die "copy vcruntime140.dll: $!";
   '';
 
   passthru = let

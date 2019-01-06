@@ -10,11 +10,11 @@ stdenv.mkDerivation rec {
   unpackPhase = "";
 # buildPhase = "";
   installPhase = ''
-    make_path("$ENV{out}/bin");
-    copy('C:/msys64/usr/bin/flex.exe',         "$ENV{out}/bin/");
-    copy('C:/msys64/usr/bin/msys-2.0.dll',     "$ENV{out}/bin/");
-    copy('C:/msys64/usr/bin/msys-intl-8.dll',  "$ENV{out}/bin/");
-    copy('C:/msys64/usr/bin/msys-iconv-2.dll', "$ENV{out}/bin/");
+    make_pathL("$ENV{out}/bin");
+    copyL('C:/msys64/usr/bin/flex.exe',         "$ENV{out}/bin/flex.exe"        );
+    copyL('C:/msys64/usr/bin/msys-2.0.dll',     "$ENV{out}/bin/msys-2.0.dll"    );
+    copyL('C:/msys64/usr/bin/msys-intl-8.dll',  "$ENV{out}/bin/msys-intl-8.dll" );
+    copyL('C:/msys64/usr/bin/msys-iconv-2.dll', "$ENV{out}/bin/msys-iconv-2.dll");
   '';
 }
 

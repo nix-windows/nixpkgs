@@ -41,11 +41,11 @@ in stdenv.mkDerivation {
   configurePhase = ''
     system("bootstrap.bat vc141");
 
-    open(my $fh, ">project-config.jam");
-    print $fh "import option ;\n";
-    print $fh "using msvc : 14.1 : : <setup>${stdenv.cc}/VC/vcvarsall.bat ;\n";
-    print $fh "option.set keep-going : false ;\n";
-    close($fh);
+    writeFile("project-config.jam", qq[
+    import option ;
+    using msvc : 14.1 : : <setup>${stdenv.cc}/VC/vcvarsall.bat ;
+    option.set keep-going : false ;
+    ]);
   '';
 
   buildPhase = ''
@@ -55,8 +55,8 @@ in stdenv.mkDerivation {
 
   installPhase = ''
     system("b2 ${b2Args} install");
-    move("$ENV{out}/include/boost-1_67/boost", "$ENV{out}/include/boost");
-    rmdir("$ENV{out}/include/boost-1_67");
+    renameL("$ENV{out}/include/boost-1_67/boost", "$ENV{out}/include/boost") or die;
+    rmdirL("$ENV{out}/include/boost-1_67") or die;
   '';
 }
 

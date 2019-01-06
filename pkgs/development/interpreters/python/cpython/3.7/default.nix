@@ -49,7 +49,7 @@ let
     outputHash = "0gwfisipw6c0qq36fhbpgnlpc1d6hgxgvkpqqjh9pxbz9a1g1ccf";
   } ''
     system("${nuget-bin} install pythonx86 -Version ${version} -NoCache -Verbosity detailed -ExcludeVersion -OutputDirectory .") == 0 or die $!;
-    move('pythonx86', $ENV{out}) or die $!;
+    dircopy('pythonx86', $ENV{out}) or die $!;
   '';
 
   #  todo: use pkgs.
@@ -113,9 +113,9 @@ in stdenv.mkDerivation rec {
     system("build.bat -p ${if stdenv.is64bit then "x64" else "Win32"} -c Release") == 0 or die "build.bat: $!";
   '';
   installPhase = ''
-    make_path("$ENV{out}/bin", "$ENV{out}/DLLs", "$ENV{out}/libs");
+    make_pathL("$ENV{out}/bin", "$ENV{out}/DLLs", "$ENV{out}/libs");
     for my $name ('python.exe', 'python.pdb', 'pythonw.exe', 'pythonw.pdb', 'python3.dll', 'python3.pdb', 'python37.dll', 'python37.pdb') {
-      copy("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/bin/" ) or die "copy $name: $!";
+      copyL("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/bin/$name") or die "copy $name: $!";
     }
     for my $name ('libcrypto-1_1${if stdenv.is64bit then "-x64" else ""}.dll',
                   'libssl-1_1${if stdenv.is64bit then "-x64" else ""}.dll',
@@ -123,20 +123,20 @@ in stdenv.mkDerivation rec {
                   '_bz2.pyd', '_contextvars.pyd', '_ctypes.pyd', '_decimal.pyd', '_distutils_findvs.pyd', '_elementtree.pyd',
                   '_hashlib.pyd', '_lzma.pyd', '_msi.pyd', '_multiprocessing.pyd', '_overlapped.pyd', '_queue.pyd', '_socket.pyd',
                   '_sqlite3.pyd', '_ssl.pyd') {
-      copy("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/DLLs/") or die "copy $name: $!";
+      copyL("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/DLLs/$name") or die "copy $name: $!";
     }
     for my $name ('pyexpat.lib', 'python3.lib', 'python37.lib', 'select.lib', 'sqlite3.lib', 'unicodedata.lib', 'winsound.lib',
                   '_asyncio.lib', '_bz2.lib', '_contextvars.lib', '_ctypes.lib', '_decimal.lib',
                  #'_distutils_findvs.lib',
                   '_elementtree.lib', '_hashlib.lib', '_lzma.lib', '_msi.lib', '_multiprocessing.lib', '_overlapped.lib',
                   '_queue.lib', '_socket.lib', '_sqlite3.lib', '_ssl.lib', '_tkinter.lib') {
-      copy("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/libs/") or die "copy $name: $!";
+      copyL("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/libs/$name") or die "copy $name: $!";
     }
-    dircopy '../Include',                                         "$ENV{out}/Include"  or die "dircopy Include: $!";
-       copy '../PC/pyconfig.h',                                   "$ENV{out}/Include/" or die "copy PC/pyconfig.h: $!";
-    dircopy '../Lib',                                             "$ENV{out}/Lib"      or die "dircopy Lib: $!";
-    dircopy '../Tools',                                           "$ENV{out}/Tools"    or die "dircopy Tools: $!";
-       copy '${stdenv.cc.msvc}/bin/Hostx64/x64/vcruntime140.dll', "$ENV{out}/bin/"     or die "dircopy vcruntime140.dll: $!";
+    dircopy '../Include',                                         "$ENV{out}/include"               or die "dircopy Include: $!";
+      copyL '../PC/pyconfig.h',                                   "$ENV{out}/include/pyconfig.h"    or die "copy PC/pyconfig.h: $!";
+    dircopy '../Lib',                                             "$ENV{out}/lib"                   or die "dircopy Lib: $!";
+    dircopy '../Tools',                                           "$ENV{out}/tools"                 or die "dircopy Tools: $!";
+      copyL '${stdenv.cc.msvc}/bin/Hostx64/x64/vcruntime140.dll', "$ENV{out}/bin/vcruntime140.dll"  or die "copy vcruntime140.dll: $!";
   '';
 # passthru.nuget = nuget-bin;
 # passthru.python-bin = python-bin;

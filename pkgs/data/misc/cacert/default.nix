@@ -31,8 +31,8 @@ stdenv.mkDerivation rec {
     #   EOF
     #
   configurePhase = ''
-    copy('nss/lib/ckfw/builtins/certdata.txt', 'certdata.txt');
-    copy('${certdata2pem}', 'certdata2pem.py');
+    copyL('nss/lib/ckfw/builtins/certdata.txt', 'certdata.txt'   ) or die $!;
+    copyL('${certdata2pem}',                    'certdata2pem.py') or die $!;
   '';
     #   patch -p1 < ${./fix-unicode-ca-names.patch}
     #   ${optionalString includeEmail ''
@@ -57,8 +57,8 @@ stdenv.mkDerivation rec {
   '';
 
   installPhase = ''
-    make_path("$ENV{out}/etc/ssl/certs");
-    copy('ca-bundle', "$ENV{out}/etc/ssl/certs/ca-bundle.crt");
+    make_pathL("$ENV{out}/etc/ssl/certs");
+    copyL('ca-bundle', "$ENV{out}/etc/ssl/certs/ca-bundle.crt") or die $!;
   '';
     #   # install individual certs in unbundled output
     #   mkdir -pv $unbundled/etc/ssl/certs

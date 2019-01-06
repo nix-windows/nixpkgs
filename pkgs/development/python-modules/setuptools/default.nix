@@ -42,7 +42,7 @@ stdenv.mkDerivation rec {
       copy 'setuptools/cli-32.exe', 'setuptools/cli.exe';
       copy 'setuptools/gui-32.exe', 'setuptools/gui.exe';
 
-      make_path "$ENV{out}/${python.sitePackages}";
+      make_pathL "$ENV{out}/${python.sitePackages}";
       $ENV{PYTHONPATH}="$ENV{out}/${python.sitePackages};$ENV{PYTHONPATH}";
       system("${python.interpreter} setup.py install --prefix=$ENV{out}") == 0 or die;
 

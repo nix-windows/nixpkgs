@@ -16,7 +16,7 @@ stdenv.mkDerivation rec {
 # buildInputs = [ python ];
 
   installPhase = ''
-    make_path "$ENV{out}/${python.sitePackages}";
+    make_pathL "$ENV{out}/${python.sitePackages}";
     $ENV{PYTHONPATH}="$ENV{out}/${python.sitePackages};${setuptools}/${python.sitePackages};$ENV{PYTHONPATH}";
     system("${python.interpreter} setup.py install --prefix=$ENV{out}");
 
