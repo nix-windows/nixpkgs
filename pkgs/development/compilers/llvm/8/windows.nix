@@ -37,7 +37,7 @@ let
         system("7z x -o$ENV{out} $ENV{src}");
       '';
       installPhase = ''
-        remove_tree("$ENV{out}/\$PLUGINSDIR", "$ENV{out}/Uninstall.exe");
+        remove_treeL("$ENV{out}/\$PLUGINSDIR", "$ENV{out}/Uninstall.exe");
         changeFile { s|^perl| "${perl}/bin/perl.exe" =~ s,/,\\,gr |gre } "$ENV{out}/libexec/c++-analyzer.bat", "$ENV{out}/libexec/ccc-analyzer.bat";
       '';
     };

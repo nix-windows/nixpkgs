@@ -44,16 +44,29 @@ in stdenv.mkDerivation rec {
   in stdenv.mkDerivation {
     name = "${name}-src";
     buildCommand = ''
-      dircopy('${llvm_src             }', "$ENV{out}"                        ) or die "dircopy";
-      dircopy('${lld_src              }', "$ENV{out}/tools/lld"              ) or die "dircopy";
-      dircopy('${lldb_src             }', "$ENV{out}/tools/lldb"             ) or die "dircopy";
-      dircopy('${clang_src            }', "$ENV{out}/tools/clang"            ) or die "dircopy";
-      dircopy('${clang-tools-extra_src}', "$ENV{out}/tools/clang/tools/extra") or die "dircopy";
-      dircopy('${compiler-rt_src      }', "$ENV{out}/projects/compiler-rt"   ) or die "dircopy";
-      dircopy('${libunwind_src        }', "$ENV{out}/projects/libunwind"     ) or die "dircopy";
-      dircopy('${libcxxabi_src        }', "$ENV{out}/projects/libcxxabi"     ) or die "dircopy";
-      dircopy('${libcxx_src           }', "$ENV{out}/projects/libcxx"        ) or die "dircopy";
-      dircopy('${openmp_src           }', "$ENV{out}/projects/openmp"        ) or die "dircopy";
+      #dircopy      (           '${llvm_src             }', "$ENV{out}"                                ) or die $!;
+      #dircopy      (           '${lld_src              }', "$ENV{out}/tools/lld"                      ) or die $!;
+      #dircopy      (           '${lldb_src             }', "$ENV{out}/tools/lldb"                     ) or die $!;
+      #dircopy      (           '${clang_src            }', "$ENV{out}/tools/clang"                    ) or die $!;
+      #dircopy      (           '${clang-tools-extra_src}', "$ENV{out}/tools/clang/tools/extra"        ) or die $!;
+      #dircopy      (           '${compiler-rt_src      }', "$ENV{out}/projects/compiler-rt"           ) or die $!;
+      #dircopy      (           '${libunwind_src        }', "$ENV{out}/projects/libunwind"             ) or die $!;
+      #dircopy      (           '${libcxxabi_src        }', "$ENV{out}/projects/libcxxabi"             ) or die $!;
+      #dircopy      (           '${libcxx_src           }', "$ENV{out}/projects/libcxx"                ) or die $!;
+      #dircopy      (           '${openmp_src           }', "$ENV{out}/projects/openmp"                ) or die $!;
+      #exit(0);
+
+      symtree_link ($ENV{out}, '${llvm_src             }', "$ENV{out}"                                ) or die $!;
+      symtree_link ($ENV{out}, '${lld_src              }', "$ENV{out}/tools/lld"                      ) or die $!;
+      symtree_link ($ENV{out}, '${lldb_src             }', "$ENV{out}/tools/lldb"                     ) or die $!;
+      symtree_link ($ENV{out}, '${clang_src            }', "$ENV{out}/tools/clang"                    ) or die $!;
+      symtree_link ($ENV{out}, '${clang-tools-extra_src}', "$ENV{out}/tools/clang/tools/extra"        ) or die $!;
+      symtree_link ($ENV{out}, '${compiler-rt_src      }', "$ENV{out}/projects/compiler-rt"           ) or die $!;
+      symtree_link ($ENV{out}, '${libunwind_src        }', "$ENV{out}/projects/libunwind"             ) or die $!;
+      symtree_link ($ENV{out}, '${libcxxabi_src        }', "$ENV{out}/projects/libcxxabi"             ) or die $!;
+      symtree_link ($ENV{out}, '${libcxx_src           }', "$ENV{out}/projects/libcxx"                ) or die $!;
+      symtree_link ($ENV{out}, '${openmp_src           }', "$ENV{out}/projects/openmp"                ) or die $!;
+      symtree_reify($ENV{out},                             "$ENV{out}/projects/openmp/runtime/exports") or die $!;
     '';
   };
 
@@ -84,10 +97,10 @@ in stdenv.mkDerivation rec {
 
   installPhase = ''
     system("ninja ${lib.concatMapStringsSep " " (x: if x == "all" then "install" else "install-${x}") buildTargets}") == 0 or die;
-    copy('${zlib}/bin/zlib1.dll',      "$ENV{out}/bin/") or die "copy(zlib1.dll): $!";    # TODO: setup hook should handle this
-    copy('${libxml2}/bin/libxml2.dll', "$ENV{out}/bin/") or die "copy(libxml2.dll): $!";  # TODO: setup hook should handle this
+    copyL('${zlib}/bin/zlib1.dll',      "$ENV{out}/bin/zlib1.dll"   ) or die "copyL(zlib1.dll): $!";    # TODO: setup hook should handle this
+    copyL('${libxml2}/bin/libxml2.dll', "$ENV{out}/bin/libxml2.dll" ) or die "copyL(libxml2.dll): $!";  # TODO: setup hook should handle this
   '' + lib.optionalString (libffi != null) ''
-    copy('${libffi}/bin/libffi-7.dll', "$ENV{out}/bin/") or die "copy(libffi.dll): $!";   # TODO: setup hook should handle this
+    copyL('${libffi}/bin/libffi-7.dll', "$ENV{out}/bin/libffi-7.dll") or die "copyL(libffi.dll): $!";   # TODO: setup hook should handle this
   '';
 
   cmakeFlags = with stdenv; [
