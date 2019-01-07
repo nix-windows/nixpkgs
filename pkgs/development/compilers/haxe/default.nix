@@ -98,7 +98,7 @@ in {
       };
       installPhase = ''
         make_pathL("$ENV{out}/bin", "$ENV{out}/share/doc");
-        dircopy('std', "$ENV{out}/std");
+        dircopy('std', "$ENV{out}/std") or die "dircopy(std, $ENV{out}/std): $!";
         for my $file (glob('*.exe'), glob('*.dll')) {
           copyL($file, "$ENV{out}/bin/".basename($file));
         }

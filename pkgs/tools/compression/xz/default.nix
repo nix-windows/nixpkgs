@@ -57,7 +57,7 @@ stdenv.mkDerivation rec {
         copyL("windows/vs2017/Release/x64/liblzma_dll/liblzma.lib", "$ENV{out}/lib/liblzma.lib") or die $!;
         copyL("src/liblzma/api/lzma.h",                             "$ENV{out}/include/lzma.h" ) or die $!;
       ''}
-    dircopy("src/liblzma/api/lzma", "$ENV{out}/include/lzma") or die $!;
+    dircopy("src/liblzma/api/lzma", "$ENV{out}/include/lzma") or die "dircopy(src/liblzma/api/lzma, $ENV{out}/include/lzma): $!";
   '';
 }
 

@@ -43,13 +43,13 @@ if stdenv.isShellPerl then
       }
       my $fn = shift @ls;
       if (-f $fn) {
-        mkdir($ENV{out}) or die $!;
-        copyL($fn, "$ENV{out}/".basename($fn)) or die $!;
+        mkdirL($ENV{out})                       or die "mkdirL($ENV{out}): $!";
+        copyL($fn, "$ENV{out}/".basename($fn))  or die "copyL($fn, $ENV{out}/".basename($fn)."): $!";
       } else {
-        dircopy($fn, $ENV{out}) or die "robocopy";
+        dircopy($fn, $ENV{out})                 or die "dircopy($fn, $ENV{out}): $!";
       }
     '' else ''
-      dircopy($unpackDir, $ENV{out});
+      dircopy($unpackDir, $ENV{out})            or die "dircopy($unpackDir, $ENV{out}): $!";
     '')
   + extraPostFetch;
 } // removeAttrs args [ "stripRoot" "extraPostFetch" ]))

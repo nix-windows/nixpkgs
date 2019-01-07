@@ -35,11 +35,11 @@ let
       sourceRoot = ".";
       buildPhase = if stdenvNoCC.isShellPerl /* on native windows */ then
         ''
-          dircopy '.',       "$ENV{out}";
-          unlink "$ENV{out}/.BUILDINFO";
-          unlink "$ENV{out}/.INSTALL";
-          unlink "$ENV{out}/.MTREE";
-          unlink "$ENV{out}/.PKGINFO";
+          dircopy('.', $ENV{out}) or die "dircopy(., $ENV{out}): $!";
+          unlinkL "$ENV{out}/.BUILDINFO";
+          unlinkL "$ENV{out}/.INSTALL";
+          unlinkL "$ENV{out}/.MTREE";
+          unlinkL "$ENV{out}/.PKGINFO";
           use File::Find qw(find);
         '' + stdenvNoCC.lib.concatMapStringsSep "\n" (dep:
                ''symtree_link($ENV{out}, '${dep}', $ENV{out});''

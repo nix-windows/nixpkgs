@@ -50,7 +50,7 @@ let
     outputHash = "0gwfisipw6c0qq36fhbpgnlpc1d6hgxgvkpqqjh9pxbz9a1g1ccf";
   } ''
     system("${nuget-bin} install pythonx86 -Version 3.7.1 -NoCache -Verbosity detailed -ExcludeVersion -OutputDirectory .") == 0 or die $!;
-    dircopy('pythonx86', $ENV{out}) or die $!;
+    dircopy('pythonx86', $ENV{out}) or die "dircopy(pythonx86, $ENV{out}): $!";
   '';
 
   #  todo: use pkgs.

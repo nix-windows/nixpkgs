@@ -270,7 +270,7 @@ in
         buildInputs = [ vc1 ];
         buildCommand = ''
           #
-          dircopy("${vc1}", $ENV{out}) or die "dircopy: $!";
+          dircopy("${vc1}", $ENV{out}) or die "dircopy(${vc1}, $ENV{out}): $!";
 
           # so far there is no `substituteInPlace`
           for my $filename (glob("$ENV{out}/VCTargets/*.props"), glob("$ENV{out}/VCTargets/*.targets")) {

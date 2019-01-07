@@ -14,7 +14,9 @@ sub readlink_f {
     die "readlink_f: '$src' does not exist" unless -e $src;
     my %seen = ();
     while (testL('l', $src)) {
-        $src = readlinkL($src);
+        my $target = readlinkL($src);
+        die "readlinkL($src)='$target' is not absolute" if $target !~ /^(\\\\\?\\)?[a-zA-Z]:\\/; # TODO: absolutize $target otherwise
+        $src = $target;
         die "readlink_f: cycle" if $seen{$src};
         $seen{$src} = 1;
     }

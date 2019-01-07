@@ -58,17 +58,52 @@ sub escapeWindowsArg {
     return "\"$s\"";
 }
 
+#sub dircopy {
+#    my ($from, $to) = @_;
+#    my $logfile = "nul"; # "C:/tmp/robocopy-$$.log";
+#    my $exitCode = system('robocopy', $from =~ s|/|\\|gr, $to =~ s|/|\\|gr, '/E', '/SL', "/LOG:$logfile") >> 8;
+#    if ($exitCode == 0 || $exitCode == 1) { # success https://blogs.technet.microsoft.com/deploymentguys/2008/06/16/robocopy-exit-codes/
+#        unlink($logfile);
+#        return 1;
+#    } else {
+#        print("robocopy's exitCode=$exitCode logfile=$logfile\n");
+#        return 0;
+#    }
+#}
+# recursively copy directory
+# there is no readymade method:
+# xcopy's issue: paths longer than 254 chars
+# robocopy's issue: it always tries to set attributes and timestamps on the copy which is not always possible due to insuficcient permission
 sub dircopy {
+    my $dirCopyInternal;
+    $dirCopyInternal = sub {
+        my ($from, $to) = @_;
+        if (testL('l', $from)) {
+#           print("dirCopyInternal($from, $to)L\n");
+            my $target = readlink_f($from);
+            return uncsymlink($target => $to);
+        } elsif (-d $from) {
+#           print("dirCopyInternal($from, $to)D\n");
+            return 0 unless mkdirL($to);
+            # avoid using glob() - at leaast it needs escaping spaces in the path
+            my $dir = Win32::LongPath->new();
+            return 0 unless $dir->opendirL($from);
+            for my $f ($dir->readdirL()) {
+                next if $f eq '.' || $f eq '..';
+                return 0 unless &$dirCopyInternal("$from/$f", "$to/$f");
+            }
+            $dir->closedirL();
+            return 1;
+        } else {
+#           print("dirCopyInternal($from, $to)F\n");
+            return copyL($from, $to);
+        }
+    };
     my ($from, $to) = @_;
-    my $logfile = "nul"; # "C:/tmp/robocopy-$$.log";
-    my $exitCode = system('robocopy', $from =~ s|/|\\|gr, $to =~ s|/|\\|gr, '/E', '/SL', "/LOG:$logfile") >> 8;
-    if ($exitCode == 0 || $exitCode == 1) { # success https://blogs.technet.microsoft.com/deploymentguys/2008/06/16/robocopy-exit-codes/
-        unlink($logfile);
-        return 1;
-    } else {
-        print("robocopy's exitCode=$exitCode logfile=$logfile\n");
-        return 0;
+    unless (-d dirname($to)) {
+        return 0 unless make_pathL(dirname($to));
     }
+    return &$dirCopyInternal($from, $to);
 }
 
 sub readlink_f {
@@ -76,7 +111,9 @@ sub readlink_f {
     die "readlink_f: '$src' does not exist" unless -e $src;
     my %seen = ();
     while (testL('l', $src)) {
-        $src = readlinkL($src);
+        my $target = readlinkL($src);
+        die "readlinkL($src)='$target' is not absolute" if $target !~ /^(\\\\\?\\)?[a-zA-Z]:\\/; # TODO: absolutize $target otherwise
+        $src = $target;
         die "readlink_f: cycle" if $seen{$src};
         $seen{$src} = 1;
     }
@@ -106,6 +143,10 @@ sub uniform_path {
     return $path;
 }
 
+# symtree is like buildenv, but
+#  1. mutable (can be used at sourceRoot)
+#  2. other derivations/directories can be merged to any subfolder (not only root as in buildenv)
+
 # if $path exists: if it is reachable via symlink, make it real
 # otherwise:       ensure dirname($path) is a directory, so a dir or file $path could be created
 sub symtree_reify {
@@ -121,8 +162,8 @@ sub symtree_reify {
     $path =~ /^\Q$treeroot\E([\/\\].+|)$/ or die "'$path' must be under '$treeroot'";
 
     symtree_reify($treeroot, dirname($path), $cache) if $treeroot ne $path; # reify parent dirs
-    die "not dir '".dirname(dirname($path))."'" unless          -d dirname(dirname($path));
-    die "symlink '".dirname(dirname($path))."'" unless !testL('l', dirname(dirname($path)));
+#   die "not dir '".dirname(dirname($path))."'" unless          -d dirname(dirname($path));
+#   die "symlink '".dirname(dirname($path))."'" unless !testL('l', dirname(dirname($path)));
     unless(-e dirname($path)) {
         return 0 unless mkdirL(dirname($path));
     }
@@ -136,10 +177,13 @@ sub symtree_reify {
             return 0 unless rmdirL($path) or die "$!";
             return 0 unless mkdirL($path) or die "$!";
             # populate dir with links to $target/*
-            for my $t (glob("$target/*")) {
-                #symtree_link($treeroot, $t, $path.'/'.basename($t));
-                return 0 unless uncsymlink($t, "$path/".basename($t));
+            my $dir = Win32::LongPath->new();
+            return 0 unless $dir->opendirL($target);
+            for my $t ($dir->readdirL()) {
+                next if $t eq '.' || $t eq '..';
+                return 0 unless uncsymlink("$target/$t", "$path/$t");
             }
+            $dir->closedirL();
         } else {
             # nothing to do
         }
@@ -179,9 +223,13 @@ sub symtree_link {
         return 0 unless symtree_reify($treeroot, $to, $cache); #if testL('l', $to);
         die unless -d $to && !testL('l', $to);
 
-        for my $t (glob("$from/*")) {
-          return 0 unless symtree_link($treeroot, $t, $to.'/'.basename($t), $cache);
+        my $dir = Win32::LongPath->new();
+        return 0 unless $dir->opendirL($from);
+        for my $t ($dir->readdirL()) {
+            next if $t eq '.' || $t eq '..';
+            return 0 unless symtree_link($treeroot, "$from/$t", "$to/$t", $cache);
         }
+        $dir->closedirL();
         return 1;
     } elsif (-f $from) {
         # the only way to merge files is linking to the same file
@@ -214,9 +262,13 @@ sub remove_treeL {
         #print("remove_treeL($path)\n");
         if (-d $path) { # dir | symlink to dir
             if (!testL('l', $path)) {
-                for my $t (glob("$path/*")) {
-                    return 0 unless remove_treeL($t);
+                my $dir = Win32::LongPath->new();
+                return 0 unless $dir->opendirL($path);
+                for my $t ($dir->readdirL()) {
+                    next if $t eq '.' || $t eq '..';
+                    return 0 unless remove_treeL("$path/$t");
                 }
+                $dir->closedirL();
             }
             #print("rmdirL($path)\n");
             return 0 unless rmdirL($path);

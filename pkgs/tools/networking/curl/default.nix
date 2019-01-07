@@ -43,11 +43,11 @@ stdenv.mkDerivation rec {
   '';
   installPhase = ''
     for my $dir (glob('../builds/*')) {
-      dircopy($dir, $ENV{out}) or die "$!" if -f "$dir/bin/curl.exe";
+      dircopy($dir, $ENV{out}) or die "dircopy($dir, $ENV{out}): $!" if -f "$dir/bin/curl.exe";
     }
-    copyL('${openssl}/bin/libeay32.dll', "$ENV{out}/bin/LIBEAY32.dll");
-    copyL('${openssl}/bin/ssleay32.dll', "$ENV{out}/bin/SSLEAY32.dll");
-    copyL('${zlib}/bin/zlib1.dll',       "$ENV{out}/bin/zlib1.dll");
+    copyL('${openssl}/bin/libeay32.dll', "$ENV{out}/bin/LIBEAY32.dll") or die $!;
+    copyL('${openssl}/bin/ssleay32.dll', "$ENV{out}/bin/SSLEAY32.dll") or die $!;
+    copyL('${zlib}/bin/zlib1.dll',       "$ENV{out}/bin/zlib1.dll"   ) or die $!;
   '';
 }
 else
