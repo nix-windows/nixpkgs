@@ -107,10 +107,10 @@ in stdenv.mkDerivation rec {
 
   installPhase = ''
     system("ninja ${lib.concatMapStringsSep " " (x: if x == "all" then "install" else "install-${x}") buildTargets}") == 0 or die;
-    copy('${zlib}/bin/zlib1.dll',      "$ENV{out}/bin/") or die "copy(zlib1.dll): $!";    # TODO: setup hook should handle this
-    copy('${libxml2}/bin/libxml2.dll', "$ENV{out}/bin/") or die "copy(libxml2.dll): $!";  # TODO: setup hook should handle this
+    copyL('${zlib}/bin/zlib1.dll',      "$ENV{out}/bin/zlib1.dll"   ) or die "copyL(zlib1.dll): $!";    # TODO: setup hook should handle this
+    copyL('${libxml2}/bin/libxml2.dll', "$ENV{out}/bin/libxml2.dll" ) or die "copyL(libxml2.dll): $!";  # TODO: setup hook should handle this
   '' + lib.optionalString (libffi != null) ''
-    copy('${libffi}/bin/libffi-7.dll', "$ENV{out}/bin/") or die "copy(libffi.dll): $!";   # TODO: setup hook should handle this
+    copyL('${libffi}/bin/libffi-7.dll', "$ENV{out}/bin/libffi-7.dll") or die "copyL(libffi.dll): $!";   # TODO: setup hook should handle this
   '';
 
   cmakeFlags = with stdenv; [
