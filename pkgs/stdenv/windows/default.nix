@@ -150,21 +150,21 @@ in
                                              ''xcopy /E/I ..\builds\libcurl-vc15-x64-release-static-ipv6-sspi-winssl\bin %out%\bin'' ];
     };
 
-    # a symlink utility
-    # not compatible with coreutils' ln !
-    # not open-source :-(
-    schinagl-ln = stdenv.mkDerivation rec {
-      name = "ln-2.9.0.2";
-      src = stdenv.fetchurlBoot {
-        url = "http://www.schinagl.priv.at/nt/ln/ln.zip";
-        sha256 = "1f9mx8q679i4abdmjk01hrzdyjwj08m229fp00mvj25q5xi030y1";
-      };
-      PATH    = "${prevStage.p7zip-static}/bin";
-      builder = lib.concatStringsSep " & " [ ''7z x %src% ln.exe -o%out%\bin''
-                                             ''xcopy /E/I ${lib.replaceStrings ["/"] ["\\"] "${redist}/x64/Microsoft.VC141.CRT/msvcp140.dll"    } %out%\bin''
-                                             ''xcopy /E/I ${lib.replaceStrings ["/"] ["\\"] "${redist}/x64/Microsoft.VC141.CRT/vcruntime140.dll"} %out%\bin''
-                                           ];
-    };
+#   # a symlink utility
+#   # not compatible with coreutils' ln !
+#   # not open-source :-(
+#   schinagl-ln = stdenv.mkDerivation rec {
+#     name = "ln-2.9.0.2";
+#     src = stdenv.fetchurlBoot {
+#       url = "http://www.schinagl.priv.at/nt/ln/ln.zip";
+#       sha256 = "1f9mx8q679i4abdmjk01hrzdyjwj08m229fp00mvj25q5xi030y1";
+#     };
+#     PATH    = "${prevStage.p7zip-static}/bin";
+#     builder = lib.concatStringsSep " & " [ ''7z x %src% ln.exe -o%out%\bin''
+#                                            ''xcopy /E/I ${lib.replaceStrings ["/"] ["\\"] "${redist}/x64/Microsoft.VC141.CRT/msvcp140.dll"    } %out%\bin''
+#                                            ''xcopy /E/I ${lib.replaceStrings ["/"] ["\\"] "${redist}/x64/Microsoft.VC141.CRT/vcruntime140.dll"} %out%\bin''
+#                                          ];
+#   };
 
     # TODO: build from source
     gnu-utils = let
@@ -234,6 +234,7 @@ in
                                              # it does not built being copied to \cpan or \ext
                                              ''7z x ${cpan-Win32-LongPath}        -so  |  7z x -aoa -si -ttar''
                                              ''cd Win32-LongPath-1.0''
+                                             ''${gnu-utils}\bin\patch.exe -p1 < ${./Win32-LongPath.patch}'' # FIX https://github.com/rdboisvert/Win32-LongPath/issues/8
                                              ''%out%\bin\perl Makefile.PL''
                                              ''nmake''
                                              ''nmake test''
@@ -251,7 +252,7 @@ in
       inherit config;
       inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform;
 
-      initialPath = prevStage.stdenv.initialPath ++ [ prevStage.curl-static prevStage.gnu-utils prevStage.schinagl-ln ];
+      initialPath = prevStage.stdenv.initialPath ++ [ prevStage.curl-static prevStage.gnu-utils /*prevStage.schinagl-ln*/ ];
       cc = null;
       fetchurlBoot = null;
       shell = "${prevStage.perl-for-stdenv-shell}/bin/perl.exe";
@@ -357,7 +358,7 @@ in
           perl-for-stdenv-shell = prevStage.perl-for-stdenv-shell;
           curl-static = prevStage.curl-static;
           gnu-utils = prevStage.gnu-utils;
-          schinagl-ln = prevStage.schinagl-ln;
+#         schinagl-ln = prevStage.schinagl-ln;
         };
       };
     in cc-wrapper { msvc = msvc_2017; sdk = sdk_10; };

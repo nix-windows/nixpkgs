@@ -80,8 +80,9 @@ sub dircopy {
         my ($from, $to) = @_;
         if (testL('l', $from)) {
 #           print("dirCopyInternal($from, $to)L\n");
-            my $target = readlink_f($from);
-            return uncsymlink($target => $to);
+            my $target = readlinkL($from);
+            # TODO: re-target symlink if not absolute?
+            return symlinkL($target => $to);
         } elsif (-d $from) {
 #           print("dirCopyInternal($from, $to)D\n");
             return 0 unless mkdirL($to);
@@ -191,6 +192,7 @@ sub symtree_reify {
         if (testL('l', $path)) {
             my $target = readlinkL($path);
             -f $target or die "$target is not a file";
+            return 0 unless attribL('-r', $path);
             return 0 unless unlinkL($path);
             return 0 unless copyL($target, $path);
         } else {
@@ -271,9 +273,11 @@ sub remove_treeL {
                 $dir->closedirL();
             }
             #print("rmdirL($path)\n");
+            return 0 unless attribL('-r', $path);
             return 0 unless rmdirL($path);
         } else { # file | symlink to file | not exist
             #print("unlinkL($path)\n");
+            return 0 unless attribL('-r', $path);
             return 0 unless unlinkL($path);
         }
     }
