@@ -44,18 +44,6 @@ in stdenv.mkDerivation rec {
   in stdenv.mkDerivation {
     name = "${name}-src";
     buildCommand = ''
-      #dircopy      (           '${llvm_src             }', "$ENV{out}"                                ) or die $!;
-      #dircopy      (           '${lld_src              }', "$ENV{out}/tools/lld"                      ) or die $!;
-      #dircopy      (           '${lldb_src             }', "$ENV{out}/tools/lldb"                     ) or die $!;
-      #dircopy      (           '${clang_src            }', "$ENV{out}/tools/clang"                    ) or die $!;
-      #dircopy      (           '${clang-tools-extra_src}', "$ENV{out}/tools/clang/tools/extra"        ) or die $!;
-      #dircopy      (           '${compiler-rt_src      }', "$ENV{out}/projects/compiler-rt"           ) or die $!;
-      #dircopy      (           '${libunwind_src        }', "$ENV{out}/projects/libunwind"             ) or die $!;
-      #dircopy      (           '${libcxxabi_src        }', "$ENV{out}/projects/libcxxabi"             ) or die $!;
-      #dircopy      (           '${libcxx_src           }', "$ENV{out}/projects/libcxx"                ) or die $!;
-      #dircopy      (           '${openmp_src           }', "$ENV{out}/projects/openmp"                ) or die $!;
-      #exit(0);
-
       symtree_link ($ENV{out}, '${llvm_src             }', "$ENV{out}"                                ) or die $!;
       symtree_link ($ENV{out}, '${lld_src              }', "$ENV{out}/tools/lld"                      ) or die $!;
       symtree_link ($ENV{out}, '${lldb_src             }', "$ENV{out}/tools/lldb"                     ) or die $!;

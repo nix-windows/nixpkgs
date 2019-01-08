@@ -3,9 +3,10 @@ use strict;
 use warnings;
 use feature 'unicode_strings';
 
+use Cwd;
 use Digest::file    qw(digest_file_hex);
 use File::Basename  qw(dirname basename);
-use Win32::LongPath qw(readlinkL testL symlinkL unlinkL renameL copyL mkdirL rmdirL openL chdirL getcwdL attribL statL abspathL);
+use Win32::LongPath qw(readlinkL testL symlinkL unlinkL renameL copyL mkdirL rmdirL openL attribL statL abspathL);
 
 sub readFile {
     my $fh;
@@ -1211,7 +1212,7 @@ sub patchPhase() {
         if ($i =~ /\.(gz|bz2|xz|lzma|7z)$/) {
           system("7z x \"$i\" -so | patch.exe " . ($ENV{patchFlags} || '-p1')) == 0 or die "patch failed: $!";
         } else {
-          system("patch.exe " . ($ENV{patchFlags} || '-p1')." < \"$i\"") == 0 or die "patch failed: $!";
+          system("patch.exe " . ($ENV{patchFlags} || '-p1')." < ".escapeWindowsArg($i)) == 0 or die "patch(".($ENV{patchFlags} || '-p1')." < $i) failed: $!";
         }
     }
 #
@@ -1582,7 +1583,9 @@ sub genericBuild() {
 #         eval "${!curPhase:-$curPhase}"
 #         eval "$oldOpts"
 #
-        chdirL $ENV{sourceRoot} if $curPhase eq "unpackPhase" && $ENV{sourceRoot};
+        if ($curPhase eq "unpackPhase" && $ENV{sourceRoot}) {
+            chdir($ENV{sourceRoot}) or die "chdir($ENV{sourceRoot}): $!";
+        }
     }
 }
 
