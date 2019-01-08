@@ -122,7 +122,7 @@ stdenv.mkDerivation ({
       } $filename;
     }
 
-    chdirL('PCbuild');
+    chdir('PCbuild');
     system("build.bat${if withExternals then " -e" else ""} --no-tkinter -p ${if stdenv.is64bit then "x64" else "Win32"} -c Release \"/p:PlatformToolset=v141\"") == 0 or die "build.bat: $!";
   '';
 

@@ -44,7 +44,7 @@ stdenv.mkDerivation {
   propagatedBuildInputs = [ zlib ];
 
   buildPhase = ''
-    chdirL("win32");
+    chdir("win32");
     system("cscript configure.js iconv=no") == 0 or die;
     system("nmake -f Makefile.msvc PREFIX=$ENV{out}") == 0 or die;
   '';

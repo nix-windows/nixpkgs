@@ -26,7 +26,7 @@ in
 
       configurePhase = ''
         mkdirL("build");                                                                # -\
-        chdirL("build");                                                                #   >- TODO: setup hook should handle this
+        chdir("build");                                                                 #   >- TODO: setup hook should handle this
         system("cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$ENV{out} .."); # -/
       '';
 

@@ -39,7 +39,7 @@ stdenv.mkDerivation rec {
   inherit name src;
 
   buildPhase = ''
-    chdirL("winbuild");
+    chdir("winbuild");
     # TODO? buildenv
     make_pathL("devel/include", "devel/lib");
     dircopy('${zlib}/lib/*',        'devel/lib/'    );

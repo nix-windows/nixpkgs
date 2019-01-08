@@ -109,7 +109,7 @@ in stdenv.mkDerivation rec {
       } $filename;
     }
 
-    chdirL('PCbuild');
+    chdir('PCbuild');
     system("build.bat -p ${if stdenv.is64bit then "x64" else "Win32"} -c Release") == 0 or die "build.bat: $!";
   '';
   installPhase = ''

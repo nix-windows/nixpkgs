@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
   sourceRoot = ".";
   dontConfigure = true;
   buildPhase = ''
-    chdirL('CPP/7zip/UI/Console');
+    chdir('CPP/7zip/UI/Console');
     system("nmake CPU=AMD64 NEW_COMPILER=1") == 0 or die $!;
   '';
   installPhase = ''

@@ -26,10 +26,10 @@ attrs // {
     make_pathL("$ENV{out}/${python.sitePackages}");
     $ENV{PYTHONPATH} = "$ENV{out}/${python.sitePackages}:$ENV{PYTHONPATH}";
 
-    my $oldwd = getcwdL();
-    chdirL('dist');
+    my $oldwd = getcwd();
+    chdir('dist');
     system("${bootstrapped-pip}/Scripts/pip install *.whl --no-index --prefix=$ENV{out} --no-cache ${toString installFlags} --build tmpbuild") == 0 or die;
-    chdirL($oldwd);
+    chdir($oldwd);
 
     runHook 'postInstall';
   '' else ''

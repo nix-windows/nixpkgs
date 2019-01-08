@@ -92,7 +92,7 @@ in stdenv.mkDerivation rec {
     $ENV{INCLUDE} = "${zlib}/include;${libxml2}/include;$ENV{INCLUDE}"; # TODO: setup hook should handle this
     $ENV{LIB}     = "${zlib}/lib;${libxml2}/lib;$ENV{LIB}";             # TODO: setup hook should handle this
     mkdirL("build");                                                                                                     # -\
-    chdirL("build");                                                                                                     #   >- TODO: cmake setup hook should handle this
+    chdir("build");                                                                                                      #   >- TODO: cmake setup hook should handle this
     system("cmake -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$ENV{out} $ENV{cmakeFlags} ..") == 0 or die; # -/
   '';
 

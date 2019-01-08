@@ -9,7 +9,7 @@ print("I am nix-prefetch-git.pl ".(join ' ', @ARGV)."\n");
 
 use Cwd;
 use File::Basename qw(basename);
-use Win32::LongPath qw(abspathL getcwdL chdirL);
+use Win32::LongPath qw(abspathL);
 
 ###########################################################
 #require '../../stdenv/generic/winutils.pm'; # qw(escapeWindowsArg make_pathL remove_treeL findL);
@@ -248,9 +248,9 @@ sub init_submodules {
 
 sub clone {
   my ($dir, $url, $hash, $ref) = @_;
-  my $top = getcwdL();
+  my $top = getcwd();
 
-  chdirL($dir);
+  chdir($dir);
 
   # Initialize the repository.
   init_remote($url);
@@ -276,7 +276,7 @@ sub clone {
 ##      fi
   }
 
-  chdirL($top);
+  chdir($top);
 }
 
 # Remove all remote branches, remove tags not reachable from HEAD, do a full
@@ -333,8 +333,8 @@ sub _clone_user_rev {
   }
 
   {
-    my $top = getcwdL();
-    chdirL($dir);
+    my $top = getcwd();
+    chdir($dir);
 
     if (system("git rev-parse ".escapeWindowsArg($rev)) == 0) {
       $fullRev = `git rev-parse "$rev"`;
@@ -355,7 +355,7 @@ sub _clone_user_rev {
     $commitDate           = `git show -1 --no-patch --pretty=%ci "$fullRev"`;
     $commitDateStrict8601 = `git show -1 --no-patch --pretty=%cI "$fullRev"`;
 
-    chdirL($top);
+    chdir($top);
   }
 
 ##  # Allow doing additional processing before .git removal
