@@ -40,7 +40,6 @@ let
           unlinkL "$ENV{out}/.INSTALL";
           unlinkL "$ENV{out}/.MTREE";
           unlinkL "$ENV{out}/.PKGINFO";
-          use File::Find qw(find);
         '' + stdenvNoCC.lib.concatMapStringsSep "\n" (dep:
                ''symtree_link($ENV{out}, '${dep}', $ENV{out});''
              ) buildInputs

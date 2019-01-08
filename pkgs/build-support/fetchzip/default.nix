@@ -26,8 +26,8 @@ if stdenv.isShellPerl then
 
   postFetch = ''
     my $unpackDir = "$ENV{TMPDIR}/unpack";
-    mkdir($unpackDir) or die "mkdir: $!";
-    chdir($unpackDir) or die "chdir: $!";
+    mkdirL($unpackDir) or die "mkdir: $!";
+    chdirL($unpackDir) or die "chdir: $!";
 
     my $renamed = "$ENV{TMPDIR}/${baseNameOf url}";
     renameL($ENV{downloadedFile}, $renamed) or die "renameL: $!";

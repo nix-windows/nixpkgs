@@ -9,13 +9,17 @@ use File::Compare;
 use JSON::PP;
 use Win32::LongPath qw(readlinkL symlinkL testL);
 
+#################################################################
+#require '../../stdenv/generic/winutils.pm';
 sub readlink_f {
     my $src = shift;
     die "readlink_f: '$src' does not exist" unless -e $src;
     my %seen = ();
     while (testL('l', $src)) {
         my $target = readlinkL($src);
-        die "readlinkL($src)='$target' is not absolute" if $target !~ /^(\\\\\?\\)?[a-zA-Z]:\\/; # TODO: absolutize $target otherwise
+        # TODO: absolutize $target otherwise
+        # $target = File::Spec->rel2abs($target, dirname($src));
+        die "readlinkL($src)='$target' is not absolute" if $target !~ /^(\\\\\?\\)?[a-zA-Z]:\\/;
         $src = $target;
         die "readlink_f: cycle" if $seen{$src};
         $seen{$src} = 1;
@@ -31,6 +35,8 @@ sub uncsymlink {
     $src =~ s/^(\\\\\?\\)([a-z])(:.+)$/$1.uc($2).$3/e;
     return symlinkL($src => $tgt);
 }
+#################################################################
+
 
 STDOUT->autoflush(1);
 

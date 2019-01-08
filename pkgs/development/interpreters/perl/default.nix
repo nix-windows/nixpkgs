@@ -45,7 +45,7 @@ let
 
     dontConfigure = true;
     buildPhase = ''
-      chdir('win32');
+      chdirL('win32');
       #print("PATH=$ENV{PATH}\n");
       system("nmake install INST_TOP=$ENV{out} CCTYPE=MSVC141 WIN64=define BUILD_STATIC=define");
     '';

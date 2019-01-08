@@ -2,21 +2,11 @@
 use strict;
 use warnings;
 use feature 'unicode_strings';
-use Cwd qw(getcwd);
+
 use Digest::file    qw(digest_file_hex);
 use File::Basename  qw(dirname basename);
-use Win32::LongPath qw(readlinkL testL symlinkL unlinkL renameL copyL mkdirL rmdirL openL chdirL getcwdL attribL statL);
+use Win32::LongPath qw(readlinkL testL symlinkL unlinkL renameL copyL mkdirL rmdirL openL chdirL getcwdL attribL statL abspathL);
 
-# set -eu
-# set -o pipefail
-#
-# if (( "${NIX_DEBUG:-0}" >= 6 )); then
-#     set -x
-# fi
-#
-# : ${outputs:=out}
-#
-#
 sub readFile {
     my $fh;
     openL(\$fh, '<:encoding(UTF-8)', shift) or die $!;
@@ -113,7 +103,9 @@ sub readlink_f {
     my %seen = ();
     while (testL('l', $src)) {
         my $target = readlinkL($src);
-        die "readlinkL($src)='$target' is not absolute" if $target !~ /^(\\\\\?\\)?[a-zA-Z]:\\/; # TODO: absolutize $target otherwise
+        # TODO: absolutize $target otherwise
+        # $target = File::Spec->rel2abs($target, dirname($src));
+        die "readlinkL($src)='$target' is not absolute" if $target !~ /^(\\\\\?\\)?[a-zA-Z]:\\/;
         $src = $target;
         die "readlink_f: cycle" if $seen{$src};
         $seen{$src} = 1;
@@ -136,8 +128,9 @@ sub uncsymlink {
     return symlinkL($src => $tgt);
 }
 
+
  # make them comparable using `ne` and `eq`
-sub uniform_path {
+sub _uniform_path {
     my $path = shift;
     $path =~ s|[\\/]+|/|g;
     $path =~ s/^([a-z])(:.+)$/uc($1).$2/e;
@@ -152,8 +145,8 @@ sub uniform_path {
 # otherwise:       ensure dirname($path) is a directory, so a dir or file $path could be created
 sub symtree_reify {
     my ($treeroot, $path, $cache) = @_;
-    $treeroot = uniform_path($treeroot); # make them comparable using `ne` and `eq`
-    $path     = uniform_path($path    ); # make them comparable using `ne` and `eq`
+    $treeroot = _uniform_path($treeroot); # make them comparable using `ne` and `eq`
+    $path     = _uniform_path($path    ); # make them comparable using `ne` and `eq`
     my %newhash = ();
     $cache ||= \%newhash;
 
@@ -207,9 +200,9 @@ sub symtree_reify {
 # add a link to symlink tree
 sub symtree_link {
     my ($treeroot, $from, $to, $cache) = @_;
-    $treeroot = uniform_path($treeroot); # make them comparable using `ne` and `eq`
-    $from     = uniform_path($from    ); # make them comparable using `ne` and `eq`
-    $to       = uniform_path($to      ); # make them comparable using `ne` and `eq`
+    $treeroot = _uniform_path($treeroot); # make them comparable using `ne` and `eq`
+    $from     = _uniform_path($from    ); # make them comparable using `ne` and `eq`
+    $to       = _uniform_path($to      ); # make them comparable using `ne` and `eq`
     my %newhash = ();
     $cache ||= \%newhash;
 
@@ -236,8 +229,8 @@ sub symtree_link {
     } elsif (-f $from) {
         # the only way to merge files is linking to the same file
         die if !testL('l', $to);
-        my $fromf = uniform_path(readlink_f($from));
-        my $tof   = uniform_path(readlink_f($to  ));
+        my $fromf = _uniform_path(readlink_f($from));
+        my $tof   = _uniform_path(readlink_f($to  ));
         return 1 if                 $fromf             eq                 $tof;
         return 1 if digest_file_hex($fromf, 'SHA-256') eq digest_file_hex($tof, 'SHA-256');
         die "cannot merge files\n  $from ($fromf)\n  $to ($tof)";
@@ -280,6 +273,33 @@ sub remove_treeL {
             return 0 unless attribL('-r', $path);
             return 0 unless unlinkL($path);
         }
+    }
+    return 1;
+}
+
+# find which does not follow symlinks-to-dir
+sub findL (&@) {
+    my $lambda = \&{shift @_};
+    my $findInternal;
+    $findInternal = sub {
+        my $path = shift;
+        $_ = $path; # so $lambda could use $_
+        $lambda->($_);
+        if (-d $path) { # dir | symlink to dir
+            if (!testL('l', $path)) {
+                my $dir = Win32::LongPath->new();
+                return 0 unless $dir->opendirL($path);
+                for my $t ($dir->readdirL()) {
+                    next if $t eq '.' || $t eq '..';
+                    return 0 unless &$findInternal("$path/$t");
+                }
+                $dir->closedirL();
+            }
+        }
+        return 1;
+    };
+    for my $path (@_) {
+      return 0 unless &$findInternal($path);
     }
     return 1;
 }
@@ -601,13 +621,13 @@ print ("initial path: '$ENV{PATH}'\n"); # if (( "${NIX_DEBUG:-0}" >= 1 ))
 
 # Execute the pre-hook.
 # if [ -z "${shell:-}" ]; then export shell="$SHELL"; fi
-runHook 'preHook';
+runHook('preHook');
 
 
 # Allow the caller to augment buildInputs (it's not always possible to
 # do this before the call to setup.sh, since the PATH is empty at that
 # point; here we have a basic Unix environment).
-runHook 'addInputsHook';
+runHook('addInputsHook');
 
 
 # Package accumulators
@@ -1134,7 +1154,7 @@ sub unpackFile {
 
 
 sub unpackPhase() {
-    runHook 'preUnpack';
+    runHook('preUnpack');
 
     die 'variable $src or $srcs should point to the source' unless $ENV{src} || $ENV{srcs};
     $ENV{srcs} = $ENV{src} unless $ENV{srcs};
@@ -1175,17 +1195,15 @@ sub unpackPhase() {
     # locations.
     if ($ENV{dontMakeSourcesWritable} ne '1') {
 #       chmod -R u+w -- "$sourceRoot"
-        use File::Find qw(find);
-        sub process { chmod 0777, $_; };
-        find({ wanted => \&process, no_chdir => 1}, $ENV{sourceRoot});
+        findL { attribL('-r', $_); } $ENV{sourceRoot}; # ignore chmod error
     }
 
-    runHook 'postUnpack';
+    runHook('postUnpack');
 }
 #
 #
 sub patchPhase() {
-    runHook 'prePatch';
+    runHook('prePatch');
 #
     for my $i (split / +/, $ENV{patches}) {
         print("applying patch $i\n");
@@ -1197,7 +1215,7 @@ sub patchPhase() {
         }
     }
 #
-    runHook 'postPatch';
+    runHook('postPatch');
 }
 #
 #
@@ -1207,7 +1225,7 @@ sub patchPhase() {
 #
 #
 sub configurePhase() {
-    runHook 'preConfigure';
+    runHook('preConfigure');
 #
 #     # set to empty if unset
 #     : ${configureScript=}
@@ -1257,12 +1275,12 @@ sub configurePhase() {
 #         echo "no configure script, doing nothing"
 #     fi
 #
-    runHook 'postConfigure';
+    runHook('postConfigure');
 }
 #
 #
 sub buildPhase() {
-    runHook 'preBuild';
+    runHook('preBuild');
 #
 #     # set to empty if unset
 #     : ${makeFlags=}
@@ -1288,12 +1306,12 @@ sub buildPhase() {
 #         unset flagsArray
 #     fi
 #
-    runHook 'postBuild';
+    runHook('postBuild');
 }
 #
 #
 sub checkPhase() {
-    runHook 'preCheck';
+    runHook('preCheck');
 #
 #     if [[ -z "${foundMakefile:-}" ]]; then
 #         echo "no Makefile or custom buildPhase, doing nothing"
@@ -1328,12 +1346,12 @@ sub checkPhase() {
 #         unset flagsArray
 #     fi
 #
-    runHook 'postCheck';
+    runHook('postCheck');
 }
 #
 #
 sub installPhase() {
-    runHook 'preInstall';
+    runHook('preInstall');
 #
 #     if [ -n "$prefix" ]; then
 #         mkdir -p "$prefix"
@@ -1351,7 +1369,7 @@ sub installPhase() {
 #     make ${makefile:+-f $makefile} "${flagsArray[@]}"
 #     unset flagsArray
 #
-    runHook 'postInstall';
+    runHook('postInstall');
 }
 #
 #
@@ -1365,7 +1383,7 @@ sub fixupPhase() {
 #         if [ -e "${!output}" ]; then chmod -R u+w "${!output}"; fi
 #     done
 #
-    runHook 'preFixup';
+    runHook('preFixup');
 #
 #     # Apply fixup to each output.
 #     local output
@@ -1431,12 +1449,12 @@ sub fixupPhase() {
 #         printWords $propagatedUserEnvPkgs > "${!outputBin}/nix-support/propagated-user-env-packages"
 #     fi
 #
-    runHook 'postFixup';
+    runHook('postFixup');
 }
 #
 #
 sub installCheckPhase() {
-    runHook 'preInstallCheck';
+    runHook('preInstallCheck');
 #
 #     if [[ -z "${foundMakefile:-}" ]]; then
 #         echo "no Makefile or custom buildPhase, doing nothing"
@@ -1459,12 +1477,12 @@ sub installCheckPhase() {
 #         unset flagsArray
 #     fi
 #
-    runHook 'postInstallCheck';
+    runHook('postInstallCheck');
 }
 #
 #
 sub distPhase() {
-    runHook 'preDist';
+    runHook('preDist');
 #
 #     # Old bash empty array hack
 #     # shellcheck disable=SC2086
@@ -1484,7 +1502,7 @@ sub distPhase() {
 #         cp -pvd ${tarballs:-*.tar.gz} "$out/tarballs"
 #     fi
 #
-    runHook 'postDist';
+    runHook('postDist');
 }
 #
 #
@@ -1564,19 +1582,19 @@ sub genericBuild() {
 #         eval "${!curPhase:-$curPhase}"
 #         eval "$oldOpts"
 #
-        chdir $ENV{sourceRoot} if $curPhase eq "unpackPhase" && $ENV{sourceRoot};
+        chdirL $ENV{sourceRoot} if $curPhase eq "unpackPhase" && $ENV{sourceRoot};
     }
 }
 
 
 # Execute the post-hooks.
-runHook 'postHook';
+runHook('postHook');
 
 
 # Execute the global user hook (defined through the Nixpkgs
 # configuration option ‘stdenv.userHook’).  This can be used to set
 # global compiler optimisation flags, for instance.
-runHook 'userHook';
+runHook('userHook');
 
 
 # dumpVars

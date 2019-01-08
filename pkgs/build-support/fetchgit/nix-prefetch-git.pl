@@ -8,9 +8,86 @@ print("I am nix-prefetch-git.pl ".(join ' ', @ARGV)."\n");
 
 
 use Cwd;
-use File::Path qw(remove_tree make_path);
-use File::Find qw(find);
 use File::Basename qw(basename);
+use Win32::LongPath qw(abspathL getcwdL chdirL);
+
+###########################################################
+#require '../../stdenv/generic/winutils.pm'; # qw(escapeWindowsArg make_pathL remove_treeL findL);
+
+sub escapeWindowsArg {
+    my ($s) = @_;
+    $s =~ s|\\$|\\\\|g;
+    $s =~ s|\\"|\\\\"|g;
+    $s =~ s|\"|\\"|g;
+    return "\"$s\"";
+}
+
+# recursively makes path
+sub make_pathL {
+    for my $path (@_) {
+        my $parent = dirname($path);
+        unless (-d $parent) {
+            return 0 unless make_pathL($parent);
+        }
+        return 0 unless mkdirL($path);
+    }
+    return 1;
+}
+
+# remove tree not following symlinks
+sub remove_treeL {
+    for my $path (@_) {
+        #print("remove_treeL($path)\n");
+        if (-d $path) { # dir | symlink to dir
+            if (!testL('l', $path)) {
+                my $dir = Win32::LongPath->new();
+                return 0 unless $dir->opendirL($path);
+                for my $t ($dir->readdirL()) {
+                    next if $t eq '.' || $t eq '..';
+                    return 0 unless remove_treeL("$path/$t");
+                }
+                $dir->closedirL();
+            }
+            #print("rmdirL($path)\n");
+            return 0 unless attribL('-r', $path);
+            return 0 unless rmdirL($path);
+        } else { # file | symlink to file | not exist
+            #print("unlinkL($path)\n");
+            return 0 unless attribL('-r', $path);
+            return 0 unless unlinkL($path);
+        }
+    }
+    return 1;
+}
+
+# find which does not follow symlinks-to-dir
+sub findL (&@) {
+    my $lambda = \&{shift @_};
+    my $findInternal;
+    $findInternal = sub {
+        my $path = shift;
+        $_ = $path; # so $lambda could use $_
+        $lambda->($_);
+        if (-d $path) { # dir | symlink to dir
+            if (!testL('l', $path)) {
+                my $dir = Win32::LongPath->new();
+                return 0 unless $dir->opendirL($path);
+                for my $t ($dir->readdirL()) {
+                    next if $t eq '.' || $t eq '..';
+                    return 0 unless &$findInternal("$path/$t");
+                }
+                $dir->closedirL();
+            }
+        }
+        return 1;
+    };
+    for my $path (@_) {
+      return 0 unless &$findInternal($path);
+    }
+    return 1;
+}
+###########################################################
+
 
 my $url     = '';
 my $rev     = '';
@@ -77,14 +154,6 @@ while (@ARGV) {
 }
 
 usage() unless $url;
-
-sub escapeWindowsArg {
-    my ($s) = @_;
-    $s =~ s|\\$|\\\\|g;
-    $s =~ s|\\"|\\\\"|g;
-    $s =~ s|\"|\\"|g;
-    return "\"$s\"";
-}
 
 sub init_remote {
   my ($url) = @_;
@@ -179,9 +248,9 @@ sub init_submodules {
 
 sub clone {
   my ($dir, $url, $hash, $ref) = @_;
-  my $top = getcwd();
+  my $top = getcwdL();
 
-  chdir($dir);
+  chdirL($dir);
 
   # Initialize the repository.
   init_remote($url);
@@ -207,7 +276,7 @@ sub clone {
 ##      fi
   }
 
-  chdir($top);
+  chdirL($top);
 }
 
 # Remove all remote branches, remove tags not reachable from HEAD, do a full
@@ -264,8 +333,8 @@ sub _clone_user_rev {
   }
 
   {
-    my $top = getcwd();
-    chdir($dir);
+    my $top = getcwdL();
+    chdirL($dir);
 
     if (system("git rev-parse ".escapeWindowsArg($rev)) == 0) {
       $fullRev = `git rev-parse "$rev"`;
@@ -286,7 +355,7 @@ sub _clone_user_rev {
     $commitDate           = `git show -1 --no-patch --pretty=%ci "$fullRev"`;
     $commitDateStrict8601 = `git show -1 --no-patch --pretty=%cI "$fullRev"`;
 
-    chdir($top);
+    chdirL($top);
   }
 
 ##  # Allow doing additional processing before .git removal
@@ -294,11 +363,9 @@ sub _clone_user_rev {
 
   if (!$leaveDotGit) {
     print STDERR "removing \`.git'...\n";
-    sub process1 { if ($_ =~ /\/\.git$/) { print STDERR "removing $_\n";                   remove_tree($_);                            } };
-    find({ wanted => \&process1, no_chdir => 1}, $dir);
+    findL { if ($_ =~ /\/\.git$/) { print STDERR "removing $_\n";                   remove_treeL($_);                           } } $dir;
   } else {
-    sub process2 { if ($_ =~ /\/\.git$/) { print STDERR "make_deterministic_repo $_/..\n"; make_deterministic_repo(readlink("$_/..")); } };
-    find({ wanted => \&process2, no_chdir => 1}, $dir);
+    findL { if ($_ =~ /\/\.git$/) { print STDERR "make_deterministic_repo $_/..\n"; make_deterministic_repo(abspathL("$_/..")); } } $dir;
   }
 }
 
@@ -357,10 +424,10 @@ $branchName = 'fetchgit' unless $branchName;
 if ($builder) {
   usage() unless $out && $url && $rev;
   while (-e $out) {
-      remove_tree($out) or die "remove_tree($out): $!";
+      remove_treeL($out) or die "remove_treeL($out): $!";
       sleep(1); # Windows bug? make_path just after remove_tree() might fail
   }
-  make_path($out) or die "make_path($out): $!";
+  make_pathL($out) or die "make_pathL($out): $!";
   clone_user_rev($out, $url, $rev);
 } else {
   $hashType = 'sha256' unless $hashType;

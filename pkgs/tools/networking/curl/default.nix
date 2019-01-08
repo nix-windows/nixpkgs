@@ -38,7 +38,7 @@ stdenv.mkDerivation rec {
   inherit name src;
 
   buildPhase = ''
-    chdir("winbuild");
+    chdirL("winbuild");
     system("nmake /f Makefile.vc mode=dll VC=15 USE_SSL=true USE_SSPI=false WITH_SSL=dll SSL_PATH=${openssl} WITH_ZLIB=dll ZLIB_PATH=${zlib}");
   '';
   installPhase = ''
