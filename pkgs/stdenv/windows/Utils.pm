@@ -83,7 +83,9 @@ sub dircopy {
             return symlinkL($target => $to);
         } elsif (-d $from) {
 #           print("dirCopyInternal($from, $to)D\n");
-            return 0 unless mkdirL($to);
+            unless (-d $to) {
+                return 0 unless mkdirL($to);
+            }
             # avoid using glob() - at leaast it needs escaping spaces in the path
             my $dir = Win32::LongPath->new();
             return 0 unless $dir->opendirL($from);
