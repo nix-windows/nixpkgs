@@ -239,6 +239,8 @@ in
                                              ''nmake''
                                              ''nmake test''
                                              ''nmake install''
+                                             #
+                                             ''copy ${lib.replaceStrings ["/"] ["\\"] "${./Utils.pm}"} %out%\site\lib\Win32\Utils.pm''
                                            ];
     };
   })

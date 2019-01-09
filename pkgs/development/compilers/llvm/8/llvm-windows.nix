@@ -44,17 +44,17 @@ in stdenv.mkDerivation rec {
   in stdenv.mkDerivation {
     name = "${name}-src";
     buildCommand = ''
-      symtree_link ($ENV{out}, '${llvm_src             }', "$ENV{out}"                                ) or die $!;
-      symtree_link ($ENV{out}, '${lld_src              }', "$ENV{out}/tools/lld"                      ) or die $!;
-      symtree_link ($ENV{out}, '${lldb_src             }', "$ENV{out}/tools/lldb"                     ) or die $!;
-      symtree_link ($ENV{out}, '${clang_src            }', "$ENV{out}/tools/clang"                    ) or die $!;
-      symtree_link ($ENV{out}, '${clang-tools-extra_src}', "$ENV{out}/tools/clang/tools/extra"        ) or die $!;
-      symtree_link ($ENV{out}, '${compiler-rt_src      }', "$ENV{out}/projects/compiler-rt"           ) or die $!;
-      symtree_link ($ENV{out}, '${libunwind_src        }', "$ENV{out}/projects/libunwind"             ) or die $!;
-      symtree_link ($ENV{out}, '${libcxxabi_src        }', "$ENV{out}/projects/libcxxabi"             ) or die $!;
-      symtree_link ($ENV{out}, '${libcxx_src           }', "$ENV{out}/projects/libcxx"                ) or die $!;
-      symtree_link ($ENV{out}, '${openmp_src           }', "$ENV{out}/projects/openmp"                ) or die $!;
-      symtree_reify($ENV{out},                             "$ENV{out}/projects/openmp/runtime/exports") or die $!;
+      symtree_link ($ENV{out}, '${llvm_src             }' => "."                              ) or die $!;
+      symtree_link ($ENV{out}, '${lld_src              }' => "tools/lld"                      ) or die $!;
+      symtree_link ($ENV{out}, '${lldb_src             }' => "tools/lldb"                     ) or die $!;
+      symtree_link ($ENV{out}, '${clang_src            }' => "tools/clang"                    ) or die $!;
+      symtree_link ($ENV{out}, '${clang-tools-extra_src}' => "tools/clang/tools/extra"        ) or die $!;
+      symtree_link ($ENV{out}, '${compiler-rt_src      }' => "projects/compiler-rt"           ) or die $!;
+      symtree_link ($ENV{out}, '${libunwind_src        }' => "projects/libunwind"             ) or die $!;
+      symtree_link ($ENV{out}, '${libcxxabi_src        }' => "projects/libcxxabi"             ) or die $!;
+      symtree_link ($ENV{out}, '${libcxx_src           }' => "projects/libcxx"                ) or die $!;
+      symtree_link ($ENV{out}, '${openmp_src           }' => "projects/openmp"                ) or die $!;
+      symtree_reify($ENV{out},                               "projects/openmp/runtime/exports") or die $!;
     '';
   };
 

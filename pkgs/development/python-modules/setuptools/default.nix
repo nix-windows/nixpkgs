@@ -39,8 +39,8 @@ stdenv.mkDerivation rec {
       # copy-paste from msvc-build-launcher.cmd
       system('cl /D "GUI=0" /D "WIN32_LEAN_AND_MEAN" launcher.c /O2 /link /MACHINE:x64 /SUBSYSTEM:CONSOLE /out:setuptools/cli-64.exe');
       system('cl /D "GUI=1" /D "WIN32_LEAN_AND_MEAN" launcher.c /O2 /link /MACHINE:x64 /SUBSYSTEM:WINDOWS /out:setuptools/gui-64.exe');
-      copy 'setuptools/cli-32.exe', 'setuptools/cli.exe';
-      copy 'setuptools/gui-32.exe', 'setuptools/gui.exe';
+      copyL 'setuptools/cli-32.exe', 'setuptools/cli.exe';
+      copyL 'setuptools/gui-32.exe', 'setuptools/gui.exe';
 
       make_pathL "$ENV{out}/${python.sitePackages}";
       $ENV{PYTHONPATH}="$ENV{out}/${python.sitePackages};$ENV{PYTHONPATH}";

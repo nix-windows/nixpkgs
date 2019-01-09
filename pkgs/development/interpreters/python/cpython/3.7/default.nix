@@ -132,10 +132,10 @@ in stdenv.mkDerivation rec {
                   '_queue.lib', '_socket.lib', '_sqlite3.lib', '_ssl.lib', '_tkinter.lib') {
       copyL("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/libs/$name") or die "copy $name: $!";
     }
-    dircopy '../Include',                                         "$ENV{out}/include"               or die "dircopy Include: $!";
-      copyL '../PC/pyconfig.h',                                   "$ENV{out}/include/pyconfig.h"    or die "copy PC/pyconfig.h: $!";
-    dircopy '../Lib',                                             "$ENV{out}/lib"                   or die "dircopy Lib: $!";
-    dircopy '../Tools',                                           "$ENV{out}/tools"                 or die "dircopy Tools: $!";
+    dircopy '../Include',                                         "$ENV{out}/Include"               or die "dircopy Include: $!";
+      copyL '../PC/pyconfig.h',                                   "$ENV{out}/Include/pyconfig.h"    or die "copy PC/pyconfig.h: $!";
+    dircopy '../Lib',                                             "$ENV{out}/Lib"                   or die "dircopy Lib: $!";
+    dircopy '../Tools',                                           "$ENV{out}/Tools"                 or die "dircopy Tools: $!";
       copyL '${stdenv.cc.msvc}/bin/Hostx64/x64/vcruntime140.dll', "$ENV{out}/bin/vcruntime140.dll"  or die "copy vcruntime140.dll: $!";
   '';
 # passthru.nuget = nuget-bin;

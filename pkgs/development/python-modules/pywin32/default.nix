@@ -65,6 +65,11 @@ buildPythonPackage rec {
     copyL('${stdenv.cc.redist}/x64/Microsoft.VC141.MFC/mfc140.dll', "$ENV{out}/${python.sitePackages}/pythonwin/mfc140.dll") or die "copyL(mfc140.dll): $!";
   '';
 
+  # # lowcase dirnames as buildenv is still case-sensitive
+  # for my $path (glob("$ENV{out}/*")) {
+  #   rename $path, dirname($path).'/'.lc(basename($path)) if -d $path && basename($path) ne lc(basename($path));
+  # }
+
   meta = with lib; {
     homepage = https://pypi.org/project/pywin32/;
   };

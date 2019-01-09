@@ -6,92 +6,17 @@ print("I am nix-prefetch-git.pl ".(join ' ', @ARGV)."\n");
 #$ENV{PATH} = "C:/msys64/home/User/t/git-2.19.1/bin;$ENV{PATH}";
 #$ENV{PATH} = "C:/Git/bin;$ENV{PATH}";
 
-
+use strict;
+use warnings;
 use Cwd;
-use File::Basename qw(basename);
-use Win32::LongPath qw(abspathL);
-
-###########################################################
-#require '../../stdenv/generic/winutils.pm'; # qw(escapeWindowsArg make_pathL remove_treeL findL);
-
-sub escapeWindowsArg {
-    my ($s) = @_;
-    $s =~ s|\\$|\\\\|g;
-    $s =~ s|\\"|\\\\"|g;
-    $s =~ s|\"|\\"|g;
-    return "\"$s\"";
-}
-
-# recursively makes path
-sub make_pathL {
-    for my $path (@_) {
-        my $parent = dirname($path);
-        unless (-d $parent) {
-            return 0 unless make_pathL($parent);
-        }
-        return 0 unless mkdirL($path);
-    }
-    return 1;
-}
-
-# remove tree not following symlinks
-sub remove_treeL {
-    for my $path (@_) {
-        #print("remove_treeL($path)\n");
-        if (-d $path) { # dir | symlink to dir
-            if (!testL('l', $path)) {
-                my $dir = Win32::LongPath->new();
-                return 0 unless $dir->opendirL($path);
-                for my $t ($dir->readdirL()) {
-                    next if $t eq '.' || $t eq '..';
-                    return 0 unless remove_treeL("$path/$t");
-                }
-                $dir->closedirL();
-            }
-            #print("rmdirL($path)\n");
-            return 0 unless attribL('-r', $path);
-            return 0 unless rmdirL($path);
-        } else { # file | symlink to file | not exist
-            #print("unlinkL($path)\n");
-            return 0 unless attribL('-r', $path);
-            return 0 unless unlinkL($path);
-        }
-    }
-    return 1;
-}
-
-# find which does not follow symlinks-to-dir
-sub findL (&@) {
-    my $lambda = \&{shift @_};
-    my $findInternal;
-    $findInternal = sub {
-        my $path = shift;
-        $_ = $path; # so $lambda could use $_
-        $lambda->($_);
-        if (-d $path) { # dir | symlink to dir
-            if (!testL('l', $path)) {
-                my $dir = Win32::LongPath->new();
-                return 0 unless $dir->opendirL($path);
-                for my $t ($dir->readdirL()) {
-                    next if $t eq '.' || $t eq '..';
-                    return 0 unless &$findInternal("$path/$t");
-                }
-                $dir->closedirL();
-            }
-        }
-        return 1;
-    };
-    for my $path (@_) {
-      return 0 unless &$findInternal($path);
-    }
-    return 1;
-}
-###########################################################
-
+use File::Basename qw(dirname basename);
+use Win32::LongPath qw(abspathL mkdirL rmdirL attribL unlinkL testL);
+use Win32::Utils    qw(escapeWindowsArg make_pathL remove_treeL findL);
 
 my $url     = '';
 my $rev     = '';
 my $expHash = '';
+my $finalPath = '';
 my $hashType        = $ENV{NIX_HASH_ALGO} || '';
 my $deepClone       = $ENV{NIX_PREFETCH_GIT_DEEP_CLONE}    ? 1 : 0;
 my $leaveDotGit     = $ENV{NIX_PREFETCH_GIT_LEAVE_DOT_GIT} ? 1 : 0;
@@ -143,10 +68,10 @@ while (@ARGV) {
   } elsif ($cmd eq '--fetch-submodules') { $fetchSubmodules = 1;
   } elsif ($cmd eq '--builder'         ) { $builder         = 1;
   } elsif ($cmd eq '--help'            ) { usage();
-  } elsif (@ARGS == 1                  ) { $url             = shift @ARGV;
-  } elsif (@ARGS == 2                  ) { $url             = shift @ARGV;
+  } elsif (@ARGV == 1                  ) { $url             = shift @ARGV;
+  } elsif (@ARGV == 2                  ) { $url             = shift @ARGV;
                                            $rev             = shift @ARGV;
-  } elsif (@ARGS == 3                  ) { $url             = shift @ARGV;
+  } elsif (@ARGV == 3                  ) { $url             = shift @ARGV;
                                            $rev             = shift @ARGV;
                                            $expHash         = shift @ARGV;
   } else                                 { usage();
@@ -183,9 +108,9 @@ sub hash_from_ref {
 sub url_to_name {
   my ($url, $ref) = @_;
   my $base = basename($url, '.git'); # | cut -d: -f2)
-  $base =~ s/[^:]+:([^:]+)/\1/;
+  $base =~ s/[^:]+:([^:]+)/$1/;
 
-  return $ref =~ /^[a-z0-9]+$/ ? "$base-".($ref =~ s/^([a-z0-9]{1,7}).*/\1/r) : $base;
+  return $ref =~ /^[a-z0-9]+$/ ? "$base-".($ref =~ s/^([a-z0-9]{1,7}).*/$1/r) : $base;
 }
 
 # Fetch everything and checkout the right sha1
@@ -434,6 +359,7 @@ if ($builder) {
 
   die 'todo !$builder';
 
+  my $hash = '';
   # If the hash was given, a file with that hash may already be in the
   # store.
   if ($expHash) {
