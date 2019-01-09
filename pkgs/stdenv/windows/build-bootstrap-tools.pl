@@ -14,13 +14,14 @@ use File::Fetch;
 
 sub dircopy {
   my ($from, $to) = @_;
-  return system('robocopy', $from =~ s|/|\\|gr, $to =~ s|/|\\|gr, '/E', '/SL', '/LOG:nul') == 0;
+  my $exitCode = system('robocopy', $from =~ s|/|\\|gr, $to =~ s|/|\\|gr, '/E', '/SL', '/LOG:nul') == 0;
+  return $exitCode == 0 || $exitCode == 1;
 }
 
-unless (-f '7z.exe' && digest_file_hex('7z.exe', "SHA-256") eq '47462483fe54776e01d8ceb8ff9fd5bf2c3f1f01d852a54d878914f62f98f2d3') {
-  File::Fetch->new(uri => "https://github.com/volth/nixpkgs/releases/download/windows-0.3/7z.exe")->fetch(to=>"./");
+unless (-f '7z.exe' && digest_file_hex('7z.exe', "SHA-256") eq '8e679f87ba503f3dfad96266ca79de7bfe3092dc6a58c0fe0438f7d4b19f0bbd') {
+  move(File::Fetch->new(uri => "https://github.com/volth/nixpkgs/releases/download/windows-0.3/7za.exe")->fetch(to=>"./"), '7z.exe') or die $!;
 }
-die unless -f '7z.exe' && digest_file_hex('7z.exe', "SHA-256") eq '47462483fe54776e01d8ceb8ff9fd5bf2c3f1f01d852a54d878914f62f98f2d3';
+die unless -f '7z.exe' && digest_file_hex('7z.exe', "SHA-256") eq '8e679f87ba503f3dfad96266ca79de7bfe3092dc6a58c0fe0438f7d4b19f0bbd';
 
 my $msvc_version = "14.16.27023";
 my $redist_version = "14.16.27012";
@@ -153,8 +154,11 @@ unless (-d "msvc-$msvc_version.nar.xz") {
 unless (-d "redist-$redist_version.nar.xz") {
     remove_tree("redist");
     make_path("redist");
-    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Redist/MSVC/${redist_version}/x86",  "redist/x86"  ) or die "$!";
-    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Redist/MSVC/${redist_version}/x64",  "redist/x64"  ) or die "$!";
+    #todo? also "C:\Program Files (x86)\Windows Kits\10\Redist\ucrt\DLLs\x86"?
+    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/${redist_version}/x86",                 "redist/x86") or die "$!";
+    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/${redist_version}/x64",                 "redist/x64") or die "$!";
+    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/${redist_version}/debug_nonredist/x86", "redist/x86") or die "$!";
+    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/${redist_version}/debug_nonredist/x64", "redist/x64") or die "$!";
 
     my $redist_nar    = writeNar("| 7z a $compression -si redist-$redist_version.nar.xz",       "redist",    "sha256");
     print qq[

@@ -19,12 +19,11 @@ let
     PATH    = "${msvc_2017}/bin/HostX64/x64";
   };
 
-  # TODO: include VCRUNTIME140D.dll and MSVCP140D.dll and add redist to stdenv.cc's $PATH (boost makes /MDd binaries during configuration phase)
   redist = (import <nix/fetchurl.nix> {
     name = "redist-${redist.version}";
     url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/redist-${redist.version}.nar.xz";
     unpack = true;
-    sha256 = "5efca79f200c6a0795e3fd00544723aee42c2e502f77fe74edc7ecd77ac61578";
+    sha256 = "0870472179ec741c4cdb4866dcffdbf9b1f1892915df6507feb7a3c3452ec78e";
   }) // {
     version = "14.16.27012";
   };
@@ -105,7 +104,7 @@ in
       src = stdenv.fetchurlBoot {
         # from https://www.7-zip.org/a/7z1806-extra.7z
         url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/7za.exe";
-        sha256 = "1g8bkyqx9xrq0kzc0n3avj931zkvvrwwlrk2v7x3sgshpa3ryrwf";
+        sha256 = "8e679f87ba503f3dfad96266ca79de7bfe3092dc6a58c0fe0438f7d4b19f0bbd";
       };
       builder = lib.concatStringsSep " & " [ ''md %out%\bin''
                                              ''copy %src% %out%\bin\7z.exe'' ];
