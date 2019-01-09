@@ -4,7 +4,7 @@ set NIX_STORE_DIR=C:\nix\store
 set NIX_PATH=nixpkgs=..\..\..\..\..
 
 for /f %%i in ('%NIX%\bin\nix-build.exe --no-out-link -E "(import <nixpkgs> { }).git"'                                     ) do set GIT=%%i
-for /f %%i in ('%NIX%\bin\nix-build.exe --no-out-link -E "(import <nixpkgs> { }).perl"'                                    ) do set PERL=%%i
+for /f %%i in ('%NIX%\bin\nix-build.exe --no-out-link -E "(import <nixpkgs> { }).stdenv.cc.perl-for-stdenv-shell"'         ) do set PERL=%%i
 for /f %%i in ('%NIX%\bin\nix-build.exe --no-out-link -E "(import <nixpkgs> { }).python27.withPackages (p: [ p.pywin32 ])"') do set PYTHON2=%%i
 echo NIX=%NIX%
 echo GIT=%GIT%

@@ -2,7 +2,10 @@ use strict;
 use warnings;
 use Cwd;
 use File::Path qw(remove_tree make_path);
-use File::Basename qw(dirname);
+use File::Basename  qw(dirname basename);
+#use Win32::LongPath qw(readlinkL testL symlinkL unlinkL renameL copyL mkdirL rmdirL openL attribL statL abspathL);
+use Win32::Utils    qw(readFile writeFile changeFile escapeWindowsArg dircopy readlink_f relsymlink uncsymlink symtree_reify symtree_link make_pathL remove_treeL findL);
+
 
 my $nix              = "$ENV{NIX}/bin/nix.exe";         die "no nix"     unless -f $nix;
 my $git              = "$ENV{GIT}/bin/git.exe";         die "no git"     unless -f $git;
@@ -36,6 +39,7 @@ sub checkout {
   return $hash;
 }
 
+# first checkout depot_tools for gclient.py which will help to produce list of deps
 unless (-d "$basedir/depot_tools") {
   checkout("https://chromium.googlesource.com/chromium/tools/depot_tools", "db0055dc786a71fe81e720bad2b1acb0e133a291", "$basedir/depot_tools") eq "0hsjq4lbylff194bz96dkyxahql7pq59bipbfv1fb32afwfr0vya" or die;
   # patch as there is no git.bat
@@ -73,36 +77,65 @@ if (1) {
 }
 
 sub parsedeps {
+  my $need_another_iteration;
+  my %deps;
+  do {
+    $need_another_iteration = 0;
+    my $top = getcwd();
+    chdir($basedir);
+
+    # flatten fail because of duplicate valiable names, so rename them
+    if (-f 'src\third_party\angle\buildtools\DEPS') {
+      changeFile {
+        s/\blibcxx_revision\b/libcxx_revision2/g;
+        s/\blibcxxabi_revision\b/libcxxabi_revision2/g;
+        $_;
+      } 'src\third_party\angle\buildtools\DEPS';
+    }
+
+    system("$python2 depot_tools/gclient.py config https://chromium.googlesource.com/chromium/src.git") == 0 or die;
+    system("$python2 depot_tools/gclient.py flatten --pin-all-deps > flat"                            ) == 0 or die;
+
+    my $content = readFile('flat');
+    while ($content =~ /"([^"]+)":\s*\{\s*"url":\s*"(.+)@(.+)"/gm) {
+      my $url = $2;
+      my $rev = $3;
+      my $path = $1 =~ s|\\|/|gr;
+      next if $url =~ /chrome-internal\.googlesource\.com/; # access denied to this domain
+      if (!exists($deps{$path})) {
+        print("rem $path $url $rev\n");
+        my $hash = checkout($url, $rev, "$basedir/$rev");
+        if ($path ne 'src') {
+          die "$basedir/$rev does not exist" unless -d "$basedir/$rev";
+          symtree_link('src', "$basedir/$rev" => "$basedir/$path") or die;
+#         # TODO: use symtree_link
+#         remove_tree("$basedir/$path");
+#         make_path(dirname("$basedir/$path"));
+#         #rmdirL("$basedir/$path");
+#         #symlinkL("$basedir/$rev" => "$basedir/$path") or die "symlinkL($basedir/$rev => $basedir/$path): $!";
+#         print("xcopy($basedir/$rev => $basedir/$path)\n");
+#         system("xcopy /E/H/B/F/I/Y \"$basedir/$rev\" \"$basedir/$path\"") == 0 or die "xcopy($basedir/$rev => $basedir/$path): $!";
+        }
+        if (-f "$basedir/$rev/DEPS") {  # new DEPS file appeared after checkout
+          print("need_another_iteration\n");
+          $need_another_iteration = 1;
+        }
+        $deps{$path} = { rev => $rev, hash => $hash, path => $path, url => $url };
+      }
+    }
+    chdir($top);
+  } while ($need_another_iteration);
+
   open(my $sources_nix, ">sources-$version.nix") or die;
   binmode $sources_nix;
-  print $sources_nix "# GENARATED FILE\n";
+  print $sources_nix "# GENERATED FILE\n";
   print $sources_nix "{fetchgit}:\n";
   print $sources_nix "{\n";
-
-  my $top = getcwd();
-  chdir($basedir);
-  system("$python2 depot_tools/gclient.py config https://chromium.googlesource.com/chromium/src.git") == 0 or die;
-  system("$python2 depot_tools/gclient.py flatten --pin-all-deps > flat"                            ) == 0 or die;
-
-  open(my $fh, 'flat') or die;
-  local $/ = undef;
-  my $content = <$fh>;
-  while ($content =~ /"([^"]+)":\s*\{\s*"url":\s*"(.+)@(.+)"/gm) {
-    my $url = $2;
-    my $rev = $3;
-    my $path = $1 =~ s|\\|/|gr;
-    next if $url =~ /chrome-internal\.googlesource\.com/; # access denied to this domain
-    print("rem $path $url $rev\n");
-    my $hash = checkout($url, $rev, "$basedir/$rev");
-    #print("git clone $url $path\n");
-    #print("pushd $path\n");
-    #print("git checkout $rev\n");
-    #print("popd\n");
-    printf $sources_nix "  %-64s = fetchgit { url = %-128s; rev = \"$rev\"; sha256 = \"$hash\"; };\n", "\"$path\"", "\"$url\"";
+  for my $k (sort (keys %deps)) {
+    my $dep = $deps{$k};
+    printf $sources_nix "  %-64s = fetchgit { url = %-128s; rev = \"$dep->{rev}\"; sha256 = \"$dep->{hash}\"; };\n", "\"$dep->{path}\"", "\"$dep->{url}\"";
   }
   print $sources_nix "}\n";
-
-  chdir($top);
 }
 
 parsedeps();
