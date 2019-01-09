@@ -39,6 +39,7 @@ in stdenv.mkDerivation {
 #   ;
 
   configurePhase = ''
+    $ENV{PATH} = "$ENV{PATH};${stdenv.cc.redist}/x64/Microsoft.VC141.DebugCRT"; # vcruntime140d.dll and msvcp140d.dll for /MDd builds to work
     system("bootstrap.bat vc141");
 
     writeFile("project-config.jam", qq[
