@@ -23,7 +23,7 @@ let
     name = "redist-${redist.version}";
     url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/redist-${redist.version}.nar.xz";
     unpack = true;
-    sha256 = "0870472179ec741c4cdb4866dcffdbf9b1f1892915df6507feb7a3c3452ec78e";
+    sha256 = "3b2027f80fb32ddc8896ae0350064e2abda085c65a4ef807d3892f2c928ae339";
   }) // {
     version = "14.16.27012";
   };

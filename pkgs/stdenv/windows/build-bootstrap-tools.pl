@@ -154,11 +154,17 @@ unless (-d "msvc-$msvc_version.nar.xz") {
 unless (-d "redist-$redist_version.nar.xz") {
     remove_tree("redist");
     make_path("redist");
-    #todo? also "C:\Program Files (x86)\Windows Kits\10\Redist\ucrt\DLLs\x86"?
-    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/${redist_version}/x86",                 "redist/x86") or die "$!";
-    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/${redist_version}/x64",                 "redist/x64") or die "$!";
-    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/${redist_version}/debug_nonredist/x86", "redist/x86") or die "$!";
-    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/${redist_version}/debug_nonredist/x64", "redist/x64") or die "$!";
+
+    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/${redist_version}/x86",                 "redist/x86"                             ) or die "$!";
+    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/${redist_version}/x64",                 "redist/x64"                             ) or die "$!";
+    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/${redist_version}/debug_nonredist/x86", "redist/x86"                             ) or die "$!";
+    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/${redist_version}/debug_nonredist/x64", "redist/x64"                             ) or die "$!";
+    # ucrtbased.dll
+    dircopy("C:/Program Files (x86)/Windows Kits/10/bin/$sdk_10_version/x86/ucrt",                                                "redist/x86/Microsoft.UniversalCRT.Debug") or die "$!";
+    dircopy("C:/Program Files (x86)/Windows Kits/10/bin/$sdk_10_version/x64/ucrt",                                                "redist/x64/Microsoft.UniversalCRT.Debug") or die "$!";
+    # ucrtbase.dll and api-*.dll
+    dircopy("C:/Program Files (x86)/Windows Kits/10/Redist/$sdk_10_version/ucrt/DLLs/x86",                                        "redist/x86/Microsoft.UniversalCRT"      ) or die "$!";
+    dircopy("C:/Program Files (x86)/Windows Kits/10/Redist/$sdk_10_version/ucrt/DLLs/x64",                                        "redist/x64/Microsoft.UniversalCRT"      ) or die "$!";
 
     my $redist_nar    = writeNar("| 7z a $compression -si redist-$redist_version.nar.xz",       "redist",    "sha256");
     print qq[
