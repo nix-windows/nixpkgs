@@ -319,8 +319,8 @@ let
   "argon2" = fetch {
     name        = "argon2";
     version     = "20171227";
-    filename    = "mingw-w64-x86_64-argon2-20171227-2-any.pkg.tar.xz";
-    sha256      = "9b04d055ddd85f91923c4040b805f06575b8618c1a39b7e478874b3b53759c13";
+    filename    = "mingw-w64-x86_64-argon2-20171227-3-any.pkg.tar.xz";
+    sha256      = "4b528adfdff2b7509e39b145ed1592564da20984b911ef978e18ee9b1d594cdd";
   };
 
   "aria2" = fetch {
@@ -709,9 +709,9 @@ let
 
   "cego" = fetch {
     name        = "cego";
-    version     = "2.42.13";
-    filename    = "mingw-w64-x86_64-cego-2.42.13-1-any.pkg.tar.xz";
-    sha256      = "8c39e3dd4cc8e262ec6f54f14cdbe1b1e8bf041561beeb158d3039d712b47dde";
+    version     = "2.42.16";
+    filename    = "mingw-w64-x86_64-cego-2.42.16-1-any.pkg.tar.xz";
+    sha256      = "c20d8d4a3eb5473f68fa7d0943350e7cd5ca9250fcbfb5b2b43baf696beddaf1";
     buildInputs = [ readline lfcbase lfcxml ];
   };
 
@@ -1035,8 +1035,8 @@ let
   "curl" = fetch {
     name        = "curl";
     version     = "7.63.0";
-    filename    = "mingw-w64-x86_64-curl-7.63.0-1-any.pkg.tar.xz";
-    sha256      = "98474250b52e7ad2b2701e3f606e1f42d7945f97c79f881943f4bc645c326d74";
+    filename    = "mingw-w64-x86_64-curl-7.63.0-2-any.pkg.tar.xz";
+    sha256      = "ede83f08757b2aa5b14b87cef4e9bc03ab668c872d11746e95ff7ef7a3c50ac0";
     buildInputs = [ gcc-libs c-ares brotli libidn2 libmetalink libpsl libssh2 zlib ca-certificates openssl nghttp2 ];
   };
 
@@ -1301,6 +1301,14 @@ let
     filename    = "mingw-w64-x86_64-doxygen-1.8.14-3-any.pkg.tar.xz";
     sha256      = "59497d7d920cdaa8abb9c389b3952db6acc3ebaef23524dc4964448ef3757f5c";
     buildInputs = [ clang gcc-libs libiconv sqlite3 xapian-core ];
+  };
+
+  "dragon" = fetch {
+    name        = "dragon";
+    version     = "1.5.2";
+    filename    = "mingw-w64-x86_64-dragon-1.5.2-1-any.pkg.tar.xz";
+    sha256      = "7f470a05fbf8010e88d92fb701887b457ec2e2367f78ed2b584c135b0e7ed0b2";
+    buildInputs = [ lfcbase ];
   };
 
   "drmingw" = fetch {
@@ -1614,9 +1622,9 @@ let
 
   "fmt" = fetch {
     name        = "fmt";
-    version     = "5.2.1";
-    filename    = "mingw-w64-x86_64-fmt-5.2.1-1-any.pkg.tar.xz";
-    sha256      = "2abcd74bf49c6b8fc4720c5007a1f7a55877ffdad45d8e7c75a80bfb15b8413d";
+    version     = "5.3.0";
+    filename    = "mingw-w64-x86_64-fmt-5.3.0-1-any.pkg.tar.xz";
+    sha256      = "f828acf61b4a4d1ce76f62ebf1ca1167f84d0784165c631b1a5c8301d83d7a50";
     buildInputs = [ gcc-libs ];
   };
 
@@ -2004,8 +2012,8 @@ let
   "gitg" = fetch {
     name        = "gitg";
     version     = "3.30.1";
-    filename    = "mingw-w64-x86_64-gitg-3.30.1-1-any.pkg.tar.xz";
-    sha256      = "0aa20321578fc8f5588dd38f192d552430114fe6a6ae513e7900d8770d9949e0";
+    filename    = "mingw-w64-x86_64-gitg-3.30.1-2-any.pkg.tar.xz";
+    sha256      = "2414cfe9bcf96829f7ee3e4c9deeefdd9d77028e4aaa2d4e4917984f61e3b90d";
     buildInputs = [ adwaita-icon-theme gtksourceview3 libpeas enchant iso-codes python3-gobject gsettings-desktop-schemas libsoup libsecret gtkspell3 libgit2-glib libgee ];
   };
 
@@ -2666,9 +2674,9 @@ let
 
   "harfbuzz" = fetch {
     name        = "harfbuzz";
-    version     = "2.2.0";
-    filename    = "mingw-w64-x86_64-harfbuzz-2.2.0-1-any.pkg.tar.xz";
-    sha256      = "5d6de76cb2bbb0e4be993254f0d3c3489419a3eee0318d75cd2cab4952824e35";
+    version     = "2.3.0";
+    filename    = "mingw-w64-x86_64-harfbuzz-2.3.0-1-any.pkg.tar.xz";
+    sha256      = "8fc73b86c74375d2f57b3640126e09e8399748b51a899abc1b4ac66582d48536";
     buildInputs = [ freetype gcc-libs glib2 graphite2 ];
   };
 
@@ -3643,17 +3651,17 @@ let
 
   "lfcbase" = fetch {
     name        = "lfcbase";
-    version     = "1.12.3";
-    filename    = "mingw-w64-x86_64-lfcbase-1.12.3-1-any.pkg.tar.xz";
-    sha256      = "5b95e0ec9deb5cc4a72ffd5d43de991277ea65ca41caa2fc0250cbe2f0af1632";
+    version     = "1.12.5";
+    filename    = "mingw-w64-x86_64-lfcbase-1.12.5-1-any.pkg.tar.xz";
+    sha256      = "bcf43b9d0610652f2f683f61dafd7ac1379e83c381811f0da34ca7f33ea2d4a0";
     buildInputs = [ gcc-libs ncurses ];
   };
 
   "lfcxml" = fetch {
     name        = "lfcxml";
-    version     = "1.2.9";
-    filename    = "mingw-w64-x86_64-lfcxml-1.2.9-1-any.pkg.tar.xz";
-    sha256      = "6ebe79ba403edf318c5458d6bac141e9395b6d89b351d63c43cdf2b5d38ef17b";
+    version     = "1.2.10";
+    filename    = "mingw-w64-x86_64-lfcxml-1.2.10-1-any.pkg.tar.xz";
+    sha256      = "e84a75bf93f36b41217ca59d418d40fdb43901c3565c009eabf0df530672418d";
     buildInputs = [ lfcbase ];
   };
 
@@ -3817,9 +3825,9 @@ let
 
   "libcerf" = fetch {
     name        = "libcerf";
-    version     = "1.10";
-    filename    = "mingw-w64-x86_64-libcerf-1.10-1-any.pkg.tar.xz";
-    sha256      = "4d3e499a628f729de6fdd4e0844ea05ca6a6039fed83d8cef0569281f494c901";
+    version     = "1.11";
+    filename    = "mingw-w64-x86_64-libcerf-1.11-1-any.pkg.tar.xz";
+    sha256      = "1354a1846adc0c8cd60b6bf443db2d8aa995affd5fc82eb05eb7088d7d3b75f8";
     buildInputs = [  ];
   };
 
@@ -4198,9 +4206,9 @@ let
 
   "libidn2" = fetch {
     name        = "libidn2";
-    version     = "2.0.5";
-    filename    = "mingw-w64-x86_64-libidn2-2.0.5-1-any.pkg.tar.xz";
-    sha256      = "916000573ae4fd1b66377b57bdf7697eea825b31d02673bc820b6a36949a3d08";
+    version     = "2.1.0";
+    filename    = "mingw-w64-x86_64-libidn2-2.1.0-1-any.pkg.tar.xz";
+    sha256      = "6bab44f575a81c4f135d6b4559979e4c950d335224e04f5b564f5c01e8c71f58";
     buildInputs = [ gettext libunistring ];
   };
 
@@ -4614,8 +4622,8 @@ let
   "libpsl" = fetch {
     name        = "libpsl";
     version     = "0.20.2";
-    filename    = "mingw-w64-x86_64-libpsl-0.20.2-1-any.pkg.tar.xz";
-    sha256      = "f50ce84b007fb23ff9e3f9e4875e26b30ae9a645e865885df094c408cd536c95";
+    filename    = "mingw-w64-x86_64-libpsl-0.20.2-2-any.pkg.tar.xz";
+    sha256      = "264be457add0e63642ad1e1689a7e550c02d2356e65b43634eaa032c6fce6966";
     buildInputs = [ libidn2 libunistring gettext ];
   };
 
@@ -4763,9 +4771,9 @@ let
 
   "libsodium" = fetch {
     name        = "libsodium";
-    version     = "1.0.16";
-    filename    = "mingw-w64-x86_64-libsodium-1.0.16-1-any.pkg.tar.xz";
-    sha256      = "3453e2ce0ba0e754079a7270dd8e8efcf6ddf1ae9114248d575fc8fa62ec64c4";
+    version     = "1.0.17";
+    filename    = "mingw-w64-x86_64-libsodium-1.0.17-1-any.pkg.tar.xz";
+    sha256      = "0892de70ed1492e77a61c40abe116d3fe803ea3e19602b0b744e2d767e70e943";
     buildInputs = [ gcc-libs ];
   };
 
@@ -5137,9 +5145,9 @@ let
 
   "libxslt" = fetch {
     name        = "libxslt";
-    version     = "1.1.32";
-    filename    = "mingw-w64-x86_64-libxslt-1.1.32-1-any.pkg.tar.xz";
-    sha256      = "cf60b2dff0884e2abe7e3144a64e7b366b4a8520ec074b74c0b6763302c0b07d";
+    version     = "1.1.33";
+    filename    = "mingw-w64-x86_64-libxslt-1.1.33-1-any.pkg.tar.xz";
+    sha256      = "b9e7c4bfed7de1c02f29cedff07d264894f35eeda9a304a34b129c3072821558";
     buildInputs = [ gcc-libs libxml2 libgcrypt ];
   };
 
@@ -5374,9 +5382,9 @@ let
 
   "mbedtls" = fetch {
     name        = "mbedtls";
-    version     = "2.14.0";
-    filename    = "mingw-w64-x86_64-mbedtls-2.14.0-1-any.pkg.tar.xz";
-    sha256      = "d7021356eef6978d042fb4f5ff36ff36e13589b5f08ad5446718568a81558c79";
+    version     = "2.16.0";
+    filename    = "mingw-w64-x86_64-mbedtls-2.16.0-1-any.pkg.tar.xz";
+    sha256      = "7e7641dfec426b2f0d7a881cad3512a973c07dab46279c58da9ec276e10e8026";
     buildInputs = [ gcc-libs ];
   };
 
@@ -6413,9 +6421,9 @@ let
 
   "poppler" = fetch {
     name        = "poppler";
-    version     = "0.72.0";
-    filename    = "mingw-w64-x86_64-poppler-0.72.0-1-any.pkg.tar.xz";
-    sha256      = "dc39c776c259b5265e21d13963e5dc5936fe1902852b77d20312a18742852f31";
+    version     = "0.73.0";
+    filename    = "mingw-w64-x86_64-poppler-0.73.0-1-any.pkg.tar.xz";
+    sha256      = "5cc6ad57b2830fe98ccc17a0b1f4114f9d6f43be627d022b425bc9a9a627fe1d";
     buildInputs = [ cairo curl freetype icu lcms2 libjpeg libpng libtiff nss openjpeg2 poppler-data zlib ];
   };
 
@@ -6676,9 +6684,9 @@ let
 
   "python-lxml-docs" = fetch {
     name        = "python-lxml-docs";
-    version     = "4.2.5";
-    filename    = "mingw-w64-x86_64-python-lxml-docs-4.2.5-1-any.pkg.tar.xz";
-    sha256      = "c2b6d19d9d19dadfb260a0da2179deb8777dffe633fb4d00b2c0a547fade6816";
+    version     = "4.3.0";
+    filename    = "mingw-w64-x86_64-python-lxml-docs-4.3.0-1-any.pkg.tar.xz";
+    sha256      = "1653ddcb1ed657cec286c380365f190aa0fc3cfaaf8baf1ed9cb4b89d1689045";
   };
 
   "python-qscintilla-common" = fetch {
@@ -6736,6 +6744,14 @@ let
     filename    = "mingw-w64-x86_64-python2-argh-0.26.2-1-any.pkg.tar.xz";
     sha256      = "e496bf907f06537baf9efdb52eb62e6474df39d88ff3526fbc3503f4295430b0";
     buildInputs = [ python2 ];
+  };
+
+  "python2-argon2_cffi" = fetch {
+    name        = "python2-argon2_cffi";
+    version     = "18.3.0";
+    filename    = "mingw-w64-x86_64-python2-argon2_cffi-18.3.0-1-any.pkg.tar.xz";
+    sha256      = "617f52d60ea12948e8374b5e0a797fedbb08707c24aa2173214e04ab18ca8e61";
+    buildInputs = [ python2 python2-cffi python2-enum python2-setuptools python2-six ];
   };
 
   "python2-asn1crypto" = fetch {
@@ -6860,10 +6876,10 @@ let
 
   "python2-beautifulsoup4" = fetch {
     name        = "python2-beautifulsoup4";
-    version     = "4.6.3";
-    filename    = "mingw-w64-x86_64-python2-beautifulsoup4-4.6.3-1-any.pkg.tar.xz";
-    sha256      = "c2b0a4ec12ebfe1e2bef13bb1035f5296a151132faa6b0f8b5a8b5c2e38c612f";
-    buildInputs = [ python2 ];
+    version     = "4.7.0";
+    filename    = "mingw-w64-x86_64-python2-beautifulsoup4-4.7.0-1-any.pkg.tar.xz";
+    sha256      = "07db9d8ca7bd07945aff9a595abdc175d539a005062b698421f3703434c71c71";
+    buildInputs = [ python2 python2-soupsieve ];
   };
 
   "python2-biopython" = fetch {
@@ -7158,8 +7174,8 @@ let
   "python2-django" = fetch {
     name        = "python2-django";
     version     = "1.11.13";
-    filename    = "mingw-w64-x86_64-python2-django-1.11.13-1-any.pkg.tar.xz";
-    sha256      = "23391ec706f605ea25d6a30d87302122b201d99f5a886df96bd4fc341a64171a";
+    filename    = "mingw-w64-x86_64-python2-django-1.11.13-2-any.pkg.tar.xz";
+    sha256      = "7dffc9751e3e0a299cf1b2aea1a537fa4536ea8f8e68421ade6074ed1f37a364";
     buildInputs = [ python2 python2-pytz ];
   };
 
@@ -7673,10 +7689,10 @@ let
 
   "python2-lxml" = fetch {
     name        = "python2-lxml";
-    version     = "4.2.5";
-    filename    = "mingw-w64-x86_64-python2-lxml-4.2.5-1-any.pkg.tar.xz";
-    sha256      = "3e1655dc16a01c8d32387457447f49970d37d66f871eee2004e65c82719d9774";
-    buildInputs = [ python2 libxslt ];
+    version     = "4.3.0";
+    filename    = "mingw-w64-x86_64-python2-lxml-4.3.0-1-any.pkg.tar.xz";
+    sha256      = "2a3bce18e32fb2283d8e7e513003aed4541d7d38f99b8da468224aa2bbdc7c08";
+    buildInputs = [ libxml2 libxslt python2 ];
   };
 
   "python2-mako" = fetch {
@@ -7810,9 +7826,9 @@ let
 
   "python2-netifaces" = fetch {
     name        = "python2-netifaces";
-    version     = "0.10.7";
-    filename    = "mingw-w64-x86_64-python2-netifaces-0.10.7-1-any.pkg.tar.xz";
-    sha256      = "5dfb14cf9bbc5d4ce078c2c44f0652899efbb0e23f4531a5ca60865097c16e17";
+    version     = "0.10.9";
+    filename    = "mingw-w64-x86_64-python2-netifaces-0.10.9-1-any.pkg.tar.xz";
+    sha256      = "f86fcbdbd797cf08f41325bb52f12f703a7cd20d43aa0f0c1133ba7c16d3fb81";
     buildInputs = [ python2 ];
   };
 
@@ -7842,9 +7858,9 @@ let
 
   "python2-numexpr" = fetch {
     name        = "python2-numexpr";
-    version     = "2.6.8";
-    filename    = "mingw-w64-x86_64-python2-numexpr-2.6.8-1-any.pkg.tar.xz";
-    sha256      = "9ae97c0d40c7604d678b8fd94a74cdcfdfed994d6372fea6158e16f46d09d207";
+    version     = "2.6.9";
+    filename    = "mingw-w64-x86_64-python2-numexpr-2.6.9-1-any.pkg.tar.xz";
+    sha256      = "7522e94ea11c84fd1995b957ee790e02a6545e79e41582b06a9c3e238c9d95c5";
     buildInputs = [ python2-numpy ];
   };
 
@@ -7874,9 +7890,9 @@ let
 
   "python2-openpyxl" = fetch {
     name        = "python2-openpyxl";
-    version     = "2.5.9";
-    filename    = "mingw-w64-x86_64-python2-openpyxl-2.5.9-1-any.pkg.tar.xz";
-    sha256      = "253fd888db26544c89e032c37df3890049454ec76aec9ad05a162ee97ba07575";
+    version     = "2.5.12";
+    filename    = "mingw-w64-x86_64-python2-openpyxl-2.5.12-1-any.pkg.tar.xz";
+    sha256      = "6844c178784496154ca8a88e35a01431c0134c8fec93e2f43e3fa57a3ea0246b";
     buildInputs = [ python2-jdcal python2-et-xmlfile ];
   };
 
@@ -8034,9 +8050,9 @@ let
 
   "python2-patsy" = fetch {
     name        = "python2-patsy";
-    version     = "0.5.0";
-    filename    = "mingw-w64-x86_64-python2-patsy-0.5.0-2-any.pkg.tar.xz";
-    sha256      = "f83fe7f0e93940ccb339eacd8b41f9b592d4b83ac4804e8ea9720837aeed2c93";
+    version     = "0.5.1";
+    filename    = "mingw-w64-x86_64-python2-patsy-0.5.1-1-any.pkg.tar.xz";
+    sha256      = "dd2b0482d093b6a77718b9ba681f98bedfd8685687ea0fc183b768bc42789d56";
     buildInputs = [ python2-numpy ];
   };
 
@@ -8354,10 +8370,10 @@ let
 
   "python2-pyrsistent" = fetch {
     name        = "python2-pyrsistent";
-    version     = "0.14.8";
-    filename    = "mingw-w64-x86_64-python2-pyrsistent-0.14.8-1-any.pkg.tar.xz";
-    sha256      = "94c74be7ca2c8c6fe770814284693787449a3951af8942c9c6f49a6f83e2da99";
-    buildInputs = [ python2 ];
+    version     = "0.14.9";
+    filename    = "mingw-w64-x86_64-python2-pyrsistent-0.14.9-1-any.pkg.tar.xz";
+    sha256      = "9a2a71f5ef4f80915510f15896563afb0d71f5933a914bdd35b788140f64ed1c";
+    buildInputs = [ python2 python2-six ];
   };
 
   "python2-pyserial" = fetch {
@@ -8416,6 +8432,14 @@ let
     buildInputs = [ python2 python2-py-cpuinfo python2-statistics python2-pathlib python2-pytest ];
   };
 
+  "python2-pytest-cov" = fetch {
+    name        = "python2-pytest-cov";
+    version     = "2.6.0";
+    filename    = "mingw-w64-x86_64-python2-pytest-cov-2.6.0-1-any.pkg.tar.xz";
+    sha256      = "7c404467b2f904b74171360b1d380eb1c7d91a0df88176fdb4d491eac1a82ea4";
+    buildInputs = [ python2 python2-coverage python2-pytest ];
+  };
+
   "python2-pytest-expect" = fetch {
     name        = "python2-pytest-expect";
     version     = "1.1.0";
@@ -8466,9 +8490,9 @@ let
 
   "python2-pytz" = fetch {
     name        = "python2-pytz";
-    version     = "2018.7";
-    filename    = "mingw-w64-x86_64-python2-pytz-2018.7-1-any.pkg.tar.xz";
-    sha256      = "16354de992062bb640168ee3c74e56f151983b1574bc4e74a1c61de3c9e069d4";
+    version     = "2018.9";
+    filename    = "mingw-w64-x86_64-python2-pytz-2018.9-1-any.pkg.tar.xz";
+    sha256      = "10d79a9f244f94d0679f9a71aa642a4159cf2b2855a4da93f6b51a8c099396a5";
     buildInputs = [ python2 ];
   };
 
@@ -8598,9 +8622,9 @@ let
 
   "python2-scikit-learn" = fetch {
     name        = "python2-scikit-learn";
-    version     = "0.20.0";
-    filename    = "mingw-w64-x86_64-python2-scikit-learn-0.20.0-1-any.pkg.tar.xz";
-    sha256      = "0ab885a8655f5ca557f6a962d9d7458ea095fa1165863f9f05436ea87036b87d";
+    version     = "0.20.2";
+    filename    = "mingw-w64-x86_64-python2-scikit-learn-0.20.2-1-any.pkg.tar.xz";
+    sha256      = "4cc9bb657807635785f77ccd31ff9ebb7b27fc13e0ddfad2bcbd40e34e4341eb";
     buildInputs = [ python2 python2-scipy ];
   };
 
@@ -8699,6 +8723,14 @@ let
     filename    = "mingw-w64-x86_64-python2-snowballstemmer-1.2.1-3-any.pkg.tar.xz";
     sha256      = "f2841a2562f770387bc883c276efd9bffd3323c932285b3b2d8b184bb2859a28";
     buildInputs = [ python2 ];
+  };
+
+  "python2-soupsieve" = fetch {
+    name        = "python2-soupsieve";
+    version     = "1.6.2";
+    filename    = "mingw-w64-x86_64-python2-soupsieve-1.6.2-1-any.pkg.tar.xz";
+    sha256      = "0427156edb33783dc4a7e1e98bbb930c8eaf1e6a38e69b0f70f5d0f751c776c1";
+    buildInputs = [ python2 self."python2-backports.functools_lru_cache" ];
   };
 
   "python2-sphinx" = fetch {
@@ -9119,9 +9151,9 @@ let
 
   "python2-xlsxwriter" = fetch {
     name        = "python2-xlsxwriter";
-    version     = "1.1.1";
-    filename    = "mingw-w64-x86_64-python2-xlsxwriter-1.1.1-1-any.pkg.tar.xz";
-    sha256      = "e82554f58aa2066bf1b0e0c643bca5033d8721c0801aea228e7ce20dfbd2623e";
+    version     = "1.1.2";
+    filename    = "mingw-w64-x86_64-python2-xlsxwriter-1.1.2-1-any.pkg.tar.xz";
+    sha256      = "5e448429362a8a3536f5b12c7c309231f4af118de99df08386c4e2419d5eabb7";
     buildInputs = [ python2 ];
   };
 
@@ -9211,6 +9243,14 @@ let
     buildInputs = [ python3 ];
   };
 
+  "python3-argon2_cffi" = fetch {
+    name        = "python3-argon2_cffi";
+    version     = "18.3.0";
+    filename    = "mingw-w64-x86_64-python3-argon2_cffi-18.3.0-1-any.pkg.tar.xz";
+    sha256      = "89b5154e922c54e3fa8e3e1e8910d427f01b4ea940ea5255ff649ae27c80664b";
+    buildInputs = [ python3 python3-cffi python3-setuptools python3-six ];
+  };
+
   "python3-asn1crypto" = fetch {
     name        = "python3-asn1crypto";
     version     = "0.24.0";
@@ -9277,10 +9317,10 @@ let
 
   "python3-beautifulsoup4" = fetch {
     name        = "python3-beautifulsoup4";
-    version     = "4.6.3";
-    filename    = "mingw-w64-x86_64-python3-beautifulsoup4-4.6.3-1-any.pkg.tar.xz";
-    sha256      = "56f474cc6f1153f5aafd559c5abd7f846855cfdc461e169063f747daf2bdf6f6";
-    buildInputs = [ python3 ];
+    version     = "4.7.0";
+    filename    = "mingw-w64-x86_64-python3-beautifulsoup4-4.7.0-1-any.pkg.tar.xz";
+    sha256      = "3f6074b62c45fda7674c9fb49e3110ac967afdc19562ea539cf71a74c4bab7f0";
+    buildInputs = [ python3 python3-soupsieve ];
   };
 
   "python3-binwalk" = fetch {
@@ -9558,8 +9598,8 @@ let
   "python3-django" = fetch {
     name        = "python3-django";
     version     = "2.1.4";
-    filename    = "mingw-w64-x86_64-python3-django-2.1.4-1-any.pkg.tar.xz";
-    sha256      = "8ac3d4e2fcf2577e47508e2acec9a2612e932762e214d8641327fb03fac734b7";
+    filename    = "mingw-w64-x86_64-python3-django-2.1.4-2-any.pkg.tar.xz";
+    sha256      = "62ec2e0d9ae84ac2e0d862d29e5d720b405617854525ba50d2a71f2edbef9cdd";
     buildInputs = [ python3 python3-pytz ];
   };
 
@@ -9834,6 +9874,14 @@ let
     buildInputs = [ python3 ];
   };
 
+  "python3-imbalanced-learn" = fetch {
+    name        = "python3-imbalanced-learn";
+    version     = "0.4.3";
+    filename    = "mingw-w64-x86_64-python3-imbalanced-learn-0.4.3-1-any.pkg.tar.xz";
+    sha256      = "82b601c90687cab31ec58b80c18fa06427eb3a434fcf921806c3d291a7e087f3";
+    buildInputs = [ python3 python3-numpy python3-scipy ];
+  };
+
   "python3-importlib-metadata" = fetch {
     name        = "python3-importlib-metadata";
     version     = "0.7";
@@ -10041,10 +10089,10 @@ let
 
   "python3-lxml" = fetch {
     name        = "python3-lxml";
-    version     = "4.2.5";
-    filename    = "mingw-w64-x86_64-python3-lxml-4.2.5-1-any.pkg.tar.xz";
-    sha256      = "bcf4e44db0c614daf6b4fe382080971341e1a581aae6b00e190de1beb8c4a9c0";
-    buildInputs = [ python3 libxslt ];
+    version     = "4.3.0";
+    filename    = "mingw-w64-x86_64-python3-lxml-4.3.0-1-any.pkg.tar.xz";
+    sha256      = "e29ef38c3751ecabb23f1057ca0023bb7b47d623703e08b0b630c16031cfeed6";
+    buildInputs = [ libxml2 libxslt python3 ];
   };
 
   "python3-mako" = fetch {
@@ -10169,9 +10217,9 @@ let
 
   "python3-netifaces" = fetch {
     name        = "python3-netifaces";
-    version     = "0.10.7";
-    filename    = "mingw-w64-x86_64-python3-netifaces-0.10.7-1-any.pkg.tar.xz";
-    sha256      = "f688cc3d977751465609310d2e1dce810edd1d18621d1492b80fa7006fb2b99a";
+    version     = "0.10.9";
+    filename    = "mingw-w64-x86_64-python3-netifaces-0.10.9-1-any.pkg.tar.xz";
+    sha256      = "c504f5e334ffc77f17637bd3ff9c0e1e45b5e8b504125ceb07ad191afdb1b5cd";
     buildInputs = [ python3 ];
   };
 
@@ -10210,9 +10258,9 @@ let
 
   "python3-numexpr" = fetch {
     name        = "python3-numexpr";
-    version     = "2.6.8";
-    filename    = "mingw-w64-x86_64-python3-numexpr-2.6.8-1-any.pkg.tar.xz";
-    sha256      = "c1c2ee9ec1c517f7d2888d4b11e17bbe84726b3e670fa7d6ba0124fc981c0f56";
+    version     = "2.6.9";
+    filename    = "mingw-w64-x86_64-python3-numexpr-2.6.9-1-any.pkg.tar.xz";
+    sha256      = "023093de928f0b968a182007f0ea03d17d398b41ffcdbc1126c937a7ed169abf";
     buildInputs = [ python3-numpy ];
   };
 
@@ -10242,9 +10290,9 @@ let
 
   "python3-openpyxl" = fetch {
     name        = "python3-openpyxl";
-    version     = "2.5.9";
-    filename    = "mingw-w64-x86_64-python3-openpyxl-2.5.9-1-any.pkg.tar.xz";
-    sha256      = "5333521059b28cc2602c6c377c8d2b14d3df8fcd986a55700ece7071fd72bef1";
+    version     = "2.5.12";
+    filename    = "mingw-w64-x86_64-python3-openpyxl-2.5.12-1-any.pkg.tar.xz";
+    sha256      = "c1746c6a12a278b6d28aa55a17845db5182003a8ab4f8db65c663fc2a711cea9";
     buildInputs = [ python3-jdcal python3-et-xmlfile ];
   };
 
@@ -10394,9 +10442,9 @@ let
 
   "python3-patsy" = fetch {
     name        = "python3-patsy";
-    version     = "0.5.0";
-    filename    = "mingw-w64-x86_64-python3-patsy-0.5.0-2-any.pkg.tar.xz";
-    sha256      = "c20cecd6d7aa1f14ccc64e46a2c496c1bc81bd7442af09fc34963d617dba3b38";
+    version     = "0.5.1";
+    filename    = "mingw-w64-x86_64-python3-patsy-0.5.1-1-any.pkg.tar.xz";
+    sha256      = "dcf59898fc5abf0a64f09a13e9ab849089643533f19620c90b8391c2e4e3548e";
     buildInputs = [ python3-numpy ];
   };
 
@@ -10706,10 +10754,10 @@ let
 
   "python3-pyrsistent" = fetch {
     name        = "python3-pyrsistent";
-    version     = "0.14.8";
-    filename    = "mingw-w64-x86_64-python3-pyrsistent-0.14.8-1-any.pkg.tar.xz";
-    sha256      = "6237c02531f96444f2dfede5db80ada8005c46e16de46e173bf08dc35b3c3108";
-    buildInputs = [ python3 ];
+    version     = "0.14.9";
+    filename    = "mingw-w64-x86_64-python3-pyrsistent-0.14.9-1-any.pkg.tar.xz";
+    sha256      = "ad50fb35432094894253fdd8f25d00e3c12ec71d41cfdb60a5046b2a3ab5efa3";
+    buildInputs = [ python3 python3-six ];
   };
 
   "python3-pyserial" = fetch {
@@ -10768,6 +10816,14 @@ let
     buildInputs = [ python3 python3-py-cpuinfo python3-pytest ];
   };
 
+  "python3-pytest-cov" = fetch {
+    name        = "python3-pytest-cov";
+    version     = "2.6.0";
+    filename    = "mingw-w64-x86_64-python3-pytest-cov-2.6.0-1-any.pkg.tar.xz";
+    sha256      = "9cc8b4af906842d56feded4bc36e0595601f43a4c7b4deb4f22d5042a54c06cd";
+    buildInputs = [ python3 python3-coverage python3-pytest ];
+  };
+
   "python3-pytest-expect" = fetch {
     name        = "python3-pytest-expect";
     version     = "1.1.0";
@@ -10818,9 +10874,9 @@ let
 
   "python3-pytz" = fetch {
     name        = "python3-pytz";
-    version     = "2018.7";
-    filename    = "mingw-w64-x86_64-python3-pytz-2018.7-1-any.pkg.tar.xz";
-    sha256      = "6cc7a8f6eea18e0b6aec7ea7c1162af5bc275da74dfc5e7cbb08803e34279e8e";
+    version     = "2018.9";
+    filename    = "mingw-w64-x86_64-python3-pytz-2018.9-1-any.pkg.tar.xz";
+    sha256      = "79d6255d4cd77dcc77594e18b39cbf3b80c065a698d0b5e10314aaf09d5b7833";
     buildInputs = [ python3 ];
   };
 
@@ -10950,9 +11006,9 @@ let
 
   "python3-scikit-learn" = fetch {
     name        = "python3-scikit-learn";
-    version     = "0.20.0";
-    filename    = "mingw-w64-x86_64-python3-scikit-learn-0.20.0-1-any.pkg.tar.xz";
-    sha256      = "493785f5ff6d5b3b75e1be95ef048a23f71ff3d5c1559f1cf8bf2190a73da227";
+    version     = "0.20.2";
+    filename    = "mingw-w64-x86_64-python3-scikit-learn-0.20.2-1-any.pkg.tar.xz";
+    sha256      = "3fc89400047c205d5b5d0a1fcb8b433f1c453f07b24ad5beace23d039c684f97";
     buildInputs = [ python3 python3-scipy ];
   };
 
@@ -11042,6 +11098,14 @@ let
     version     = "1.2.1";
     filename    = "mingw-w64-x86_64-python3-snowballstemmer-1.2.1-3-any.pkg.tar.xz";
     sha256      = "31cfef006e0009ab9de3330953f47f8d896a5ce24ebf8a79dc31f59730ebc5a4";
+    buildInputs = [ python3 ];
+  };
+
+  "python3-soupsieve" = fetch {
+    name        = "python3-soupsieve";
+    version     = "1.6.2";
+    filename    = "mingw-w64-x86_64-python3-soupsieve-1.6.2-1-any.pkg.tar.xz";
+    sha256      = "64e273bc3b1f73b28cc6d3abf66e6769af330a4951c89d951e0c957af963c639";
     buildInputs = [ python3 ];
   };
 
@@ -11423,9 +11487,9 @@ let
 
   "python3-xlsxwriter" = fetch {
     name        = "python3-xlsxwriter";
-    version     = "1.1.1";
-    filename    = "mingw-w64-x86_64-python3-xlsxwriter-1.1.1-1-any.pkg.tar.xz";
-    sha256      = "e1f1c5471563530ea67a85e8162e442ae607bc2af3f35762bfa453efb14cbd97";
+    version     = "1.1.2";
+    filename    = "mingw-w64-x86_64-python3-xlsxwriter-1.1.2-1-any.pkg.tar.xz";
+    sha256      = "c786604c67321a63d26e844ba8b319545822a148b63306d9c07d880cdbd87626";
     buildInputs = [ python3 ];
   };
 
@@ -13477,10 +13541,10 @@ let
 
   "wget" = fetch {
     name        = "wget";
-    version     = "1.20";
-    filename    = "mingw-w64-x86_64-wget-1.20-1-any.pkg.tar.xz";
-    sha256      = "3bd5bab944698cb2e8710be36d7babf7516f885209968770a6112f5d9990bbf4";
-    buildInputs = [ pcre libidn2 openssl c-ares gpgme ];
+    version     = "1.20.1";
+    filename    = "mingw-w64-x86_64-wget-1.20.1-1-any.pkg.tar.xz";
+    sha256      = "4282de3c407c3b4f6ff9d4d431b4834d9a3a1c65e7fe8975b8b226cb5f3e931c";
+    buildInputs = [ pcre2 libidn2 openssl c-ares gpgme ];
   };
 
   "win7appid" = fetch {
