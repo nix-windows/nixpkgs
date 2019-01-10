@@ -144,11 +144,23 @@ in stdenv.mkDerivation rec {
 
   configurePhase = ''
     chdir('src');
-    #ENV_TOOLCHAIN_ROOT
     system('gn.exe gen --args=${lib.escapeWindowsArg gnFlags} out/Release') == 0 or die;
   '';
 
   buildPhase = ''
-    system('ninja.exe -C out/Release "chrome"') == 0 or die;
+    system('ninja.exe -C out/Release chrome') == 0 or die;
+  '';
+
+  installPhase = ''
+    make_pathL("$ENV{out}/bin/locales", "$ENV{out}/bin/swiftshader");
+    for my $in (glob("out/Release/*")) {
+      copyL($in, "$ENV{out}/bin/".basename($in)) if $in =~ /\.(bin|dat|dll|pak|pdb)$/ || basename($in) =~ /^chrome(_proxy|)\.exe$/;
+    }
+    for my $in (glob("out/Release/swiftshader/*")) {
+      copyL($in, "$ENV{out}/bin/swiftshader/".basename($in)) if $in =~ /\.(dll|pdb)$/;
+    }
+    for my $in (glob("out/Release/locales/*")) {
+      copyL($in, "$ENV{out}/bin/locales/".basename($in)) if $in =~ /\.(pak)$/;
+    }
   '';
 }
