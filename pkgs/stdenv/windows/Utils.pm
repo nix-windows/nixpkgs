@@ -112,12 +112,8 @@ sub readlink_f {
     die "readlink_f: '$src' does not exist" unless -e $src;
     my %seen = ();
     while (testL('l', $src)) {
-        my $target = readlinkL($src);
-        # TODO: absolutize $target otherwise
-        # $target = File::Spec->rel2abs($target, dirname($src));
-        die "readlinkL($src)='$target' is not absolute" if $target !~ /^(\\\\\?\\)?[a-zA-Z]:\\/;
-        $src = $target;
-        die "readlink_f: cycle" if $seen{$src};
+        $src = File::Spec->rel2abs(readlinkL($src), dirname($src));
+        die "readlink_f($src): cycle" if $seen{$src};
         $seen{$src} = 1;
     }
     return $src;
