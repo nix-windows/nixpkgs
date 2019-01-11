@@ -63,8 +63,8 @@ let
   } #// (extraAttrs.gnFlags or {})
   );
 
-  version = "73.0.3660.2";
-  deps = import ./sources-73.0.3660.2.nix { inherit fetchgit; };
+  version = "73.0.3667.1";
+  deps = import (./sources- + version + ".nix") { inherit fetchgit; };
   src = stdenv.mkDerivation rec {
     name = "chromium-${version}-src";
     buildCommand = ''
@@ -154,7 +154,7 @@ in stdenv.mkDerivation rec {
   installPhase = ''
     make_pathL("$ENV{out}/bin/locales", "$ENV{out}/bin/swiftshader");
     for my $in (glob("out/Release/*")) {
-      copyL($in, "$ENV{out}/bin/".basename($in)) if $in =~ /\.(bin|dat|dll|pak|pdb)$/ || basename($in) =~ /^chrome(_proxy|)\.exe$/;
+      copyL($in, "$ENV{out}/bin/".basename($in)) if $in =~ /\.(bin|dat|dll|pak|pdb|manifest)$/ || basename($in) =~ /^chrome(_proxy|)\.exe$/;
     }
     for my $in (glob("out/Release/swiftshader/*")) {
       copyL($in, "$ENV{out}/bin/swiftshader/".basename($in)) if $in =~ /\.(dll|pdb)$/;

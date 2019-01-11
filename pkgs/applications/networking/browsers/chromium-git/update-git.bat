@@ -11,4 +11,4 @@ echo GIT=%GIT%
 echo PERL=%PERL%
 echo PYTHON2=%PYTHON2%
 
-%PERL%\bin\perl.exe update-git.pl 73.0.3660.2
+%PERL%\bin\perl.exe update-git.pl 73.0.3667.1
