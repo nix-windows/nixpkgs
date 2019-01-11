@@ -7053,7 +7053,9 @@ with pkgs;
   bootjdk = callPackage ../development/compilers/openjdk/bootstrap.nix { version = "10"; };
 
   openjdk8 =
-    if stdenv.isDarwin then
+    if stdenv.hostPlatform.isMicrosoft then
+      callPackage ../development/compilers/openjdk/windows/8.nix { }
+    else if stdenv.isDarwin then
       callPackage ../development/compilers/openjdk/darwin/8.nix { }
     else
       callPackage ../development/compilers/openjdk/8.nix {
