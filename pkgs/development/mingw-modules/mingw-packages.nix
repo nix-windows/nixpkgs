@@ -533,9 +533,9 @@ let
 
   "blosc" = fetch {
     name        = "blosc";
-    version     = "1.15.0";
-    filename    = "mingw-w64-x86_64-blosc-1.15.0-1-any.pkg.tar.xz";
-    sha256      = "244c2d6482780882bfe0bca8ac804b205a962e23c8e8bcb07a40b61eb1b54433";
+    version     = "1.15.1";
+    filename    = "mingw-w64-x86_64-blosc-1.15.1-1-any.pkg.tar.xz";
+    sha256      = "5c3ebc6f87155e8df2ecb6dd9b00325f208faad1acf9f90aa52325ac4ebb1334";
     buildInputs = [ snappy zstd zlib lz4 ];
   };
 
@@ -1186,9 +1186,9 @@ let
 
   "distorm" = fetch {
     name        = "distorm";
-    version     = "3.3.8";
-    filename    = "mingw-w64-x86_64-distorm-3.3.8-1-any.pkg.tar.xz";
-    sha256      = "7ab31ed38e930940e450e297fe7409a60a4ec1cd3bb97606af8299d5a1e474b0";
+    version     = "3.4.1";
+    filename    = "mingw-w64-x86_64-distorm-3.4.1-1-any.pkg.tar.xz";
+    sha256      = "3d908c27de8c9386566986611d44b27d60aa887d1d6c409d2e34f0faf6ac1e97";
   };
 
   "djview" = fetch {
@@ -1783,8 +1783,8 @@ let
   "gdal" = fetch {
     name        = "gdal";
     version     = "2.4.0";
-    filename    = "mingw-w64-x86_64-gdal-2.4.0-1-any.pkg.tar.xz";
-    sha256      = "8160ff041895c264445fa560e91df9435a8e6aaf9f7a93b60b32767020b2fc97";
+    filename    = "mingw-w64-x86_64-gdal-2.4.0-2-any.pkg.tar.xz";
+    sha256      = "84992267ab2c92ad7d426db6c234d4e5e7ed2c1ab7ed6cf0d0952b196745e3a5";
     buildInputs = [ cfitsio self."crypto++" curl expat geos giflib hdf5 jasper json-c libfreexl libgeotiff libiconv libjpeg libkml libpng libspatialite libtiff libwebp libxml2 netcdf openjpeg2 pcre poppler postgresql proj qhull-git sqlite3 xerces-c xz ];
     broken      = true;
   };
@@ -1808,8 +1808,8 @@ let
   "gdcm" = fetch {
     name        = "gdcm";
     version     = "2.8.8";
-    filename    = "mingw-w64-x86_64-gdcm-2.8.8-2-any.pkg.tar.xz";
-    sha256      = "57e567237941468d720747f927ac61094644753afe8d1168ae589fa009f3d166";
+    filename    = "mingw-w64-x86_64-gdcm-2.8.8-3-any.pkg.tar.xz";
+    sha256      = "10043dc0bd04e49971aeec86d22eb5e3735dabb6285832dd654a3e9f47dd6ea2";
     buildInputs = [ expat gcc-libs lcms2 libxml2 json-c openssl poppler zlib ];
   };
 
@@ -1978,8 +1978,8 @@ let
   "gimp" = fetch {
     name        = "gimp";
     version     = "2.10.8";
-    filename    = "mingw-w64-x86_64-gimp-2.10.8-2-any.pkg.tar.xz";
-    sha256      = "c163f2924adde7e7d161bcc2ee6900375149604c706669a4b43531a458882b9e";
+    filename    = "mingw-w64-x86_64-gimp-2.10.8-3-any.pkg.tar.xz";
+    sha256      = "18004847d40ba3d12e8ec02bec89e8ae826e5d1882200cf568ed516712f0f1bd";
     buildInputs = [ babl curl dbus-glib drmingw gegl gexiv2 ghostscript hicolor-icon-theme jasper lcms2 libexif libmng libmypaint librsvg libwmf mypaint-brushes openexr poppler python2-pygtk python2-gobject xpm-nox ];
     broken      = true;
   };
@@ -2068,8 +2068,8 @@ let
   "glib-networking" = fetch {
     name        = "glib-networking";
     version     = "2.58.0";
-    filename    = "mingw-w64-x86_64-glib-networking-2.58.0-1-any.pkg.tar.xz";
-    sha256      = "70820975898091e004f5136a670f2c94ea4aa5992c807efbf6e1760c3a3335ca";
+    filename    = "mingw-w64-x86_64-glib-networking-2.58.0-2-any.pkg.tar.xz";
+    sha256      = "896f4211cce20ec667efbc049f6a0e05a40e2d2f1033695396891f15608054dc";
     buildInputs = [ gcc-libs gettext glib2 gnutls ];
   };
 
@@ -2217,8 +2217,8 @@ let
   "gnutls" = fetch {
     name        = "gnutls";
     version     = "3.6.5";
-    filename    = "mingw-w64-x86_64-gnutls-3.6.5-1-any.pkg.tar.xz";
-    sha256      = "14b4cd4972e7e38d1ee282340c9a7f4e99469092675bcf26f63fd73640cfc1d5";
+    filename    = "mingw-w64-x86_64-gnutls-3.6.5-2-any.pkg.tar.xz";
+    sha256      = "9f67bb6ef0caee2b1fcb889f4f5fd7da78249655a15bc7474d604eda1199e6bb";
     buildInputs = [ gcc-libs gmp libidn2 libsystre libtasn1 (assert stdenvNoCC.lib.versionAtLeast nettle.version "3.1"; nettle) (assert stdenvNoCC.lib.versionAtLeast p11-kit.version "0.23.1"; p11-kit) libunistring zlib ];
   };
 
@@ -3596,9 +3596,9 @@ let
 
   "laszip" = fetch {
     name        = "laszip";
-    version     = "3.2.8";
-    filename    = "mingw-w64-x86_64-laszip-3.2.8-1-any.pkg.tar.xz";
-    sha256      = "3df104b0c3b73bf07a65fbb84ae4499796472db11970b16c943dd8e278a498e7";
+    version     = "3.2.9";
+    filename    = "mingw-w64-x86_64-laszip-3.2.9-1-any.pkg.tar.xz";
+    sha256      = "c5ffd81d7b66b3d0746d9fafd36485dbfdf45171c8b9b233a2ed3411b841ee67";
   };
 
   "lcms" = fetch {
@@ -3643,9 +3643,9 @@ let
 
   "leptonica" = fetch {
     name        = "leptonica";
-    version     = "1.76.0";
-    filename    = "mingw-w64-x86_64-leptonica-1.76.0-1-any.pkg.tar.xz";
-    sha256      = "0404bc28a0e94412909e03e06e1021b14bf4b45c3c1c62152d1f920b0fc04946";
+    version     = "1.77.0";
+    filename    = "mingw-w64-x86_64-leptonica-1.77.0-1-any.pkg.tar.xz";
+    sha256      = "2186d6a8706c88f259ba1fdd948f06fa7b023b57fc76e5e949481fc4b9a9fe81";
     buildInputs = [ gcc-libs giflib libtiff libpng libwebp openjpeg2 zlib ];
   };
 
@@ -4158,9 +4158,9 @@ let
 
   "libgxps" = fetch {
     name        = "libgxps";
-    version     = "0.3.0";
-    filename    = "mingw-w64-x86_64-libgxps-0.3.0-1-any.pkg.tar.xz";
-    sha256      = "6b4a4e47cfb0ef99a65328a394416f81b645ba86ce29bd6c495d389e14133ac1";
+    version     = "0.3.1";
+    filename    = "mingw-w64-x86_64-libgxps-0.3.1-1-any.pkg.tar.xz";
+    sha256      = "4e0a8cc5b03a855bb5f40ca62d6f8adc6ae6047ae1349ea65ca738280cab0751";
     buildInputs = [ glib2 gtk3 cairo lcms2 libarchive libjpeg libxslt libpng ];
   };
 
@@ -4922,8 +4922,8 @@ let
   "libtorrent-rasterbar" = fetch {
     name        = "libtorrent-rasterbar";
     version     = "1.1.11";
-    filename    = "mingw-w64-x86_64-libtorrent-rasterbar-1.1.11-1-any.pkg.tar.xz";
-    sha256      = "a7721a644dee051e8331e141134b1b0ea93083172bf4ed778d7fd0687eec9bf3";
+    filename    = "mingw-w64-x86_64-libtorrent-rasterbar-1.1.11-2-any.pkg.tar.xz";
+    sha256      = "32e25d71485e370ea7318a569732ee036ca2e3e6a02c744a707417ab44cd28fe";
     buildInputs = [ boost openssl ];
   };
 
@@ -5406,9 +5406,9 @@ let
 
   "meld3" = fetch {
     name        = "meld3";
-    version     = "3.19.1";
-    filename    = "mingw-w64-x86_64-meld3-3.19.1-1-any.pkg.tar.xz";
-    sha256      = "ecd8a21d9655ca4e9032a19c71d7a3c290ee5e44e0594e3581c9d40843658270";
+    version     = "3.20.0";
+    filename    = "mingw-w64-x86_64-meld3-3.20.0-1-any.pkg.tar.xz";
+    sha256      = "9658c87163b43b7141c3f225ddbbcd33cddcc035d4abe5d0435fcfc6a85d2c42";
     buildInputs = [ gtk3 gtksourceview3 adwaita-icon-theme gsettings-desktop-schemas python3-gobject ];
   };
 
@@ -5846,9 +5846,9 @@ let
 
   "openblas" = fetch {
     name        = "openblas";
-    version     = "0.3.4";
-    filename    = "mingw-w64-x86_64-openblas-0.3.4-1-any.pkg.tar.xz";
-    sha256      = "0f6488d24248daf44665bccae92f2bfa4d9027cf9dd3b7c5827ec685e2d2b3f8";
+    version     = "0.3.5";
+    filename    = "mingw-w64-x86_64-openblas-0.3.5-1-any.pkg.tar.xz";
+    sha256      = "c1e43d4d3ef8207fa8fc046dbc61f1b89de13699b3bd9e9643f0136817478542";
     buildInputs = [ gcc-libs gcc-libgfortran libwinpthread-git ];
   };
 
@@ -6240,17 +6240,17 @@ let
 
   "pdf2djvu" = fetch {
     name        = "pdf2djvu";
-    version     = "0.9.11";
-    filename    = "mingw-w64-x86_64-pdf2djvu-0.9.11-1-any.pkg.tar.xz";
-    sha256      = "08f025305ec4ff1fcd6eb7e8fd6928fb4460c5c8ddf8e747e5276fd48b5be0b3";
+    version     = "0.9.12";
+    filename    = "mingw-w64-x86_64-pdf2djvu-0.9.12-1-any.pkg.tar.xz";
+    sha256      = "29674931e2b8b99be8c72b8d36110f852b1b840069b029d2c214c763b3d9056c";
     buildInputs = [ poppler gcc-libs djvulibre exiv2 gettext graphicsmagick libiconv ];
   };
 
   "pdf2svg" = fetch {
     name        = "pdf2svg";
     version     = "0.2.3";
-    filename    = "mingw-w64-x86_64-pdf2svg-0.2.3-6-any.pkg.tar.xz";
-    sha256      = "678c52a54d51bc86f3cb4136e82ca0c1a68090cd9ebc7785da4bff0189347da5";
+    filename    = "mingw-w64-x86_64-pdf2svg-0.2.3-7-any.pkg.tar.xz";
+    sha256      = "55c78176abea8ec695963d9352bb75be17b09cc03207d42bbf5a02822a4ba17f";
     buildInputs = [ poppler ];
   };
 
@@ -8426,9 +8426,9 @@ let
 
   "python2-pytest-benchmark" = fetch {
     name        = "python2-pytest-benchmark";
-    version     = "3.1.1";
-    filename    = "mingw-w64-x86_64-python2-pytest-benchmark-3.1.1-1-any.pkg.tar.xz";
-    sha256      = "372587eadedc3b82acb9ac761c18ddd0c196c782a7430b5b8fac3d3fc646d97a";
+    version     = "3.2.0";
+    filename    = "mingw-w64-x86_64-python2-pytest-benchmark-3.2.0-1-any.pkg.tar.xz";
+    sha256      = "df615c683be1c16d84a30bcd56dc67ac730ef069f717b6205af9f7dfa081bf42";
     buildInputs = [ python2 python2-py-cpuinfo python2-statistics python2-pathlib python2-pytest ];
   };
 
@@ -10810,9 +10810,9 @@ let
 
   "python3-pytest-benchmark" = fetch {
     name        = "python3-pytest-benchmark";
-    version     = "3.1.1";
-    filename    = "mingw-w64-x86_64-python3-pytest-benchmark-3.1.1-1-any.pkg.tar.xz";
-    sha256      = "2e76eb0f76fb8549d0ab169cb80a6e443d14fd9b6e9a6ea3fcf4800d42d97a58";
+    version     = "3.2.0";
+    filename    = "mingw-w64-x86_64-python3-pytest-benchmark-3.2.0-1-any.pkg.tar.xz";
+    sha256      = "26f463bb86a355daecf53d54a0c8c2dee21db93d2a34fecb0971a45ae2a55073";
     buildInputs = [ python3 python3-py-cpuinfo python3-pytest ];
   };
 
@@ -11611,9 +11611,9 @@ let
 
   "qpdf" = fetch {
     name        = "qpdf";
-    version     = "8.2.1";
-    filename    = "mingw-w64-x86_64-qpdf-8.2.1-1-any.pkg.tar.xz";
-    sha256      = "e72544b52f06d3305a3240fa73e91c42fd166a914f75d561194c4ad1afc011ad";
+    version     = "8.3.0";
+    filename    = "mingw-w64-x86_64-qpdf-8.3.0-1-any.pkg.tar.xz";
+    sha256      = "106c459ff98f96edd7fd6b93d32599b564bc7f630f73aff624d2e41d038e2a16";
     buildInputs = [ gcc-libs libjpeg pcre zlib ];
   };
 
@@ -11754,10 +11754,10 @@ let
 
   "qxmpp" = fetch {
     name        = "qxmpp";
-    version     = "0.9.3";
-    filename    = "mingw-w64-x86_64-qxmpp-0.9.3-1-any.pkg.tar.xz";
-    sha256      = "fa1ffd347d2c9ea60661e90ec91a92ddfaf19e663a9cc2933afaf9e346e1b40e";
-    buildInputs = [ libtheora libvpx qt5 speex ];
+    version     = "1.0.0";
+    filename    = "mingw-w64-x86_64-qxmpp-1.0.0-1-any.pkg.tar.xz";
+    sha256      = "6a132926e9b2e7e8cee3139eeed91c7b2ec649a43d06736490e19b93a4d64edb";
+    buildInputs = [ libtheora libvpx opus qt5 speex ];
     broken      = true;
   };
 
@@ -11818,9 +11818,9 @@ let
 
   "rhash" = fetch {
     name        = "rhash";
-    version     = "1.3.6";
-    filename    = "mingw-w64-x86_64-rhash-1.3.6-2-any.pkg.tar.xz";
-    sha256      = "566620fdb3e3f9212c1ad0c146c6fb3faca8f7199b7ec65d46fc76f23cc71d3f";
+    version     = "1.3.7";
+    filename    = "mingw-w64-x86_64-rhash-1.3.7-1-any.pkg.tar.xz";
+    sha256      = "27b39684c9d28f055c54ccfd4d0600ae058dd8a9bfd16278af06e28ab14d2bef";
     buildInputs = [ gettext ];
   };
 
@@ -13348,9 +13348,9 @@ let
 
   "uriparser" = fetch {
     name        = "uriparser";
-    version     = "0.9.0";
-    filename    = "mingw-w64-x86_64-uriparser-0.9.0-1-any.pkg.tar.xz";
-    sha256      = "64e63b5d1798a52803125c4cec23d637355d5d38fa57157f824e2d5e7e46386b";
+    version     = "0.9.1";
+    filename    = "mingw-w64-x86_64-uriparser-0.9.1-1-any.pkg.tar.xz";
+    sha256      = "d8f8bd3e78b9d139698e9b73fb85568d2ffb811c9fa3c8af86cfd9052d1d9adc";
   };
 
   "usbredir" = fetch {
@@ -13791,9 +13791,9 @@ let
 
   "yarn" = fetch {
     name        = "yarn";
-    version     = "1.12.3";
-    filename    = "mingw-w64-x86_64-yarn-1.12.3-1-any.pkg.tar.xz";
-    sha256      = "ff713ed262e868e5ae211f91a0b62c603f63d92fd10f728a03d2aaa4ec9297f9";
+    version     = "1.13.0";
+    filename    = "mingw-w64-x86_64-yarn-1.13.0-1-any.pkg.tar.xz";
+    sha256      = "81671dea475eb12b848af8078e9fabb2abe6cfcce1490cdb757c7127ca02cec9";
     buildInputs = [ nodejs ];
     broken      = true;
   };
