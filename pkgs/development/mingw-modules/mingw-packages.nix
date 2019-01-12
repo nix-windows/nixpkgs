@@ -1,5 +1,5 @@
  # GENERATED FILE
-{stdenvNoCC, fetchurl}:
+{stdenvNoCC, fetchurl, mingwPackages, msysPackages}:
 
 let
   fetch = { name, version, filename, sha256, buildInputs ? [], broken ? false }:
@@ -52,6 +52,9 @@ let
 {
   callPackage = pkgs.newScope self;
   libjpeg = libjpeg-turbo;
+  minizip = minizip2;
+  bash = msysPackages.bash;
+  winpty = msysPackages.winpty;
 
   "3proxy" = fetch {
     name        = "3proxy";
@@ -80,7 +83,7 @@ let
     filename    = "mingw-w64-x86_64-OpenSceneGraph-3.6.3-3-any.pkg.tar.xz";
     sha256      = "332611cdaa685851a7ce97a035ded34505f14ad11595f7e276ada73b02d527d3";
     buildInputs = [ angleproject-git boost collada-dom-svn curl ffmpeg fltk freetype gcc-libs gdal giflib gstreamer gtk2 gtkglext jasper libjpeg libpng libtiff libvncserver libxml2 lua SDL SDL2 poppler python3 wxWidgets zlib ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "OpenSceneGraph-debug" = fetch {
@@ -89,7 +92,7 @@ let
     filename    = "mingw-w64-x86_64-OpenSceneGraph-debug-3.6.3-3-any.pkg.tar.xz";
     sha256      = "bc7a5bbc9cc14db8fe1d4c9cb29b5619b7bbb7f5337eb464e1a91d111b323de0";
     buildInputs = [ (assert OpenSceneGraph.version=="3.6.3"; OpenSceneGraph) ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "SDL" = fetch {
@@ -106,7 +109,7 @@ let
     filename    = "mingw-w64-x86_64-SDL2-2.0.9-1-any.pkg.tar.xz";
     sha256      = "9b1a4d994efcba179fac272683efffb75921b823579fea7850ee5e273d3d1592";
     buildInputs = [ gcc-libs libiconv vulkan ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "SDL2_gfx" = fetch {
@@ -115,7 +118,7 @@ let
     filename    = "mingw-w64-x86_64-SDL2_gfx-1.0.4-1-any.pkg.tar.xz";
     sha256      = "d006ee1dfaa82cefbc48795f2de78bf2f2b3f2bcdb2816f4e9656523f71e332e";
     buildInputs = [ SDL2 ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "SDL2_image" = fetch {
@@ -124,7 +127,7 @@ let
     filename    = "mingw-w64-x86_64-SDL2_image-2.0.4-1-any.pkg.tar.xz";
     sha256      = "d8ec1995a6fd4e4ef0a6c69e585acd11c5629dfa0a21026af951d4a8b8b46e62";
     buildInputs = [ SDL2 libpng libtiff libjpeg-turbo libwebp ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "SDL2_mixer" = fetch {
@@ -133,7 +136,7 @@ let
     filename    = "mingw-w64-x86_64-SDL2_mixer-2.0.4-1-any.pkg.tar.xz";
     sha256      = "cd2363302a95b27196e648cc12f614e668d2563c6c8023c7e97a969a24872958";
     buildInputs = [ gcc-libs SDL2 flac fluidsynth libvorbis libmodplug mpg123 opusfile ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "SDL2_net" = fetch {
@@ -142,7 +145,7 @@ let
     filename    = "mingw-w64-x86_64-SDL2_net-2.0.1-1-any.pkg.tar.xz";
     sha256      = "d2e7a04a8ce51071807c9a0b33d8241dd50ae8f6b75c7b2afcf1cca05b3c62be";
     buildInputs = [ gcc-libs SDL2 ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "SDL2_ttf" = fetch {
@@ -151,7 +154,7 @@ let
     filename    = "mingw-w64-x86_64-SDL2_ttf-2.0.14-1-any.pkg.tar.xz";
     sha256      = "a9a426ac7432316719f518efdfdb451c7adb098d5d76ed33dba42c93cf744191";
     buildInputs = [ SDL2 freetype ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "SDL_gfx" = fetch {
@@ -425,7 +428,6 @@ let
     filename    = "mingw-w64-x86_64-assimp-4.1.0-2-any.pkg.tar.xz";
     sha256      = "5e12a11e947194b82932f59078fb40285a750ec6dee2c6d4fb47226c8383f946";
     buildInputs = [ minizip zziplib zlib ];
-    broken      = true;
   };
 
   "astyle" = fetch {
@@ -458,7 +460,7 @@ let
     filename    = "mingw-w64-x86_64-attica-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "168958edae2e6c441eac339380a87185a08f5d5cfd5f41dccfd2c893402772f0";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "avrdude" = fetch {
@@ -528,7 +530,7 @@ let
     filename    = "mingw-w64-x86_64-blender-2.79.b-6-any.pkg.tar.xz";
     sha256      = "0ea49e778221b94f42579a3865a3fcfaac54d6379373928de3c5c1f73076afd2";
     buildInputs = [ boost llvm eigen3 glew ffmpeg fftw freetype libpng libsndfile libtiff lzo2 openexr openal opencollada-git opencolorio-git openimageio openshadinglanguage pugixml python3 python3-numpy SDL2 wintab-sdk ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "blosc" = fetch {
@@ -553,7 +555,6 @@ let
     filename    = "mingw-w64-x86_64-bower-1.8.4-1-any.pkg.tar.xz";
     sha256      = "e96e75467f19a0f150d685ab0bd69e5a0e62b88625bbd4d239e5573812c49cbf";
     buildInputs = [ nodejs ];
-    broken      = true;
   };
 
   "box2d" = fetch {
@@ -577,7 +578,7 @@ let
     filename    = "mingw-w64-x86_64-breeze-icons-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "9f8118174b9adc73e43a059dd708c547844a029cc8b03c137d18fec40f7d4c0a";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "brotli" = fetch {
@@ -602,7 +603,7 @@ let
     filename    = "mingw-w64-x86_64-bsdfprocessor-1.1.6-1-any.pkg.tar.xz";
     sha256      = "1c940bf75d25e24fa3e2eddd922263feb3c11baa989db636a62a15e2e568ab73";
     buildInputs = [ gcc-libs qt5 OpenSceneGraph ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "bullet" = fetch {
@@ -721,7 +722,7 @@ let
     filename    = "mingw-w64-x86_64-cegui-0.8.7-1-any.pkg.tar.xz";
     sha256      = "f7a9378482ed3bc221310208f76786262af16c5a12101ad210ef71cfb2d9e945";
     buildInputs = [ boost devil expat FreeImage freetype fribidi glew glfw glm irrlicht libepoxy libxml2 libiconv lua51 ogre3d ois-git openexr pcre python2 SDL2 SDL2_image tinyxml xerces-c zlib ];
-    broken      = true;
+    broken      = true; # broken dependency cegui -> FreeImage
   };
 
   "celt" = fetch {
@@ -832,7 +833,7 @@ let
     filename    = "mingw-w64-x86_64-clutter-1.26.2-1-any.pkg.tar.xz";
     sha256      = "824995eda36e7527095e0a2cb682d32dd52a43326addb5bb2399ef122bd49864";
     buildInputs = [ atk cogl json-glib gobject-introspection-runtime gtk3 ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "clutter-gst" = fetch {
@@ -841,7 +842,7 @@ let
     filename    = "mingw-w64-x86_64-clutter-gst-3.0.26-1-any.pkg.tar.xz";
     sha256      = "6556c22416c2e0cc9ac9f6be2c65e3b0179e4953cb9b5c391a0d59edeefa85d7";
     buildInputs = [ gobject-introspection clutter gstreamer gst-plugins-base ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "clutter-gtk" = fetch {
@@ -850,7 +851,7 @@ let
     filename    = "mingw-w64-x86_64-clutter-gtk-1.8.4-1-any.pkg.tar.xz";
     sha256      = "903a33368034e8f5870d3d145aeecdb8faaca94f4547a73890eeba2611a80a75";
     buildInputs = [ gtk3 clutter ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "cmake" = fetch {
@@ -896,7 +897,7 @@ let
     filename    = "mingw-w64-x86_64-cogl-1.22.2-1-any.pkg.tar.xz";
     sha256      = "1a338b805e31fb1430608215490ee9de076d0e1af98be1616d7314b2b228f7cb";
     buildInputs = [ pango gdk-pixbuf2 gstreamer gst-plugins-base ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "coin3d-hg" = fetch {
@@ -905,7 +906,7 @@ let
     filename    = "mingw-w64-x86_64-coin3d-hg-r11819+.c0999df53040+-1-any.pkg.tar.xz";
     sha256      = "dfd695862cd9b55b1f90cb45fe8e0bcf09155d01ed507451aa4e8159840beb69";
     buildInputs = [ simage bzip2 expat openal superglu freetype fontconfig zlib ];
-    broken      = true;
+    broken      = true; # broken dependency coin3d-hg -> simage
   };
 
   "collada-dom-svn" = fetch {
@@ -982,7 +983,7 @@ let
     filename    = "mingw-w64-x86_64-creduce-2.8.0-1-any.pkg.tar.xz";
     sha256      = "3cb1f42c7873e7129fdede863d27de715302cf4bfb703254a028e49bbf4e05b7";
     buildInputs = [ perl-Benchmark-Timer perl-Exporter-Lite perl-File-Which perl-Getopt-Tabular perl-Regexp-Common perl-Sys-CPU astyle indent clang ];
-    broken      = true;
+    broken      = true; # broken dependency creduce -> perl-Benchmark-Timer
   };
 
   "crt-git" = fetch {
@@ -1085,7 +1086,7 @@ let
     filename    = "mingw-w64-x86_64-daala-git-r1505.52bbd43-1-any.pkg.tar.xz";
     sha256      = "26386065ab9e175700f734dc084bbbd0d960b0b5dba8978272163f57dab102a6";
     buildInputs = [ libogg libpng libjpeg-turbo SDL2 ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "darktable" = fetch {
@@ -1094,7 +1095,6 @@ let
     filename    = "mingw-w64-x86_64-darktable-2.4.4-2-any.pkg.tar.xz";
     sha256      = "f987a8922d4419fe0f89eb82b934eb62d3b8c50e728b952df521ad126c224091";
     buildInputs = [ dbus-glib drmingw exiv2 flickcurl graphicsmagick gtk3 lcms2 lensfun libexif libgphoto2 libsecret libsoup libwebp libxslt lua openexr openjpeg2 osm-gps-map pugixml sqlite3 iso-codes zlib ];
-    broken      = true;
   };
 
   "db" = fetch {
@@ -1158,7 +1158,7 @@ let
     filename    = "mingw-w64-x86_64-devhelp-3.8.2-2-any.pkg.tar.xz";
     sha256      = "5d9d003f4aabbc891568e8cb2777fdba072da240678fd1cacfdd9721bcc327c3";
     buildInputs = [ gtk3 gsettings-desktop-schemas adwaita-icon-theme webkitgtk3 png2ico python2 ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "devil" = fetch {
@@ -1197,7 +1197,7 @@ let
     filename    = "mingw-w64-x86_64-djview-4.10.6-1-any.pkg.tar.xz";
     sha256      = "6688cccc4fdf2c25eabbd8735cb54dd1931403a523e2beba775a857c8379e168";
     buildInputs = [ djvulibre gcc-libs qt5 libtiff ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "djvulibre" = fetch {
@@ -1363,7 +1363,7 @@ let
     filename    = "mingw-w64-x86_64-emacs-26.1-1-any.pkg.tar.xz";
     sha256      = "3305bea45ceb9375d38868cf60e423c191ddd5d1d46e18d8171fd9f5cf756b35";
     buildInputs = [ ctags zlib xpm-nox dbus gnutls imagemagick libwinpthread-git ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "enca" = fetch {
@@ -1403,7 +1403,7 @@ let
     filename    = "mingw-w64-x86_64-eog-plugins-3.16.3-1-any.pkg.tar.xz";
     sha256      = "bdaa36597c7753475fffd150384ad15d31422fc32330797fa16df319ba8c233e";
     buildInputs = [ eog libchamplain libexif libgdata postr python2 ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "evince" = fetch {
@@ -1412,7 +1412,7 @@ let
     filename    = "mingw-w64-x86_64-evince-3.28.2-3-any.pkg.tar.xz";
     sha256      = "cce4c29a18847aad7784174afeb0788bc7e2950c02fd07311be0e1c6d09e4982";
     buildInputs = [ glib2 cairo djvulibre gsettings-desktop-schemas gtk3 libgxps libspectre libtiff poppler gst-plugins-base nss ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "exiv2" = fetch {
@@ -1474,7 +1474,7 @@ let
     filename    = "mingw-w64-x86_64-farstream-0.2.8-2-any.pkg.tar.xz";
     sha256      = "d662099b748d64ef337acf2b8b5afc419730ae095baed137950e6b9b480da61d";
     buildInputs = [ gst-plugins-base libnice ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "fastjar" = fetch {
@@ -1512,7 +1512,7 @@ let
     filename    = "mingw-w64-x86_64-ffmpeg-4.1-1-any.pkg.tar.xz";
     sha256      = "f30aebdb2f51ca202a7c31553481f36fa3a3066d687cef3eff3074a07c2a1104";
     buildInputs = [ bzip2 celt fontconfig gnutls gsm lame libass libbluray libcaca libmodplug libtheora libvorbis libvpx libwebp openal opencore-amr openjpeg2 opus rtmpdump-git SDL2 speex wavpack x264-git x265 xvidcore zlib ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "ffms2" = fetch {
@@ -1521,7 +1521,7 @@ let
     filename    = "mingw-w64-x86_64-ffms2-2.23-1-any.pkg.tar.xz";
     sha256      = "346a62f19b08bfb45f5421db6dba7690681869ab937d8ecf006b411eb3c2cfa9";
     buildInputs = [ ffmpeg ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "fftw" = fetch {
@@ -1601,7 +1601,7 @@ let
     filename    = "mingw-w64-x86_64-flif-0.3-1-any.pkg.tar.xz";
     sha256      = "0b477f94c3e1dfe3edfba3edb97f4c5c1cfa911509fec5ac025b402d120addb7";
     buildInputs = [ zlib libpng SDL2 ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "fltk" = fetch {
@@ -1786,7 +1786,6 @@ let
     filename    = "mingw-w64-x86_64-gdal-2.4.0-2-any.pkg.tar.xz";
     sha256      = "84992267ab2c92ad7d426db6c234d4e5e7ed2c1ab7ed6cf0d0952b196745e3a5";
     buildInputs = [ cfitsio self."crypto++" curl expat geos giflib hdf5 jasper json-c libfreexl libgeotiff libiconv libjpeg libkml libpng libspatialite libtiff libwebp libxml2 netcdf openjpeg2 pcre poppler postgresql proj qhull-git sqlite3 xerces-c xz ];
-    broken      = true;
   };
 
   "gdb" = fetch {
@@ -1859,7 +1858,7 @@ let
     filename    = "mingw-w64-x86_64-geany-plugins-1.34.0-1-any.pkg.tar.xz";
     sha256      = "012ad3e95b3f27e397d05e0c08f32bdf2c4df25b328128dccce9517f622d825a";
     buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast geany.version "1.34.0"; geany) discount gtkspell3 webkitgtk3 ctpl-git gpgme lua51 gtk3 hicolor-icon-theme python2 ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "gedit" = fetch {
@@ -1884,7 +1883,7 @@ let
     filename    = "mingw-w64-x86_64-gegl-0.4.12-1-any.pkg.tar.xz";
     sha256      = "8fe819aa79ef87af1cc8b949bc9fcce0a1c5124ad0f387a7f7f1a468c9159e4b";
     buildInputs = [ babl cairo exiv2 gcc-libs gdk-pixbuf2 gettext glib2 gtk2 jasper json-glib libjpeg libpng LibRaw librsvg libspiro libwebp lcms lensfun openexr pango SDL suitesparse ];
-    broken      = true;
+    broken      = true; # broken dependency gegl -> LibRaw
   };
 
   "geoclue" = fetch {
@@ -1981,7 +1980,7 @@ let
     filename    = "mingw-w64-x86_64-gimp-2.10.8-3-any.pkg.tar.xz";
     sha256      = "18004847d40ba3d12e8ec02bec89e8ae826e5d1882200cf568ed516712f0f1bd";
     buildInputs = [ babl curl dbus-glib drmingw gegl gexiv2 ghostscript hicolor-icon-theme jasper lcms2 libexif libmng libmypaint librsvg libwmf mypaint-brushes openexr poppler python2-pygtk python2-gobject xpm-nox ];
-    broken      = true;
+    broken      = true; # broken dependency gegl -> LibRaw
   };
 
   "gimp-ufraw" = fetch {
@@ -1998,7 +1997,7 @@ let
     filename    = "mingw-w64-x86_64-git-lfs-2.2.1-1-any.pkg.tar.xz";
     sha256      = "0fc40488ea7cbb86f39315c1c26bb0d92ffb07d19ba76108e72e9980e492fd9e";
     buildInputs = [ git ];
-    broken      = true;
+    broken      = true; # broken dependency git-lfs -> git
   };
 
   "git-repo" = fetch {
@@ -2408,7 +2407,7 @@ let
     filename    = "mingw-w64-x86_64-gst-editing-services-1.14.4-1-any.pkg.tar.xz";
     sha256      = "bceb0d12f68c2d3c4f70f80e1216d7763c5a487c40d1c1eb5fbcfe19f21b1d09";
     buildInputs = [ gst-plugins-base ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "gst-libav" = fetch {
@@ -2417,7 +2416,7 @@ let
     filename    = "mingw-w64-x86_64-gst-libav-1.14.4-1-any.pkg.tar.xz";
     sha256      = "6691c48fa102cc559b7386824927dcb83f73d295398141edfcd3fa4d3f848b46";
     buildInputs = [ gst-plugins-base ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "gst-plugins-bad" = fetch {
@@ -2426,7 +2425,7 @@ let
     filename    = "mingw-w64-x86_64-gst-plugins-bad-1.14.4-3-any.pkg.tar.xz";
     sha256      = "c19a4e6f9a3ef7d61affb1e69ac781d2ad6e20097bf5f16808fefa27b961edd5";
     buildInputs = [ bzip2 cairo chromaprint curl daala-git faad2 faac fdk-aac fluidsynth gsm gst-plugins-base gtk3 ladspa-sdk lcms2 libass libbs2b libdca libdvdnav libdvdread libexif libgme libjpeg libmodplug libmpeg2-git libnice librsvg libsndfile libsrtp libssh2 libwebp libxml2 nettle openal opencv openexr openh264 openjpeg2 openssl opus orc pango rtmpdump-git soundtouch srt vo-amrwbenc x265 zbar ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "gst-plugins-base" = fetch {
@@ -2435,7 +2434,7 @@ let
     filename    = "mingw-w64-x86_64-gst-plugins-base-1.14.4-1-any.pkg.tar.xz";
     sha256      = "e630a5e40ab93d3855821d724c623c2415d82babbf9788f1849232046da1f272";
     buildInputs = [ graphene gstreamer libogg libtheora libvorbis libvorbisidec opus orc pango zlib ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "gst-plugins-good" = fetch {
@@ -2444,7 +2443,7 @@ let
     filename    = "mingw-w64-x86_64-gst-plugins-good-1.14.4-1-any.pkg.tar.xz";
     sha256      = "499aa6446f77ecd23b7012a6e6f12d30a6ba094e71912352bae4a4b93e86474e";
     buildInputs = [ bzip2 cairo flac gdk-pixbuf2 gst-plugins-base gtk3 lame libcaca libjpeg libpng libshout libsoup libvpx mpg123 speex taglib twolame wavpack zlib ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "gst-plugins-ugly" = fetch {
@@ -2453,7 +2452,7 @@ let
     filename    = "mingw-w64-x86_64-gst-plugins-ugly-1.14.4-1-any.pkg.tar.xz";
     sha256      = "d3c3538644233135a6daa807860de23728466fb3ce0ba4a31c1ee08514c2eb70";
     buildInputs = [ a52dec gst-plugins-base libcdio libdvdread libmpeg2-git opencore-amr x264-git ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "gst-python" = fetch {
@@ -2478,7 +2477,7 @@ let
     filename    = "mingw-w64-x86_64-gst-rtsp-server-1.14.4-1-any.pkg.tar.xz";
     sha256      = "056d02f3829d43887b8bd5afb3ded270ed667586aad6a8bd73b14c9a70838276";
     buildInputs = [ gcc-libs glib2 gettext gstreamer gst-plugins-base gst-plugins-good gst-plugins-ugly gst-plugins-bad ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "gstreamer" = fetch {
@@ -2777,7 +2776,7 @@ let
     filename    = "mingw-w64-x86_64-icon-naming-utils-0.8.90-2-any.pkg.tar.xz";
     sha256      = "d8b8038ae4885bfd7e86f2988d60e1bbf9b7c0505217c30dff80ab4ab558c04c";
     buildInputs = [ perl-XML-Simple ];
-    broken      = true;
+    broken      = true; # broken dependency icon-naming-utils -> perl-XML-Simple
   };
 
   "iconv" = fetch {
@@ -2834,7 +2833,7 @@ let
     filename    = "mingw-w64-x86_64-imagemagick-7.0.8.14-1-any.pkg.tar.xz";
     sha256      = "6340bd5ac76ab38a688f092f246d578084ada8bf730515f2c7c2689a20bd6514";
     buildInputs = [ bzip2 djvulibre flif fftw fontconfig freetype glib2 gsfonts jasper jbigkit lcms2 liblqr libpng libraqm libtiff libtool libwebp libxml2 openjpeg2 ttf-dejavu xz zlib ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "indent" = fetch {
@@ -2850,7 +2849,7 @@ let
     filename    = "mingw-w64-x86_64-inkscape-0.92.3-7-any.pkg.tar.xz";
     sha256      = "f81edb517bfa22e2629b0b742b13ffafe3a3df7d2558580f53c1669a1b591675";
     buildInputs = [ aspell gc ghostscript gsl gtkmm gtkspell hicolor-icon-theme imagemagick lcms2 libcdr libvisio libxml2 libxslt libwpg poppler popt potrace python2 ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "innoextract" = fetch {
@@ -2995,7 +2994,7 @@ let
     filename    = "mingw-w64-x86_64-kactivities-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "9824074cc656ba408ba8a1f756d0ac13ea1cd75a85d1c85bc6c21ff3c29d26b0";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) (assert stdenvNoCC.lib.versionAtLeast kconfig-qt5.version "5.50.0"; kconfig-qt5) (assert stdenvNoCC.lib.versionAtLeast kwindowsystem-qt5.version "5.50.0"; kwindowsystem-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "karchive-qt5" = fetch {
@@ -3004,7 +3003,7 @@ let
     filename    = "mingw-w64-x86_64-karchive-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "d2b77c9e63503d3152728c70ea1cf14082a3a0e64db5433034be2aea6eeddce0";
     buildInputs = [ zlib bzip2 xz qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kate" = fetch {
@@ -3013,7 +3012,7 @@ let
     filename    = "mingw-w64-x86_64-kate-18.08.1-2-any.pkg.tar.xz";
     sha256      = "fd6f75d4ce20138897743390948131a583223fde9579bdd4b096d12278e5cc45";
     buildInputs = [ knewstuff-qt5 ktexteditor-qt5 threadweaver-qt5 kitemmodels-qt5 kactivities-qt5 plasma-framework-qt5 hicolor-icon-theme ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kauth-qt5" = fetch {
@@ -3022,7 +3021,7 @@ let
     filename    = "mingw-w64-x86_64-kauth-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "b8f74c9c0253177b9272496c2abc42df1522e5583244251a43388ed3b85b906c";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kbookmarks-qt5" = fetch {
@@ -3031,7 +3030,7 @@ let
     filename    = "mingw-w64-x86_64-kbookmarks-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "4a39eb2125f55027fecce54bf1c0f699a03e5ccf76d97207ed960d0d4d69c67e";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kxmlgui-qt5.version "5.50.0"; kxmlgui-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kcmutils-qt5" = fetch {
@@ -3040,7 +3039,7 @@ let
     filename    = "mingw-w64-x86_64-kcmutils-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "62afbabdd6864f989ddebb16d60046cda2827d937220e3757dc4c6faf6986513";
     buildInputs = [ kdeclarative-qt5 qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kcodecs-qt5" = fetch {
@@ -3049,7 +3048,7 @@ let
     filename    = "mingw-w64-x86_64-kcodecs-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "5beeceacdfd867a6fc44d2bd62df509e744607744a108e089f2e5cfc20fa10d2";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kcompletion-qt5" = fetch {
@@ -3058,7 +3057,7 @@ let
     filename    = "mingw-w64-x86_64-kcompletion-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "71f79491898da54ef48595e7b7a6359a720fdfb4c8fbe33bbb24349fb29a8f40";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kconfig-qt5.version "5.50.0"; kconfig-qt5) (assert stdenvNoCC.lib.versionAtLeast kwidgetsaddons-qt5.version "5.50.0"; kwidgetsaddons-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kconfig-qt5" = fetch {
@@ -3067,7 +3066,7 @@ let
     filename    = "mingw-w64-x86_64-kconfig-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "f6ed87a0088b1ee4ef8532d8b11ae739b5332877546d338f3380e275323c5ad5";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kconfigwidgets-qt5" = fetch {
@@ -3076,7 +3075,7 @@ let
     filename    = "mingw-w64-x86_64-kconfigwidgets-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "ed4c0c70009e48e308d84610c57abc29d0721f751c038895b87e9fb5bcc1cfd2";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kauth-qt5.version "5.50.0"; kauth-qt5) (assert stdenvNoCC.lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) (assert stdenvNoCC.lib.versionAtLeast kcodecs-qt5.version "5.50.0"; kcodecs-qt5) (assert stdenvNoCC.lib.versionAtLeast kconfig-qt5.version "5.50.0"; kconfig-qt5) (assert stdenvNoCC.lib.versionAtLeast kguiaddons-qt5.version "5.50.0"; kguiaddons-qt5) (assert stdenvNoCC.lib.versionAtLeast ki18n-qt5.version "5.50.0"; ki18n-qt5) (assert stdenvNoCC.lib.versionAtLeast kwidgetsaddons-qt5.version "5.50.0"; kwidgetsaddons-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kcoreaddons-qt5" = fetch {
@@ -3085,7 +3084,7 @@ let
     filename    = "mingw-w64-x86_64-kcoreaddons-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "26c3b3836ad10853245a9a7ef2001c8918961fde0d7c7b36c53b06c6946fd88d";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kcrash-qt5" = fetch {
@@ -3094,7 +3093,7 @@ let
     filename    = "mingw-w64-x86_64-kcrash-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "61da03be82ff2ae3244f82b46d67862ebe16565b612c4f2b9bb3a507c8989930";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) (assert stdenvNoCC.lib.versionAtLeast kwindowsystem-qt5.version "5.50.0"; kwindowsystem-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kdbusaddons-qt5" = fetch {
@@ -3103,7 +3102,7 @@ let
     filename    = "mingw-w64-x86_64-kdbusaddons-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "0a948bb5de306e700650a1159e882862d98417c9cd986751051aa8e419a5d044";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kdeclarative-qt5" = fetch {
@@ -3112,7 +3111,7 @@ let
     filename    = "mingw-w64-x86_64-kdeclarative-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "86f671132765b71e2e2d6cad19c19dcfa80e564ac9b478b6c3e5d9c621c1949d";
     buildInputs = [ qt5 kio-qt5 kpackage-qt5 libepoxy ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kdewebkit-qt5" = fetch {
@@ -3121,7 +3120,7 @@ let
     filename    = "mingw-w64-x86_64-kdewebkit-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "afe298f17f858bd0e63bffc3da388dbcbff654c4fbe1b5a032124cafbaa96b4f";
     buildInputs = [ kparts-qt5 qtwebkit ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kdnssd-qt5" = fetch {
@@ -3130,7 +3129,7 @@ let
     filename    = "mingw-w64-x86_64-kdnssd-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "8d37dec27022fd1ed3a298df802965d78f61ca50841368f4709b9e8b1a3a7180";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kdoctools-qt5" = fetch {
@@ -3139,7 +3138,7 @@ let
     filename    = "mingw-w64-x86_64-kdoctools-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "5bcb289c9a329c85e9f96c76d91f66b31b4f5a135afa4b6dfc00e27b1c4b0324";
     buildInputs = [ qt5 libxslt docbook-xsl (assert stdenvNoCC.lib.versionAtLeast ki18n-qt5.version "5.50.0"; ki18n-qt5) (assert stdenvNoCC.lib.versionAtLeast karchive-qt5.version "5.50.0"; karchive-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kfilemetadata-qt5" = fetch {
@@ -3148,7 +3147,7 @@ let
     filename    = "mingw-w64-x86_64-kfilemetadata-qt5-5.50.0-4-any.pkg.tar.xz";
     sha256      = "ce4f49cf9f3c630d8971203cf9e88013e8b8728b7d8cbce3c48851de75bd8fbb";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast ki18n-qt5.version "5.50.0"; ki18n-qt5) (assert stdenvNoCC.lib.versionAtLeast karchive-qt5.version "5.50.0"; karchive-qt5) exiv2 poppler taglib ffmpeg ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kglobalaccel-qt5" = fetch {
@@ -3157,7 +3156,7 @@ let
     filename    = "mingw-w64-x86_64-kglobalaccel-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "90e3e4d33be2791664253431fcf7fd6b04f100b753ad5ab907b79ccf3086ae25";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kconfig-qt5.version "5.50.0"; kconfig-qt5) (assert stdenvNoCC.lib.versionAtLeast kcrash-qt5.version "5.50.0"; kcrash-qt5) (assert stdenvNoCC.lib.versionAtLeast kdbusaddons-qt5.version "5.50.0"; kdbusaddons-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kguiaddons-qt5" = fetch {
@@ -3166,7 +3165,7 @@ let
     filename    = "mingw-w64-x86_64-kguiaddons-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "4a250da762388ee06f2c32f13183af138ef2b0dfd4905cad591f06a922887fad";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kholidays-qt5" = fetch {
@@ -3175,7 +3174,7 @@ let
     filename    = "mingw-w64-x86_64-kholidays-qt5-1~5.50.0-1-any.pkg.tar.xz";
     sha256      = "e4e91cf06ca48b435bd5c9c472836a621512453b2ea08a3aa22cacec0067cbd8";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "ki18n-qt5" = fetch {
@@ -3184,7 +3183,7 @@ let
     filename    = "mingw-w64-x86_64-ki18n-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "4a47e30161a3cb17534bdcce36301752c22e4ff3035fc7ac332bbe16daa63157";
     buildInputs = [ gettext qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kicad" = fetch {
@@ -3324,7 +3323,7 @@ let
     filename    = "mingw-w64-x86_64-kiconthemes-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "e0d07d734e58ddfea4efa23de5dcc252e2348e77b4920d677d366642028ae08e";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kconfigwidgets-qt5.version "5.50.0"; kconfigwidgets-qt5) (assert stdenvNoCC.lib.versionAtLeast kitemviews-qt5.version "5.50.0"; kitemviews-qt5) (assert stdenvNoCC.lib.versionAtLeast karchive-qt5.version "5.50.0"; karchive-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kidletime-qt5" = fetch {
@@ -3333,7 +3332,7 @@ let
     filename    = "mingw-w64-x86_64-kidletime-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "cf1c24133de2215638238eff074b8e43ffcc60ab0ef58864f3d27e9f565a8f66";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kimageformats-qt5" = fetch {
@@ -3342,7 +3341,7 @@ let
     filename    = "mingw-w64-x86_64-kimageformats-qt5-5.50.0-3-any.pkg.tar.xz";
     sha256      = "28b0a012e4ef383eb69393e4ea105fc825ed29ceabe116529f4fe07d17e0cc56";
     buildInputs = [ qt5 openexr (assert stdenvNoCC.lib.versionAtLeast karchive-qt5.version "5.50.0"; karchive-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kinit-qt5" = fetch {
@@ -3351,7 +3350,7 @@ let
     filename    = "mingw-w64-x86_64-kinit-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "63e56c255240a7392354f459208b94e1a7df237239ad493a9aebc4cc9002c7c6";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kio-qt5.version "5.50.0"; kio-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kio-qt5" = fetch {
@@ -3360,7 +3359,7 @@ let
     filename    = "mingw-w64-x86_64-kio-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "b9115f1dcc7c5e77d0b2cec0cc3e840192e94a443caa79ed412a62f40b4a4e0b";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast solid-qt5.version "5.50.0"; solid-qt5) (assert stdenvNoCC.lib.versionAtLeast kjobwidgets-qt5.version "5.50.0"; kjobwidgets-qt5) (assert stdenvNoCC.lib.versionAtLeast kbookmarks-qt5.version "5.50.0"; kbookmarks-qt5) (assert stdenvNoCC.lib.versionAtLeast kwallet-qt5.version "5.50.0"; kwallet-qt5) libxslt ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kirigami2-qt5" = fetch {
@@ -3369,7 +3368,7 @@ let
     filename    = "mingw-w64-x86_64-kirigami2-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "62f0fb9cebc4983af08446b2f3edb12bf2e6493dea5c451aa54729c4903d42bc";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kiss_fft" = fetch {
@@ -3385,7 +3384,7 @@ let
     filename    = "mingw-w64-x86_64-kitemmodels-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "428fb71507c9de0f42c8260e2ef9efa7ed573ae6554ae17412f32eda542d03a1";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kitemviews-qt5" = fetch {
@@ -3394,7 +3393,7 @@ let
     filename    = "mingw-w64-x86_64-kitemviews-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "a0c38aaeb0a9953772092634f589f7d4cdc085cd42e4b0d02ac01dd9e05aa7f0";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kjobwidgets-qt5" = fetch {
@@ -3403,7 +3402,7 @@ let
     filename    = "mingw-w64-x86_64-kjobwidgets-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "81ad6883c0f2ee9087406152219be59ba1e7b81b51b61a2a93ef6c01d52ecc5e";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) (assert stdenvNoCC.lib.versionAtLeast kwidgetsaddons-qt5.version "5.50.0"; kwidgetsaddons-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kjs-qt5" = fetch {
@@ -3412,7 +3411,7 @@ let
     filename    = "mingw-w64-x86_64-kjs-qt5-5.42.0-1-any.pkg.tar.xz";
     sha256      = "1e32db6056ce5c8d170c1bb33e06c74bec139d71c42e56cd11d678b7d3924476";
     buildInputs = [ qt5 bzip2 pcre (assert stdenvNoCC.lib.versionAtLeast kdoctools-qt5.version "5.42.0"; kdoctools-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "knewstuff-qt5" = fetch {
@@ -3421,7 +3420,7 @@ let
     filename    = "mingw-w64-x86_64-knewstuff-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "eec5da591ec2f0914533141057f6607881da51e4b7b3005b8fa81318580c45e0";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kio-qt5.version "5.50.0"; kio-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "knotifications-qt5" = fetch {
@@ -3430,7 +3429,7 @@ let
     filename    = "mingw-w64-x86_64-knotifications-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "bb7d06ecf43b52143aa82c33c069df981d0584ed0f9c37b76637ca8271a2c396";
     buildInputs = [ qt5 phonon-qt5 (assert stdenvNoCC.lib.versionAtLeast kcodecs-qt5.version "5.50.0"; kcodecs-qt5) (assert stdenvNoCC.lib.versionAtLeast kconfig-qt5.version "5.50.0"; kconfig-qt5) (assert stdenvNoCC.lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) (assert stdenvNoCC.lib.versionAtLeast kwindowsystem-qt5.version "5.50.0"; kwindowsystem-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kpackage-qt5" = fetch {
@@ -3439,7 +3438,7 @@ let
     filename    = "mingw-w64-x86_64-kpackage-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "90b5e6e0f8793e02b21e209de25c37dceb87e1a5fb94e3ec0a28403951ec3cb2";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast karchive-qt5.version "5.50.0"; karchive-qt5) (assert stdenvNoCC.lib.versionAtLeast ki18n-qt5.version "5.50.0"; ki18n-qt5) (assert stdenvNoCC.lib.versionAtLeast kcoreaddons-qt5.version "5.50.0"; kcoreaddons-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kparts-qt5" = fetch {
@@ -3448,7 +3447,7 @@ let
     filename    = "mingw-w64-x86_64-kparts-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "452e9d2f5c791eacb31ad5165dfae20e92998e7367ad464206cabccd0da74ebb";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kio-qt5.version "5.50.0"; kio-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kplotting-qt5" = fetch {
@@ -3457,7 +3456,7 @@ let
     filename    = "mingw-w64-x86_64-kplotting-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "56e250cdc06e3d050f4588e33903d239d941b3ee257ba87ef77552f6c20c3455";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kqoauth-qt4" = fetch {
@@ -3474,7 +3473,7 @@ let
     filename    = "mingw-w64-x86_64-kservice-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "fdf314d754b0c2f207a4eaa7084f3bfa842a33fe3f5c41f0945323f7bcb96406";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast ki18n-qt5.version "5.50.0"; ki18n-qt5) (assert stdenvNoCC.lib.versionAtLeast kconfig-qt5.version "5.50.0"; kconfig-qt5) (assert stdenvNoCC.lib.versionAtLeast kcrash-qt5.version "5.50.0"; kcrash-qt5) (assert stdenvNoCC.lib.versionAtLeast kdbusaddons-qt5.version "5.50.0"; kdbusaddons-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "ktexteditor-qt5" = fetch {
@@ -3483,7 +3482,7 @@ let
     filename    = "mingw-w64-x86_64-ktexteditor-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "657a4fccd37fd3496664aabc1938b8af692a4b3c122dcc4ff238ca334d66c69b";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kparts-qt5.version "5.50.0"; kparts-qt5) (assert stdenvNoCC.lib.versionAtLeast syntax-highlighting-qt5.version "5.50.0"; syntax-highlighting-qt5) libgit2 editorconfig-core-c ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "ktextwidgets-qt5" = fetch {
@@ -3492,7 +3491,7 @@ let
     filename    = "mingw-w64-x86_64-ktextwidgets-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "d03f5b5976f7b9e8039c99e2315a249291fea7660cddb7a4771c822a423d73c8";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kcompletion-qt5.version "5.50.0"; kcompletion-qt5) (assert stdenvNoCC.lib.versionAtLeast kservice-qt5.version "5.50.0"; kservice-qt5) (assert stdenvNoCC.lib.versionAtLeast kiconthemes-qt5.version "5.50.0"; kiconthemes-qt5) (assert stdenvNoCC.lib.versionAtLeast sonnet-qt5.version "5.50.0"; sonnet-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kunitconversion-qt5" = fetch {
@@ -3501,7 +3500,7 @@ let
     filename    = "mingw-w64-x86_64-kunitconversion-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "e5ad117027f35a2d285bca5979efd9e750f890f8c4f3fbd540c64044ca737820";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast ki18n-qt5.version "5.50.0"; ki18n-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kvazaar" = fetch {
@@ -3518,7 +3517,7 @@ let
     filename    = "mingw-w64-x86_64-kwallet-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "38752c816cbb8ceb2fdce01151c13412ed68105c69aadbb916345f7ee2a98d9c";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast knotifications-qt5.version "5.50.0"; knotifications-qt5) (assert stdenvNoCC.lib.versionAtLeast kiconthemes-qt5.version "5.50.0"; kiconthemes-qt5) (assert stdenvNoCC.lib.versionAtLeast kservice-qt5.version "5.50.0"; kservice-qt5) gpgme ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kwidgetsaddons-qt5" = fetch {
@@ -3527,7 +3526,7 @@ let
     filename    = "mingw-w64-x86_64-kwidgetsaddons-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "da97d4eab56b314f0a286295da23159f3d5ee674e07050321891d3f75e6ca1f2";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kwindowsystem-qt5" = fetch {
@@ -3536,7 +3535,7 @@ let
     filename    = "mingw-w64-x86_64-kwindowsystem-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "a4ba21b387e665c6945ee016d4cbca7b0bb23dc2c6e2bbd4d82fd1481aabe0b0";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kwrite" = fetch {
@@ -3545,7 +3544,7 @@ let
     filename    = "mingw-w64-x86_64-kwrite-18.08.1-1-any.pkg.tar.xz";
     sha256      = "407a8327b16b666b1f2d021a4af38b923bad3ba9226b12b43216a073786ff887";
     buildInputs = [ ktexteditor-qt5 kactivities-qt5 hicolor-icon-theme ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "kxmlgui-qt5" = fetch {
@@ -3554,7 +3553,7 @@ let
     filename    = "mingw-w64-x86_64-kxmlgui-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "4f26604bce61419a5f62957b5a97bf15f253ca77bef1ad4421b42e5b1c5846c6";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kglobalaccel-qt5.version "5.50.0"; kglobalaccel-qt5) (assert stdenvNoCC.lib.versionAtLeast ktextwidgets-qt5.version "5.50.0"; ktextwidgets-qt5) (assert stdenvNoCC.lib.versionAtLeast attica-qt5.version "5.50.0"; attica-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "l-smash" = fetch {
@@ -3837,7 +3836,7 @@ let
     filename    = "mingw-w64-x86_64-libchamplain-0.12.16-1-any.pkg.tar.xz";
     sha256      = "74e5d48302be652beee3c46bbfe61c66fbd1286c85e68575c6558c9d4128676f";
     buildInputs = [ clutter clutter-gtk cairo libsoup memphis sqlite3 ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "libconfig" = fetch {
@@ -4249,7 +4248,6 @@ let
     filename    = "mingw-w64-x86_64-libkml-1.3.0-5-any.pkg.tar.xz";
     sha256      = "17ee9e8fffd1be6d25ee53b6a7e932529657591b7bb0bbde47bdb5a96b26b562";
     buildInputs = [ boost minizip uriparser zlib ];
-    broken      = true;
   };
 
   "libksba" = fetch {
@@ -4266,7 +4264,6 @@ let
     filename    = "mingw-w64-x86_64-liblas-1.8.1-1-any.pkg.tar.xz";
     sha256      = "7cfa0a44d8f7624b55b6fe322e45090946e81b60980daf465906299bea1fc420";
     buildInputs = [ gdal laszip ];
-    broken      = true;
   };
 
   "liblastfm" = fetch {
@@ -4275,7 +4272,7 @@ let
     filename    = "mingw-w64-x86_64-liblastfm-1.0.9-2-any.pkg.tar.xz";
     sha256      = "992cf3d9a6fe12e85a013feb87de9ba0e4240eec68171e8333fd97de2209ad07";
     buildInputs = [ qt5 fftw libsamplerate ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "liblastfm-qt4" = fetch {
@@ -4592,7 +4589,7 @@ let
     filename    = "mingw-w64-x86_64-libplacebo-1.7.0-1-any.pkg.tar.xz";
     sha256      = "799fbb85f3d39683ad3f4d6e24bc420d0e69132a9a3a9b53dc4e32ff2161867c";
     buildInputs = [ vulkan ];
-    broken      = true;
+    broken      = true; # broken dependency libplacebo -> vulkan
   };
 
   "libplist" = fetch {
@@ -5228,7 +5225,6 @@ let
     filename    = "mingw-w64-x86_64-lua-5.3.5-1-any.pkg.tar.xz";
     sha256      = "c3f81a48b8050ea1e2ec9a081f52caaa80db509913f271bdb2e7acf6d3e8746a";
     buildInputs = [ winpty ];
-    broken      = true;
   };
 
   "lua-lpeg" = fetch {
@@ -5237,7 +5233,6 @@ let
     filename    = "mingw-w64-x86_64-lua-lpeg-1.0.1-1-any.pkg.tar.xz";
     sha256      = "35d595850df8e8b8027168ab063fe5c8a155126c74a6fde19cb54349e733b76f";
     buildInputs = [ lua ];
-    broken      = true;
   };
 
   "lua-mpack" = fetch {
@@ -5246,7 +5241,6 @@ let
     filename    = "mingw-w64-x86_64-lua-mpack-1.0.7-1-any.pkg.tar.xz";
     sha256      = "1fae12bef250ff1c7868d7ac94e884e5ef96d171ebe6c0af84cba1687b63e3ba";
     buildInputs = [ lua libmpack ];
-    broken      = true;
   };
 
   "lua51" = fetch {
@@ -5255,7 +5249,6 @@ let
     filename    = "mingw-w64-x86_64-lua51-5.1.5-4-any.pkg.tar.xz";
     sha256      = "b1dcf14e61ea42e7f52d396420fd4b6b186d29698aa3dcd74b36f1b63328b4e2";
     buildInputs = [ winpty ];
-    broken      = true;
   };
 
   "lua51-bitop" = fetch {
@@ -5264,7 +5257,6 @@ let
     filename    = "mingw-w64-x86_64-lua51-bitop-1.0.2-1-any.pkg.tar.xz";
     sha256      = "d9f69ab4d523f67cb34045c0397e60b2e318515befadb885bd68645ed496575e";
     buildInputs = [ lua51 ];
-    broken      = true;
   };
 
   "lua51-lgi" = fetch {
@@ -5273,7 +5265,6 @@ let
     filename    = "mingw-w64-x86_64-lua51-lgi-0.9.2-1-any.pkg.tar.xz";
     sha256      = "9a18b49937d2785373dec032d181feb9680cc7679c3eb633252e98280498d30a";
     buildInputs = [ lua51 gtk3 gobject-introspection ];
-    broken      = true;
   };
 
   "lua51-lpeg" = fetch {
@@ -5282,7 +5273,6 @@ let
     filename    = "mingw-w64-x86_64-lua51-lpeg-1.0.1-1-any.pkg.tar.xz";
     sha256      = "668a538c58b79068df09033a40b56abc3635adbfdea0313f44a171efef9bae6d";
     buildInputs = [ lua51 ];
-    broken      = true;
   };
 
   "lua51-lsqlite3" = fetch {
@@ -5291,7 +5281,6 @@ let
     filename    = "mingw-w64-x86_64-lua51-lsqlite3-0.9.3-1-any.pkg.tar.xz";
     sha256      = "3eb1e9f05559439cb8367a34d2d6e04e8ad36c8e9604e9c378d73c1752fd7d4b";
     buildInputs = [ lua51 sqlite3 ];
-    broken      = true;
   };
 
   "lua51-luarocks" = fetch {
@@ -5300,7 +5289,6 @@ let
     filename    = "mingw-w64-x86_64-lua51-luarocks-2.4.4-1-any.pkg.tar.xz";
     sha256      = "dd9431ab938a54ef55a4d1a0aab02d46de08f6d48610f63e5d7a1c762f0fa7cb";
     buildInputs = [ lua51 ];
-    broken      = true;
   };
 
   "lua51-mpack" = fetch {
@@ -5309,7 +5297,6 @@ let
     filename    = "mingw-w64-x86_64-lua51-mpack-1.0.7-1-any.pkg.tar.xz";
     sha256      = "95f58aa8feead58283badd3a8dcc358bab10a5b4e7bcb2269afbdda2731ddcbd";
     buildInputs = [ lua51 libmpack ];
-    broken      = true;
   };
 
   "lua51-winapi" = fetch {
@@ -5318,7 +5305,6 @@ let
     filename    = "mingw-w64-x86_64-lua51-winapi-1.4.2-1-any.pkg.tar.xz";
     sha256      = "b8bfb7af2812f0ccee89f9f8a062dddeccac74841fdf9549ea56349060371886";
     buildInputs = [ lua51 ];
-    broken      = true;
   };
 
   "luabind-git" = fetch {
@@ -5327,7 +5313,6 @@ let
     filename    = "mingw-w64-x86_64-luabind-git-0.9.1.144.ge414c57-1-any.pkg.tar.xz";
     sha256      = "3df039eff4fe41af747e48c03c68ed5e8b19c00dbc3150b6dc0be754417feb80";
     buildInputs = [ boost lua51 ];
-    broken      = true;
   };
 
   "luajit-git" = fetch {
@@ -5336,7 +5321,6 @@ let
     filename    = "mingw-w64-x86_64-luajit-git-2.0.4.49.ga68c411-1-any.pkg.tar.xz";
     sha256      = "d4a92cc968fccd692c4e56ad375cde871880aed3d2c8c74116e10c1f56e5c672";
     buildInputs = [ winpty ];
-    broken      = true;
   };
 
   "lz4" = fetch {
@@ -5369,7 +5353,7 @@ let
     filename    = "mingw-w64-x86_64-mathgl-2.4.2-1-any.pkg.tar.xz";
     sha256      = "f45ca4e81367d21f494b69651b6247bf9ac548fb72b7db3bd1aaec640b28f5f8";
     buildInputs = [ hdf5 fltk libharu libjpeg-turbo libpng giflib qt5 freeglut wxWidgets ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "matio" = fetch {
@@ -5537,7 +5521,7 @@ let
     filename    = "mingw-w64-x86_64-mpv-0.29.1-1-any.pkg.tar.xz";
     sha256      = "46fd2d20e0ce5fcbb556bd14dca3ea3edfd0ab2505a8fa4e95665c1924a77e57";
     buildInputs = [ angleproject-git ffmpeg lcms2 libarchive libass libbluray libcaca libcdio libcdio-paranoia libdvdnav libdvdread libjpeg-turbo lua51 rubberband uchardet vapoursynth vulkan winpty ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "mruby" = fetch {
@@ -5711,7 +5695,6 @@ let
     filename    = "mingw-w64-x86_64-nodejs-8.11.1-5-any.pkg.tar.xz";
     sha256      = "ccac4b7fd8f40946325091297d22c73f2d658633fc6d6063ad2c61e0ad021488";
     buildInputs = [ c-ares http-parser icu libuv openssl zlib winpty ];
-    broken      = true;
   };
 
   "npth" = fetch {
@@ -5775,7 +5758,7 @@ let
     filename    = "mingw-w64-x86_64-ocaml-findlib-1.7.1-1-any.pkg.tar.xz";
     sha256      = "d03eff18c8f20b8f68e461a7f34a56385c7190ef06df5ba14175a9280059d529";
     buildInputs = [ ocaml msys2-runtime ];
-    broken      = true;
+    broken      = true; # broken dependency ocaml-findlib -> msys2-runtime
   };
 
   "oce" = fetch {
@@ -5808,7 +5791,7 @@ let
     filename    = "mingw-w64-x86_64-ogitor-git-r816.cf42232-1-any.pkg.tar.xz";
     sha256      = "fe61c39cab2470d47b78f73f535c36360efe3e21fbe06c577730491b55e4a0c9";
     buildInputs = [ libwinpthread-git ogre3d boost qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency ogre3d -> FreeImage
   };
 
   "ogre3d" = fetch {
@@ -5817,7 +5800,7 @@ let
     filename    = "mingw-w64-x86_64-ogre3d-1.11.1-1-any.pkg.tar.xz";
     sha256      = "0857aacae013a5c5661630318489e487946021a9c3db74ac88b2c3cb884c1cc3";
     buildInputs = [ boost cppunit FreeImage freetype glsl-optimizer-git hlsl2glsl-git intel-tbb openexr SDL2 python2 tinyxml winpthreads-git zlib zziplib ];
-    broken      = true;
+    broken      = true; # broken dependency ogre3d -> FreeImage
   };
 
   "ois-git" = fetch {
@@ -5920,7 +5903,7 @@ let
     filename    = "mingw-w64-x86_64-openimageio-1.8.17-1-any.pkg.tar.xz";
     sha256      = "028ccde29d95cd1649cadeed53e08e760d52ce072335ed691fe217342e21329c";
     buildInputs = [ boost field3d freetype jasper giflib glew hdf5 libjpeg libpng LibRaw libwebp libtiff opencolorio-git opencv openexr openjpeg openssl ptex pugixml zlib ];
-    broken      = true;
+    broken      = true; # broken dependency openimageio -> LibRaw
   };
 
   "openjpeg" = fetch {
@@ -5976,7 +5959,7 @@ let
     filename    = "mingw-w64-x86_64-openscad-2015.03-2-any.pkg.tar.xz";
     sha256      = "e445edbbbc90e48b5637c94be10fea39e684fd9c9be9be5844448d779dacbf53";
     buildInputs = [ qt5 boost cgal opencsg qscintilla shared-mime-info ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "openshadinglanguage" = fetch {
@@ -5985,7 +5968,7 @@ let
     filename    = "mingw-w64-x86_64-openshadinglanguage-1.8.15-3-any.pkg.tar.xz";
     sha256      = "4e5132baf89c3826693a7ef25e4aa886ba1d7b5618ca0ff03406c45759eb4ce9";
     buildInputs = [ boost clang freetype glew ilmbase intel-tbb libpng libtiff openexr openimageio pugixml ];
-    broken      = true;
+    broken      = true; # broken dependency openimageio -> LibRaw
   };
 
   "openssl" = fetch {
@@ -6049,7 +6032,7 @@ let
     filename    = "mingw-w64-x86_64-osgQt-3.5.7-6-any.pkg.tar.xz";
     sha256      = "186a4c73b6aafaec838c5b30c168051489c704d4628fabbd1c23635a3898cd53";
     buildInputs = [ qt5 OpenSceneGraph ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "osgQt-debug" = fetch {
@@ -6058,7 +6041,7 @@ let
     filename    = "mingw-w64-x86_64-osgQt-debug-3.5.7-6-any.pkg.tar.xz";
     sha256      = "bd4bfab5eef28445101b96ce8e52a54342375c6370798bc615a347c67ce6d430";
     buildInputs = [ qt5 OpenSceneGraph-debug ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "osgQtQuick-debug-git" = fetch {
@@ -6067,7 +6050,7 @@ let
     filename    = "mingw-w64-x86_64-osgQtQuick-debug-git-2.0.0.r172-4-any.pkg.tar.xz";
     sha256      = "0b01b60a6f8d31f1845a7d55799e2c9a198e5f092ec67bd1996737f5ef15962c";
     buildInputs = [ osgQt-debug qt5 (assert osgQtQuick-git.version=="2.0.0.r172"; osgQtQuick-git) OpenSceneGraph-debug ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "osgQtQuick-git" = fetch {
@@ -6076,7 +6059,7 @@ let
     filename    = "mingw-w64-x86_64-osgQtQuick-git-2.0.0.r172-4-any.pkg.tar.xz";
     sha256      = "3c80a4d9cf10a2e9fa16e034c28464218e9d8962dc76e621adce834c093989db";
     buildInputs = [ osgQt qt5 OpenSceneGraph ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "osgbullet-debug-git" = fetch {
@@ -6085,7 +6068,7 @@ let
     filename    = "mingw-w64-x86_64-osgbullet-debug-git-3.0.0.265-1-any.pkg.tar.xz";
     sha256      = "8c7cfd980edccbcb051b55dcad84e7eee7ad4577845f9668ecee59ac1501a2c5";
     buildInputs = [ (assert osgbullet-git.version=="3.0.0.265"; osgbullet-git) OpenSceneGraph-debug osgworks-debug-git ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "osgbullet-git" = fetch {
@@ -6094,7 +6077,7 @@ let
     filename    = "mingw-w64-x86_64-osgbullet-git-3.0.0.265-1-any.pkg.tar.xz";
     sha256      = "318c52e82dc8988abf9b29546449fb9edba56612e13a60b50c740452c6836bff";
     buildInputs = [ bullet OpenSceneGraph osgworks-git ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "osgearth" = fetch {
@@ -6103,7 +6086,7 @@ let
     filename    = "mingw-w64-x86_64-osgearth-2.10-1-any.pkg.tar.xz";
     sha256      = "6ae4bf93a663582622335539b0be885afe7c1ba379f36444a80cf2dd3f856cb2";
     buildInputs = [ OpenSceneGraph OpenSceneGraph-debug osgQt osgQt-debug curl gdal geos poco protobuf rocksdb sqlite3 OpenSceneGraph ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "osgearth-debug" = fetch {
@@ -6112,7 +6095,7 @@ let
     filename    = "mingw-w64-x86_64-osgearth-debug-2.10-1-any.pkg.tar.xz";
     sha256      = "47e9504c3c0afbb46943df919fd6353193487375f08355108231ae3badad994d";
     buildInputs = [ OpenSceneGraph OpenSceneGraph-debug osgQt osgQt-debug curl gdal geos poco protobuf rocksdb sqlite3 OpenSceneGraph-debug ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "osgocean-debug-git" = fetch {
@@ -6121,7 +6104,7 @@ let
     filename    = "mingw-w64-x86_64-osgocean-debug-git-1.0.1.r161-1-any.pkg.tar.xz";
     sha256      = "dd8f456d64b9fa72dd5fca17721d98f54f796d11a9a1d6a86750a3f5e4eb9e6d";
     buildInputs = [ (assert osgocean-git.version=="1.0.1.r161"; osgocean-git) OpenSceneGraph-debug ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "osgocean-git" = fetch {
@@ -6130,7 +6113,7 @@ let
     filename    = "mingw-w64-x86_64-osgocean-git-1.0.1.r161-1-any.pkg.tar.xz";
     sha256      = "1312ee56e82566375184fc8d54cc77145dab95eea0caf1a8082c279782380be7";
     buildInputs = [ fftw OpenSceneGraph ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "osgworks-debug-git" = fetch {
@@ -6139,7 +6122,7 @@ let
     filename    = "mingw-w64-x86_64-osgworks-debug-git-3.1.0.444-3-any.pkg.tar.xz";
     sha256      = "b454d6b99916774611030ece8f448b430d92b657232e7d8be3341b013f78a366";
     buildInputs = [ (assert osgworks-git.version=="3.1.0.444"; osgworks-git) OpenSceneGraph-debug ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "osgworks-git" = fetch {
@@ -6148,7 +6131,7 @@ let
     filename    = "mingw-w64-x86_64-osgworks-git-3.1.0.444-3-any.pkg.tar.xz";
     sha256      = "d4af18dff794dbee82c785f8317c27e81ce6b7604378ea56ed7d977eb30b5f33";
     buildInputs = [ OpenSceneGraph vrpn ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "osl" = fetch {
@@ -6291,7 +6274,7 @@ let
     filename    = "mingw-w64-x86_64-phonon-qt5-4.10.1-1-any.pkg.tar.xz";
     sha256      = "6708df8d732879d4369eb074fd140a17082e03125a31069b60039b41e659e934";
     buildInputs = [ qt5 glib2 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "physfs" = fetch {
@@ -6308,7 +6291,7 @@ let
     filename    = "mingw-w64-x86_64-pidgin++-15.1-2-any.pkg.tar.xz";
     sha256      = "249090a85c5cf3013152d3adbf299ac4d461e6df9f330b45a90f1a9acc122e97";
     buildInputs = [ adwaita-icon-theme ca-certificates drmingw freetype fontconfig gettext gnutls gsasl gst-plugins-base gst-plugins-good gtk2 gtkspell libgadu libidn meanwhile nss ncurses silc-toolkit winsparkle zlib ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "pidgin-hg" = fetch {
@@ -6317,7 +6300,7 @@ let
     filename    = "mingw-w64-x86_64-pidgin-hg-r37207.e666f49a3e86-1-any.pkg.tar.xz";
     sha256      = "7f152128f3187775d2d209533e0a68dfb651dabcdaf5a6ee5b8c50e47ade4b64";
     buildInputs = [ adwaita-icon-theme ca-certificates farstream freetype fontconfig gettext gnutls gplugin gsasl gtk3 gtkspell libgadu libidn nss ncurses webkitgtk3 zlib ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "pinentry" = fetch {
@@ -6326,7 +6309,7 @@ let
     filename    = "mingw-w64-x86_64-pinentry-1.1.0-1-any.pkg.tar.xz";
     sha256      = "b463fd9d5556b188247d0954bf244df0ed244d60fbc9e47bf3ba273581a72832";
     buildInputs = [ qt5 libsecret libassuan ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "pixman" = fetch {
@@ -6351,7 +6334,7 @@ let
     filename    = "mingw-w64-x86_64-plasma-framework-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "643e98e04261146c98bd622116bc5efd4cdc52f84f75b68587c521aa76fc08f7";
     buildInputs = [ qt5 kactivities-qt5 kdeclarative-qt5 kirigami2-qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "plplot" = fetch {
@@ -6360,7 +6343,6 @@ let
     filename    = "mingw-w64-x86_64-plplot-5.13.0-3-any.pkg.tar.xz";
     sha256      = "b8214dedccd04fc24dff4b80fbda1ff8f8807a61e3ead480ea28acbf307830ef";
     buildInputs = [ cairo gcc-libs gcc-libgfortran freetype libharu lua python2 python2-numpy shapelib tk wxWidgets ];
-    broken      = true;
   };
 
   "png2ico" = fetch {
@@ -6401,7 +6383,6 @@ let
     filename    = "mingw-w64-x86_64-podofo-0.9.6-1-any.pkg.tar.xz";
     sha256      = "76bc143b5f8fcb669b3c6355f64eb28fde4e86dd97a361cb7361f011601fa1a5";
     buildInputs = [ fontconfig libtiff libidn libjpeg-turbo lua openssl ];
-    broken      = true;
   };
 
   "polipo" = fetch {
@@ -6488,7 +6469,6 @@ let
     filename    = "mingw-w64-x86_64-postgis-2.5.1-1-any.pkg.tar.xz";
     sha256      = "a0e82e23fef01e24b62fefc93c30c6c8dfc20b65db198e8752e5047d15e00ba3";
     buildInputs = [ gcc-libs gdal geos gettext json-c libxml2 postgresql proj ];
-    broken      = true;
   };
 
   "postgresql" = fetch {
@@ -6497,7 +6477,6 @@ let
     filename    = "mingw-w64-x86_64-postgresql-11.1-1-any.pkg.tar.xz";
     sha256      = "a62e14c1a3864fd25cb81fe1f612e24868b5514a568e212ca37addfdbd616c32";
     buildInputs = [ gcc-libs gettext libxml2 libxslt openssl python2 tcl zlib winpty ];
-    broken      = true;
   };
 
   "postr" = fetch {
@@ -6559,6 +6538,7 @@ let
     version     = "1.9";
     filename    = "mingw-w64-x86_64-pugixml-1.9-1-any.pkg.tar.xz";
     sha256      = "36cdfa9fdf9a8b6acdaad0cda759b066ce2bb8524e91a84842d8d916fbe6bc99";
+    buildInputs = [  ];
   };
 
   "pupnp" = fetch {
@@ -6574,7 +6554,7 @@ let
     filename    = "mingw-w64-x86_64-purple-facebook-20160907.66ee773.bf8ed95-1-any.pkg.tar.xz";
     sha256      = "c679b668c80cb30dcb267af17c22d2414bd5c94eccced5fe213e2ab5859addc2";
     buildInputs = [ libpurple json-glib glib2 zlib gettext gcc-libs ];
-    broken      = true;
+    broken      = true; # broken dependency purple-facebook -> libpurple
   };
 
   "purple-hangouts-hg" = fetch {
@@ -6583,7 +6563,7 @@ let
     filename    = "mingw-w64-x86_64-purple-hangouts-hg-r287+.574c112aa35c+-1-any.pkg.tar.xz";
     sha256      = "a47376783739b76ef87944c0eb86949039ed86b405e3c908f05efc230f854014";
     buildInputs = [ libpurple protobuf-c json-glib glib2 zlib gettext gcc-libs ];
-    broken      = true;
+    broken      = true; # broken dependency purple-hangouts-hg -> libpurple
   };
 
   "purple-skypeweb" = fetch {
@@ -6592,7 +6572,7 @@ let
     filename    = "mingw-w64-x86_64-purple-skypeweb-1.1-1-any.pkg.tar.xz";
     sha256      = "f5eb02c79080cf07bfb940fbbe23ec57da3a7f1f3ab8ae0c2ef4854b38826951";
     buildInputs = [ libpurple json-glib glib2 zlib gettext gcc-libs ];
-    broken      = true;
+    broken      = true; # broken dependency purple-skypeweb -> libpurple
   };
 
   "putty" = fetch {
@@ -6656,7 +6636,7 @@ let
     filename    = "mingw-w64-x86_64-pyqt5-common-5.11.3-1-any.pkg.tar.xz";
     sha256      = "55e197d3513524e8fce623fc7a0b4db8601fe5863ae730a62ddba9f8973291ba";
     buildInputs = [ qt5 qtwebkit ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "pyrex" = fetch {
@@ -6695,7 +6675,7 @@ let
     filename    = "mingw-w64-x86_64-python-qscintilla-common-2.10.8-1-any.pkg.tar.xz";
     sha256      = "4664393618c3baa47b401aacb88824bef1e8e24dc77233211bc62711655c5d95";
     buildInputs = [ qscintilla ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "python2" = fetch {
@@ -7086,8 +7066,8 @@ let
     version     = "1.0.3";
     filename    = "mingw-w64-x86_64-python2-cssselect-1.0.3-2-any.pkg.tar.xz";
     sha256      = "d34ab700671c4585e0715f049829388ea096341e68203fcf42a9160893ab4eb7";
-    buildInputs = [ self."python2>" ];
-    broken      = true;
+    buildInputs = [ python2 ];
+    broken      = true; # broken dependency python2-cssselect -> python2>
   };
 
   "python2-cvxopt" = fetch {
@@ -7168,7 +7148,7 @@ let
     filename    = "mingw-w64-x86_64-python2-distutils-extra-2.39-4-any.pkg.tar.xz";
     sha256      = "5d83a7ce5ed5ad85aea6895c367d8196cbc0b94cb8c811ce0b7102e545405583";
     buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast python2.version "2.7"; python2) intltool ];
-    broken      = true;
+    broken      = true; # broken dependency python2-distutils-extra -> intltool
   };
 
   "python2-django" = fetch {
@@ -7521,7 +7501,6 @@ let
     filename    = "mingw-w64-x86_64-python2-ipykernel-4.9.0-2-any.pkg.tar.xz";
     sha256      = "c316928468749836994b7fd5f2ae377512007438ca3cec73f770094c86cab937";
     buildInputs = [ python2 self."python2-backports.shutil_get_terminal_size" python2-pathlib2 python2-pyzmq python2-ipython ];
-    broken      = true;
   };
 
   "python2-ipython" = fetch {
@@ -7530,7 +7509,6 @@ let
     filename    = "mingw-w64-x86_64-python2-ipython-5.3.0-8-any.pkg.tar.xz";
     sha256      = "eb1b9dc8f72599d4240270e9963e7a00e7a080f9b189f364c7991c52af13655c";
     buildInputs = [ winpty sqlite3 python2-traitlets python2-simplegeneric python2-pickleshare python2-prompt_toolkit self."python2-backports.shutil_get_terminal_size" python2-jedi python2-win_unicode_console ];
-    broken      = true;
   };
 
   "python2-ipython_genutils" = fetch {
@@ -7611,7 +7589,6 @@ let
     filename    = "mingw-w64-x86_64-python2-jupyter_client-5.2.4-1-any.pkg.tar.xz";
     sha256      = "cebf79b7fc3ebf64d63be1e3433c90e6a7ae50c359fd3cf7c3cda7a377337058";
     buildInputs = [ python2-ipykernel python2-jupyter_core python2-pyzmq ];
-    broken      = true;
   };
 
   "python2-jupyter_console" = fetch {
@@ -7620,7 +7597,6 @@ let
     filename    = "mingw-w64-x86_64-python2-jupyter_console-5.2.0-3-any.pkg.tar.xz";
     sha256      = "f5708d21fde18c0360d865f175df4bc170522ee9ad47bef476e3b07f12d1e8a0";
     buildInputs = [ python2 python2-jupyter_core python2-jupyter_client python2-colorama ];
-    broken      = true;
   };
 
   "python2-jupyter_core" = fetch {
@@ -7725,7 +7701,7 @@ let
     filename    = "mingw-w64-x86_64-python2-matplotlib-2.2.3-4-any.pkg.tar.xz";
     sha256      = "430588c8c15b256556ba3a51ebe32f357e80ea70f056e86d99fc48ba51a2c74c";
     buildInputs = [ python2-pytz python2-numpy python2-cairo python2-cycler python2-pyqt5 python2-dateutil python2-pyparsing python2-kiwisolver self."python2-backports.functools_lru_cache" freetype libpng ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "python2-mccabe" = fetch {
@@ -8357,7 +8333,7 @@ let
     filename    = "mingw-w64-x86_64-python2-pyqt5-5.11.3-1-any.pkg.tar.xz";
     sha256      = "858b1435f8c8462fc61da6ddf906b2b119e1142311e44fd7767cbfdeea56cb70";
     buildInputs = [ python2-sip pyqt5-common python2 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "python2-pyreadline" = fetch {
@@ -8534,7 +8510,7 @@ let
     filename    = "mingw-w64-x86_64-python2-qscintilla-2.10.8-1-any.pkg.tar.xz";
     sha256      = "35fdc3381f7500d1387bc8d5e0aa03db6609ebffb93ab3f281fc366fa6223ce6";
     buildInputs = [ python-qscintilla-common python2-pyqt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "python2-qtconsole" = fetch {
@@ -8543,7 +8519,7 @@ let
     filename    = "mingw-w64-x86_64-python2-qtconsole-4.4.1-1-any.pkg.tar.xz";
     sha256      = "5e0e3deae52f93bd322439f8d8166527e000323f7fa065fb403c61c7871d4324";
     buildInputs = [ python2 python2-jupyter_core python2-jupyter_client python2-pyqt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "python2-rencode" = fetch {
@@ -8560,7 +8536,7 @@ let
     filename    = "mingw-w64-x86_64-python2-reportlab-3.5.12-1-any.pkg.tar.xz";
     sha256      = "143112c07a913d82e301c13d55b8b62aed301d9b49f3d36b6de6f361e8bef5ee";
     buildInputs = [ freetype python2-pip python2-Pillow ];
-    broken      = true;
+    broken      = true; # broken dependency python2-reportlab -> python2-Pillow
   };
 
   "python2-requests" = fetch {
@@ -8609,7 +8585,7 @@ let
     filename    = "mingw-w64-x86_64-python2-rst2pdf-0.93-4-any.pkg.tar.xz";
     sha256      = "17c19ab03246e91bfb762747a9948c0ed6998c5e0f29e8e23c6b4e0ccfec3013";
     buildInputs = [ python2 python2-docutils python2-pdfrw python2-pygments (assert stdenvNoCC.lib.versionAtLeast python2-reportlab.version "2.4"; python2-reportlab) python2-setuptools ];
-    broken      = true;
+    broken      = true; # broken dependency python2-reportlab -> python2-Pillow
   };
 
   "python2-scandir" = fetch {
@@ -8666,7 +8642,7 @@ let
     filename    = "mingw-w64-x86_64-python2-setuptools-git-1.2-1-any.pkg.tar.xz";
     sha256      = "517ad8bf5a5d25eb04a8465f7fac0ed0061810032b1191bd7502f54d8ed4bcaf";
     buildInputs = [ python2 python2-setuptools git ];
-    broken      = true;
+    broken      = true; # broken dependency python2-setuptools-git -> git
   };
 
   "python2-setuptools-scm" = fetch {
@@ -9592,7 +9568,7 @@ let
     filename    = "mingw-w64-x86_64-python3-distutils-extra-2.39-4-any.pkg.tar.xz";
     sha256      = "b3eb2b1d6b7f1c3a35579eb798351f5068eea046f19c24aa4745ba272f5cf346";
     buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast python3.version "3.3"; python3) intltool ];
-    broken      = true;
+    broken      = true; # broken dependency python3-distutils-extra -> intltool
   };
 
   "python3-django" = fetch {
@@ -9912,7 +9888,6 @@ let
     filename    = "mingw-w64-x86_64-python3-ipykernel-5.1.0-1-any.pkg.tar.xz";
     sha256      = "cba1943c50d8a7d8f9ae626e4a1f033e637d9f4d47bd565eb0fd7dc0e1ebcda6";
     buildInputs = [ python3 python3-pathlib2 python3-pyzmq python3-ipython ];
-    broken      = true;
   };
 
   "python3-ipython" = fetch {
@@ -9921,7 +9896,6 @@ let
     filename    = "mingw-w64-x86_64-python3-ipython-7.1.1-1-any.pkg.tar.xz";
     sha256      = "c9b035e7f81b993bbeaa315cb95e18bbb54ead7a80cda9c45512b7833be2cdd0";
     buildInputs = [ winpty sqlite3 python3-jedi python3-decorator python3-pickleshare python3-simplegeneric python3-traitlets (assert stdenvNoCC.lib.versionAtLeast python3-prompt_toolkit.version "2.0"; python3-prompt_toolkit) python3-pygments python3-simplegeneric python3-backcall python3-pexpect python3-colorama python3-win_unicode_console ];
-    broken      = true;
   };
 
   "python3-ipython_genutils" = fetch {
@@ -10002,7 +9976,6 @@ let
     filename    = "mingw-w64-x86_64-python3-jupyter-nbconvert-5.4-2-any.pkg.tar.xz";
     sha256      = "5178307a50f72b1ec7a9324a21cfb212f08b5d5f558eea269b5dfa18fb3d2e61";
     buildInputs = [ python3 python3-defusedxml python3-jupyter_client python3-jupyter-nbformat python3-pygments python3-mistune python3-jinja python3-entrypoints python3-traitlets python3-pandocfilters python3-bleach python3-testpath ];
-    broken      = true;
   };
 
   "python3-jupyter-nbformat" = fetch {
@@ -10019,7 +9992,6 @@ let
     filename    = "mingw-w64-x86_64-python3-jupyter_client-5.2.4-1-any.pkg.tar.xz";
     sha256      = "416b1c6474509e67cfbe3df0c67c73e1404cad45623909247f6c40a92662c944";
     buildInputs = [ python3-ipykernel python3-jupyter_core python3-pyzmq ];
-    broken      = true;
   };
 
   "python3-jupyter_console" = fetch {
@@ -10028,7 +10000,6 @@ let
     filename    = "mingw-w64-x86_64-python3-jupyter_console-6.0.0-1-any.pkg.tar.xz";
     sha256      = "e2d8f1129e4607537829d0f0b4ad60f227fa20d35355d492538e2b62cd2695d4";
     buildInputs = [ python3 python3-jupyter_core python3-jupyter_client python3-colorama ];
-    broken      = true;
   };
 
   "python3-jupyter_core" = fetch {
@@ -10245,7 +10216,6 @@ let
     filename    = "mingw-w64-x86_64-python3-notebook-5.6.0-1-any.pkg.tar.xz";
     sha256      = "528cb347fbbf2431986370caa39af2e0209dbc3fe09f0e30824359a4d79bcb11";
     buildInputs = [ python3 python3-jupyter_core python3-jupyter_client python3-jupyter-nbformat python3-jupyter-nbconvert python3-ipywidgets python3-jinja python3-traitlets python3-tornado python3-terminado python3-send2trash python3-prometheus-client ];
-    broken      = true;
   };
 
   "python3-nuitka" = fetch {
@@ -10741,7 +10711,7 @@ let
     filename    = "mingw-w64-x86_64-python3-pyqt5-5.11.3-1-any.pkg.tar.xz";
     sha256      = "7626b52ae1253ffca22cdeefb6c959e8410fc97df68e7d8932aec07045009bf6";
     buildInputs = [ python3-sip pyqt5-common python3 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "python3-pyreadline" = fetch {
@@ -10918,7 +10888,7 @@ let
     filename    = "mingw-w64-x86_64-python3-qscintilla-2.10.8-1-any.pkg.tar.xz";
     sha256      = "0a81a34887c9aabebf56f26c5f347b2d2f2421acb3b356fc8c135f5638853f68";
     buildInputs = [ python-qscintilla-common python3-pyqt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "python3-qtconsole" = fetch {
@@ -10927,7 +10897,7 @@ let
     filename    = "mingw-w64-x86_64-python3-qtconsole-4.4.1-1-any.pkg.tar.xz";
     sha256      = "9bef3c480665072317c4639db58d514ab24fc499a97e0d9f3510237ba498cb1b";
     buildInputs = [ python3 python3-jupyter_core python3-jupyter_client python3-pyqt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "python3-rencode" = fetch {
@@ -10944,7 +10914,7 @@ let
     filename    = "mingw-w64-x86_64-python3-reportlab-3.5.12-1-any.pkg.tar.xz";
     sha256      = "9bbc922d278269b491c39ac4f499dfc91d9c510849ed3f6a5b4528fc61951fc0";
     buildInputs = [ freetype python3-pip python3-Pillow ];
-    broken      = true;
+    broken      = true; # broken dependency python3-reportlab -> python3-Pillow
   };
 
   "python3-requests" = fetch {
@@ -10993,7 +10963,7 @@ let
     filename    = "mingw-w64-x86_64-python3-rst2pdf-0.93-4-any.pkg.tar.xz";
     sha256      = "991f6e54d35fd8384052fdcf44c35771d1069ee9369e50b2f635c91423bdc16d";
     buildInputs = [ python3 python3-docutils python3-pdfrw python3-pygments (assert stdenvNoCC.lib.versionAtLeast python3-reportlab.version "2.4"; python3-reportlab) python3-setuptools ];
-    broken      = true;
+    broken      = true; # broken dependency python3-reportlab -> python3-Pillow
   };
 
   "python3-scandir" = fetch {
@@ -11050,7 +11020,7 @@ let
     filename    = "mingw-w64-x86_64-python3-setuptools-git-1.2-1-any.pkg.tar.xz";
     sha256      = "0a0aead7d534b0836cfe15505ae54286550ad08185641e8306de844a815b695c";
     buildInputs = [ python3 python3-setuptools git ];
-    broken      = true;
+    broken      = true; # broken dependency python3-setuptools-git -> git
   };
 
   "python3-setuptools-scm" = fetch {
@@ -11537,7 +11507,7 @@ let
     filename    = "mingw-w64-x86_64-qbittorrent-4.1.5-1-any.pkg.tar.xz";
     sha256      = "eba47d852070da3ffb2583cb06dc9d0a6f11a2e56fe43459e5f818da14106e18";
     buildInputs = [ boost qt5 libtorrent-rasterbar zlib ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "qbs" = fetch {
@@ -11546,7 +11516,7 @@ let
     filename    = "mingw-w64-x86_64-qbs-1.12.2-1-any.pkg.tar.xz";
     sha256      = "26700a89396140f9db5cebef9dd820de9442925d8b64466e0e183eee45aef076";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "qca-qt4-git" = fetch {
@@ -11563,7 +11533,7 @@ let
     filename    = "mingw-w64-x86_64-qca-qt5-git-2277.98eead0-1-any.pkg.tar.xz";
     sha256      = "592d612866d67f6bc0555d0608b067dfe8f7a6241b3ba660a00415a9cfa948a9";
     buildInputs = [ ca-certificates cyrus-sasl doxygen gnupg libgcrypt nss openssl qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "qemu" = fetch {
@@ -11572,7 +11542,7 @@ let
     filename    = "mingw-w64-x86_64-qemu-3.1.0-1-any.pkg.tar.xz";
     sha256      = "dbdc094f2c6d7e834c431f92189bc61ff91b83d5e5653906ab6ac004a29bc8b7";
     buildInputs = [ capstone curl cyrus-sasl glib2 gnutls gtk3 libjpeg libpng libssh2 libusb lzo2 pixman snappy SDL2 usbredir ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "qhttpengine" = fetch {
@@ -11581,7 +11551,7 @@ let
     filename    = "mingw-w64-x86_64-qhttpengine-1.0.1-1-any.pkg.tar.xz";
     sha256      = "85ec8eb589999175786e8bddab1831c61b24ff4864f7da0377e69cba6ea78b83";
     buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast qt5.version "5.4"; qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "qhull-git" = fetch {
@@ -11606,7 +11576,7 @@ let
     filename    = "mingw-w64-x86_64-qmdnsengine-0.1.0-1-any.pkg.tar.xz";
     sha256      = "17432b651fb1889cb5f03e96b34932f6f4b236b1589d0f2a44a0d47b7fa46fd6";
     buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast qt5.version "5.4"; qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "qpdf" = fetch {
@@ -11639,7 +11609,7 @@ let
     filename    = "mingw-w64-x86_64-qscintilla-2.10.8-1-any.pkg.tar.xz";
     sha256      = "bbc270a6a0073c744a5ff9b0d97c8ba1ef595ce66f48f60a648cd9160d6a2967";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "qt-creator" = fetch {
@@ -11648,7 +11618,7 @@ let
     filename    = "mingw-w64-x86_64-qt-creator-4.8.0-1-any.pkg.tar.xz";
     sha256      = "14eb3bf61a3f4cf157a8ac29f8290e9e07fe93ecfc7781004bf32437c3432cd7";
     buildInputs = [ qt5 gcc make qbs ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "qt-installer-framework-git" = fetch {
@@ -11672,7 +11642,7 @@ let
     filename    = "mingw-w64-x86_64-qt5-5.12.0-1-any.pkg.tar.xz";
     sha256      = "80911cdabf3bd9a2f1fecb3970286d346f42804f0149fe2ae4882b16256204fd";
     buildInputs = [ gcc-libs qtbinpatcher z3 assimp dbus fontconfig freetype harfbuzz jasper libjpeg libmng libpng libtiff libxml2 libxslt libwebp openssl openal pcre2 sqlite3 vulkan xpm-nox zlib icu icu-debug-libs ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "qt5-static" = fetch {
@@ -11697,7 +11667,7 @@ let
     filename    = "mingw-w64-x86_64-qtwebkit-5.212.0alpha2-5-any.pkg.tar.xz";
     sha256      = "79b49063e6fdd0ecdc10a7bc82ddce2e2b5779b459e8a3f0a1e269b3137bbe1e";
     buildInputs = [ icu libxml2 libxslt libwebp fontconfig sqlite3 qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "quantlib" = fetch {
@@ -11714,7 +11684,7 @@ let
     filename    = "mingw-w64-x86_64-quarter-hg-r507+.4040ac7a14cf+-1-any.pkg.tar.xz";
     sha256      = "d5e10f2d00572e8e593dc2d739ba8f1587c714ee3e5fb68bf9e22497555f6847";
     buildInputs = [ qt5 coin3d ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "quassel" = fetch {
@@ -11723,7 +11693,7 @@ let
     filename    = "mingw-w64-x86_64-quassel-0.13.0-1-any.pkg.tar.xz";
     sha256      = "d76fb509e751f7b8a78bbb07e6fbdfc3e514e65261096babd7ebec61a219d27a";
     buildInputs = [ qt5 qca-qt5-git Snorenotify ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "quazip" = fetch {
@@ -11732,7 +11702,7 @@ let
     filename    = "mingw-w64-x86_64-quazip-0.7.6-1-any.pkg.tar.xz";
     sha256      = "6c53b02b8295988b662668a98b352e0ec23a9320e8148776e9e930b804e4ab59";
     buildInputs = [ qt5 zlib ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "qwt-qt4" = fetch {
@@ -11749,7 +11719,7 @@ let
     filename    = "mingw-w64-x86_64-qwt-qt5-6.1.3-1-any.pkg.tar.xz";
     sha256      = "4b22367506dd5fc874cdab9ab190a64a55e7787d58236375a873db2528119fe5";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "qxmpp" = fetch {
@@ -11758,7 +11728,7 @@ let
     filename    = "mingw-w64-x86_64-qxmpp-1.0.0-1-any.pkg.tar.xz";
     sha256      = "6a132926e9b2e7e8cee3139eeed91c7b2ec649a43d06736490e19b93a4d64edb";
     buildInputs = [ libtheora libvpx opus qt5 speex ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "qxmpp-qt4" = fetch {
@@ -11941,7 +11911,7 @@ let
     filename    = "mingw-w64-x86_64-scummvm-2.0.0-1-any.pkg.tar.xz";
     sha256      = "fb1c75a74ff7d045acebee1045831727c286afb9d50922c6a68b3ab3ca941b4a";
     buildInputs = [ faad2 freetype flac fluidsynth libjpeg-turbo libogg libvorbis libmad libmpeg2-git libtheora libpng nasm readline SDL2 zlib ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "seexpr" = fetch {
@@ -12021,7 +11991,7 @@ let
     filename    = "mingw-w64-x86_64-simage-hg-r748+.194ff9c6293e+-1-any.pkg.tar.xz";
     sha256      = "21302c21fe906b2eadce97fbdb24ead67cbcb7cbedfa65fe5ddcbef2cd50da5f";
     buildInputs = [ giflib jasper libjpeg-turbo libpng libsndfile libtiff libvorbis qt5 zlib ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "sip" = fetch {
@@ -12046,7 +12016,7 @@ let
     filename    = "mingw-w64-x86_64-smpeg2-2.0.0-5-any.pkg.tar.xz";
     sha256      = "35f4c47d798239183e65716cc180d1d284462e7604481dc0a4b79a7a484a0dc5";
     buildInputs = [ gcc-libs SDL2 ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "snappy" = fetch {
@@ -12070,7 +12040,7 @@ let
     filename    = "mingw-w64-x86_64-snorenotify-0.7.0-2-any.pkg.tar.xz";
     sha256      = "ade7590fbafae84f89d420650b7ce6dd0fa192f67e13892344c558a0981cbe78";
     buildInputs = [ qt5 snoregrowl ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "soci" = fetch {
@@ -12087,7 +12057,7 @@ let
     filename    = "mingw-w64-x86_64-solid-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "d7edcfda2e1a07b39c0d6b431586d742771e1a5a794c6286b434ec6bc73b23f8";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "sonnet-qt5" = fetch {
@@ -12096,7 +12066,7 @@ let
     filename    = "mingw-w64-x86_64-sonnet-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "b142351b514e4c72f89c1228ff918867d1e3e5c5a912df8c11f7b7af4abf7af4";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "soqt-hg" = fetch {
@@ -12105,7 +12075,7 @@ let
     filename    = "mingw-w64-x86_64-soqt-hg-r1962+.6719cfeef271+-1-any.pkg.tar.xz";
     sha256      = "2b4da0bf8006b8d9321ec9055e923dd5c7138a66437d94b7519f9b171382cbda";
     buildInputs = [ coin3d qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency soqt-hg -> coin3d
   };
 
   "soundtouch" = fetch {
@@ -12122,7 +12092,6 @@ let
     filename    = "mingw-w64-x86_64-source-highlight-3.1.8-1-any.pkg.tar.xz";
     sha256      = "90be2c6ac3f9c21c95250acd6cf6ebb727de003750c9ce8a386a73e177297c0e";
     buildInputs = [ bash boost ];
-    broken      = true;
   };
 
   "sparsehash" = fetch {
@@ -12169,7 +12138,7 @@ let
     filename    = "mingw-w64-x86_64-spice-gtk-0.35-3-any.pkg.tar.xz";
     sha256      = "0886d66c751d9dd822ce4b7f51d50cca269c07c2a46e03a2b6769aa59568e922";
     buildInputs = [ cyrus-sasl dbus-glib gobject-introspection gstreamer gst-plugins-base gtk3 libjpeg-turbo lz4 openssl phodav pixman spice-protocol usbredir vala ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "spice-protocol" = fetch {
@@ -12240,7 +12209,7 @@ let
     filename    = "mingw-w64-x86_64-styrene-0.3.0-2-any.pkg.tar.xz";
     sha256      = "ad398257449d2ae0fc0772ae27ef826562e0e037c6b478afc371a129970a5fc0";
     buildInputs = [ zip python3 gcc binutils nsis ];
-    broken      = true;
+    broken      = true; # broken dependency styrene -> zip
   };
 
   "suitesparse" = fetch {
@@ -12273,7 +12242,7 @@ let
     filename    = "mingw-w64-x86_64-syndication-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "bb262bb4b2a7aa8c037acc31980a93dc564c1549220af82434384b0ef4cdd4ad";
     buildInputs = [ qt5 (assert stdenvNoCC.lib.versionAtLeast kcodecs-qt5.version "5.50.0"; kcodecs-qt5) ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "syntax-highlighting-qt5" = fetch {
@@ -12282,7 +12251,7 @@ let
     filename    = "mingw-w64-x86_64-syntax-highlighting-qt5-5.50.0-2-any.pkg.tar.xz";
     sha256      = "df253cc699184f90c6b400bb26fb1538958f60a70194c29aa84fecd70a9eea2c";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "szip" = fetch {
@@ -13121,7 +13090,7 @@ let
     filename    = "mingw-w64-x86_64-threadweaver-qt5-5.50.0-1-any.pkg.tar.xz";
     sha256      = "e034bf1a23a75164f65deeeee856744cee83124a1081d6174c46f2e0a3c7b00f";
     buildInputs = [ qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "thrift-git" = fetch {
@@ -13209,7 +13178,6 @@ let
     filename    = "mingw-w64-x86_64-tolua-5.2.4-3-any.pkg.tar.xz";
     sha256      = "92fa34ff0ce7c5a6245052368b688668558b50bfc796cd175161671b16ea46e6";
     buildInputs = [ lua ];
-    broken      = true;
   };
 
   "tools-git" = fetch {
@@ -13265,7 +13233,7 @@ let
     filename    = "mingw-w64-x86_64-tulip-5.2.1-1-any.pkg.tar.xz";
     sha256      = "d027fb7feca5a43aa9082b1cae2cea1e54692b799896f953cc546635431e961a";
     buildInputs = [ freetype glew libpng libjpeg python3 qhull-git qt5 qtwebkit quazip yajl ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "twolame" = fetch {
@@ -13351,6 +13319,7 @@ let
     version     = "0.9.1";
     filename    = "mingw-w64-x86_64-uriparser-0.9.1-1-any.pkg.tar.xz";
     sha256      = "d8f8bd3e78b9d139698e9b73fb85568d2ffb811c9fa3c8af86cfd9052d1d9adc";
+    buildInputs = [  ];
   };
 
   "usbredir" = fetch {
@@ -13405,7 +13374,7 @@ let
     filename    = "mingw-w64-x86_64-vapoursynth-45.1-1-any.pkg.tar.xz";
     sha256      = "66c8671de9c3109307377e6b517aa5b056244f5e688e79b1477dcb453d228ce0";
     buildInputs = [ gcc-libs cython ffmpeg imagemagick libass libxml2 python3 tesseract-ocr zimg ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "vcdimager" = fetch {
@@ -13445,7 +13414,7 @@ let
     filename    = "mingw-w64-x86_64-virt-viewer-7.0-1-any.pkg.tar.xz";
     sha256      = "0f32c96ddd25b40b232d9c78054c07289cec9f3f883095221469f706bff4bed7";
     buildInputs = [ spice-gtk gtk-vnc libxml2 opus ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "vlc" = fetch {
@@ -13454,7 +13423,7 @@ let
     filename    = "mingw-w64-x86_64-vlc-3.0.5-1-any.pkg.tar.xz";
     sha256      = "8b3ae7717d0a6ec85e3d2fad2ae48a3aba1b9a9dde261fc4e1751df249487ed2";
     buildInputs = [ a52dec aribb24 chromaprint faad2 ffmpeg flac fluidsynth fribidi gnutls gsm libass libbluray libcaca libcddb libcdio libdca libdsm libdvdcss libdvdnav libdvbpsi libgme libgoom2 libmad libmatroska libmicrodns libmpcdec libmpeg2-git libmysofa libnfs libplacebo libproxy librsvg libsamplerate libshout libssh2 libtheora libvpx libxml2 lua51 opencv opus portaudio protobuf pupnp schroedinger speex srt taglib twolame vcdimager x264-git x265 xpm-nox qt5 ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "vlfeat" = fetch {
@@ -13486,7 +13455,7 @@ let
     filename    = "mingw-w64-x86_64-vtk-8.1.2-1-any.pkg.tar.xz";
     sha256      = "ec1be0888c0e75c9b28bc5a9d24128715a5f93a27c9ec25dfe014a1d7fa1e8ab";
     buildInputs = [ gcc-libs expat ffmpeg fontconfig freetype hdf5 intel-tbb jsoncpp libjpeg libharu libpng libogg libtheora libtiff libxml2 lz4 qt5 zlib ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "vulkan-headers" = fetch {
@@ -13527,7 +13496,7 @@ let
     filename    = "mingw-w64-x86_64-webkitgtk2-2.4.11-6-any.pkg.tar.xz";
     sha256      = "e3ac3b06775a5a9fd1c880c45b293c8a7f111d2cb2ae44922752233108cd67c8";
     buildInputs = [ angleproject-git cairo enchant fontconfig freetype glib2 gst-plugins-base gstreamer geoclue harfbuzz icu libidn libjpeg libpng libsoup libxml2 libxslt libwebp pango sqlite3 xz gtk2 ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "webkitgtk3" = fetch {
@@ -13536,7 +13505,7 @@ let
     filename    = "mingw-w64-x86_64-webkitgtk3-2.4.11-6-any.pkg.tar.xz";
     sha256      = "c2fbcb8b99068b3452112f64523d6fab4b841005176524b9bd910ec6c967c26c";
     buildInputs = [ angleproject-git cairo enchant fontconfig freetype glib2 gst-plugins-base gstreamer geoclue harfbuzz icu libidn libjpeg libpng libsoup libxml2 libxslt libwebp pango sqlite3 xz gtk3 ];
-    broken      = true;
+    broken      = true; # broken dependency gst-plugins-base -> libvorbisidec
   };
 
   "wget" = fetch {
@@ -13621,7 +13590,7 @@ let
     filename    = "mingw-w64-x86_64-wkhtmltopdf-git-0.13.r1049.51f9658-1-any.pkg.tar.xz";
     sha256      = "fb77d9494d5776ad15c8c008a305fa999c582030a99203acfc6b4e7059cf3ffb";
     buildInputs = [ qt5 qtwebkit ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "woff2" = fetch {
@@ -13734,7 +13703,7 @@ let
     filename    = "mingw-w64-x86_64-xpdf-4.00-1-any.pkg.tar.xz";
     sha256      = "cca5204acd6cace8ec837e428844ea5fe7547c43243c387f269530dd8a21770b";
     buildInputs = [ freetype libjpeg-turbo libpaper libpng libtiff qt5 zlib ];
-    broken      = true;
+    broken      = true; # broken dependency qt5 -> vulkan
   };
 
   "xpm-nox" = fetch {
@@ -13795,7 +13764,6 @@ let
     filename    = "mingw-w64-x86_64-yarn-1.13.0-1-any.pkg.tar.xz";
     sha256      = "81671dea475eb12b848af8078e9fabb2abe6cfcce1490cdb757c7127ca02cec9";
     buildInputs = [ nodejs ];
-    broken      = true;
   };
 
   "yasm" = fetch {
@@ -13820,7 +13788,7 @@ let
     filename    = "mingw-w64-x86_64-zbar-0.20-1-any.pkg.tar.xz";
     sha256      = "e3d8f306ed6e0272afb43d7b8b7e3dcb27f5cbd4fccea5a46786c6af9c94f482";
     buildInputs = [ imagemagick ];
-    broken      = true;
+    broken      = true; # broken dependency SDL2 -> vulkan
   };
 
   "zeromq" = fetch {

@@ -36,7 +36,7 @@ sub isBroken {
 
   if ($seen->{$name}) {
 #   print("seen $name\n");
-    return 0;
+    return '';
   }
   my $seen2 = { %$seen }; # copy
   $seen2->{$name} = 1;
@@ -44,31 +44,35 @@ sub isBroken {
 # my %desc = %{$repo{$name}};
   if ($repo->{$name}->{broken}) {
 #   print("cached $name\n");
-    return 1;
+    return $repo->{$name}->{broken};
   }
 
   for (@{$repo->{$name}->{DEPENDS}}) {
     my $dep = /([^>]+)(>=|=)([^>]+)/ ? $1 : $_;
 #   print("check $name->$dep\n");
-    if ($dep eq 'sh' || $dep eq 'awk' || $dep eq 'libjpeg') {
+    if ($dep eq 'sh' || $dep eq 'awk' || $dep eq 'libjpeg' || $dep eq 'bash' || $dep eq 'winpty' || $dep eq 'minizip' || $dep eq 'python3') { # aliases
+
     } elsif (exists($repo->{$dep})) {
-      if (isBroken($repo, $dep, $seen2)) {
-        $repo->{$name}->{broken} = 1;
-        return 1;
+      my $reason = isBroken($repo, $dep, $seen2);
+      if ($reason) {
+        $repo->{$name}->{broken} = $reason;
+        return $reason;
       }
     } elsif (exists($repo->{"$dep-git"})) {
       $dep = "$dep-git";
-      if (isBroken($repo, $dep, $seen2)) {
-        $repo->{$name}->{broken} = 1;
-        return 1;
+      my $reason = isBroken($repo, $dep, $seen2);
+      if ($reason) {
+        $repo->{$name}->{broken} = $reason;
+        return $reason;
       }
     } else {
-      print STDERR "broken dependency $name -> $dep\n";
-      $repo->{$name}->{broken} = 1;
-      return 1;
+#     print STDERR "broken dependency $name -> $dep\n";
+      my $reason = "broken dependency $name -> $dep";
+      $repo->{$name}->{broken} = $reason;
+      return $reason;
     }
   }
-  return 0;
+  return '';
 }
 
 
@@ -76,7 +80,7 @@ sub emitNix {
   my ($out, $baseUrl, $repo) = @_;
 print $out
 qq[ # GENERATED FILE
-{stdenvNoCC, fetchurl}:
+{stdenvNoCC, fetchurl, mingwPackages, msysPackages}:
 
 let
   fetch = { name, version, filename, sha256, buildInputs ? [], broken ? false }:
@@ -130,9 +134,14 @@ let
   callPackage = pkgs.newScope self;
 ];
 
-  print $out  "  sh = bash;\n"                if !exists($repo->{sh})      && exists($repo->{bash});
-  print $out  "  awk = gawk;\n"               if !exists($repo->{awk})     && exists($repo->{gawk});
-  print $out  "  libjpeg = libjpeg-turbo;\n"  if !exists($repo->{libjpeg}) && exists($repo->{'libjpeg-turbo'});
+  # aliases
+  print $out  "  sh = bash;\n"                       if !exists($repo->{sh})      && exists($repo->{bash});
+  print $out  "  awk = gawk;\n"                      if !exists($repo->{awk})     && exists($repo->{gawk});
+  print $out  "  libjpeg = libjpeg-turbo;\n"         if !exists($repo->{libjpeg}) && exists($repo->{'libjpeg-turbo'});
+  print $out  "  minizip = minizip2;\n"              if !exists($repo->{minizip}) && exists($repo->{minizip2});
+  print $out  "  bash = msysPackages.bash;\n"        if !exists($repo->{bash});
+  print $out  "  winpty = msysPackages.winpty;\n"    if !exists($repo->{winpty});
+  print $out  "  python3 = mingwPackages.python3;\n" if !exists($repo->{python3});
 
 for my $name (sort (keys %$repo)) {
 # next unless $name =~ /^perl-HTTP-M/;
@@ -155,11 +164,13 @@ qq<
                                my $op = '';
                                my $ver;
 
-                               if ($dep =~ /([^>]+)(>=|=)([^>]+)/) {
+                               $dep =~ s/>$//; # python2-cssselect depends on "python2>". it must be a typo
+                               if ($dep =~ /^([^>]+)(>=|=)([^>]+)$/) {
                                  $dep = $1;
                                  $op = $2;
                                  $ver = $3 =~ s/-\d+$//r;
                                }
+                               die "bad dep='$dep'" if $dep =~ /[<>=]/;
 
                                if ($dep eq 'sh' || $dep eq 'awk' || $dep eq 'libjpeg') {
                                } elsif (exists($repo->{$dep})) {
@@ -183,7 +194,8 @@ qq<
                              } @{$desc{DEPENDS}}).
                " ];\n";
   }
-  print $out "    broken      = true;\n" if isBroken($repo, $name);
+  my $reason = isBroken($repo, $name);
+  print $out "    broken      = true; # $reason\n" if $reason;
   print $out "  };\n";
 }
 

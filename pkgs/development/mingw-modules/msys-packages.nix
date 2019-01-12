@@ -1,5 +1,5 @@
  # GENERATED FILE
-{stdenvNoCC, fetchurl}:
+{stdenvNoCC, fetchurl, mingwPackages, msysPackages}:
 
 let
   fetch = { name, version, filename, sha256, buildInputs ? [], broken ? false }:
@@ -53,6 +53,7 @@ let
   callPackage = pkgs.newScope self;
   sh = bash;
   awk = gawk;
+  python3 = mingwPackages.python3;
 
   "apr" = fetch {
     name        = "apr";
@@ -60,7 +61,7 @@ let
     filename    = "apr-1.6.5-1-x86_64.pkg.tar.xz";
     sha256      = "ef4335a085d07587f824369c23795e4ea534145ebdf4c26266d57c03d7f3ef47";
     buildInputs = [ libcrypt libuuid ];
-    broken      = true;
+    broken      = true; # broken dependency apr -> libuuid
   };
 
   "apr-devel" = fetch {
@@ -69,7 +70,7 @@ let
     filename    = "apr-devel-1.6.5-1-x86_64.pkg.tar.xz";
     sha256      = "7bd2bfc9db4dbcf44d8c2c18b3419e300f57b303db8de0ca76bff95dcec07cf2";
     buildInputs = [ (assert apr.version=="1.6.5"; apr) libcrypt-devel libuuid-devel ];
-    broken      = true;
+    broken      = true; # broken dependency apr -> libuuid
   };
 
   "apr-util" = fetch {
@@ -78,7 +79,7 @@ let
     filename    = "apr-util-1.6.1-1-x86_64.pkg.tar.xz";
     sha256      = "6ffe865abff6d79c954c620a44a5ec570d05131279a05302c5142946220deef2";
     buildInputs = [ apr expat libsqlite ];
-    broken      = true;
+    broken      = true; # broken dependency apr -> libuuid
   };
 
   "apr-util-devel" = fetch {
@@ -87,7 +88,7 @@ let
     filename    = "apr-util-devel-1.6.1-1-x86_64.pkg.tar.xz";
     sha256      = "a6bda4a4a8d79d53d79a270dd5dd5f81a837844c3a2fc185664f72a7ffb86964";
     buildInputs = [ (assert apr-util.version=="1.6.1"; apr-util) apr-devel libexpat-devel libsqlite-devel ];
-    broken      = true;
+    broken      = true; # broken dependency apr -> libuuid
   };
 
   "asciidoc" = fetch {
@@ -577,7 +578,7 @@ let
     filename    = "dash-0.5.10.2-1-x86_64.pkg.tar.xz";
     sha256      = "adc9d44519e30904d0baec122e7700391d29a2197ae9bb10da8db265d6fe1183";
     buildInputs = [ msys2-base msys2-runtime grep sed ];
-    broken      = true;
+    broken      = true; # broken dependency dash -> msys2-base
   };
 
   "db" = fetch {
@@ -745,7 +746,7 @@ let
     filename    = "elinks-git-0.13.4008.f86be659-2-x86_64.pkg.tar.xz";
     sha256      = "4221e52fff123d1343fe1a2940c50071ca15b71f59560f951d612f3df0f7b933";
     buildInputs = [ doxygen gettext libbz2 libcrypt libexpat libffi libgc libgcrypt libgnutls libhogweed libiconv libidn liblzma libnettle libp11-kit libtasn1 libtre-git libunistring perl python2 xmlto zlib ];
-    broken      = true;
+    broken      = true; # broken dependency perl-Module-Build -> perl-CPAN-Meta
   };
 
   "emacs" = fetch {
@@ -1106,7 +1107,6 @@ let
     filename    = "gtk-doc-1.29-1-x86_64.pkg.tar.xz";
     sha256      = "606eabc4a42150910c7701b77e743dc1c2ed0415f28e24f3dac373de991f974a";
     buildInputs = [ docbook-xsl glib2 gnome-doc-utils libxml2-python python3 vim yelp-tools python2-six ];
-    broken      = true;
   };
 
   "guile" = fetch {
@@ -1712,7 +1712,6 @@ let
     filename    = "libgpgme-python3-1.12.0-1-x86_64.pkg.tar.xz";
     sha256      = "08ec28110d00c9cf04105709fe6d09ba1b8e457603ff7c89087a91d317fe94a2";
     buildInputs = [ (assert libgpgme.version=="1.12.0"; libgpgme) python3 ];
-    broken      = true;
   };
 
   "libguile" = fetch {
@@ -2136,7 +2135,7 @@ let
     filename    = "libserf-1.3.9-3-x86_64.pkg.tar.xz";
     sha256      = "11f5ba0c74925cf808f39f77a2c920a24490e1520253632cb0fce1b557fe443a";
     buildInputs = [ apr-util libopenssl zlib ];
-    broken      = true;
+    broken      = true; # broken dependency apr -> libuuid
   };
 
   "libserf-devel" = fetch {
@@ -2145,7 +2144,7 @@ let
     filename    = "libserf-devel-1.3.9-3-x86_64.pkg.tar.xz";
     sha256      = "64be19d58ceaf28522febfb27e78212eac167dbddc611b662061759ba98dcb6b";
     buildInputs = [ (assert libserf.version=="1.3.9"; libserf) apr-util-devel openssl-devel zlib-devel ];
-    broken      = true;
+    broken      = true; # broken dependency apr -> libuuid
   };
 
   "libsqlite" = fetch {
@@ -2442,7 +2441,7 @@ let
     filename    = "man-pages-posix-2013_a-1-any.pkg.tar.xz";
     sha256      = "2ebbcc565d0e5c99400425924dff2696130fe998da59f5387b8fa881933adb91";
     buildInputs = [ man ];
-    broken      = true;
+    broken      = true; # broken dependency man-pages-posix -> man
   };
 
   "markdown" = fetch {
@@ -2475,7 +2474,6 @@ let
     filename    = "meson-0.49.0-1-any.pkg.tar.xz";
     sha256      = "35d990e58a4c8c5645ecc66ccd465d38edbdf99c39affd49e9693af3e0e5c440";
     buildInputs = [ python3 python3-setuptools ninja ];
-    broken      = true;
   };
 
   "mingw-w64-cross-binutils" = fetch {
@@ -2743,6 +2741,7 @@ let
     version     = "1.8.2";
     filename    = "ninja-1.8.2-1-any.pkg.tar.xz";
     sha256      = "c5f50cb6b043b39279ede49c3a1ee9cce1ad1605945647e11b8f89b1ce6bdc52";
+    buildInputs = [  ];
   };
 
   "openbsd-netcat" = fetch {
@@ -2814,7 +2813,7 @@ let
     filename    = "pactoys-git-r2.07ca37f-1-x86_64.pkg.tar.xz";
     sha256      = "47986ea27816fc9c6d04602653718eb5a34dab140766ea0e73b48e999cd80073";
     buildInputs = [ pacman pkgfile wget ];
-    broken      = true;
+    broken      = true; # broken dependency wget -> libuuid
   };
 
   "parallel" = fetch {
@@ -3311,7 +3310,7 @@ let
     filename    = "perl-Module-Build-0.4224-1-any.pkg.tar.xz";
     sha256      = "16479b2820d4554ffbff6f403433a5ac957576c74a2f47988096c21f5131dac3";
     buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.8.0"; perl) (assert stdenvNoCC.lib.versionAtLeast perl-CPAN-Meta.version "2.142060"; perl-CPAN-Meta) perl-inc-latest ];
-    broken      = true;
+    broken      = true; # broken dependency perl-Module-Build -> perl-CPAN-Meta
   };
 
   "perl-Mozilla-CA" = fetch {
@@ -3448,7 +3447,7 @@ let
     filename    = "perl-Test-Base-0.89-1-any.pkg.tar.xz";
     sha256      = "6732359b469fdc1ad21bf438ca1a785adcfa45c496752a0f9bbfe5a3408bfe2c";
     buildInputs = [ perl perl-Spiffy perl-Text-Diff ];
-    broken      = true;
+    broken      = true; # broken dependency perl-Text-Diff -> perl-Exporter
   };
 
   "perl-Test-Deep" = fetch {
@@ -3497,7 +3496,7 @@ let
     filename    = "perl-Test-Pod-1.52-1-any.pkg.tar.xz";
     sha256      = "e63f00957a37c8a797aae80a774d87c2310c38ff0658a6b9714fe2c44211b9fe";
     buildInputs = [ perl perl-Module-Build ];
-    broken      = true;
+    broken      = true; # broken dependency perl-Module-Build -> perl-CPAN-Meta
   };
 
   "perl-Test-Requiresinternet" = fetch {
@@ -3530,7 +3529,7 @@ let
     filename    = "perl-Test-YAML-1.07-1-any.pkg.tar.xz";
     sha256      = "2f50588f47c264b7559edd35712ca06a90a703feb374eaa8599d47b0e1ed966f";
     buildInputs = [ perl perl-Test-Base ];
-    broken      = true;
+    broken      = true; # broken dependency perl-Text-Diff -> perl-Exporter
   };
 
   "perl-Text-CharWidth" = fetch {
@@ -3547,7 +3546,7 @@ let
     filename    = "perl-Text-Diff-1.45-1-any.pkg.tar.xz";
     sha256      = "9b4bdfed7375d2edc84ddb35ba8215435b0a077e5f5117c690fef97b649cea4a";
     buildInputs = [ perl perl-Algorithm-Diff perl-Exporter ];
-    broken      = true;
+    broken      = true; # broken dependency perl-Text-Diff -> perl-Exporter
   };
 
   "perl-Text-WrapI18N" = fetch {
@@ -4090,7 +4089,6 @@ let
     filename    = "python3-appdirs-1.4.3-3-any.pkg.tar.xz";
     sha256      = "447ed410a4dc5970f9508ea865bb668ecd6a755b0151f6c16076f15f0e7e1acd";
     buildInputs = [ python3 ];
-    broken      = true;
   };
 
   "python3-atomicwrites" = fetch {
@@ -4099,7 +4097,6 @@ let
     filename    = "python3-atomicwrites-1.2.1-1-any.pkg.tar.xz";
     sha256      = "6cbe2929c203b3a86da2da0195134498696777cc8433b27e953f8de9434a42e3";
     buildInputs = [ python3 ];
-    broken      = true;
   };
 
   "python3-attrs" = fetch {
@@ -4108,7 +4105,6 @@ let
     filename    = "python3-attrs-18.2.0-1-any.pkg.tar.xz";
     sha256      = "b745a168b6569e213e44f16b8be1e1a547dfdf15693c97b7d0a9d21e6127325a";
     buildInputs = [ python3 ];
-    broken      = true;
   };
 
   "python3-beaker" = fetch {
@@ -4125,7 +4121,6 @@ let
     filename    = "python3-colorama-0.4.1-1-any.pkg.tar.xz";
     sha256      = "33b2ea627d2e563baef195bfc22955e03f32797b1e69a27319b4c1f3d9f9e088";
     buildInputs = [ python3 ];
-    broken      = true;
   };
 
   "python3-distutils-extra" = fetch {
@@ -4142,7 +4137,6 @@ let
     filename    = "python3-mako-1.0.7-3-x86_64.pkg.tar.xz";
     sha256      = "955322d79438056076cd4d19eafa812e234b7fa1d1551149941eb0ac7d310bf9";
     buildInputs = [ python3-markupsafe python3-beaker ];
-    broken      = true;
   };
 
   "python3-markupsafe" = fetch {
@@ -4151,7 +4145,6 @@ let
     filename    = "python3-markupsafe-1.1.0-1-x86_64.pkg.tar.xz";
     sha256      = "547475a8d588e528c97f5fe08b531f1695e1129fe73c5e9f9d9988a5c0dbdb4f";
     buildInputs = [ python3 ];
-    broken      = true;
   };
 
   "python3-mock" = fetch {
@@ -4160,7 +4153,6 @@ let
     filename    = "python3-mock-2.0.0-1-any.pkg.tar.xz";
     sha256      = "d5ecddd5e506603d86154111b52f2ff8265322de43df8eb320a6fde411428ee2";
     buildInputs = [ python3 ];
-    broken      = true;
   };
 
   "python3-more-itertools" = fetch {
@@ -4169,7 +4161,6 @@ let
     filename    = "python3-more-itertools-4.3.0-1-any.pkg.tar.xz";
     sha256      = "996b4476069ab327ad48126632f2d21e37ccd48bfe02e97f70299d8cf37cab38";
     buildInputs = [ python3 python3-six ];
-    broken      = true;
   };
 
   "python3-nose" = fetch {
@@ -4178,7 +4169,6 @@ let
     filename    = "python3-nose-1.3.7-4-x86_64.pkg.tar.xz";
     sha256      = "e50722d30e6e7dc070c1e6bd79be084d2f7617ef8f7ed36a45b911f15e2655a3";
     buildInputs = [ python3-setuptools ];
-    broken      = true;
   };
 
   "python3-packaging" = fetch {
@@ -4187,7 +4177,6 @@ let
     filename    = "python3-packaging-18.0-1-any.pkg.tar.xz";
     sha256      = "91755cac76fc4186776d676df47900f8d54d11a7e04a298d3058fc1ce194438a";
     buildInputs = [ python3-pyparsing python3-six ];
-    broken      = true;
   };
 
   "python3-pbr" = fetch {
@@ -4196,7 +4185,6 @@ let
     filename    = "python3-pbr-5.1.1-1-any.pkg.tar.xz";
     sha256      = "8f846d733a378c066f33349334a05092e5fc41146b4097041b0cb6c0b80398f8";
     buildInputs = [ python3-setuptools ];
-    broken      = true;
   };
 
   "python3-pip" = fetch {
@@ -4205,7 +4193,6 @@ let
     filename    = "python3-pip-18.1-1-any.pkg.tar.xz";
     sha256      = "6555b497a618ae8d1422c367398f6a6e7583961795b8d6629bd4d4058f717267";
     buildInputs = [ python3 python3-setuptools ];
-    broken      = true;
   };
 
   "python3-pluggy" = fetch {
@@ -4214,7 +4201,6 @@ let
     filename    = "python3-pluggy-0.8.0-1-any.pkg.tar.xz";
     sha256      = "737dba7fea01b9ede31e97ec1c55a1e185769618621d73395c77f9f10de029de";
     buildInputs = [ python3 ];
-    broken      = true;
   };
 
   "python3-py" = fetch {
@@ -4223,7 +4209,6 @@ let
     filename    = "python3-py-1.7.0-1-any.pkg.tar.xz";
     sha256      = "2d8116ea6c9c9f710ee34b78e171aa5e97c75152c3c5bc9414ab22f9283893dc";
     buildInputs = [ python3 ];
-    broken      = true;
   };
 
   "python3-pyalpm" = fetch {
@@ -4232,7 +4217,6 @@ let
     filename    = "python3-pyalpm-0.8.4-1-x86_64.pkg.tar.xz";
     sha256      = "056b47c0ca1878169ef4ac14004078b5944031cd6327286d0a9bc9d98d17c096";
     buildInputs = [ python3 ];
-    broken      = true;
   };
 
   "python3-pygments" = fetch {
@@ -4241,7 +4225,6 @@ let
     filename    = "python3-pygments-2.3.1-1-x86_64.pkg.tar.xz";
     sha256      = "e813b20a39cf837de5394ed61d6fb301888c88bbd15db2535fab681d4ac0d56c";
     buildInputs = [ python3 ];
-    broken      = true;
   };
 
   "python3-pyparsing" = fetch {
@@ -4250,7 +4233,6 @@ let
     filename    = "python3-pyparsing-2.3.0-1-any.pkg.tar.xz";
     sha256      = "35d8409030da4485d5677e88711e50bbed62b21bf93f21575326ec03ce1c3849";
     buildInputs = [ python3 ];
-    broken      = true;
   };
 
   "python3-pytest" = fetch {
@@ -4259,7 +4241,6 @@ let
     filename    = "python3-pytest-3.9.3-1-any.pkg.tar.xz";
     sha256      = "5df58ed091eb7fac355ab6cc64e04acd94d0dd605d5f16f53455e541e48b167a";
     buildInputs = [ python3 python3-py python3-setuptools ];
-    broken      = true;
   };
 
   "python3-pytest-runner" = fetch {
@@ -4268,7 +4249,6 @@ let
     filename    = "python3-pytest-runner-4.2-2-any.pkg.tar.xz";
     sha256      = "295b886d38905f7a7dbbdf9185ee10bc3c7391668480d8b930366fd97d5738ca";
     buildInputs = [ python3-pytest ];
-    broken      = true;
   };
 
   "python3-setuptools" = fetch {
@@ -4277,7 +4257,6 @@ let
     filename    = "python3-setuptools-40.5.0-1-any.pkg.tar.xz";
     sha256      = "fb62abd7cd2e21399cfa4e5357506dbbca5b9b4b02aada219461914ce4c19f98";
     buildInputs = [ python3-packaging python3-appdirs ];
-    broken      = true;
   };
 
   "python3-setuptools-scm" = fetch {
@@ -4286,7 +4265,6 @@ let
     filename    = "python3-setuptools-scm-3.1.0-1-any.pkg.tar.xz";
     sha256      = "213775649c134d5b30786d35ea8151789fffd9764edcd4b2711870b7c0b31f44";
     buildInputs = [ python3 ];
-    broken      = true;
   };
 
   "python3-six" = fetch {
@@ -4295,7 +4273,6 @@ let
     filename    = "python3-six-1.12.0-1-any.pkg.tar.xz";
     sha256      = "9deb6e435148d378869736da880d3112b19bfb3ccb026e62369a97fcccb007f3";
     buildInputs = [ python3 ];
-    broken      = true;
   };
 
   "quilt" = fetch {
@@ -4335,7 +4312,7 @@ let
     filename    = "rebase-4.4.4-1-x86_64.pkg.tar.xz";
     sha256      = "d111585db47bf2b328702dc150085fc47010b1cc1390fafc426ca8a49057fb47";
     buildInputs = [ msys2-runtime dash ];
-    broken      = true;
+    broken      = true; # broken dependency dash -> msys2-base
   };
 
   "remake-git" = fetch {
@@ -4478,7 +4455,7 @@ let
     filename    = "subversion-1.11.0-1-x86_64.pkg.tar.xz";
     sha256      = "d95eb64ba92580aa432636e24d4171e06cfb9e12687a9a60d3d30f59a629de7b";
     buildInputs = [ libsqlite file liblz4 libserf libsasl ];
-    broken      = true;
+    broken      = true; # broken dependency apr -> libuuid
   };
 
   "swig" = fetch {
@@ -4731,7 +4708,7 @@ let
     filename    = "wget-1.20-2-x86_64.pkg.tar.xz";
     sha256      = "b307ce6bd3956d08e5bb0b970b4c209e80f27931c1e04ca027a7eabe51fbd2e6";
     buildInputs = [ gcc-libs libiconv libidn2 libintl libgpgme libmetalink libpcre2_8 libpsl libuuid openssl zlib ];
-    broken      = true;
+    broken      = true; # broken dependency wget -> libuuid
   };
 
   "which" = fetch {
@@ -4786,7 +4763,7 @@ let
     filename    = "xmlto-0.0.28-2-x86_64.pkg.tar.xz";
     sha256      = "21a73919fe230f3e499312bdc35f67ec19bf2aa49d808eb446ebd3273a38b233";
     buildInputs = [ libxslt perl-YAML-Syck perl-Test-Pod ];
-    broken      = true;
+    broken      = true; # broken dependency perl-Module-Build -> perl-CPAN-Meta
   };
 
   "xorriso" = fetch {
