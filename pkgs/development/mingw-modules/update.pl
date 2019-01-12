@@ -50,7 +50,7 @@ sub isBroken {
   for (@{$repo->{$name}->{DEPENDS}}) {
     my $dep = /([^>]+)(>=|=)([^>]+)/ ? $1 : $_;
 #   print("check $name->$dep\n");
-    if ($dep eq 'sh' || $dep eq 'awk' || $dep eq 'libjpeg' || $dep eq 'bash' || $dep eq 'winpty' || $dep eq 'minizip' || $dep eq 'python3') { # aliases
+    if ($dep eq 'sh' || $dep eq 'awk' || $dep eq 'libjpeg' || $dep eq 'bash' || $dep eq 'winpty' || $dep eq 'minizip' || $dep eq 'python3' || $dep eq 'vulkan') { # aliases
 
     } elsif (exists($repo->{$dep})) {
       my $reason = isBroken($repo, $dep, $seen2);
@@ -139,6 +139,7 @@ let
   print $out  "  awk = gawk;\n"                      if !exists($repo->{awk})     && exists($repo->{gawk});
   print $out  "  libjpeg = libjpeg-turbo;\n"         if !exists($repo->{libjpeg}) && exists($repo->{'libjpeg-turbo'});
   print $out  "  minizip = minizip2;\n"              if !exists($repo->{minizip}) && exists($repo->{minizip2});
+  print $out  "  vulkan = vulkan-loader;\n"          if !exists($repo->{vulkan})  && exists($repo->{'vulkan-loader'});
   print $out  "  bash = msysPackages.bash;\n"        if !exists($repo->{bash});
   print $out  "  winpty = msysPackages.winpty;\n"    if !exists($repo->{winpty});
   print $out  "  python3 = mingwPackages.python3;\n" if !exists($repo->{python3});
