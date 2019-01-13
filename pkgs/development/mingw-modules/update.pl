@@ -207,18 +207,19 @@ qq<
 >;
 }
 
+for my $arch ('i686', 'x86_64') {
+  my %msys_repo = parseDB(File::Fetch->new(uri => "http://repo.msys2.org/msys/$arch/msys.db")->fetch(to => $ENV{TMP}));
+  #my %msys_repo = parseDB('msys.db');
+  open(my $out, ">msys-packages-$arch.nix") or die $!;
+  binmode $out;
+  emitNix($out, "http://repo.msys2.org/msys/$arch", \%msys_repo);
+  close($out);
 
-my %msys_repo = parseDB(File::Fetch->new(uri => "http://repo.msys2.org/msys/x86_64/msys.db")->fetch(to => $ENV{TMP}));
-#my %msys_repo = parseDB('msys.db');
-open(my $out, ">msys-packages.nix") or die $!;
-binmode $out;
-emitNix($out, "http://repo.msys2.org/msys/x86_64", \%msys_repo);
-close($out);
 
-
-my %mingw64db_repo = parseDB(File::Fetch->new(uri => "http://repo.msys2.org/mingw/x86_64/mingw64.db")->fetch(to => $ENV{TMP}));
-#my %mingw64db_repo = parseDB('mingw64.db');
-open(my $out, ">mingw-packages.nix") or die $!;
-binmode $out;
-emitNix($out, "http://repo.msys2.org/mingw/x86_64", \%mingw64db_repo);
-close($out);
+  my %mingw64db_repo = parseDB(File::Fetch->new(uri => "http://repo.msys2.org/mingw/$arch/mingw".($arch eq 'x86_64' ? 64 : 32).".db")->fetch(to => $ENV{TMP}));
+  #my %mingw64db_repo = parseDB('mingw64.db');
+  open(my $out, ">mingw-packages-$arch.nix") or die $!;
+  binmode $out;
+  emitNix($out, "http://repo.msys2.org/mingw/$arch", \%mingw64db_repo);
+  close($out);
+}

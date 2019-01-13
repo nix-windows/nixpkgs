@@ -1673,7 +1673,7 @@ let
     version     = "2.9.1";
     filename    = "mingw-w64-x86_64-freetype-2.9.1-1-any.pkg.tar.xz";
     sha256      = "16aa47d6956e58d64848af624018f7c9efad3e6ed5b486f1c778b1391e139f9e";
-    buildInputs = [ gcc-libs bzip2 /*harfbuzz*/ libpng zlib ];
+    buildInputs = [ gcc-libs bzip2 harfbuzz libpng zlib ];
   };
 
   "fribidi" = fetch {

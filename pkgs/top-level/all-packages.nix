@@ -9059,6 +9059,8 @@ with pkgs;
     guile = null;
   };
 
+  x64dbg = callPackage ../development/tools/misc/x64dbg { };
+
   jhiccup = callPackage ../development/tools/java/jhiccup { };
 
   valgrind = callPackage ../development/tools/analysis/valgrind {
@@ -13163,9 +13165,9 @@ with pkgs;
 
   perlcritic = perlPackages.PerlCritic;
 
-  msysPackages = recurseIntoAttrs (callPackage ../development/mingw-modules/msys-packages.nix { });
+  msysPackages = recurseIntoAttrs (callPackage (../development/mingw-modules/msys-packages- + (if stdenv.is64bit then "x86_64.nix" else "i686.nix")) { });
 
-  mingwPackages = recurseIntoAttrs (callPackage ../development/mingw-modules/mingw-packages.nix { });
+  mingwPackages = recurseIntoAttrs (callPackage (../development/mingw-modules/mingw-packages- + (if stdenv.is64bit then "x86_64.nix" else "i686.nix")) { });
 
   sqitchPg = callPackage ../development/tools/misc/sqitch {
     name = "sqitch-pg";
