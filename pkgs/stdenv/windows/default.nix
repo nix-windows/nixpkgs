@@ -235,7 +235,7 @@ in
                                              ''7z x ${cpan-Capture-Tiny}          -so  |  7z x -aoa -si -ttar -operl-${version}\cpan''
                                              ''7z x ${cpan-Data-Dump}             -so  |  7z x -aoa -si -ttar -operl-${version}\cpan''
                                              ''cd perl-${version}\win32''
-                                             ''nmake install INST_TOP=%out% CCTYPE=MSVC141 WIN64=${if stdenv.is64bit then throw "define" else "undef"}''
+                                             ''nmake install INST_TOP=%out% CCTYPE=MSVC141 WIN64=${if stdenv.is64bit then "define" else "undef"}''
                                              # it does not built being copied to \cpan or \ext
                                              ''7z x ${cpan-Win32-LongPath}        -so  |  7z x -aoa -si -ttar''
                                              ''cd Win32-LongPath-1.0''
