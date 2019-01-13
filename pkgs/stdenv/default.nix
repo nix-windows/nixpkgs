@@ -63,4 +63,10 @@ in
                          stagesMinGW
                        else
                          abort "localSystem=${localSystem}";
+    "i686-windows"   = if localSystem.isMicrosoft then
+                         stagesWindows
+                       else if localSystem.isMinGW then
+                         stagesMinGW
+                       else
+                         abort "localSystem=${localSystem}";
   }.${localSystem.system} or stagesNative

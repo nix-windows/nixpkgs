@@ -247,8 +247,10 @@ sub symtree_link {
 sub make_pathL {
     for my $path (@_) {
         my $parent = dirname($path);
-        unless (-d $parent) {
-            return 0 unless make_pathL($parent);
+        if ($parent ne $path) {
+            unless (-d $parent) {
+                return 0 unless make_pathL($parent);
+            }
         }
         return 0 unless mkdirL($path);
     }
