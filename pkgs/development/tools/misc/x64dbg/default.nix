@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchFromGitHub, pkgsi686Windows }:
+{ stdenv, lib, fetchFromGitHub, pkgsCross }:
 
 stdenv.mkDerivation {
   name = "x64dbg-2019-01-10";
@@ -46,6 +46,8 @@ stdenv.mkDerivation {
       copyL("$ENV{QT32PATH}/$name", "$ENV{out}/x32/$name");
     }
     remove_treeL("$ENV{out}/x64"); # delete binary dlls from $src/deps/x64
+  '' + lib.optionalString (pkgsCross != null) ''
+    dircopy('${pkgsCross.windows64.x64dbg.override{pkgsCross = null; /* prevent infinite recursion */} }/x64' => "$ENV{out}/x64");
   '' else ''
     system("release.bat");
     dircopy('release/release', $ENV{out});
@@ -53,6 +55,7 @@ stdenv.mkDerivation {
       copyL("$ENV{QT64PATH}/$name", "$ENV{out}/x64/$name");
     }
     remove_treeL("$ENV{out}/x32");
-    dircopy('${pkgsi686Windows.x64dbg}/x32' => "$ENV{out}/x32");
+  '' + lib.optionalString (pkgsCross != null) ''
+    dircopy('${pkgsCross.windows32.x64dbg.override{pkgsCross = null; /* prevent infinite recursion */} }/x32' => "$ENV{out}/x32");
   '';
 }
