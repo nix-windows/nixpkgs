@@ -1,3 +1,5 @@
+# TODO: qt needs post-install patch. pacman does it. without the patch qt apps do not work (test case: kate)
+
 use warnings;
 use strict;
 use File::Fetch;
@@ -5,9 +7,9 @@ use Archive::Tar;
 
 sub parseDesc {
   my %chunks = shift =~ /%([A-Z0-9]+)%\n(.*?)\n\n/gs;
-  $chunks{NAME}        =~ s/^mingw-w64-x86_64-//                                                if $chunks{NAME};
-  $chunks{DEPENDS}     = [(map { s/^mingw-w64-x86_64-//r } (split /\n/, $chunks{DEPENDS}    ))] if $chunks{DEPENDS};
-  $chunks{MAKEDEPENDS} = [(map { s/^mingw-w64-x86_64-//r } (split /\n/, $chunks{MAKEDEPENDS}))] if $chunks{MAKEDEPENDS};
+  $chunks{NAME}        =~ s/^mingw-w64-(x86_64|i686)-//                                                if $chunks{NAME};
+  $chunks{DEPENDS}     = [(map { s/^mingw-w64-(x86_64|i686)-//r } (split /\n/, $chunks{DEPENDS}    ))] if $chunks{DEPENDS};
+  $chunks{MAKEDEPENDS} = [(map { s/^mingw-w64-(x86_64|i686)-//r } (split /\n/, $chunks{MAKEDEPENDS}))] if $chunks{MAKEDEPENDS};
 # dd \%chunks;
   return %chunks;
 }
