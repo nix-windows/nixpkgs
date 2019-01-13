@@ -158,7 +158,7 @@ qq<
   "$pname" = fetch {
     pname       = "$pname";
     version     = "$version";
-    srcs        = [{ filename = "@{$filenames}[0]"; sha256 = "@{$sha256s}[0]"; }];
+    srcs        = [> . join("", map { "{ filename = \"@{$filenames}[$_]\"; sha256 = \"@{$sha256s}[$_]\"; }" } (0 .. scalar(@{$filenames})-1)) . qq<];
 >;
     if ($depends) {
       print $out qq<    buildInputs = [ >.
@@ -201,15 +201,29 @@ qq<
     print $out "  };\n";
   };
 
-for my $name (sort (keys %$repo)) {
+for my $pname (sort (keys %$repo)) {
 # next unless $name =~ /^perl-HTTP-M/;
-  my %desc = %{$repo->{$name}};
+  my %desc = %{$repo->{$pname}};
   my $version = $desc{VERSION} =~ s/-\d+$//r;
 
-# dd \%desc if $name =~ /^perl-HTTP-M/;
-  &$one($desc{NAME}, $version, [$desc{FILENAME}], [$desc{SHA256SUM}], $desc{DEPENDS});
+  # freetype and harfbuzz are mutable deps
+  if ($pname eq 'freetype' || $pname eq 'harfbuzz') {
+    print $out  "  $pname = freetype-and-harfbuzz;\n";
+#   print $out  "  $pname = freetype-and-harfbuzz // { name = \"$pname-$version\"; version = \"$version\"; };\n";
+  } else {
+    &$one($desc{NAME}, $version, [$desc{FILENAME}], [$desc{SHA256SUM}], $desc{DEPENDS});
+  }
 }
 
+# freetype and harfbuzz are mutable deps
+if (exists($repo->{freetype}) && exists($repo->{harfbuzz})) {
+  &$one(  'freetype-and-harfbuzz'
+       ,   $repo->{freetype}->{VERSION}."+".$repo->{harfbuzz}->{VERSION}
+       , [ $repo->{freetype}->{FILENAME},   $repo->{harfbuzz}->{FILENAME}  ]
+       , [ $repo->{freetype}->{SHA256SUM},  $repo->{harfbuzz}->{SHA256SUM} ]
+       , [ grep { ! /^freetype|harfbuzz$/ } (@{$repo->{freetype}->{DEPENDS}}, @{$repo->{harfbuzz}->{DEPENDS}}) ]
+       );
+}
 
 print $out
 qq<

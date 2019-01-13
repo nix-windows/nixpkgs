@@ -1460,13 +1460,7 @@ let
     srcs        = [{ filename = "mingw-w64-i686-freetds-1.00.98-1-any.pkg.tar.xz"; sha256 = "8bbb5b13d8eb78b2f6c752eef8f1507535af803dff45098dd28acadcafb45521"; }];
     buildInputs = [ gcc-libs openssl libiconv ];
   };
-
-  "freetype" = fetch {
-    pname       = "freetype";
-    version     = "2.9.1";
-    srcs        = [{ filename = "mingw-w64-i686-freetype-2.9.1-1-any.pkg.tar.xz"; sha256 = "e8df4eb86c7914b0edefe18949bffbf94bc4d1d2715b9d475b2a61f5905c4647"; }];
-    buildInputs = [ gcc-libs bzip2 harfbuzz libpng zlib ];
-  };
+  freetype = freetype-and-harfbuzz;
 
   "fribidi" = fetch {
     pname       = "fribidi";
@@ -2332,13 +2326,7 @@ let
     srcs        = [{ filename = "mingw-w64-i686-gxml-0.16.3-1-any.pkg.tar.xz"; sha256 = "16ced0205f0802a48be9e83e312057a0ee343c415b49d8493506900d48a5d330"; }];
     buildInputs = [ gcc-libs gettext (assert stdenvNoCC.lib.versionAtLeast glib2.version "2.34.0"; glib2) libgee libxml2 xz zlib ];
   };
-
-  "harfbuzz" = fetch {
-    pname       = "harfbuzz";
-    version     = "2.3.0";
-    srcs        = [{ filename = "mingw-w64-i686-harfbuzz-2.3.0-1-any.pkg.tar.xz"; sha256 = "c18830b82bbbfccd6dc22649fa9e5bf901c9cc6976ee26eb2758f73e7d3e8aff"; }];
-    buildInputs = [ freetype gcc-libs glib2 graphite2 ];
-  };
+  harfbuzz = freetype-and-harfbuzz;
 
   "hclient-git" = fetch {
     pname       = "hclient-git";
@@ -11984,6 +11972,13 @@ let
     version     = "0.13.69";
     srcs        = [{ filename = "mingw-w64-i686-zziplib-0.13.69-1-any.pkg.tar.xz"; sha256 = "03c2d76db1e25af6c079f7d32452cd061f286d93deed3ad4d79ccae1d6ebc7a7"; }];
     buildInputs = [ zlib ];
+  };
+
+  "freetype-and-harfbuzz" = fetch {
+    pname       = "freetype-and-harfbuzz";
+    version     = "2.9.1-1+2.3.0-1";
+    srcs        = [{ filename = "mingw-w64-i686-freetype-2.9.1-1-any.pkg.tar.xz"; sha256 = "e8df4eb86c7914b0edefe18949bffbf94bc4d1d2715b9d475b2a61f5905c4647"; }{ filename = "mingw-w64-i686-harfbuzz-2.3.0-1-any.pkg.tar.xz"; sha256 = "c18830b82bbbfccd6dc22649fa9e5bf901c9cc6976ee26eb2758f73e7d3e8aff"; }];
+    buildInputs = [ gcc-libs bzip2 libpng zlib gcc-libs glib2 graphite2 ];
   };
 
 }; in self
