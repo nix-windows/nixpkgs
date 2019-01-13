@@ -205,4 +205,16 @@ rec {
     libc = "msvcrt"; # This distinguishes the mingw (non posix) toolchain
     platform = {};
   };
+
+  windows32 = {
+    config = "i686-pc-windows-msvc";
+    libc = "msvcrt";
+    platform = {};
+  };
+
+  windows64 = {
+    config = "x86_64-pc-windows-msvc";
+    libc = "msvcrt";
+    platform = {};
+  };
 }

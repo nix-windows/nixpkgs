@@ -2,17 +2,19 @@
 , localSystem, crossSystem, config, overlays
 }:
 
-assert crossSystem == null;
 assert localSystem.config == "x86_64-pc-windows-msvc" || localSystem.config == "i686-pc-windows-msvc";
 assert crossSystem == null ||
-       (localSystem.config == "x86_64-pc-windows-msvc" && crossSystem.config == "i686-pc-windows-msvc")
-       (localSystem.config == "i686-pc-windows-msvc" && crossSystem.config == "x86_64-pc-windows-msvc");
+       ( builtins.trace "localSystem.config=${localSystem.config} crossSystem.config=${crossSystem.config}"
+          ( (localSystem.config == "x86_64-pc-windows-msvc" && crossSystem.config == "i686-pc-windows-msvc")
+         || (localSystem.config == "i686-pc-windows-msvc" && crossSystem.config == "x86_64-pc-windows-msvc")
+          )
+       );
 
 let
   msvc_2017 = hostPlatform: targetPlatform:
   let
-    host   = { "x86_64-pc-windows-msvc" = "HostX64"; "i686-pc-windows-msvc" = "HostX86"; }.${  hostPlatform.config};
-    target = { "x86_64-pc-windows-msvc" = "x64";     "i686-pc-windows-msvc" = "x86";     }.${targetPlatform.config};
+    host   = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${  hostPlatform.config};
+    target = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${targetPlatform.config};
     msvc = import <nix/fetchurl.nix> {
       name = "msvc-${msvc.version}";
       url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/msvc-${msvc.version}.nar.xz";
@@ -25,7 +27,8 @@ let
     INCLUDE = "${msvc}/include;${msvc}/atlmfc/include";
     LIB     = "${msvc}/lib/${target};${msvc}/atlmfc/lib/${target}";
     LIBPATH = "${msvc}/lib/${target};${msvc}/atlmfc/lib/${target};${msvc}/lib/x86/store/references";
-    PATH    = "${msvc}/bin/${host}/${target}";
+    PATH    = "${msvc}/bin/Host${host}/${target};${msvc}/bin/Host${host}/${host}";
+    CLEXE   = "${msvc}/bin/Host${host}/${target}/cl.exe";
   };
 
   redist = (import <nix/fetchurl.nix> {
@@ -131,7 +134,7 @@ in
       LIB     = "${(msvc_2017 stdenv.buildPlatform stdenv.buildPlatform).LIB};${(sdk_10 stdenv.buildPlatform stdenv.buildPlatform).LIB}";
       PATH    = "${(msvc_2017 stdenv.buildPlatform stdenv.buildPlatform).PATH};${(sdk_10 stdenv.buildPlatform stdenv.buildPlatform).PATH}";
       builder = lib.concatStringsSep " & " [ ''md %out%\bin''
-                                             ''cl /O2 /MT /EHsc /Fe:%out%\bin\makeWrapper.exe /DINCLUDE=${INCLUDE} /DLIB=${LIB} /DCC=${(msvc_2017 stdenv.buildPlatform stdenv.hostPlatform).PATH}/cl.exe ${./makeWrapper.cpp}'' ];
+                                             ''cl /O2 /MT /EHsc /Fe:%out%\bin\makeWrapper.exe /DINCLUDE=${INCLUDE} /DLIB=${LIB} /DCC=${(msvc_2017 stdenv.buildPlatform stdenv.hostPlatform).CLEXE} ${./makeWrapper.cpp}'' ];
     };
   })
 
@@ -155,23 +158,23 @@ in
         url = "https://curl.haxx.se/download/${name}.tar.bz2";
         sha256 = "084niy7cin13ba65p8x38w2xcyc54n3fgzbin40fa2shfr0ca0kq";
       };
-      INCLUDE = "${(msvc_2017 stdenv.buildPlatform stdenv.hostPlatform).INCLUDE};${(sdk_10 stdenv.buildPlatform stdenv.hostPlatform).INCLUDE}";
-      LIB     = "${(msvc_2017 stdenv.buildPlatform stdenv.hostPlatform).LIB};${(sdk_10 stdenv.buildPlatform stdenv.hostPlatform).LIB}";
-      PATH    = "${(msvc_2017 stdenv.buildPlatform stdenv.hostPlatform).PATH};${(sdk_10 stdenv.buildPlatform stdenv.hostPlatform).PATH};${prevStage.p7zip-static}/bin"; # initialPath does not work because it is set up in setup.pm which is not involved here
+      INCLUDE = "${(msvc_2017 stdenv.buildPlatform stdenv.buildPlatform).INCLUDE};${(sdk_10 stdenv.buildPlatform stdenv.buildPlatform).INCLUDE}";
+      LIB     = "${(msvc_2017 stdenv.buildPlatform stdenv.buildPlatform).LIB};${(sdk_10 stdenv.buildPlatform stdenv.buildPlatform).LIB}";
+      PATH    = "${(msvc_2017 stdenv.buildPlatform stdenv.buildPlatform).PATH};${(sdk_10 stdenv.buildPlatform stdenv.buildPlatform).PATH};${prevStage.p7zip-static}/bin"; # initialPath does not work because it is set up in setup.pm which is not involved here
       builder = lib.concatStringsSep " & " [ ''7z x %src% -so  |  7z x -aoa -si -ttar''
                                              ''cd ${name}\winbuild''
                                              ''nmake /f Makefile.vc mode=static VC=15''
-                                             ''xcopy /E/I ..\builds\libcurl-vc15-${if stdenv.is64bit then "x64" else "x86"}-release-static-ipv6-sspi-winssl\bin %out%\bin'' ];
+                                             ''xcopy /E/I ..\builds\libcurl-vc15-${if stdenv.buildPlatform.is64bit then "x64" else "x86"}-release-static-ipv6-sspi-winssl\bin %out%\bin'' ];
     };
 
     # TODO: build from source
     gnu-utils = let
-      msysPackages  = import (../../development/mingw-modules/msys-packages- + (if stdenv.is64bit then "x86_64.nix" else "i686.nix")) {
+      msysPackages  = import (../../development/mingw-modules/msys-packages- + (if stdenv.buildPlatform.is64bit then "x86_64.nix" else "i686.nix")) {
                         stdenvNoCC = stdenv; # with 7z.exe
                         fetchurl = stdenv.fetchurlBoot;
                         inherit msysPackages mingwPackages;
                       };
-      mingwPackages = import (../../development/mingw-modules/mingw- + (if stdenv.is64bit then "x86_64.nix" else "i686.nix")) {
+      mingwPackages = import (../../development/mingw-modules/mingw- + (if stdenv.buildPlatform.is64bit then "x86_64.nix" else "i686.nix")) {
                         stdenvNoCC = stdenv; # with 7z.exe
                         fetchurl = stdenv.fetchurlBoot;
                         inherit msysPackages mingwPackages;
@@ -227,15 +230,15 @@ in
         url = "https://www.cpan.org/src/5.0/perl-${version}.tar.gz";
         sha256 = "0iy3as4hnbjfyws4in3j9d6zhhjxgl5m95i5n9jy2bnzcpz8bgry";
       };
-      INCLUDE = "${(msvc_2017 stdenv.buildPlatform stdenv.hostPlatform).INCLUDE};${(sdk_10 stdenv.buildPlatform stdenv.hostPlatform).INCLUDE}";
-      LIB     = "${(msvc_2017 stdenv.buildPlatform stdenv.hostPlatform).LIB};${(sdk_10 stdenv.buildPlatform stdenv.hostPlatform).LIB}";
-      PATH    = "${(msvc_2017 stdenv.buildPlatform stdenv.hostPlatform).PATH};${(sdk_10 stdenv.buildPlatform stdenv.hostPlatform).PATH};${prevStage.p7zip-static}/bin"; # initialPath does not work because it is set up in setup.pm which is not involved here
+      INCLUDE = "${(msvc_2017 stdenv.buildPlatform stdenv.buildPlatform).INCLUDE};${(sdk_10 stdenv.buildPlatform stdenv.buildPlatform).INCLUDE}";
+      LIB     = "${(msvc_2017 stdenv.buildPlatform stdenv.buildPlatform).LIB};${(sdk_10 stdenv.buildPlatform stdenv.buildPlatform).LIB}";
+      PATH    = "${(msvc_2017 stdenv.buildPlatform stdenv.buildPlatform).PATH};${(sdk_10 stdenv.buildPlatform stdenv.buildPlatform).PATH};${prevStage.p7zip-static}/bin"; # initialPath does not work because it is set up in setup.pm which is not involved here
       PERL_USE_UNSAFE_INC = "1"; # env var needed to build Win32-LongPath-1.0
       builder = lib.concatStringsSep " & " [ ''7z x %src%                         -so  |  7z x -aoa -si -ttar''
                                              ''7z x ${cpan-Capture-Tiny}          -so  |  7z x -aoa -si -ttar -operl-${version}\cpan''
                                              ''7z x ${cpan-Data-Dump}             -so  |  7z x -aoa -si -ttar -operl-${version}\cpan''
                                              ''cd perl-${version}\win32''
-                                             ''nmake install INST_TOP=%out% CCTYPE=MSVC141 WIN64=${if stdenv.is64bit then "define" else "undef"}''
+                                             ''nmake install INST_TOP=%out% CCTYPE=MSVC141 WIN64=${if stdenv.buildPlatform.is64bit then "define" else "undef"}''
                                              # it does not built being copied to \cpan or \ext
                                              ''7z x ${cpan-Win32-LongPath}        -so  |  7z x -aoa -si -ttar''
                                              ''cd Win32-LongPath-1.0''
@@ -384,7 +387,8 @@ in
       name = "stdenv-windows-boot-4";
       inherit config;
 
-      inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform shell initialPath;
+      inherit (prevStage.stdenv) buildPlatform targetPlatform shell initialPath;
+      hostPlatform = prevStage.stdenv.targetPlatform;
       cc = prevStage.cc;
       fetchurlBoot = prevStage.fetchurl-curl-static;
     };

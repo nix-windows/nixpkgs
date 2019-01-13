@@ -194,7 +194,7 @@ int wmain(int argc, const wchar_t** argv) {
     STARTUPINFOW si = {sizeof(STARTUPINFOW)};
     PROCESS_INFORMATION pi = {0};
     if (!CreateProcessW(NULL, const_cast<wchar_t*>(((L1(CC) L" /EHsc /Fe:") + wrapper_exe + L" _wrapper.cpp").c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
-        cout << "CreateProcessW(cl _wrapper.cpp) failed lastError=" << GetLastError() << endl;
+        cout << "CreateProcessW(" << S1(CC) << " _wrapper.cpp) failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
 

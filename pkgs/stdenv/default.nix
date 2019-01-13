@@ -40,7 +40,9 @@ let
 
   # Select the appropriate stages for the platform `system'.
 in
-  if crossSystem != null then stagesCross
+  if localSystem.isMicrosoft then stagesWindows
+  else if localSystem.isMinGW then stagesMinGW
+  else if crossSystem != null then stagesCross
   else if config ? replaceStdenv then stagesCustom
   else { # switch
     "i686-linux" = stagesLinux;
@@ -57,16 +59,6 @@ in
     "i686-cygwin" = stagesNative;
     "x86_64-cygwin" = stagesNative;
     "x86_64-freebsd" = stagesFreeBSD;
-    "x86_64-windows" = if localSystem.isMicrosoft then
-                         stagesWindows
-                       else if localSystem.isMinGW then
-                         stagesMinGW
-                       else
-                         abort "localSystem=${localSystem}";
-    "i686-windows"   = if localSystem.isMicrosoft then
-                         stagesWindows
-                       else if localSystem.isMinGW then
-                         stagesMinGW
-                       else
-                         abort "localSystem=${localSystem}";
+    "x86_64-windows" = throw "???";
+    "i686-windows" = throw "???";
   }.${localSystem.system} or stagesNative
