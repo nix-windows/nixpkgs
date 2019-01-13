@@ -85,17 +85,20 @@ qq[ # GENERATED FILE
 {stdenvNoCC, fetchurl, mingwPackages, msysPackages}:
 
 let
-  fetch = { name, version, filename, sha256, buildInputs ? [], broken ? false }:
+  fetch = { pname, version, srcs, buildInputs ? [], broken ? false }:
     if stdenvNoCC.isShellCmdExe /* on mingw bootstrap */ then
       stdenvNoCC.mkDerivation {
-        inherit name version buildInputs;
-        src = fetchurl {
-          url = "$baseUrl/\${filename}";
-          inherit sha256;
-        };
+        inherit version buildInputs;
+        name = "\${pname}-\${version}";
+        srcs = map ({filename, sha256}:
+                    fetchurl {
+                      url = "$baseUrl/\${filename}";
+                      inherit sha256;
+                    }) srcs;
         PATH = stdenvNoCC.lib.concatMapStringsSep ";" (x: "\${x}\\\\bin") stdenvNoCC.initialPath; # it adds 7z.exe to PATH
-        builder = stdenvNoCC.lib.concatStringsSep " & " ( [ ''echo PATH=%PATH%''
-                                                            ''7z x %src% -so  |  7z x -aoa -si -ttar -o%out%''
+        builder = stdenvNoCC.lib.concatStringsSep " & " ( assert (builtins.length srcs == 1);
+                                                          [ ''echo PATH=%PATH%''
+                                                            ''7z x %srcs% -so  |  7z x -aoa -si -ttar -o%out%''
                                                             ''pushd %out%''
                                                             ''del .BUILDINFO .INSTALL .MTREE .PKGINFO''
                                                           ]
@@ -110,11 +113,13 @@ let
       }
     else
     stdenvNoCC.mkDerivation {
-      inherit name version buildInputs;
-      src = fetchurl {
-        url = "$baseUrl/\${filename}";
-        inherit sha256;
-      };
+      inherit version buildInputs;
+      name = "\${pname}-\${version}";
+      srcs = map ({filename, sha256}:
+                  fetchurl {
+                    url = "$baseUrl/\${filename}";
+                    inherit sha256;
+                  }) srcs;
       sourceRoot = ".";
       buildPhase = if stdenvNoCC.isShellPerl /* on native windows */ then
         ''
@@ -146,60 +151,63 @@ let
   print $out  "  winpty = msysPackages.winpty;\n"    if !exists($repo->{winpty});
   print $out  "  python3 = mingwPackages.python3;\n" if !exists($repo->{python3});
 
+  my $one = sub {
+    my ($pname, $version, $filenames, $sha256s, $depends) = @_;
+    print $out
+qq<
+  "$pname" = fetch {
+    pname       = "$pname";
+    version     = "$version";
+    srcs        = [{ filename = "@{$filenames}[0]"; sha256 = "@{$sha256s}[0]"; }];
+>;
+    if ($depends) {
+      print $out qq<    buildInputs = [ >.
+                 join(' ', map { my $dep = $_;
+                                 my $op = '';
+                                 my $ver;
+
+                                 $dep =~ s/>$//; # python2-cssselect depends on "python2>". it must be a typo
+                                 if ($dep =~ /^([^>]+)(>=|=)([^>]+)$/) {
+                                   $dep = $1;
+                                   $op = $2;
+                                   $ver = $3 =~ s/-\d+$//r;
+                                 }
+                                 die "bad dep='$dep'" if $dep =~ /[<>=]/;
+
+                                 if ($dep eq 'sh' || $dep eq 'awk' || $dep eq 'libjpeg') {
+                                 } elsif (exists($repo->{$dep})) {
+                                 } elsif (exists($repo->{"$dep-git"})) {
+                                   $dep = "$dep-git";
+                                 } else {
+#                                   print STDERR "broken dependency $name -> $dep\n";
+                                 }
+
+                                 my $refdep = okName($dep) ? $dep : "self.\"$dep\"";
+
+                                 if ($op eq '>=') { # todo: check version right here
+                                   "(assert stdenvNoCC.lib.versionAtLeast $refdep.version \"$ver\"; $refdep)";
+                                 } elsif ($op eq '=') {
+                                   "(assert $refdep.version==\"$ver\"; $refdep)";
+                                 } elsif ($op eq '') {
+                                   $refdep;
+                                 } else {
+                                   die;
+                                 }
+                               } @{$depends}).
+                 " ];\n";
+    }
+    my $reason = isBroken($repo, $pname);
+    print $out "    broken      = true; # $reason\n" if $reason;
+    print $out "  };\n";
+  };
+
 for my $name (sort (keys %$repo)) {
 # next unless $name =~ /^perl-HTTP-M/;
   my %desc = %{$repo->{$name}};
   my $version = $desc{VERSION} =~ s/-\d+$//r;
 
 # dd \%desc if $name =~ /^perl-HTTP-M/;
-
-  print $out
-qq<
-  "$name" = fetch {
-    name        = "$desc{NAME}";
-    version     = "$version";
-    filename    = "$desc{FILENAME}";
-    sha256      = "$desc{SHA256SUM}";
->;
-  if ($desc{DEPENDS}) {
-    print $out qq<    buildInputs = [ >.
-               join(' ', map { my $dep = $_;
-                               my $op = '';
-                               my $ver;
-
-                               $dep =~ s/>$//; # python2-cssselect depends on "python2>". it must be a typo
-                               if ($dep =~ /^([^>]+)(>=|=)([^>]+)$/) {
-                                 $dep = $1;
-                                 $op = $2;
-                                 $ver = $3 =~ s/-\d+$//r;
-                               }
-                               die "bad dep='$dep'" if $dep =~ /[<>=]/;
-
-                               if ($dep eq 'sh' || $dep eq 'awk' || $dep eq 'libjpeg') {
-                               } elsif (exists($repo->{$dep})) {
-                               } elsif (exists($repo->{"$dep-git"})) {
-                                 $dep = "$dep-git";
-                               } else {
-#                                 print STDERR "broken dependency $name -> $dep\n";
-                               }
-
-                               my $refdep = okName($dep) ? $dep : "self.\"$dep\"";
-
-                               if ($op eq '>=') { # todo: check version right here
-                                 "(assert stdenvNoCC.lib.versionAtLeast $refdep.version \"$ver\"; $refdep)";
-                               } elsif ($op eq '=') {
-                                 "(assert $refdep.version==\"$ver\"; $refdep)";
-                               } elsif ($op eq '') {
-                                 $refdep;
-                               } else {
-                                 die;
-                               }
-                             } @{$desc{DEPENDS}}).
-               " ];\n";
-  }
-  my $reason = isBroken($repo, $name);
-  print $out "    broken      = true; # $reason\n" if $reason;
-  print $out "  };\n";
+  &$one($desc{NAME}, $version, [$desc{FILENAME}], [$desc{SHA256SUM}], $desc{DEPENDS});
 }
 
 
