@@ -160,6 +160,16 @@ let
       };
     } else throw "i686 Linux package set can only be used with the x86 family.";
 
+    pkgsi686Windows = if stdenv.hostPlatform.isWindows && stdenv.hostPlatform.isx86 then nixpkgsFun {
+      inherit overlays config;
+      ${if stdenv.hostPlatform == stdenv.buildPlatform
+        then "localSystem" else "crossSystem"} = {
+        parsed = stdenv.hostPlatform.parsed // {
+          cpu = lib.systems.parse.cpuTypes.i686;
+        };
+      };
+    } else throw "i686 Windows package set can only be used with the x86 family.";
+
     # MinGW packages in Windows Nix
     pkgsMinGW = if stdenv.hostPlatform.isWindows then nixpkgsFun {
       inherit overlays config;
