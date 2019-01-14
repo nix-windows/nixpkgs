@@ -2,6 +2,7 @@
 , withCryptodev ? false, cryptodev
 , enableSSL2 ? false
 , static ? false
+, mingwPackages
 }:
 
 with stdenv.lib;
@@ -44,14 +45,23 @@ let
       ++ stdenv.lib.optional (versionAtLeast version "1.1.0" && stdenv.hostPlatform.isAarch64) "no-afalgeng";
 
 #   print("PATH=$ENV{PATH}\n");
-    configurePhase = if (versionOlder version "1.1.0") then ''
-      system("perl Configure VC-WIN64A --prefix=$ENV{out} $ENV{configureFlags}");
-    '' else ''
-      system("perl Configure VC-WIN64A-masm --prefix=$ENV{out} $ENV{configureFlags}");
-    '';
+    configurePhase =
+      if (versionOlder version "1.1.0") then
+        if stdenv.is64bit then ''
+          system("perl Configure VC-WIN64A       --prefix=$ENV{out} $ENV{configureFlags}");
+        '' else ''
+          system("perl Configure VC-WIN32 no-asm --prefix=$ENV{out} $ENV{configureFlags}");
+        ''
+      else
+        if stdenv.is64bit then ''
+          system("perl Configure VC-WIN64A-masm  --prefix=$ENV{out} $ENV{configureFlags}");
+        '' else ''
+          $ENV{PATH} = "${mingwPackages.nasm}/mingw32/bin;$ENV{PATH}";
+          system("perl Configure VC-WIN32        --prefix=$ENV{out} $ENV{configureFlags}");
+        '';
 
     buildPhase = if (versionOlder version "1.1.0") then ''
-      system('ms\do_win64a') == 0 or die "do_win64a failed: $!";
+      system('ms\${if stdenv.is64bit then "do_win64a" else "do_ms"}') == 0 or die "$!";
       system('nmake -f ms\ntdll.mak') == 0 or die "nmake failed: $!";
     '' else ''
       system('nmake') == 0 or die "nmake failed: $!";
