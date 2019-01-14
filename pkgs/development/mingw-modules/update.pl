@@ -80,6 +80,7 @@ sub isBroken {
 
 sub emitNix {
   my ($out, $baseUrl, $repo) = @_;
+  my $isMsys = exists($repo->{'msys2-runtime'}) ? 'true' : 'false';
 print $out
 qq[ # GENERATED FILE
 {stdenvNoCC, fetchurl, mingwPackages, msysPackages}:
@@ -124,13 +125,21 @@ let
       buildPhase = if stdenvNoCC.isShellPerl /* on native windows */ then
         ''
           dircopy('.', \$ENV{out}) or die "dircopy(., \$ENV{out}): \$!";
-          unlinkL "\$ENV{out}/.BUILDINFO";
-          unlinkL "\$ENV{out}/.INSTALL";
-          unlinkL "\$ENV{out}/.MTREE";
-          unlinkL "\$ENV{out}/.PKGINFO";
-        '' + stdenvNoCC.lib.concatMapStringsSep "\\n" (dep:
-               ''symtree_link(\$ENV{out}, '\${dep}', \$ENV{out});''
-             ) buildInputs
+          \${ stdenvNoCC.lib.concatMapStringsSep "\\n" (dep:
+                ''symtree_link(\$ENV{out}, '\${dep}', \$ENV{out});''
+              ) buildInputs }
+          chdir(\$ENV{out});
+          \${ stdenvNoCC.lib.optionalString (!($isMsys && builtins.elem pname ["msys2-runtime" "bash" "coreutils" "gmp" "libiconv" "gcc-libs" "libintl"])) ''
+                if (-f ".INSTALL") {
+                  \$ENV{PATH} = '\${msysPackages.bash}/usr/bin;\${msysPackages.coreutils}/usr/bin';
+                  system("bash -c \\"ls -l ; . .INSTALL ; post_install\\"") == 0 or die;
+                }
+              '' }
+          unlinkL ".BUILDINFO";
+          unlinkL ".INSTALL";
+          unlinkL ".MTREE";
+          unlinkL ".PKGINFO";
+        ''
       else /* on mingw or linux */
         throw "todo";
       meta.broken = broken;
