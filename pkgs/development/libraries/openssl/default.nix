@@ -32,7 +32,7 @@ let
       (args.patches or [])
       ++ [ ./nix-ssl-cert-file.patch ];
 
-    nativeBuildInputs = [ perl ];
+    nativeBuildInputs = [ perl ] ++ stdenv.lib.optional (!stdenv.is64bit && !(versionOlder version "1.1.0")) mingwPackages.nasm;
 
     configureFlags = [
       "shared" # "shared" builds both shared and static libraries
@@ -56,7 +56,6 @@ let
         if stdenv.is64bit then ''
           system("perl Configure VC-WIN64A-masm  --prefix=$ENV{out} $ENV{configureFlags}");
         '' else ''
-          $ENV{PATH} = "${mingwPackages.nasm}/mingw32/bin;$ENV{PATH}";
           system("perl Configure VC-WIN32        --prefix=$ENV{out} $ENV{configureFlags}");
         '';
 
