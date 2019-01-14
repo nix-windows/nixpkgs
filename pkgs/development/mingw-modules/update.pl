@@ -79,8 +79,12 @@ sub isBroken {
 
 
 sub emitNix {
-  my ($out, $baseUrl, $repo) = @_;
-  my $isMsys = exists($repo->{'msys2-runtime'}) ? 'true' : 'false';
+  my ($out, $subsystem, $arch, $repo) = @_;
+  die unless $subsystem eq 'msys' || $subsystem eq 'mingw';
+  die unless $arch eq 'i686' || $arch eq 'x86_64';
+  my $baseUrl = "http://repo.msys2.org/$subsystem/$arch";
+
+  #my $isMsys = exists($repo->{'msys2-runtime'}) ? 'true' : 'false';
 print $out
 qq[ # GENERATED FILE
 {stdenvNoCC, fetchurl, mingwPackages, msysPackages}:
@@ -129,7 +133,7 @@ let
                 ''symtree_link(\$ENV{out}, '\${dep}', \$ENV{out});''
               ) buildInputs }
           chdir(\$ENV{out});
-          \${ stdenvNoCC.lib.optionalString (!($isMsys && builtins.elem pname ["msys2-runtime" "bash" "coreutils" "gmp" "libiconv" "gcc-libs" "libintl"])) ''
+          \${ stdenvNoCC.lib.optionalString (!(].($subsystem eq 'msys' ? 'true' : 'false').qq[ && builtins.elem pname ["msys2-runtime" "bash" "coreutils" "gmp" "libiconv" "gcc-libs" "libintl"])) ''
                 if (-f ".INSTALL") {
                   \$ENV{PATH} = '\${msysPackages.bash}/usr/bin;\${msysPackages.coreutils}/usr/bin';
                   system("bash -c \\"ls -l ; . .INSTALL ; post_install\\"") == 0 or die;
@@ -139,6 +143,17 @@ let
           unlinkL ".INSTALL";
           unlinkL ".MTREE";
           unlinkL ".PKGINFO";
+
+          # make symlinks in /bin, mingw does not need it, it is only for nixpkgs convenience, to have the executables in \$derivation/bin
+          symtree_reify(\$ENV{out}, "bin/_");
+          for my \$file (glob("\$ENV{out}/mingw].($arch eq 'x86_64' ? 64 : 32).qq[/bin/*.exe"),
+                         glob("\$ENV{out}/mingw].($arch eq 'x86_64' ? 64 : 32).qq[/bin/*.dll"),
+                         glob("\$ENV{out}/usr/bin/*.exe"),
+                         glob("\$ENV{out}/usr/bin/*.dll")) {
+            if (!testL('l', \$file)) { # symlinks are likely already in bin/ after symtree_link()
+              symlinkL(\$file => "\$ENV{out}/bin/".basename(\$file)) or die \$!;
+            }
+          }
         ''
       else /* on mingw or linux */
         throw "todo";
@@ -245,7 +260,7 @@ for my $arch ('i686', 'x86_64') {
   #my %msys_repo = parseDB('msys.db');
   open(my $out, ">msys-packages-$arch.nix") or die $!;
   binmode $out;
-  emitNix($out, "http://repo.msys2.org/msys/$arch", \%msys_repo);
+  emitNix($out, 'msys', $arch, \%msys_repo);
   close($out);
 
 
@@ -253,6 +268,6 @@ for my $arch ('i686', 'x86_64') {
   #my %mingw64db_repo = parseDB('mingw64.db');
   open(my $out, ">mingw-packages-$arch.nix") or die $!;
   binmode $out;
-  emitNix($out, "http://repo.msys2.org/mingw/$arch", \%mingw64db_repo);
+  emitNix($out, 'mingw', $arch, \%mingw64db_repo);
   close($out);
 }

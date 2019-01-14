@@ -55,6 +55,17 @@ let
           unlinkL ".INSTALL";
           unlinkL ".MTREE";
           unlinkL ".PKGINFO";
+
+          # make symlinks in /bin, mingw does not need it, it is only for nixpkgs convenience, to have the executables in $derivation/bin
+          symtree_reify($ENV{out}, "bin/_");
+          for my $file (glob("$ENV{out}/mingw32/bin/*.exe"),
+                         glob("$ENV{out}/mingw32/bin/*.dll"),
+                         glob("$ENV{out}/usr/bin/*.exe"),
+                         glob("$ENV{out}/usr/bin/*.dll")) {
+            if (!testL('l', $file)) { # symlinks are likely already in bin/ after symtree_link()
+              symlinkL($file => "$ENV{out}/bin/".basename($file)) or die $!;
+            }
+          }
         ''
       else /* on mingw or linux */
         throw "todo";
@@ -336,7 +347,7 @@ let
   "asciidoctor" = fetch {
     pname       = "asciidoctor";
     version     = "1.5.8";
-    srcs        = [{ filename = "mingw-w64-i686-asciidoctor-1.5.8-1-any.pkg.tar.xz"; sha256 = "a7097858c8f722f234cb7946637a98ce0e3accb2e9c8cc6a7b75e8fe5ead69de"; }];
+    srcs        = [{ filename = "mingw-w64-i686-asciidoctor-1.5.8-2-any.pkg.tar.xz"; sha256 = "df51e68361ffaf252630c09124e312c15d878a37e4793125dec441a2b7627fb2"; }];
     buildInputs = [ ruby ];
   };
 
@@ -605,8 +616,8 @@ let
 
   "capstone" = fetch {
     pname       = "capstone";
-    version     = "4.0";
-    srcs        = [{ filename = "mingw-w64-i686-capstone-4.0-1-any.pkg.tar.xz"; sha256 = "7a67855cb904996c38f220abd96b7b8c05b0932b42a0c0f4209ee27217a17b81"; }];
+    version     = "4.0.1";
+    srcs        = [{ filename = "mingw-w64-i686-capstone-4.0.1-1-any.pkg.tar.xz"; sha256 = "42f3845b3f51f3349a6d2e394763b28d9af6f98c630d69c61b256661266ddec2"; }];
     buildInputs = [ gcc-libs ];
   };
 
@@ -1135,8 +1146,8 @@ let
 
   "doxygen" = fetch {
     pname       = "doxygen";
-    version     = "1.8.14";
-    srcs        = [{ filename = "mingw-w64-i686-doxygen-1.8.14-3-any.pkg.tar.xz"; sha256 = "9842a91f27170706e9f7139bf44fa8afe2a62f20eb12c899cbd514ba2846bb65"; }];
+    version     = "1.8.15";
+    srcs        = [{ filename = "mingw-w64-i686-doxygen-1.8.15-1-any.pkg.tar.xz"; sha256 = "559fa00340bbf90a43e687a824aab98383782240690d4935e2fd863fb6f13870"; }];
     buildInputs = [ clang gcc-libs libiconv sqlite3 xapian-core ];
   };
 
@@ -1799,8 +1810,8 @@ let
   "glib-networking" = fetch {
     pname       = "glib-networking";
     version     = "2.58.0";
-    srcs        = [{ filename = "mingw-w64-i686-glib-networking-2.58.0-2-any.pkg.tar.xz"; sha256 = "3ed3a6676aead6f73df955273d6ef75e86fbad7cf0841dbad946d9edbe620e25"; }];
-    buildInputs = [ gcc-libs gettext glib2 gnutls ];
+    srcs        = [{ filename = "mingw-w64-i686-glib-networking-2.58.0-3-any.pkg.tar.xz"; sha256 = "ca055e158d5f2890f940d33e0e3f1187c8b5210cb6a2383c375c2b0613335e04"; }];
+    buildInputs = [ gcc-libs gettext glib2 gnutls libproxy gsettings-desktop-schemas ];
   };
 
   "glib-openssl" = fetch {
@@ -5931,8 +5942,8 @@ let
 
   "python2-bleach" = fetch {
     pname       = "python2-bleach";
-    version     = "3.0.2";
-    srcs        = [{ filename = "mingw-w64-i686-python2-bleach-3.0.2-1-any.pkg.tar.xz"; sha256 = "049b5d536f25420755bdc81b167658de4a015301519de02f1ee2eababc3916f7"; }];
+    version     = "3.1.0";
+    srcs        = [{ filename = "mingw-w64-i686-python2-bleach-3.1.0-1-any.pkg.tar.xz"; sha256 = "774d395484ae24df4f5b6ca3e87c1e9b6fd26c49cbb272c7ec2baa08f75d32d4"; }];
     buildInputs = [ python2 python2-html5lib ];
   };
 
@@ -5980,8 +5991,8 @@ let
 
   "python2-capstone" = fetch {
     pname       = "python2-capstone";
-    version     = "4.0";
-    srcs        = [{ filename = "mingw-w64-i686-python2-capstone-4.0-1-any.pkg.tar.xz"; sha256 = "c34108e40e110ed8274840dd15cd96c81fec437862be3d5647ddf61d96c67b27"; }];
+    version     = "4.0.1";
+    srcs        = [{ filename = "mingw-w64-i686-python2-capstone-4.0.1-1-any.pkg.tar.xz"; sha256 = "b53d90cd015ea71291aa9df7bd066b0c49dbad977468a56dccf939fdb30539fc"; }];
     buildInputs = [ capstone python2 ];
   };
 
@@ -6527,8 +6538,8 @@ let
 
   "python2-jedi" = fetch {
     pname       = "python2-jedi";
-    version     = "0.13.1";
-    srcs        = [{ filename = "mingw-w64-i686-python2-jedi-0.13.1-1-any.pkg.tar.xz"; sha256 = "9833b0baff17f6719e82ce3dcb1db0cb83e37704911e0fe0e00af2e6ad14d799"; }];
+    version     = "0.13.2";
+    srcs        = [{ filename = "mingw-w64-i686-python2-jedi-0.13.2-1-any.pkg.tar.xz"; sha256 = "4400f4129819578e2c6e4f4621f093024d6d25d704a6a0df5350b21892a92bd5"; }];
     buildInputs = [ python2 python2-parso ];
   };
 
@@ -6695,8 +6706,8 @@ let
 
   "python2-more-itertools" = fetch {
     pname       = "python2-more-itertools";
-    version     = "4.3.1";
-    srcs        = [{ filename = "mingw-w64-i686-python2-more-itertools-4.3.1-1-any.pkg.tar.xz"; sha256 = "c4ba9a584edd7e6b073aea83b54cc9e332d71a02dd0080a6f34fd709066490e7"; }];
+    version     = "5.0.0";
+    srcs        = [{ filename = "mingw-w64-i686-python2-more-itertools-5.0.0-1-any.pkg.tar.xz"; sha256 = "17a2c6eb9b785673b3c8542b8ccd6e0c7cd49b5cfd82f7bea5c88ac6f3556e09"; }];
     buildInputs = [ python2 python2-six ];
   };
 
@@ -7450,6 +7461,13 @@ let
     buildInputs = [ gcc-libgfortran openblas python2-numpy ];
   };
 
+  "python2-seaborn" = fetch {
+    pname       = "python2-seaborn";
+    version     = "0.9.0";
+    srcs        = [{ filename = "mingw-w64-i686-python2-seaborn-0.9.0-1-any.pkg.tar.xz"; sha256 = "87b342125e9cc21bcf62b3faa57216a3a3ffa2fafdcdad1acf0c50019f5e4571"; }];
+    buildInputs = [ python2 python2-pandas python2-matplotlib ];
+  };
+
   "python2-send2trash" = fetch {
     pname       = "python2-send2trash";
     version     = "1.5.0";
@@ -7530,8 +7548,8 @@ let
 
   "python2-soupsieve" = fetch {
     pname       = "python2-soupsieve";
-    version     = "1.6.2";
-    srcs        = [{ filename = "mingw-w64-i686-python2-soupsieve-1.6.2-1-any.pkg.tar.xz"; sha256 = "405bed0c05c77ab1772ae5a5b763068865178e3437b2a7696b39c7e4b59e0d08"; }];
+    version     = "1.7.0";
+    srcs        = [{ filename = "mingw-w64-i686-python2-soupsieve-1.7.0-1-any.pkg.tar.xz"; sha256 = "288a58ce050aa34bd1f3b0b8442d946c05b440d13be4433959373096de1212fa"; }];
     buildInputs = [ python2 self."python2-backports.functools_lru_cache" ];
   };
 
@@ -8067,8 +8085,8 @@ let
 
   "python3-bleach" = fetch {
     pname       = "python3-bleach";
-    version     = "3.0.2";
-    srcs        = [{ filename = "mingw-w64-i686-python3-bleach-3.0.2-1-any.pkg.tar.xz"; sha256 = "3b429fe164bb8a1761b65764046b28e469b82c814b14128582afac0b21310313"; }];
+    version     = "3.1.0";
+    srcs        = [{ filename = "mingw-w64-i686-python3-bleach-3.1.0-1-any.pkg.tar.xz"; sha256 = "08edb293e8fcff11a9a22220265e5c19544c188306a058676d4bc0ec21d68429"; }];
     buildInputs = [ python3 python3-html5lib ];
   };
 
@@ -8116,8 +8134,8 @@ let
 
   "python3-capstone" = fetch {
     pname       = "python3-capstone";
-    version     = "4.0";
-    srcs        = [{ filename = "mingw-w64-i686-python3-capstone-4.0-1-any.pkg.tar.xz"; sha256 = "38bdc8945fb366b7eba934aa2708801f9d3b810a31035d03a8ca9e5abb3aaa0e"; }];
+    version     = "4.0.1";
+    srcs        = [{ filename = "mingw-w64-i686-python3-capstone-4.0.1-1-any.pkg.tar.xz"; sha256 = "f9890bf7c195ba4c4aad4b1dae96571b1e05490103ee1d30243946fb6fd04cbd"; }];
     buildInputs = [ capstone python3 ];
   };
 
@@ -8326,8 +8344,8 @@ let
 
   "python3-entrypoints" = fetch {
     pname       = "python3-entrypoints";
-    version     = "0.2.3";
-    srcs        = [{ filename = "mingw-w64-i686-python3-entrypoints-0.2.3-4-any.pkg.tar.xz"; sha256 = "1f76a5182a43c4b3ff4d789e799c61e8fc5b8612c7c643258c157a098a5506fd"; }];
+    version     = "0.3";
+    srcs        = [{ filename = "mingw-w64-i686-python3-entrypoints-0.3-1-any.pkg.tar.xz"; sha256 = "ba07e72bfac3a36d5df96909dc53ea10882a6782d7faa97db421d4a278fd0916"; }];
   };
 
   "python3-et-xmlfile" = fetch {
@@ -8612,8 +8630,8 @@ let
 
   "python3-jedi" = fetch {
     pname       = "python3-jedi";
-    version     = "0.13.1";
-    srcs        = [{ filename = "mingw-w64-i686-python3-jedi-0.13.1-1-any.pkg.tar.xz"; sha256 = "03c4de707b058db5970b041cc865e005738db132181a629d72a888b570e6bef2"; }];
+    version     = "0.13.2";
+    srcs        = [{ filename = "mingw-w64-i686-python3-jedi-0.13.2-1-any.pkg.tar.xz"; sha256 = "360d1f816d3c323e5562b3f58125b77c7dcab2996c36af76dc2e4b74f7212be7"; }];
     buildInputs = [ python3 python3-parso ];
   };
 
@@ -8787,8 +8805,8 @@ let
 
   "python3-more-itertools" = fetch {
     pname       = "python3-more-itertools";
-    version     = "4.3.1";
-    srcs        = [{ filename = "mingw-w64-i686-python3-more-itertools-4.3.1-1-any.pkg.tar.xz"; sha256 = "58a15eda8000ace3d27bbc62ebedd5f0c8b6d6771c65870f22b52259184d931f"; }];
+    version     = "5.0.0";
+    srcs        = [{ filename = "mingw-w64-i686-python3-more-itertools-5.0.0-1-any.pkg.tar.xz"; sha256 = "6089bc7d8f23cbda5c11fd0da595058d9d311af962e2e137cb390ec95ddf998c"; }];
     buildInputs = [ python3 python3-six ];
   };
 
@@ -9528,6 +9546,13 @@ let
     buildInputs = [ gcc-libgfortran openblas python3-numpy ];
   };
 
+  "python3-seaborn" = fetch {
+    pname       = "python3-seaborn";
+    version     = "0.9.0";
+    srcs        = [{ filename = "mingw-w64-i686-python3-seaborn-0.9.0-1-any.pkg.tar.xz"; sha256 = "294ec7069a4fe542e5d55d8e9ad71849f3f47553a8079ddc1494770b3a76a5b6"; }];
+    buildInputs = [ python3 python3-pandas python3-matplotlib ];
+  };
+
   "python3-send2trash" = fetch {
     pname       = "python3-send2trash";
     version     = "1.5.0";
@@ -9601,8 +9626,8 @@ let
 
   "python3-soupsieve" = fetch {
     pname       = "python3-soupsieve";
-    version     = "1.6.2";
-    srcs        = [{ filename = "mingw-w64-i686-python3-soupsieve-1.6.2-1-any.pkg.tar.xz"; sha256 = "6f6313117ecdb3ff3b6533fffe1b58abc5a4cf67907637d78a7538fddc068cec"; }];
+    version     = "1.7.0";
+    srcs        = [{ filename = "mingw-w64-i686-python3-soupsieve-1.7.0-1-any.pkg.tar.xz"; sha256 = "d0a3da9cd3706ce8f6a4189c95195db4dadb59c795b4e25fbc510ba8200e186c"; }];
     buildInputs = [ python3 ];
   };
 
@@ -10251,28 +10276,28 @@ let
   "ruby-cairo" = fetch {
     pname       = "ruby-cairo";
     version     = "1.16.2";
-    srcs        = [{ filename = "mingw-w64-i686-ruby-cairo-1.16.2-1-any.pkg.tar.xz"; sha256 = "19b9ab8d64234da36cb936f1e59dfb378c5f1f518614840b432617c8f743083b"; }];
+    srcs        = [{ filename = "mingw-w64-i686-ruby-cairo-1.16.2-2-any.pkg.tar.xz"; sha256 = "aeb7e3b3bd115f2668119bc46142546ef68cf575ae080ae83cbc1529048e400b"; }];
     buildInputs = [ ruby cairo ruby-pkg-config ];
   };
 
   "ruby-dbus" = fetch {
     pname       = "ruby-dbus";
     version     = "0.15.0";
-    srcs        = [{ filename = "mingw-w64-i686-ruby-dbus-0.15.0-1-any.pkg.tar.xz"; sha256 = "54a2748f117869435dce721380ef40e6d23db5a55bac1c76a2b1e9e9cdfaf8a4"; }];
+    srcs        = [{ filename = "mingw-w64-i686-ruby-dbus-0.15.0-2-any.pkg.tar.xz"; sha256 = "6163ae6351265aea7ef6d2b083b09d67c1fe7ed5dae203786aa084b852843f95"; }];
     buildInputs = [ ruby ];
   };
 
   "ruby-native-package-installer" = fetch {
     pname       = "ruby-native-package-installer";
     version     = "1.0.6";
-    srcs        = [{ filename = "mingw-w64-i686-ruby-native-package-installer-1.0.6-1-any.pkg.tar.xz"; sha256 = "c31a0470f87d45cb5cba4d13fcd14afe0e78d2ee1c28edcd4e40357d47b74630"; }];
+    srcs        = [{ filename = "mingw-w64-i686-ruby-native-package-installer-1.0.6-2-any.pkg.tar.xz"; sha256 = "3b4f804a5ba6633baa3c2e1df5037abf4d420bd18f038e07add4aa16ee0bc31e"; }];
     buildInputs = [ ruby ];
   };
 
   "ruby-pkg-config" = fetch {
     pname       = "ruby-pkg-config";
-    version     = "1.3.1";
-    srcs        = [{ filename = "mingw-w64-i686-ruby-pkg-config-1.3.1-1-any.pkg.tar.xz"; sha256 = "35fdf4f234223cbba78b7584b62934cd3afecb9762b99729f208b7c1204d39b5"; }];
+    version     = "1.3.2";
+    srcs        = [{ filename = "mingw-w64-i686-ruby-pkg-config-1.3.2-1-any.pkg.tar.xz"; sha256 = "2859a8f8728af5677cb8f46af9dbcd4573736d8def5a20b6b134ac42138b14b8"; }];
     buildInputs = [ ruby ];
   };
 
@@ -11618,8 +11643,8 @@ let
 
   "vlc" = fetch {
     pname       = "vlc";
-    version     = "3.0.5";
-    srcs        = [{ filename = "mingw-w64-i686-vlc-3.0.5-1-any.pkg.tar.xz"; sha256 = "e00d7f156256a313bce7c7d37b24164ef0cbb1ed931cb97a0810f0cb96907d64"; }];
+    version     = "3.0.6";
+    srcs        = [{ filename = "mingw-w64-i686-vlc-3.0.6-1-any.pkg.tar.xz"; sha256 = "09783334395c765258f894c7f34210689a515fdb9711c2b2fad065a597e8812b"; }];
     buildInputs = [ a52dec aribb24 chromaprint faad2 ffmpeg flac fluidsynth fribidi gnutls gsm libass libbluray libcaca libcddb libcdio libdca libdsm libdvdcss libdvdnav libdvbpsi libgme libgoom2 libmad libmatroska libmicrodns libmpcdec libmpeg2-git libmysofa libnfs libplacebo libproxy librsvg libsamplerate libshout libssh2 libtheora libvpx libxml2 lua51 opencv opus portaudio protobuf pupnp schroedinger speex srt taglib twolame vcdimager x264-git x265 xpm-nox qt5 ];
   };
 

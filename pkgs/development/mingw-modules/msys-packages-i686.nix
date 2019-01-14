@@ -55,6 +55,17 @@ let
           unlinkL ".INSTALL";
           unlinkL ".MTREE";
           unlinkL ".PKGINFO";
+
+          # make symlinks in /bin, mingw does not need it, it is only for nixpkgs convenience, to have the executables in $derivation/bin
+          symtree_reify($ENV{out}, "bin/_");
+          for my $file (glob("$ENV{out}/mingw32/bin/*.exe"),
+                         glob("$ENV{out}/mingw32/bin/*.dll"),
+                         glob("$ENV{out}/usr/bin/*.exe"),
+                         glob("$ENV{out}/usr/bin/*.dll")) {
+            if (!testL('l', $file)) { # symlinks are likely already in bin/ after symtree_link()
+              symlinkL($file => "$ENV{out}/bin/".basename($file)) or die $!;
+            }
+          }
         ''
       else /* on mingw or linux */
         throw "todo";
@@ -144,8 +155,8 @@ let
 
   "autoconf-archive" = fetch {
     pname       = "autoconf-archive";
-    version     = "2018.03.13";
-    srcs        = [{ filename = "autoconf-archive-2018.03.13-1-any.pkg.tar.xz"; sha256 = "0193c418e0ab9fb54b97ab474bb1b10c5549133c772483c6cf8cbcc9b69b3ddf"; }];
+    version     = "2019.01.06";
+    srcs        = [{ filename = "autoconf-archive-2019.01.06-1-any.pkg.tar.xz"; sha256 = "a11af2a66cf2a739d4bf6092360cd763b3b4a95f5f12c924d4cb20f50f369bb6"; }];
   };
 
   "autoconf2.13" = fetch {
@@ -490,7 +501,7 @@ let
   "curl" = fetch {
     pname       = "curl";
     version     = "7.63.0";
-    srcs        = [{ filename = "curl-7.63.0-1-i686.pkg.tar.xz"; sha256 = "68331251bf1822cae0553e17c3c9941e74afda2d3db572436974d6824c28f536"; }];
+    srcs        = [{ filename = "curl-7.63.0-2-i686.pkg.tar.xz"; sha256 = "73f93fec5864d88588288b841d197e19f6707bdb22bb7e2ec64a199ceb0d35aa"; }];
     buildInputs = [ ca-certificates libcurl libcrypt libmetalink libnghttp2 libpsl openssl zlib ];
   };
 
@@ -716,8 +727,8 @@ let
 
   "fish" = fetch {
     pname       = "fish";
-    version     = "2.7.1";
-    srcs        = [{ filename = "fish-2.7.1-2-i686.pkg.tar.xz"; sha256 = "e264070788f66d3ae7525b2c0e2f6e2eb45c821ab68f4da1a2e1809b2fb54adf"; }];
+    version     = "3.0.0";
+    srcs        = [{ filename = "fish-3.0.0-1-i686.pkg.tar.xz"; sha256 = "f076cb9519e4bbab1ea9d9cd2afc2420b479687350e25adbcf79266df10e7551"; }];
     buildInputs = [ gcc-libs ncurses gettext libiconv man-db bc ];
   };
 
@@ -928,7 +939,7 @@ let
   "gnutls" = fetch {
     pname       = "gnutls";
     version     = "3.6.5";
-    srcs        = [{ filename = "gnutls-3.6.5-1-i686.pkg.tar.xz"; sha256 = "1a7064f5d36b092751790115079cb3aef6100150bd133d7646df5aa0b5c7dcf1"; }];
+    srcs        = [{ filename = "gnutls-3.6.5-2-i686.pkg.tar.xz"; sha256 = "6f3e2cc3b0bba90e45fdf0599b7704137efae6282bd68da3cbcb7070f495622e"; }];
     buildInputs = [ (assert libgnutls.version=="3.6.5"; libgnutls) ];
   };
 
@@ -941,14 +952,14 @@ let
 
   "gradle" = fetch {
     pname       = "gradle";
-    version     = "5.0";
-    srcs        = [{ filename = "gradle-5.0-1-any.pkg.tar.xz"; sha256 = "e03b3c91fd05baf66bdba3ca8b188bd23c03f5e21f8809b026104edea1f87e0c"; }];
+    version     = "5.1";
+    srcs        = [{ filename = "gradle-5.1-1-any.pkg.tar.xz"; sha256 = "26fa75757baa3f73dd0cc13204499bffc6c519ed3fce80c94dbc8c39abf9dd52"; }];
   };
 
   "gradle-doc" = fetch {
     pname       = "gradle-doc";
-    version     = "5.0";
-    srcs        = [{ filename = "gradle-doc-5.0-1-any.pkg.tar.xz"; sha256 = "9bfdc407e4109952cb5058c272fdc05e3574a29e9dc8cb236352869629959a10"; }];
+    version     = "5.1";
+    srcs        = [{ filename = "gradle-doc-5.1-1-any.pkg.tar.xz"; sha256 = "3670d9f070fa3c5e0ca93fd921cea7f41182f8c85c5816d503c54a4242def112"; }];
   };
 
   "grep" = fetch {
@@ -1105,8 +1116,8 @@ let
 
   "irssi" = fetch {
     pname       = "irssi";
-    version     = "1.1.1";
-    srcs        = [{ filename = "irssi-1.1.1-2-i686.pkg.tar.xz"; sha256 = "58eb11b603fb4c6e056ce8d9046da1dcfc76ca21707dce02820ad29a773ea5bb"; }];
+    version     = "1.1.2";
+    srcs        = [{ filename = "irssi-1.1.2-1-i686.pkg.tar.xz"; sha256 = "0016de8415d49e90e8d6ed8aafafc52eeeae5a5c18c1ad956d156e98a1743f03"; }];
     buildInputs = [ openssl gettext perl ncurses glib2 ];
   };
 
@@ -1182,7 +1193,7 @@ let
   "lftp" = fetch {
     pname       = "lftp";
     version     = "4.8.4";
-    srcs        = [{ filename = "lftp-4.8.4-1-i686.pkg.tar.xz"; sha256 = "1f2af63cd371016c62a9d04313dd03d40b62ef80a9238664b80caf7e89332441"; }];
+    srcs        = [{ filename = "lftp-4.8.4-2-i686.pkg.tar.xz"; sha256 = "5f90adb4f6fd966fc3642f9357c75b58d4a9b785cb0fe800ea686c5e5a7d4dc4"; }];
     buildInputs = [ gcc-libs ca-certificates expat gettext libexpat libgnutls libiconv libidn2 libintl libreadline libunistring openssh zlib ];
   };
 
@@ -1308,14 +1319,14 @@ let
   "libcurl" = fetch {
     pname       = "libcurl";
     version     = "7.63.0";
-    srcs        = [{ filename = "libcurl-7.63.0-1-i686.pkg.tar.xz"; sha256 = "00960dd18f00b246440e04d6bff9e181eac7d7a87a58043994c256aa9a6d5eec"; }];
+    srcs        = [{ filename = "libcurl-7.63.0-2-i686.pkg.tar.xz"; sha256 = "d02ecea4ed6b1a501d5b82588c136b4d344b1855a5d103f3b4d904d0431930e8"; }];
     buildInputs = [ brotli ca-certificates heimdal-libs libcrypt libidn2 libmetalink libnghttp2 libpsl libssh2 openssl zlib ];
   };
 
   "libcurl-devel" = fetch {
     pname       = "libcurl-devel";
     version     = "7.63.0";
-    srcs        = [{ filename = "libcurl-devel-7.63.0-1-i686.pkg.tar.xz"; sha256 = "c452c5f7e276665607e68208b7c5973ae2afcb2bc2c289caf8d11e365985923c"; }];
+    srcs        = [{ filename = "libcurl-devel-7.63.0-2-i686.pkg.tar.xz"; sha256 = "ab2c4beedc0570eb275ff6f947a87ea4a2355454069540f41c6295c5cc7b3de5"; }];
     buildInputs = [ (assert libcurl.version=="7.63.0"; libcurl) brotli-devel heimdal-devel libcrypt-devel libidn2-devel libmetalink-devel libnghttp2-devel libpsl-devel libssh2-devel openssl-devel zlib-devel ];
   };
 
@@ -1455,14 +1466,14 @@ let
   "libgnutls" = fetch {
     pname       = "libgnutls";
     version     = "3.6.5";
-    srcs        = [{ filename = "libgnutls-3.6.5-1-i686.pkg.tar.xz"; sha256 = "c1b57484e29095d351ee4053c2ad6c04e32af9764b9ddfaa23b8cbe08acd5707"; }];
+    srcs        = [{ filename = "libgnutls-3.6.5-2-i686.pkg.tar.xz"; sha256 = "9ed4ae729411cbd403ede30eefcb7264fc9583f4adb215d71ec560d15d5e926e"; }];
     buildInputs = [ gcc-libs libidn2 libiconv libintl gmp libnettle libp11-kit libtasn1 zlib ];
   };
 
   "libgnutls-devel" = fetch {
     pname       = "libgnutls-devel";
     version     = "3.6.5";
-    srcs        = [{ filename = "libgnutls-devel-3.6.5-1-i686.pkg.tar.xz"; sha256 = "9273e44cde06357895aab69d7983337a1139ba719e497d23208904bebd09a9d7"; }];
+    srcs        = [{ filename = "libgnutls-devel-3.6.5-2-i686.pkg.tar.xz"; sha256 = "ec3baea9ade1ffc3f2581ce14534a992d0bb2ed9a601c884562ec826180b35b9"; }];
     buildInputs = [ (assert libgnutls.version=="3.6.5"; libgnutls) ];
   };
 
@@ -1559,16 +1570,16 @@ let
 
   "libidn2" = fetch {
     pname       = "libidn2";
-    version     = "2.0.5";
-    srcs        = [{ filename = "libidn2-2.0.5-1-i686.pkg.tar.xz"; sha256 = "92243aba93e888047ab87c259e9806f2bb0e588b5ce46f16308b3b675987f843"; }];
+    version     = "2.1.0";
+    srcs        = [{ filename = "libidn2-2.1.0-1-i686.pkg.tar.xz"; sha256 = "4698256bf6f0cbbe4a6ff73c69dc0cb54eb2aeb9d66107f938981a70ff29feaa"; }];
     buildInputs = [ info libunistring ];
   };
 
   "libidn2-devel" = fetch {
     pname       = "libidn2-devel";
-    version     = "2.0.5";
-    srcs        = [{ filename = "libidn2-devel-2.0.5-1-i686.pkg.tar.xz"; sha256 = "68ca7cd9cfb3ffdfa5659afd0669019859ca011ea70eb573d82ee12041d28ce1"; }];
-    buildInputs = [ (assert libidn2.version=="2.0.5"; libidn2) ];
+    version     = "2.1.0";
+    srcs        = [{ filename = "libidn2-devel-2.1.0-1-i686.pkg.tar.xz"; sha256 = "f20beff7548ca4cbbabfd2abf89286b76ca636e9464e70c5bed4c7a0e80d7408"; }];
+    buildInputs = [ (assert libidn2.version=="2.1.0"; libidn2) ];
   };
 
   "libintl" = fetch {
@@ -1812,14 +1823,14 @@ let
   "libpsl" = fetch {
     pname       = "libpsl";
     version     = "0.20.2";
-    srcs        = [{ filename = "libpsl-0.20.2-1-i686.pkg.tar.xz"; sha256 = "a28f5e5b697008d2d34074fad2a859fcb2f310b4e50e3bac8d634fdcdc5a1d36"; }];
+    srcs        = [{ filename = "libpsl-0.20.2-2-i686.pkg.tar.xz"; sha256 = "9edcfa3a20cf1937699ad97f8de7d617034fbf710a0c8bf7f7793fb79c5cf56b"; }];
     buildInputs = [ libxslt libidn2 libunistring ];
   };
 
   "libpsl-devel" = fetch {
     pname       = "libpsl-devel";
     version     = "0.20.2";
-    srcs        = [{ filename = "libpsl-devel-0.20.2-1-i686.pkg.tar.xz"; sha256 = "656d7126d0d97b819a5c3bf23e798529672f12dc24a6bf8dcb1f3ab5a98d58a1"; }];
+    srcs        = [{ filename = "libpsl-devel-0.20.2-2-i686.pkg.tar.xz"; sha256 = "e793e1b168c086d5564cbf38d4041ddb043288ae809d3d2769a568cf90b61684"; }];
     buildInputs = [ (assert libpsl.version=="0.20.2"; libpsl) libxslt libidn2-devel libunistring ];
   };
 
@@ -2343,8 +2354,8 @@ let
 
   "mutt" = fetch {
     pname       = "mutt";
-    version     = "1.11.1";
-    srcs        = [{ filename = "mutt-1.11.1-1-i686.pkg.tar.xz"; sha256 = "5516e5b096a795acd3663fa8f375d3711e892a739a39cbdba69225b5c11cd5d3"; }];
+    version     = "1.11.2";
+    srcs        = [{ filename = "mutt-1.11.2-1-i686.pkg.tar.xz"; sha256 = "5c1a840595a89812087bba95780bb403ea5f48f21bfbd3cdeee11730e8d8a811"; }];
     buildInputs = [ libgpgme libsasl libgdbm ncurses libgnutls libidn2 ];
   };
 
@@ -2448,7 +2459,7 @@ let
   "pacman" = fetch {
     pname       = "pacman";
     version     = "5.1.2";
-    srcs        = [{ filename = "pacman-5.1.2-1-i686.pkg.tar.xz"; sha256 = "ca1a1b3dc62c93079be2f55927297876a22d890e3cc8aba2b7dfc1d00c8e23ca"; }];
+    srcs        = [{ filename = "pacman-5.1.2-2-i686.pkg.tar.xz"; sha256 = "d4645aa9cdd0d710e26fb0385dcc06d4a87a9aa1a7a5eb87e0da37afb0e3c317"; }];
     buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast bash.version "4.2.045"; bash) gettext gnupg msys2-runtime curl pacman-mirrors msys2-keyring which bzip2 xz ];
   };
 
@@ -3894,8 +3905,8 @@ let
 
   "subversion" = fetch {
     pname       = "subversion";
-    version     = "1.11.0";
-    srcs        = [{ filename = "subversion-1.11.0-1-i686.pkg.tar.xz"; sha256 = "20b3ef4221e87b07fd4f5bbfd95dad910daa19073a94f1bfdf0a4a7dba41ba34"; }];
+    version     = "1.11.1";
+    srcs        = [{ filename = "subversion-1.11.1-1-i686.pkg.tar.xz"; sha256 = "e1867cac0df7a718d7f81da852a76871eb02325a21e7e288e7f89ee3be4243fd"; }];
     buildInputs = [ libsqlite file liblz4 libserf libsasl ];
     broken      = true; # broken dependency apr -> libuuid
   };
@@ -4115,8 +4126,8 @@ let
 
   "wget" = fetch {
     pname       = "wget";
-    version     = "1.20";
-    srcs        = [{ filename = "wget-1.20-2-i686.pkg.tar.xz"; sha256 = "9e27e6799211f528fc9c5136a36087e0125353286d9f76f9b7c8bc214760533b"; }];
+    version     = "1.20.1";
+    srcs        = [{ filename = "wget-1.20.1-1-i686.pkg.tar.xz"; sha256 = "0d1feb9d400515d3735fbec5c87a2042d6ce7fb05d2fd4be8e4dc42e75026b6e"; }];
     buildInputs = [ gcc-libs libiconv libidn2 libintl libgpgme libmetalink libpcre2_8 libpsl libuuid openssl zlib ];
     broken      = true; # broken dependency wget -> libuuid
   };
@@ -4131,7 +4142,7 @@ let
   "whois" = fetch {
     pname       = "whois";
     version     = "5.4.0";
-    srcs        = [{ filename = "whois-5.4.0-1-i686.pkg.tar.xz"; sha256 = "3f6852e2df9d584616eb3314c1d57aec9fac6b077fb0304b7685432ea346b6e6"; }];
+    srcs        = [{ filename = "whois-5.4.0-2-i686.pkg.tar.xz"; sha256 = "4f907acac1eb23a53c7cc67cf3cdfad0286c3deadcd1a87437517e8206a2158d"; }];
     buildInputs = [ libcrypt libidn2 libiconv ];
   };
 
