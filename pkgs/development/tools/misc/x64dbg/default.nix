@@ -41,21 +41,21 @@ stdenv.mkDerivation {
 
   installPhase = if !stdenv.is64bit then ''
     system("release.bat");
-    dircopy('release/release', $ENV{out});
+    dircopy('release/release', "$ENV{out}/bin");
     for my $name ('Qt5Core.dll', 'Qt5Widgets.dll', 'Qt5Gui.dll', 'Qt5Network.dll') {
-      copyL("$ENV{QT32PATH}/$name", "$ENV{out}/x32/$name");
+      copyL("$ENV{QT32PATH}/$name", "$ENV{out}/bin/x32/$name");
     }
-    remove_treeL("$ENV{out}/x64"); # delete binary dlls from $src/deps/x64
+    remove_treeL("$ENV{out}/bin/x64"); # delete binary dlls from $src/deps/x64
   '' + lib.optionalString (pkgsCross != null) ''
-    dircopy('${pkgsCross.windows64.x64dbg.override{pkgsCross = null; /* prevent infinite recursion */} }/x64' => "$ENV{out}/x64");
+    dircopy('${pkgsCross.windows64.x64dbg.override{pkgsCross = null; /* prevent infinite recursion */} }/bin/x64' => "$ENV{out}/bin/x64");
   '' else ''
     system("release.bat");
-    dircopy('release/release', $ENV{out});
+    dircopy('release/release', "$ENV{out}/bin");
     for my $name ('Qt5Core.dll', 'Qt5Widgets.dll', 'Qt5Gui.dll', 'Qt5Network.dll') {
-      copyL("$ENV{QT64PATH}/$name", "$ENV{out}/x64/$name");
+      copyL("$ENV{QT64PATH}/$name", "$ENV{out}/bin/x64/$name");
     }
-    remove_treeL("$ENV{out}/x32");
+    remove_treeL("$ENV{out}/bin/x32");
   '' + lib.optionalString (pkgsCross != null) ''
-    dircopy('${pkgsCross.windows32.x64dbg.override{pkgsCross = null; /* prevent infinite recursion */} }/x32' => "$ENV{out}/x32");
+    dircopy('${pkgsCross.windows32.x64dbg.override{pkgsCross = null; /* prevent infinite recursion */} }/bin/x32' => "$ENV{out}/bin/x32");
   '';
 }
