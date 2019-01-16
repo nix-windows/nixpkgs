@@ -1,23 +1,26 @@
-{ stdenv, python, buildEnv
+{ stdenv, python#, buildEnv
 , extraLibs ? []
-, extraOutputsToInstall ? []
-, postBuild ? ""
-, ignoreCollisions ? false
+#, extraOutputsToInstall ? []
+#, postBuild ? ""
+#, ignoreCollisions ? false
 , requiredPythonModules
 # Wrap executables with the given argument.
-, makeWrapperArgs ? []
+#, makeWrapperArgs ? []
 , }:
 
 # Create a python executable that knows about additional packages.
 let
   env = let
     paths = requiredPythonModules (extraLibs ++ [ python ] ) ;
-  in buildEnv {
+  in stdenv.mkDerivation {
     name = "${python.name}-env";
 
-    inherit paths;
-    inherit ignoreCollisions;
-    extraOutputsToInstall = [ "out" ] ++ extraOutputsToInstall;
+    buildInputs = paths;
+    phases = ["installPhase"];
+    installPhase = stdenv.lib.concatMapStrings (x: ''symtree_link($ENV{out}, '${x}', '.');'') paths;
+#   inherit paths;
+#   inherit ignoreCollisions;
+#   extraOutputsToInstall = [ "out" ] ++ extraOutputsToInstall;
 
 #   postBuild = ''
 #     . "${makeWrapper}/nix-support/setup-hook"

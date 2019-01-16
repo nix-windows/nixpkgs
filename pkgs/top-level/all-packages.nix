@@ -119,9 +119,15 @@ with pkgs;
     deps = [ innoextract file-rename ]; }
     ../build-support/setup-hooks/gog-unpack.sh;
 
-  buildEnv = callPackage ../build-support/buildenv { }; # not actually a package
+  buildEnv = if stdenv.hostPlatform.isMicrosoft then
+               throw "try to avoid using buildEnv"
+             else
+               callPackage ../build-support/buildenv { }; # not actually a package
 
-  buildFHSUserEnv = callPackage ../build-support/build-fhs-userenv { };
+  buildFHSUserEnv = if stdenv.hostPlatform.isMicrosoft then
+                      throw "try to avoid using buildFHSUserEnv"
+                    else
+                      callPackage ../build-support/build-fhs-userenv { };
 
   buildMaven = callPackage ../build-support/build-maven.nix {};
 
