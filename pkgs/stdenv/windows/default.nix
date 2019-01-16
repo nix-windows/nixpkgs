@@ -193,6 +193,7 @@ in
                                              ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${gawk }/usr/bin/*.dll"    } %out%\bin''
                                              ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${patch}/usr/bin/*.dll"    } %out%\bin''
                                            ];
+      passthru = { inherit (msysPackages) patch grep gawk sed; };
     };
 
     perl-for-stdenv-shell = let

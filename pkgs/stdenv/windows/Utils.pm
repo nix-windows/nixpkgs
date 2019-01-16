@@ -157,7 +157,7 @@ sub symtree_reify {
 
     return 1 if $cache->{$path}; # already reified
 
-    print("symtree_reify($treeroot, $path)\n");
+#   print("symtree_reify($treeroot, $path)\n");
     $path =~ /^\Q$treeroot\E([\/\\].+|)$/ or die "'$path' must be under '$treeroot'";
 
     symtree_reify($treeroot, dirname($path), $cache) if $treeroot ne $path; # reify parent dirs
@@ -210,7 +210,7 @@ sub symtree_link {
     $to       = _uniform_path(File::Spec->rel2abs($to, $treeroot)); # make them comparable using `ne` and `eq`
     $cache ||= {};
 
-    print("symtree_link($treeroot, $from, $to)\n");
+#   print("symtree_link($treeroot, $from, $to)\n");
     $to =~ /^\Q$treeroot\E([\/\\].+|)$/ or die "'$to' must be under '$treeroot'";
 
     if (! -e $to) {
