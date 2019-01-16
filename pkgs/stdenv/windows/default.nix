@@ -303,7 +303,7 @@ in
         buildCommand = ''
           make_pathL("$ENV{out}/bin", "$ENV{out}/VC/Tools/MSVC") or die "make_pathL: $!";
 
-          for my $name ('cl', 'ml', 'ml64', 'lib', 'link', 'nmake', 'mc', 'mt', 'rc', 'dumpbin', 'csc', 'msbuild') {
+          for my $name ('cl', 'ml', 'ml64', 'lib', 'link', 'nmake', 'mc', 'mt', 'rc', 'dumpbin', 'editbin', 'csc', 'msbuild') {
             my $target;
             for my $path (split /;/, '${msvc.PATH};${sdk.PATH};${msbuild.PATH}') {
               die unless $path;
