@@ -9549,6 +9549,8 @@ with pkgs;
     stdenv = if stdenv.cc.isClang then llvmPackages_4.stdenv else stdenv;
   };
 
+  far3 = callPackage ../applications/misc/far3 { };
+
   farbfeld = callPackage ../development/libraries/farbfeld { };
 
   farstream = callPackage ../development/libraries/farstream {

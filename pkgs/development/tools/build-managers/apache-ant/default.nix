@@ -1,5 +1,23 @@
 { fetchurl, stdenv, coreutils, makeWrapper }:
 
+if stdenv.hostPlatform.isMicrosoft then
+
+let version = "1.10.5"; in
+stdenv.mkDerivation {
+  name = "ant-${version}";
+
+  src = fetchurl {
+    url = "mirror://apache/ant/binaries/apache-ant-${version}-bin.tar.bz2";
+    sha256 = "0b8bwb8i3z58s3ifsbh6hcfmm1myfvz6w54xhrj6wi5mqhb2wxiz";
+  };
+
+  installPhase = ''
+    dircopy('.', $ENV{out});
+  '';
+}
+
+else
+
 let version = "1.10.2"; in
 
 stdenv.mkDerivation {
