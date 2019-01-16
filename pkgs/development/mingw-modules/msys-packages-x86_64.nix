@@ -48,7 +48,7 @@ let
           ${ stdenvNoCC.lib.optionalString (!(true && builtins.elem pname ["msys2-runtime" "bash" "coreutils" "gmp" "libiconv" "gcc-libs" "libintl"])) ''
                 if (-f ".INSTALL") {
                   $ENV{PATH} = '${msysPackages.bash}/usr/bin;${msysPackages.coreutils}/usr/bin';
-                  system("bash -c \"ls -l ; . .INSTALL ; post_install\"") == 0 or die;
+                  system("bash -c \"ls -la ; . .INSTALL ; if command -v post_install; then post_install; else true; fi\"") == 0 or die;
                 }
               '' }
           unlinkL ".BUILDINFO";
@@ -590,8 +590,8 @@ let
 
   "diffutils" = fetch {
     pname       = "diffutils";
-    version     = "3.6";
-    srcs        = [{ filename = "diffutils-3.6-1-x86_64.pkg.tar.xz"; sha256 = "fc4629b8a00ee43d4102fbdf3f122828cfd9c7540bc74dd77476b43157bd2baa"; }];
+    version     = "3.7";
+    srcs        = [{ filename = "diffutils-3.7-1-x86_64.pkg.tar.xz"; sha256 = "7df9391e234f7d0ba9ae6717aed739d01190aa9ab25c48d53549a15c89ed0d87"; }];
     buildInputs = [ msys2-runtime sh ];
   };
 
@@ -653,8 +653,8 @@ let
 
   "doxygen" = fetch {
     pname       = "doxygen";
-    version     = "1.8.14";
-    srcs        = [{ filename = "doxygen-1.8.14-1-x86_64.pkg.tar.xz"; sha256 = "525148e080ddc72fb77c4354e52583d44239b28bd3aa86b9f70a0ff161783d54"; }];
+    version     = "1.8.15";
+    srcs        = [{ filename = "doxygen-1.8.15-1-x86_64.pkg.tar.xz"; sha256 = "02e43901366901b2a81c903ba02dcb93637b7961cdc62354fc258b2cfed2d209"; }];
     buildInputs = [ gcc-libs libsqlite libiconv ];
   };
 
@@ -962,14 +962,14 @@ let
 
   "gradle" = fetch {
     pname       = "gradle";
-    version     = "5.1";
-    srcs        = [{ filename = "gradle-5.1-1-any.pkg.tar.xz"; sha256 = "9fc76e3cd19e17d056f899479a04246f513c2bee2a37f22e862a3390333866cb"; }];
+    version     = "5.1.1";
+    srcs        = [{ filename = "gradle-5.1.1-1-any.pkg.tar.xz"; sha256 = "c3932f31fea48267c46dbff678f16368b48628ec258a40751e8d7634b1438a13"; }];
   };
 
   "gradle-doc" = fetch {
     pname       = "gradle-doc";
-    version     = "5.1";
-    srcs        = [{ filename = "gradle-doc-5.1-1-any.pkg.tar.xz"; sha256 = "b4d830e1bed958f63333f45283f1ba5df45ceec94ce566daa5042e608c46c0a9"; }];
+    version     = "5.1.1";
+    srcs        = [{ filename = "gradle-doc-5.1.1-1-any.pkg.tar.xz"; sha256 = "511c433ecd8e6ea8d1a79133cef8e93d16afdc32a25b74b5d2f7eb87c3f22ecf"; }];
   };
 
   "grep" = fetch {
@@ -1016,8 +1016,8 @@ let
 
   "gzip" = fetch {
     pname       = "gzip";
-    version     = "1.9";
-    srcs        = [{ filename = "gzip-1.9-1-x86_64.pkg.tar.xz"; sha256 = "b466010fd98a45d508bdf3b3c248ba620533b2d24c056263b2ed1b94c7b569e8"; }];
+    version     = "1.10";
+    srcs        = [{ filename = "gzip-1.10-1-x86_64.pkg.tar.xz"; sha256 = "681678f214873cef17a1411c53cdef0da5ad4ad1ebb25055363f99e73f3f4959"; }];
     buildInputs = [ msys2-runtime bash less ];
   };
 
@@ -1866,16 +1866,16 @@ let
 
   "librhash" = fetch {
     pname       = "librhash";
-    version     = "1.3.6";
-    srcs        = [{ filename = "librhash-1.3.6-2-x86_64.pkg.tar.xz"; sha256 = "4d461390c9bc491b0141b854ecbeb08655b2f742aa3951c5615f145a100d5e36"; }];
+    version     = "1.3.7";
+    srcs        = [{ filename = "librhash-1.3.7-1-x86_64.pkg.tar.xz"; sha256 = "d7182f5b2622fc921271a5e4ceedc3e52f9e547a7b7a2cd84ca87823a60bcd96"; }];
     buildInputs = [ libopenssl gcc-libs ];
   };
 
   "librhash-devel" = fetch {
     pname       = "librhash-devel";
-    version     = "1.3.6";
-    srcs        = [{ filename = "librhash-devel-1.3.6-2-x86_64.pkg.tar.xz"; sha256 = "542d549d2e279e190b4e83e5e415365fa38e3913e8348955ad5b467a44ed09f6"; }];
-    buildInputs = [ (assert librhash.version=="1.3.6"; librhash) ];
+    version     = "1.3.7";
+    srcs        = [{ filename = "librhash-devel-1.3.7-1-x86_64.pkg.tar.xz"; sha256 = "6f76f3464527a2c46f06f116ccacd81f3aafb9eec6573b6d87671505cd2cf2f0"; }];
+    buildInputs = [ (assert librhash.version=="1.3.7"; librhash) ];
   };
 
   "libsasl" = fetch {
@@ -2064,23 +2064,23 @@ let
 
   "libxslt" = fetch {
     pname       = "libxslt";
-    version     = "1.1.32";
-    srcs        = [{ filename = "libxslt-1.1.32-1-x86_64.pkg.tar.xz"; sha256 = "3e0dd3abc1f8a20ee09197702f95418dad05b912c2b41310df4a3705c6cd802d"; }];
+    version     = "1.1.33";
+    srcs        = [{ filename = "libxslt-1.1.33-1-x86_64.pkg.tar.xz"; sha256 = "cf45169b5956719978903d502de7770a3dfba2516b33a5fde19d7874dbaad621"; }];
     buildInputs = [ libxml2 libgcrypt ];
   };
 
   "libxslt-devel" = fetch {
     pname       = "libxslt-devel";
-    version     = "1.1.32";
-    srcs        = [{ filename = "libxslt-devel-1.1.32-1-x86_64.pkg.tar.xz"; sha256 = "9ebab19a8acbbd72c192b78e6aad665e8072b4952ba58c20d9c527362e424619"; }];
-    buildInputs = [ (assert libxslt.version=="1.1.32"; libxslt) libxml2-devel libgcrypt-devel ];
+    version     = "1.1.33";
+    srcs        = [{ filename = "libxslt-devel-1.1.33-1-x86_64.pkg.tar.xz"; sha256 = "c723ca1e608549a39d980c52e3d1d022ca3d6a196a131d5c421094b4f36d01b7"; }];
+    buildInputs = [ (assert libxslt.version=="1.1.33"; libxslt) libxml2-devel libgcrypt-devel ];
   };
 
   "libxslt-python" = fetch {
     pname       = "libxslt-python";
-    version     = "1.1.32";
-    srcs        = [{ filename = "libxslt-python-1.1.32-1-x86_64.pkg.tar.xz"; sha256 = "49ee76a6afdb0b2024c9a51a2aba0813abe05186b482db4b4f6bcb0d2d8c3843"; }];
-    buildInputs = [ (assert libxslt.version=="1.1.32"; libxslt) python2 ];
+    version     = "1.1.33";
+    srcs        = [{ filename = "libxslt-python-1.1.33-1-x86_64.pkg.tar.xz"; sha256 = "f0f0309fe01c0757d534352a01a68e4c97b1ceb42e4e6bf50c49ab55bd4dadc5"; }];
+    buildInputs = [ (assert libxslt.version=="1.1.33"; libxslt) python2 ];
   };
 
   "libyaml" = fetch {
@@ -2127,8 +2127,8 @@ let
 
   "lzip" = fetch {
     pname       = "lzip";
-    version     = "1.20";
-    srcs        = [{ filename = "lzip-1.20-1-x86_64.pkg.tar.xz"; sha256 = "1462aaba3671df2b3363d22fa0f2a15728bda75a17481ae8e6fd13c0a378a12b"; }];
+    version     = "1.21";
+    srcs        = [{ filename = "lzip-1.21-1-x86_64.pkg.tar.xz"; sha256 = "ae8e4b5e69bf3cac18c439ec3301af7384321489ae42bf3a9ef482e6b2bf8a38"; }];
     buildInputs = [ gcc-libs ];
   };
 
@@ -2155,8 +2155,8 @@ let
 
   "man-db" = fetch {
     pname       = "man-db";
-    version     = "2.8.4";
-    srcs        = [{ filename = "man-db-2.8.4-1-x86_64.pkg.tar.xz"; sha256 = "9f7546b79deda6381d12994083435003dc57defd50f6f87293ac4c27224d0e59"; }];
+    version     = "2.8.5";
+    srcs        = [{ filename = "man-db-2.8.5-1-x86_64.pkg.tar.xz"; sha256 = "a4c705b9b319e0e56b9055d51bbddde6bc2ae763842d1b46c450001010b92b3d"; }];
     buildInputs = [ bash gdbm zlib groff libpipeline less ];
   };
 
@@ -2177,15 +2177,15 @@ let
 
   "mc" = fetch {
     pname       = "mc";
-    version     = "4.8.21";
-    srcs        = [{ filename = "mc-4.8.21-1-x86_64.pkg.tar.xz"; sha256 = "3c7a870bd325a671a05aeb7fec4c415bc87c71b924812affb8c0b8a6175b2b59"; }];
+    version     = "4.8.22";
+    srcs        = [{ filename = "mc-4.8.22-1-x86_64.pkg.tar.xz"; sha256 = "d70c36eec58e3090d3b4d1672fc3ae22d1c7a47cf1c359cb4672c2d20d75a4c4"; }];
     buildInputs = [ glib2 libssh2 ];
   };
 
   "mercurial" = fetch {
     pname       = "mercurial";
-    version     = "4.8.1";
-    srcs        = [{ filename = "mercurial-4.8.1-1-x86_64.pkg.tar.xz"; sha256 = "a0405892ac3c14741ba022281f430543a74b5d58416074626c58e9516df3e875"; }];
+    version     = "4.8.2";
+    srcs        = [{ filename = "mercurial-4.8.2-1-x86_64.pkg.tar.xz"; sha256 = "9b33495cf1b35bb4b4e656749c7bae1891811d177f37fed578c5fa7d2ebf6f47"; }];
     buildInputs = [ python2 ];
   };
 
@@ -2273,8 +2273,8 @@ let
 
   "moreutils" = fetch {
     pname       = "moreutils";
-    version     = "0.62";
-    srcs        = [{ filename = "moreutils-0.62-1-x86_64.pkg.tar.xz"; sha256 = "2bd891ca52e4b1f99ea12e14951fc8ff9d40f5a6bca31bd44a1bb20cc0799887"; }];
+    version     = "0.63";
+    srcs        = [{ filename = "moreutils-0.63-1-x86_64.pkg.tar.xz"; sha256 = "95a602167c4dc6ba5b1fd0b372aa1f14187da02f07a5398e7e7d9d81a897ce7f"; }];
   };
 
   "mosh" = fetch {
@@ -2600,8 +2600,8 @@ let
 
   "perl-Carp-Clan" = fetch {
     pname       = "perl-Carp-Clan";
-    version     = "6.06";
-    srcs        = [{ filename = "perl-Carp-Clan-6.06-1-any.pkg.tar.xz"; sha256 = "753836eb3024d57c91bb5f02570c419e79ac67ea35e3ba07d6759b543c8ec2de"; }];
+    version     = "6.07";
+    srcs        = [{ filename = "perl-Carp-Clan-6.07-1-any.pkg.tar.xz"; sha256 = "c301cbfd9c4e8e002c88f37314b5469c82f27a458969415351d36946d393fb1f"; }];
     buildInputs = [ perl ];
   };
 
@@ -3158,8 +3158,8 @@ let
 
   "perl-URI" = fetch {
     pname       = "perl-URI";
-    version     = "1.74";
-    srcs        = [{ filename = "perl-URI-1.74-1-any.pkg.tar.xz"; sha256 = "a606c2a30ff1290265281bffd8433d71e8b3e782a2cac2844930f2d7e5b54874"; }];
+    version     = "1.76";
+    srcs        = [{ filename = "perl-URI-1.76-1-any.pkg.tar.xz"; sha256 = "46f3e369e56f0eadb542ecb694ca62c012755c759cb0a169ba47afc2f7e6981a"; }];
     buildInputs = [ (assert stdenvNoCC.lib.versionAtLeast perl.version "5.10.0"; perl) ];
   };
 
@@ -3814,9 +3814,9 @@ let
 
   "rhash" = fetch {
     pname       = "rhash";
-    version     = "1.3.6";
-    srcs        = [{ filename = "rhash-1.3.6-2-x86_64.pkg.tar.xz"; sha256 = "093663a858d66daaae2101fa8ad1097ca3a84a915637bd00ddd943f9f2fa4ae9"; }];
-    buildInputs = [ (assert librhash.version=="1.3.6"; librhash) ];
+    version     = "1.3.7";
+    srcs        = [{ filename = "rhash-1.3.7-1-x86_64.pkg.tar.xz"; sha256 = "1c4cfd84cbc4cc966d5b0d4e68cc4266c7574529cb25ba4c1d52359ac214d07b"; }];
+    buildInputs = [ (assert librhash.version=="1.3.7"; librhash) ];
   };
 
   "rsync" = fetch {
@@ -3939,8 +3939,8 @@ let
 
   "tar" = fetch {
     pname       = "tar";
-    version     = "1.30";
-    srcs        = [{ filename = "tar-1.30-1-x86_64.pkg.tar.xz"; sha256 = "9993caeb88577f1b7fb03c659e73d9284ed08e0c9f855fc60e5240618091a0d9"; }];
+    version     = "1.31";
+    srcs        = [{ filename = "tar-1.31-1-x86_64.pkg.tar.xz"; sha256 = "624f4365ea27cedc37f0b940f59670d6462d6f4d1dbdc15a0e83cc1ee39fe9f5"; }];
     buildInputs = [ msys2-runtime libiconv libintl sh ];
   };
 

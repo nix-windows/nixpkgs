@@ -48,7 +48,7 @@ let
           ${ stdenvNoCC.lib.optionalString (!(false && builtins.elem pname ["msys2-runtime" "bash" "coreutils" "gmp" "libiconv" "gcc-libs" "libintl"])) ''
                 if (-f ".INSTALL") {
                   $ENV{PATH} = '${msysPackages.bash}/usr/bin;${msysPackages.coreutils}/usr/bin';
-                  system("bash -c \"ls -l ; . .INSTALL ; post_install\"") == 0 or die;
+                  system("bash -c \"ls -la ; . .INSTALL ; if command -v post_install; then post_install; else true; fi\"") == 0 or die;
                 }
               '' }
           unlinkL ".BUILDINFO";
