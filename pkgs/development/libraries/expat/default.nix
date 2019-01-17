@@ -1,4 +1,34 @@
-{ stdenv, fetchurl }:
+{ stdenv, fetchurl, cmake, fetchFromGitHub }:
+
+if stdenv.hostPlatform.isMicrosoft then
+
+stdenv.mkDerivation rec {
+  name = "expat-2.2.6";
+
+  src = fetchFromGitHub {
+    owner = "libexpat";
+    repo = "libexpat";
+    rev = "R_2_2_6";
+    sha256 = "0jfp38d84p6ysl5pb0v28j766g1psxc42s0aagl3i5p2rw1kgba2";
+  };
+
+  nativeBuildInputs = [ cmake ];
+  buildPhase = ''
+    mkdir('build');
+    chdir('build');
+    system("cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$ENV{out} $ENV{cmakeFlags} ../expat") == 0 or die;
+    system("nmake") == 0 or die;
+  '';
+  doCheck = true;
+  checkPhase = ''
+    system("nmake test") == 0 or die;
+  '';
+  installPhase = ''
+    system("nmake install") == 0 or die;
+  '';
+}
+
+else
 
 stdenv.mkDerivation rec {
   name = "expat-2.2.6";
