@@ -3,19 +3,9 @@
 }:
 
 assert localSystem.config == "x86_64-pc-windows-msvc" || localSystem.config == "i686-pc-windows-msvc";
-assert crossSystem == null /*||
-       ( builtins.trace "localSystem.config=${localSystem.config} crossSystem.config=${crossSystem.config}"
-          ( (localSystem.config == "x86_64-pc-windows-msvc" && crossSystem.config == "i686-pc-windows-msvc")
-         || (localSystem.config == "i686-pc-windows-msvc" && crossSystem.config == "x86_64-pc-windows-msvc")
-          )
-       )*/;
-
-let
-
-in
+assert crossSystem == null;
 
 [
-
   ({}: rec {
     __raw = true;
 
@@ -38,7 +28,7 @@ in
     p7zip-static = stdenv.mkDerivation {
       name = "7za-18.06-static";
       src = stdenv.fetchurlBoot {
-        # from https://www.7-zip.org/a/7z1806-extra.7z
+        # 32-bit version from https://www.7-zip.org/a/7z1806-extra.7z
         url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/7za.exe";
         sha256 = "8e679f87ba503f3dfad96266ca79de7bfe3092dc6a58c0fe0438f7d4b19f0bbd";
       };
@@ -161,12 +151,9 @@ in
 
       initialPath = prevStage.stdenv.initialPath ++ [ /*prevStage.curl-static*/ prevStage.gnu-utils ];
       cc = null;
-#     fetchurlBoot = null;
-#     cc = prevStage.ms.cc;
       shell = "${prevStage.perl-for-stdenv-shell}/bin/perl.exe";
     };
     inherit (prevStage) perl-for-stdenv-shell;
-    #ms = prevStage.ms;
 
 #   fetchurl-curl-static = import ../../build-support/fetchurl {
 #     inherit lib;
@@ -183,9 +170,10 @@ in
       inherit config;
 
       inherit (prevStage.stdenv) buildPlatform targetPlatform hostPlatform shell initialPath fetchurlBoot;
-      cc = (import ../../../pkgs/development/compilers/msvc/2017.nix { stdenvNoCC = prevStage.stdenv; buildPackages = null; }) // { inherit (prevStage) perl-for-stdenv-shell; };
-#      cc = prevStage.ms.cc;
-#      cc = prevStage.cc;
+      cc = (import ../../../pkgs/development/compilers/msvc/2017.nix {
+              stdenvNoCC = prevStage.stdenv;
+              buildPackages = null;
+            }) // { inherit (prevStage) perl-for-stdenv-shell; };
 #     fetchurlBoot = prevStage.fetchurl-curl-static;
       extraNativeBuildInputs = [];
     };
