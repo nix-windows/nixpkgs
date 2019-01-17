@@ -165,6 +165,7 @@ in
 #     cc = prevStage.ms.cc;
       shell = "${prevStage.perl-for-stdenv-shell}/bin/perl.exe";
     };
+    inherit (prevStage) perl-for-stdenv-shell;
     #ms = prevStage.ms;
 
 #   fetchurl-curl-static = import ../../build-support/fetchurl {
@@ -182,7 +183,7 @@ in
       inherit config;
 
       inherit (prevStage.stdenv) buildPlatform targetPlatform hostPlatform shell initialPath fetchurlBoot;
-      cc = import ../../../pkgs/development/compilers/msvc/2017.nix { stdenvNoCC = prevStage.stdenv; buildPackages = null; };
+      cc = (import ../../../pkgs/development/compilers/msvc/2017.nix { stdenvNoCC = prevStage.stdenv; buildPackages = null; }) // { inherit (prevStage) perl-for-stdenv-shell; };
 #      cc = prevStage.ms.cc;
 #      cc = prevStage.cc;
 #     fetchurlBoot = prevStage.fetchurl-curl-static;
