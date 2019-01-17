@@ -29,7 +29,7 @@ let
     buildPhase = ''
       mkdir('build');
       chdir('build');
-      system("cmake -G \"NMake Makefiles\" -D CMAKE_BUILD_TYPE=Release ..\\src") == 0 or die;
+      system("cmake -G \"NMake Makefiles\" -DCMAKE_BUILD_TYPE=Release ..\\src") == 0 or die;
       system("nmake") == 0 or die;
       chdir('..');
     '';
@@ -56,7 +56,7 @@ let
     buildPhase = ''
       mkdir('build');
       chdir('build');
-      system("cmake -G \"NMake Makefiles\" -D CMAKE_BUILD_TYPE=Release -D FAR_VERSION=Far3 ..\\src\\NetBox") == 0 or die;
+      system("cmake -G \"NMake Makefiles\" -DCMAKE_BUILD_TYPE=Release -DFAR_VERSION=Far3 ..\\src\\NetBox") == 0 or die;
       system("nmake") == 0 or die;
       chdir('..');
     '';
@@ -71,14 +71,14 @@ let
 
 in
 stdenv.mkDerivation rec {
-  version = "v3.0.5351.735";
+  version = "3.0.5354.738";
   name = "far-${version}";
 
   src = fetchFromGitHub {
     owner = "FarGroup";
     repo = "FarManager";
-    rev = version;
-    sha256 = "12gxfvdfp5x4k14bqr5j2bfq3mp8101fm7mqf1vpjas9ygnm9x7v";
+    rev = "v${version}";
+    sha256 = "1dl8yvr6axc2a6w0327y1b3ns44n0d3cv0r0zkdsdv0j9wjzbpl8";
   };
 
   # do not use `makeFlags`, nmake.exe does read %MAKEFLAGS% and interprets it in unexpected way
