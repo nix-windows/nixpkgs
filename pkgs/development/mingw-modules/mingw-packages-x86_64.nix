@@ -41,9 +41,11 @@ let
       buildPhase = if stdenvNoCC.isShellPerl /* on native windows */ then
         ''
           dircopy('.', $ENV{out}) or die "dircopy(., $ENV{out}): $!";
-          ${ stdenvNoCC.lib.concatMapStringsSep "\n" (dep:
-                ''symtree_link($ENV{out}, '${dep}', $ENV{out});''
-              ) buildInputs }
+          ${ stdenvNoCC.lib.concatMapStringsSep "\n" (dep: ''
+                for my $path (glob('${dep}/*')) {
+                  symtree_link($ENV{out}, $path, "$ENV{out}/".basename($path)) if basename($path) ne 'bin';
+                }
+              '') buildInputs }
           chdir($ENV{out});
           ${ stdenvNoCC.lib.optionalString (!(false && builtins.elem pname ["msys2-runtime" "bash" "coreutils" "gmp" "libiconv" "gcc-libs" "libintl"])) ''
                 if (-f ".INSTALL") {
@@ -58,12 +60,9 @@ let
 
           # make symlinks in /bin, mingw does not need it, it is only for nixpkgs convenience, to have the executables in $derivation/bin
           symtree_reify($ENV{out}, "bin/_");
-          for my $file (glob("$ENV{out}/mingw64/bin/*.exe"),
-                         glob("$ENV{out}/mingw64/bin/*.dll"),
-                         glob("$ENV{out}/usr/bin/*.exe"),
-                         glob("$ENV{out}/usr/bin/*.dll")) {
-            if (!testL('l', $file)) { # symlinks are likely already in bin/ after symtree_link()
-              uncsymlink($file => "$ENV{out}/bin/".basename($file)) or die $!;
+          for my $file (glob("$ENV{out}/mingw64/bin/*")) {
+            if (-f $file) {
+              uncsymlink($file => "$ENV{out}/bin/".basename($file)) or die "uncsymlink($file => $ENV{out}/bin/".basename($file)."): $!";
             }
           }
         ''
@@ -885,8 +884,8 @@ let
 
   "crt-git" = fetch {
     pname       = "crt-git";
-    version     = "7.0.0.5285.7b2baaf8";
-    srcs        = [{ filename = "mingw-w64-x86_64-crt-git-7.0.0.5285.7b2baaf8-1-any.pkg.tar.xz"; sha256 = "6648f736c14326ef0b3cadcc0b936eff2c409e199477c4975567900f7aba95f4"; }];
+    version     = "7.0.0.5293.c1b14154";
+    srcs        = [{ filename = "mingw-w64-x86_64-crt-git-7.0.0.5293.c1b14154-1-any.pkg.tar.xz"; sha256 = "244a2220560e8f68ed71ee20984cf67c3be8e0a3405188e8d6ee4cf74bdb5094"; }];
     buildInputs = [ headers-git ];
   };
 
@@ -2091,8 +2090,8 @@ let
 
   "gsoap" = fetch {
     pname       = "gsoap";
-    version     = "2.8.74";
-    srcs        = [{ filename = "mingw-w64-x86_64-gsoap-2.8.74-1-any.pkg.tar.xz"; sha256 = "89492306a131af00097e3b825c56d4ab2871bd67e67825cae629b5347f369526"; }];
+    version     = "2.8.75";
+    srcs        = [{ filename = "mingw-w64-x86_64-gsoap-2.8.75-1-any.pkg.tar.xz"; sha256 = "89e3f6d80b6f50ae6c35db3d10e573d1950ea5c9ea73eb5c30f556c6779203f6"; }];
   };
 
   "gspell" = fetch {
@@ -2237,8 +2236,8 @@ let
 
   "gtk3" = fetch {
     pname       = "gtk3";
-    version     = "3.24.2";
-    srcs        = [{ filename = "mingw-w64-x86_64-gtk3-3.24.2-1-any.pkg.tar.xz"; sha256 = "addb505e87dcab6b76c77b6902c3ffe9280a94a614b827a08bd8aa5813efee5a"; }];
+    version     = "3.24.3";
+    srcs        = [{ filename = "mingw-w64-x86_64-gtk3-3.24.3-1-any.pkg.tar.xz"; sha256 = "8d72e7d670a38264af1b5af617e7ed1ab88c298467544ac3472953765c1e154a"; }];
     buildInputs = [ gcc-libs adwaita-icon-theme atk cairo gdk-pixbuf2 glib2 json-glib libepoxy pango shared-mime-info ];
   };
 
@@ -2369,8 +2368,8 @@ let
 
   "headers-git" = fetch {
     pname       = "headers-git";
-    version     = "7.0.0.5285.7b2baaf8";
-    srcs        = [{ filename = "mingw-w64-x86_64-headers-git-7.0.0.5285.7b2baaf8-1-any.pkg.tar.xz"; sha256 = "ee31a0a3511035f71e4ffc6c7f85439729069dc3661c948bb78b51e6126007b0"; }];
+    version     = "7.0.0.5293.c1b14154";
+    srcs        = [{ filename = "mingw-w64-x86_64-headers-git-7.0.0.5293.c1b14154-1-any.pkg.tar.xz"; sha256 = "f8c2294e590fde496ba2b3c2808318ca975139fc69e9cf40de749f2e0d8a7d93"; }];
     buildInputs = [  ];
   };
 
@@ -5024,8 +5023,8 @@ let
 
   "ogre3d" = fetch {
     pname       = "ogre3d";
-    version     = "1.11.1";
-    srcs        = [{ filename = "mingw-w64-x86_64-ogre3d-1.11.1-1-any.pkg.tar.xz"; sha256 = "0857aacae013a5c5661630318489e487946021a9c3db74ac88b2c3cb884c1cc3"; }];
+    version     = "1.11.5";
+    srcs        = [{ filename = "mingw-w64-x86_64-ogre3d-1.11.5-1-any.pkg.tar.xz"; sha256 = "2db9a01c13168c0ee8878669fa9233f1e49575ffe5362524e76f6da20d723bd3"; }];
     buildInputs = [ boost cppunit FreeImage freetype glsl-optimizer-git hlsl2glsl-git intel-tbb openexr SDL2 python2 tinyxml winpthreads-git zlib zziplib ];
     broken      = true; # broken dependency ogre3d -> FreeImage
   };
@@ -6798,8 +6797,8 @@ let
 
   "python2-numpy" = fetch {
     pname       = "python2-numpy";
-    version     = "1.15.4";
-    srcs        = [{ filename = "mingw-w64-x86_64-python2-numpy-1.15.4-1-any.pkg.tar.xz"; sha256 = "132d7b79da6f0c2db37ceb9662b7ce32d8e07fd2f5b53f34cb83b416100703b6"; }];
+    version     = "1.16.0";
+    srcs        = [{ filename = "mingw-w64-x86_64-python2-numpy-1.16.0-1-any.pkg.tar.xz"; sha256 = "c4a335027110951b46599fe4d448becd5410cfa285cf5c98e6bbf70e374739aa"; }];
     buildInputs = [ openblas python2 ];
   };
 
@@ -8897,8 +8896,8 @@ let
 
   "python3-numpy" = fetch {
     pname       = "python3-numpy";
-    version     = "1.15.4";
-    srcs        = [{ filename = "mingw-w64-x86_64-python3-numpy-1.15.4-1-any.pkg.tar.xz"; sha256 = "33fdbeb7bbdb17de2ba94225ec764b698bca98fb9e55f899b84ecf4d7488fbbf"; }];
+    version     = "1.16.0";
+    srcs        = [{ filename = "mingw-w64-x86_64-python3-numpy-1.16.0-1-any.pkg.tar.xz"; sha256 = "1a4ff054893f9c7227eef6c3947f5b56fdbcc4fe6a08c52a4f89a6cbf16dc619"; }];
     buildInputs = [ openblas python3 ];
   };
 
@@ -11975,8 +11974,8 @@ let
 
   "zeromq" = fetch {
     pname       = "zeromq";
-    version     = "4.3.0";
-    srcs        = [{ filename = "mingw-w64-x86_64-zeromq-4.3.0-1-any.pkg.tar.xz"; sha256 = "2adcdf34b1632690b2a8be0923c6041063df8bc234ffc62322bf8dce738d8a41"; }];
+    version     = "4.3.1";
+    srcs        = [{ filename = "mingw-w64-x86_64-zeromq-4.3.1-1-any.pkg.tar.xz"; sha256 = "0a50048b556a60e54b44a03ebbc0a03a89a85ccd86fe731034ee0af125980e69"; }];
     buildInputs = [ libsodium ];
   };
 

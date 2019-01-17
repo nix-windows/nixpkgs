@@ -41,9 +41,11 @@ let
       buildPhase = if stdenvNoCC.isShellPerl /* on native windows */ then
         ''
           dircopy('.', $ENV{out}) or die "dircopy(., $ENV{out}): $!";
-          ${ stdenvNoCC.lib.concatMapStringsSep "\n" (dep:
-                ''symtree_link($ENV{out}, '${dep}', $ENV{out});''
-              ) buildInputs }
+          ${ stdenvNoCC.lib.concatMapStringsSep "\n" (dep: ''
+                for my $path (glob('${dep}/*')) {
+                  symtree_link($ENV{out}, $path, "$ENV{out}/".basename($path)) if basename($path) ne 'bin';
+                }
+              '') buildInputs }
           chdir($ENV{out});
           ${ stdenvNoCC.lib.optionalString (!(true && builtins.elem pname ["msys2-runtime" "bash" "coreutils" "gmp" "libiconv" "gcc-libs" "libintl"])) ''
                 if (-f ".INSTALL") {
@@ -58,12 +60,9 @@ let
 
           # make symlinks in /bin, mingw does not need it, it is only for nixpkgs convenience, to have the executables in $derivation/bin
           symtree_reify($ENV{out}, "bin/_");
-          for my $file (glob("$ENV{out}/mingw64/bin/*.exe"),
-                         glob("$ENV{out}/mingw64/bin/*.dll"),
-                         glob("$ENV{out}/usr/bin/*.exe"),
-                         glob("$ENV{out}/usr/bin/*.dll")) {
-            if (!testL('l', $file)) { # symlinks are likely already in bin/ after symtree_link()
-              uncsymlink($file => "$ENV{out}/bin/".basename($file)) or die $!;
+          for my $file (glob("$ENV{out}/usr/bin/*")) {
+            if (-f $file) {
+              uncsymlink($file => "$ENV{out}/bin/".basename($file)) or die "uncsymlink($file => $ENV{out}/bin/".basename($file)."): $!";
             }
           }
         ''
