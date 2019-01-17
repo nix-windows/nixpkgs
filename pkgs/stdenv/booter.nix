@@ -109,9 +109,12 @@ stageFuns: let
   postStage = buildPackages: {
     __raw = true;
     stdenv.cc =
-      if buildPackages.stdenv.cc.isClang or false
-      then buildPackages.clang
-      else buildPackages.gcc;
+      if buildPackages.stdenv.cc.isClang or false then
+        buildPackages.clang
+      else if buildPackages.stdenv.hostPlatform.isMicrosoft then
+        buildPackages.msvc2017
+      else
+        buildPackages.gcc;
   };
 
 in dfold folder postStage (_: {}) withAllowCustomOverrides

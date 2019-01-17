@@ -33,6 +33,7 @@ in
 
 if stdenv.hostPlatform.isMicrosoft then
 
+assert stdenv.hostPlatform == stdenv.buildPlatform; # not yet tested
 let
   libPrefix = "python${majorVersion}";
   sitePackages = "Lib/site-packages";

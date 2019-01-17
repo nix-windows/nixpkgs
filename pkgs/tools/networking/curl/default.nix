@@ -34,6 +34,8 @@ let
     sha256 = "084niy7cin13ba65p8x38w2xcyc54n3fgzbin40fa2shfr0ca0kq";
   };
 in if stdenv.hostPlatform.isMicrosoft then
+
+assert stdenv.hostPlatform == stdenv.buildPlatform; # not yet tested
 stdenv.mkDerivation rec {
   inherit name src;
 
@@ -50,7 +52,9 @@ stdenv.mkDerivation rec {
     copyL('${zlib}/bin/zlib1.dll',       "$ENV{out}/bin/zlib1.dll"   ) or die $!;
   '';
 }
+
 else
+
 stdenv.mkDerivation rec {
   inherit name src;
 

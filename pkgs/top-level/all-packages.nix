@@ -197,7 +197,8 @@ with pkgs;
   fetchfossil = callPackage ../build-support/fetchfossil { };
 
   fetchgit = callPackage ../build-support/fetchgit {
-    git = gitMinimal;
+    git = buildPackages.gitMinimal;
+    cacert = buildPackages.cacert;
   };
 
   fetchgitPrivate = callPackage ../build-support/fetchgit/private.nix { };
@@ -359,9 +360,7 @@ with pkgs;
     };
 
   makeWrapper = if stdenv.hostPlatform.isMicrosoft then
-                  stdenv.cc.makeWrapper
-                else if stdenv.hostPlatform.isPerlShell then
-                  throw "makeWrapper??"
+                  callPackage ../development/compilers/msvc/make-wrapper.nix { }
                 else
                   makeSetupHook { deps = [ dieHook ]; }
                               ../build-support/setup-hooks/make-wrapper.sh;
@@ -6929,6 +6928,8 @@ with pkgs;
   };
 
   gcl_2_6_13_pre = callPackage ../development/compilers/gcl/2.6.13-pre.nix { };
+
+  msvc2017 = callPackage ../development/compilers/msvc/2017.nix { };
 
   gforth = callPackage ../development/compilers/gforth {};
 
