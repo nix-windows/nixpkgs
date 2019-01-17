@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, cmake, fetchFromGitHub }:
+{ stdenv, fetchurl, cmake, fetchFromGitHub, static ? false }:
 
 if stdenv.hostPlatform.isMicrosoft then
 
@@ -13,6 +13,7 @@ stdenv.mkDerivation rec {
   };
 
   nativeBuildInputs = [ cmake ];
+  cmakeFlags = [ "-DBUILD_shared=${if static then "OFF" else "ON"}" ];
   buildPhase = ''
     mkdir('build');
     chdir('build');
@@ -25,6 +26,8 @@ stdenv.mkDerivation rec {
   '';
   installPhase = ''
     system("nmake install") == 0 or die;
+  '' + stdenv.lib.optionalString static ''
+    changeFile { "#define XML_STATIC 1\n".$_ } "$ENV{out}/include/expat_external.h";
   '';
 }
 
