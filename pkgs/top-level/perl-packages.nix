@@ -7785,7 +7785,7 @@ let
     };
     propagatedBuildInputs = [ MozillaCA NetSSLeay ];
     # Fix path to default certificate store.
-    postPatch = ''
+    postPatch = stdenv.lib.optionalString (!stdenv.hostPlatform.isMicrosoft) ''
       substituteInPlace lib/IO/Socket/SSL.pm \
         --replace "\$openssldir/cert.pem" "/etc/ssl/certs/ca-certificates.crt"
     '';
@@ -8931,10 +8931,12 @@ let
     postPatch = stdenv.lib.optionalString (stdenv.buildPlatform != stdenv.hostPlatform) ''
       substituteInPlace Makefile.PL --replace 'if has_module' 'if 0; #'
     '';
+    postFixup = stdenv.lib.optionalString stdenv.hostPlatform.isMicrosoft ''
+      changeFile { s|perl -x|${perl}/bin/perl.exe $ENV{perlFlags} -x|gr; } "$ENV{out}/bin/lwp-download.bat", "$ENV{out}/bin/lwp-dump.bat", "$ENV{out}/bin/lwp-mirror.bat", "$ENV{out}/bin/lwp-request.bat";
+    '';
     meta = with stdenv.lib; {
       description = "The World-Wide Web library for Perl";
       license = with licenses; [ artistic1 gpl1Plus ];
-    # platforms = platforms.unix;
     };
     buildInputs = [ TestFatal TestNeeds TestRequiresInternet ];
   };
@@ -8990,7 +8992,6 @@ let
     meta = {
       description = "Provide https support for LWP::UserAgent";
       license = with stdenv.lib.licenses; [ artistic1 gpl1Plus ];
-      platforms = with stdenv.lib.platforms; linux ++ darwin;
     };
     buildInputs = [ TestRequiresInternet ];
   };
@@ -11493,12 +11494,18 @@ let
     };
     buildInputs = [ pkgs.openssl ];
     doCheck = false; # Test performs network access.
-    preConfigure = ''
+    preConfigure = if stdenv.hostPlatform.isMicrosoft then ''
+      $ENV{OPENSSL_PREFIX} = '${pkgs.openssl}';
+    '' else ''
       mkdir openssl
       ln -s ${pkgs.openssl.out}/lib openssl
       ln -s ${pkgs.openssl.bin}/bin openssl
       ln -s ${pkgs.openssl.dev}/include openssl
       export OPENSSL_PREFIX=$(realpath openssl)
+    '';
+    postFixup = stdenv.lib.optionalString stdenv.hostPlatform.isMicrosoft ''
+      uncsymlink("${pkgs.openssl}/bin/libeay32.dll" => "$ENV{out}/lib/auto/Net/SSLeay/LIBEAY32.dll") or die $!;
+      uncsymlink("${pkgs.openssl}/bin/ssleay32.dll" => "$ENV{out}/lib/auto/Net/SSLeay/SSLEAY32.dll") or die $!;
     '';
     meta = {
       description = "Perl extension for using OpenSSL";
