@@ -151,7 +151,7 @@ let
                          glob("\$ENV{out}/usr/bin/*.exe"),
                          glob("\$ENV{out}/usr/bin/*.dll")) {
             if (!testL('l', \$file)) { # symlinks are likely already in bin/ after symtree_link()
-              symlinkL(\$file => "\$ENV{out}/bin/".basename(\$file)) or die \$!;
+              uncsymlink(\$file => "\$ENV{out}/bin/".basename(\$file)) or die \$!;
             }
           }
         ''

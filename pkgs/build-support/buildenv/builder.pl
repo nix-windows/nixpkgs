@@ -7,7 +7,7 @@ use File::Path;
 use File::Basename;
 use File::Compare;
 use JSON::PP;
-use Win32::LongPath qw(readlinkL symlinkL testL);
+use Win32::LongPath qw(readlinkL testL);
 use Win32::Utils    qw(readlink_f relsymlink uncsymlink);
 
 

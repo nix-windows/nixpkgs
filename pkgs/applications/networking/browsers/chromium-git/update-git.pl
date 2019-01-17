@@ -3,7 +3,6 @@ use warnings;
 use Cwd;
 use File::Path qw(remove_tree make_path);
 use File::Basename  qw(dirname basename);
-#use Win32::LongPath qw(readlinkL testL symlinkL unlinkL renameL copyL mkdirL rmdirL openL attribL statL abspathL);
 use Win32::Utils    qw(readFile writeFile changeFile escapeWindowsArg dircopy readlink_f relsymlink uncsymlink symtree_reify symtree_link make_pathL remove_treeL findL);
 
 
