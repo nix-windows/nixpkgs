@@ -1102,35 +1102,34 @@ sub fixupPhase() {
     }
 
 
-#     # Propagate dependencies & setup hook into the development output.
-#     declare -ra flatVars=(
-#         # Build
-#         depsBuildBuildPropagated
-#         propagatedNativeBuildInputs
-#         depsBuildTargetPropagated
-#         # Host
-#         depsHostHostPropagated
-#         propagatedBuildInputs
-#         # Target
-#         depsTargetTargetPropagated
-#     )
-#     declare -ra flatFiles=(
-#         "${propagatedBuildDepFiles[@]}"
-#         "${propagatedHostDepFiles[@]}"
-#         "${propagatedTargetDepFiles[@]}"
-#     )
-#
-#     local propagatedInputsIndex
-#     for propagatedInputsIndex in "${!flatVars[@]}"; do
-#         local propagatedInputsSlice="${flatVars[$propagatedInputsIndex]}[@]"
-#         local propagatedInputsFile="${flatFiles[$propagatedInputsIndex]}"
-#
-#         [[ "${!propagatedInputsSlice}" ]] || continue
-#
-#         mkdir -p "${!outputDev}/nix-support"
-#         # shellcheck disable=SC2086
-#         printWords ${!propagatedInputsSlice} > "${!outputDev}/nix-support/$propagatedInputsFile"
-#     done
+    # Propagate dependencies & setup hook into the development output.
+    my @flatVars = (
+        # Build
+        $ENV{depsBuildBuildPropagated},
+        $ENV{propagatedNativeBuildInputs},
+        $ENV{depsBuildTargetPropagated},
+        # Host
+        $ENV{depsHostHostPropagated},
+        $ENV{propagatedBuildInputs},
+        # Target
+        $ENV{depsTargetTargetPropagated},
+    );
+    my @flatFiles = (
+        @propagatedBuildDepFiles,
+        @propagatedHostDepFiles,
+        @propagatedTargetDepFiles
+    );
+
+    for (my $propagatedInputsIndex = 0; $propagatedInputsIndex < scalar(@flatFiles); $propagatedInputsIndex++) {
+        my $propagatedInputsSlice = $flatVars[$propagatedInputsIndex];
+        my $propagatedInputsFile = $flatFiles[$propagatedInputsIndex];
+
+        next unless $propagatedInputsSlice;
+
+        # shellcheck disable=SC2086
+        #printWords ${!propagatedInputsSlice} > "${!outputDev}/nix-support/$propagatedInputsFile"
+        writeFile("$ENV{out}/nix-support/$propagatedInputsFile", $propagatedInputsSlice);
+    }
 
 
     if (exists($ENV{setupHook})) {
