@@ -58,7 +58,8 @@ in
 
       initialPath = [ prevStage.p7zip-static ];
     };
-#   inherit prevStage;
+
+    msblobs = import ../../../pkgs/development/compilers/msvc/2017-blobs.nix { stdenvNoCC = stdenv; };
 
 #   # it uses Windows's SSL libs, not openssl
 #   curl-static = stdenv.mkDerivation rec {
@@ -105,7 +106,6 @@ in
       passthru = { inherit (msysPackages) patch grep gawk sed; };
     };
 
-    msblobs = import ../../../pkgs/development/compilers/msvc/2017-blobs.nix { stdenvNoCC = stdenv; };
     perl-for-stdenv-shell = let
       # useful libs not included by default
       cpan-Capture-Tiny = stdenv.fetchurlBoot {

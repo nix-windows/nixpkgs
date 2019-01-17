@@ -6,7 +6,7 @@ let
     if stdenvNoCC.isShellCmdExe /* on mingw bootstrap */ then
       stdenvNoCC.mkDerivation {
         inherit version buildInputs;
-        name = "${pname}-${version}";
+        name = "msys64-${pname}-${version}";
         srcs = map ({filename, sha256}:
                     fetchurl {
                       url = "http://repo.msys2.org/msys/x86_64/${filename}";

@@ -6,7 +6,7 @@ let
     if stdenvNoCC.isShellCmdExe /* on mingw bootstrap */ then
       stdenvNoCC.mkDerivation {
         inherit version buildInputs;
-        name = "${pname}-${version}";
+        name = "mingw32-${pname}-${version}";
         srcs = map ({filename, sha256}:
                     fetchurl {
                       url = "http://repo.msys2.org/mingw/i686/${filename}";
@@ -12009,7 +12009,8 @@ let
   "freetype-and-harfbuzz" = fetch {
     pname       = "freetype-and-harfbuzz";
     version     = "2.9.1-1+2.3.0-1";
-    srcs        = [{ filename = "mingw-w64-i686-freetype-2.9.1-1-any.pkg.tar.xz"; sha256 = "e8df4eb86c7914b0edefe18949bffbf94bc4d1d2715b9d475b2a61f5905c4647"; }{ filename = "mingw-w64-i686-harfbuzz-2.3.0-1-any.pkg.tar.xz"; sha256 = "c18830b82bbbfccd6dc22649fa9e5bf901c9cc6976ee26eb2758f73e7d3e8aff"; }];
+    srcs        = [{ filename = "mingw-w64-i686-freetype-2.9.1-1-any.pkg.tar.xz"; sha256 = "e8df4eb86c7914b0edefe18949bffbf94bc4d1d2715b9d475b2a61f5905c4647"; }
+                   { filename = "mingw-w64-i686-harfbuzz-2.3.0-1-any.pkg.tar.xz"; sha256 = "c18830b82bbbfccd6dc22649fa9e5bf901c9cc6976ee26eb2758f73e7d3e8aff"; }];
     buildInputs = [ gcc-libs bzip2 libpng zlib gcc-libs glib2 graphite2 ];
   };
 

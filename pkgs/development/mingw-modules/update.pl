@@ -82,6 +82,7 @@ sub emitNix {
   my ($out, $subsystem, $arch, $repo) = @_;
   die unless $subsystem eq 'msys' || $subsystem eq 'mingw';
   die unless $arch eq 'i686' || $arch eq 'x86_64';
+  my $bits = $arch eq 'i686' ? 32 : 64;
   my $baseUrl = "http://repo.msys2.org/$subsystem/$arch";
 
   #my $isMsys = exists($repo->{'msys2-runtime'}) ? 'true' : 'false';
@@ -94,7 +95,7 @@ let
     if stdenvNoCC.isShellCmdExe /* on mingw bootstrap */ then
       stdenvNoCC.mkDerivation {
         inherit version buildInputs;
-        name = "\${pname}-\${version}";
+        name = "$subsystem$bits-\${pname}-\${version}";
         srcs = map ({filename, sha256}:
                     fetchurl {
                       url = "$baseUrl/\${filename}";
@@ -148,7 +149,7 @@ let
 
           # make symlinks in /bin, mingw does not need it, it is only for nixpkgs convenience, to have the executables in \$derivation/bin
           symtree_reify(\$ENV{out}, "bin/_");
-          for my \$file (glob("\$ENV{out}/].($subsystem eq 'mingw' ? ($arch eq 'x86_64' ? 'mingw64' : 'mingw32') : 'usr').qq[/bin/*")) {
+          for my \$file (glob("\$ENV{out}/].($subsystem eq "mingw" ? "mingw$bits" : "usr").qq[/bin/*")) {
             if (-f \$file) {
               uncsymlink(\$file => "\$ENV{out}/bin/".basename(\$file)) or die "uncsymlink(\$file => \$ENV{out}/bin/".basename(\$file)."): \$!";
             }
@@ -181,7 +182,7 @@ qq<
   "$pname" = fetch {
     pname       = "$pname";
     version     = "$version";
-    srcs        = [> . join("", map { "{ filename = \"@{$filenames}[$_]\"; sha256 = \"@{$sha256s}[$_]\"; }" } (0 .. scalar(@{$filenames})-1)) . qq<];
+    srcs        = [> . join("\n                   ", map { "{ filename = \"@{$filenames}[$_]\"; sha256 = \"@{$sha256s}[$_]\"; }" } (0 .. scalar(@{$filenames})-1)) . qq<];
 >;
     if ($depends) {
       print $out qq<    buildInputs = [ >.
