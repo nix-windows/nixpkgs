@@ -8934,7 +8934,7 @@ let
     meta = with stdenv.lib; {
       description = "The World-Wide Web library for Perl";
       license = with licenses; [ artistic1 gpl1Plus ];
-      platforms = platforms.unix;
+    # platforms = platforms.unix;
     };
     buildInputs = [ TestFatal TestNeeds TestRequiresInternet ];
   };
@@ -17719,7 +17719,13 @@ let
     '' + stdenv.lib.optionalString stdenv.isCygwin ''
       sed -i"" -e "s@my \$compiler = File::Spec->catfile(\$path, \$cc\[0\]) \. \$Config{_exe};@my \$compiler = File::Spec->catfile(\$path, \$cc\[0\]) \. (\$^O eq 'cygwin' ? \"\" : \$Config{_exe});@" inc/Devel/CheckLib.pm
     '';
-    makeMakerFlags = "EXPATLIBPATH=${pkgs.expat.out}/lib EXPATINCPATH=${pkgs.expat.dev}/include";
+    makeMakerFlags = if stdenv.hostPlatform.isMicrosoft then
+                       let
+                         expat = pkgs.expat.override{static=true;}; # use static expat to avoid expat.dll & Expat.dll name collision
+                       in
+                         "EXPATLIBPATH=${expat}/lib EXPATINCPATH=${expat}/include"
+                     else
+                       "EXPATLIBPATH=${pkgs.expat.out}/lib EXPATINCPATH=${pkgs.expat.dev}/include";
     propagatedBuildInputs = [ LWP ];
   };
 

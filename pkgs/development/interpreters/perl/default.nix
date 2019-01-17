@@ -44,6 +44,7 @@ let
 #   '';
 
     dontConfigure = true;
+    # PROCESSOR_ARCHITECTURE needs for cross-compilation; should it be buildPlatform's or hostPlatform's ?
     buildPhase = ''
       chdir('win32');
       system("nmake install INST_TOP=$ENV{out} CCTYPE=MSVC141 ${if stdenv.is64bit then "WIN64=define PROCESSOR_ARCHITECTURE=AMD64" else "WIN64=undef PROCESSOR_ARCHITECTURE=X86"} BUILD_STATIC=define");
