@@ -38,7 +38,7 @@ stdenv.mkDerivation (
               # there are no default buildPhase, checkPhase, installPhase in stdenv/windows yet
               buildPhase   = ''system('nmake.exe'        ) == 0 or die;'';
               checkPhase   = ''system('nmake.exe test'   ) == 0 or die;'';
-              installPhase = ''system('nmake.exe install') == 0 or die; remove_treeL("$ENV{out}/lib/perllocal.pod");'';
+              installPhase = ''system('nmake.exe install') == 0 or die;''; #  remove_treeL("$ENV{out}/lib/perllocal.pod");
             })
       )
       attrs

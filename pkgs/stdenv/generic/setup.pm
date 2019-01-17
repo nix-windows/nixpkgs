@@ -27,7 +27,7 @@ sub runHook {
 #     set -u # May be called from elsewhere, so do `set -u`.
 #
     my ($hookName, @rest) = @_;
-    my @hooksSlice = split / +/, ($ENV{$hookName."Hooks"} =~ s/^\s+|\s+$//r);
+    my @hooksSlice = split / +/, (($ENV{$hookName."Hooks"} || '') =~ s/^\s+|\s+$//r);
     print("runHook hookName=$hookName hooksSlice=@hooksSlice\n");
 #   die "TODO" if scalar(@hooksSlice) > 0;
 #     shift
@@ -52,13 +52,14 @@ sub runHook {
             print("BUILTIN hook=$hook\n");
             &{$builtinHooks{$hook}}(@rest);
         } elsif (exists($ENV{$hook})) {
-            scalar(@rest) == 0 or die "how to eval with args?";
             if (-f $ENV{$hook}) {
-                print("FILE hook=$hook $ENV{$hook}\n");
+                print("FILE hook=$hook filename='$ENV{$hook}'\n");
+                @_ = @rest; # so eval'ed code can access to params
                 eval readFile($ENV{$hook});
                 if ($@) { print "$@" ; die; }
             } else {
-                print("ENV hook=$hook $ENV{$hook}\n");
+                print("ENV hook=$hook content='$ENV{$hook}'\n");
+                @_ = @rest; # so eval'ed code can access to params
                 eval "$ENV{$hook}";
                 if ($@) { print "$@" ; die; }
             }
@@ -349,16 +350,16 @@ my %pkgAccumVarVars = ( -1 => [\$pkgsBuildBuild, \$pkgsBuildHost, \$pkgsBuildTar
                       );
 
 
-# Hooks
-my $envBuildBuildHooks   = [];
-my $envBuildHostHooks    = [];
-my $envBuildTargetHooks  = [];
-my $envHostHostHooks     = [];
-my $envHostTargetHooks   = [];
-my $envTargetTargetHooks = [];
-my %pkgHookVarVars  = ( -1 => [\$envBuildBuildHooks, \$envBuildHostHooks, \$envBuildTargetHooks],
-                         0 => [\$envHostHostHooks, \$envHostTargetHooks                        ],
-                         1 => [\$envTargetTargetHooks                                          ]
+# Hooks (todo: get git of bash's legacy, make arrays)
+$ENV{envBuildBuildHooks}   = '';
+$ENV{envBuildHostHooks}    = '';
+$ENV{envBuildTargetHooks}  = '';
+$ENV{envHostHostHooks}     = '';
+$ENV{envHostTargetHooks}   = '';
+$ENV{envTargetTargetHooks} = '';
+my %pkgHookVarVars  = ( -1 => ['envBuildBuild', 'envBuildHost', 'envBuildTarget'],
+                         0 => ['envHostHost', 'envHostTarget'                   ],
+                         1 => ['envTargetTarget'                                ]
                       );
 
 
@@ -368,7 +369,8 @@ sub addEnvHooks {
     print("TODO: addEnvHooks($depHostOffset, @rest)\n");
 
     for my $pkgHookVar (@{$pkgHookVarVars{$depHostOffset}}) {
-        push(@$$pkgHookVar, @rest);
+        print("pkgHookVar=$pkgHookVar\n");
+        $ENV{$pkgHookVar.'Hooks'} = join(' ', $ENV{$pkgHookVar.'Hooks'}, @rest);
     }
 }
 
@@ -549,12 +551,9 @@ sub activatePackage {
     addToSearchPath('HOST_PATH', "$pkg/bin") if                       $hostOffset == 0   && -d "$pkg/bin";
 
     if (-f "$pkg/nix-support/setup-hook") {
-        print("TODO: source '$pkg/nix-support/setup-hook'\n");
-        exit(1);
-#       local oldOpts="$(shopt -po nounset)"
-#       set +u
-#       source "$pkg/nix-support/setup-hook"
-#       eval "$oldOpts"
+        print("evaluating '$pkg/nix-support/setup-hook':\n");
+        eval readFile("$pkg/nix-support/setup-hook");
+        if ($@) { print "$@" ; die; }
     }
 }
 
@@ -588,8 +587,8 @@ sub _addToEnv() {
         my $pkgsVar = $pkgAccumVarVars{$depHostOffset};
         for my $depTargetOffset (@allPlatOffsets) {
             next unless $depHostOffset <= $depTargetOffset;
-            my $hookRef = ${$hookVar->[$depTargetOffset - $depHostOffset]}; # ???
-            print("TODO _addToEnv: hookRef=$hookRef\n");
+            my $hookRef = $hookVar->[$depTargetOffset - $depHostOffset]; # ???
+            print("TODO _addToEnv depHostOffset=$depHostOffset depTargetOffset=$depTargetOffset: hookRef=$hookRef\n");
 
             if (!$ENV{strictDeps}) {
                 # Apply environment hooks to all packages during native
@@ -597,13 +596,15 @@ sub _addToEnv() {
                 #
                 # TODO(@Ericson2314): Don't special-case native compilation
                 for my $pkg (@{$pkgsBuildBuild}, @{$pkgsBuildHost}, @{$pkgsBuildTarget}, @{$pkgsHostHost}, @{$pkgsHostTarget}, @{$pkgsTargetTarget}) {
-#                     runHook "${!hookRef}" "$pkg"
+                    print("TODO1 runHook $hookRef $pkg\n");
+                    runHook($hookRef, $pkg);
                 }
             } else {
                 my $pkgsSlice = ${$pkgsVar->[$depTargetOffset - $depHostOffset]};
                 for my $pkg (@$pkgsSlice) {
-#                    runHook "${!hookRef}" "$pkg"
-               }
+                    print("TODO2 runHook $hookRef $pkg\n");
+                    runHook($hookRef, $pkg);
+                }
             }
         }
     }
@@ -612,12 +613,12 @@ sub _addToEnv() {
 # Run the package-specific hooks set by the setup-hook scripts.
 _addToEnv();
 
-print("envBuildBuildHooks   = $envBuildBuildHooks   @{$envBuildBuildHooks}  \n");
-print("envBuildHostHooks    = $envBuildHostHooks    @{$envBuildHostHooks}   \n");
-print("envBuildTargetHooks  = $envBuildTargetHooks  @{$envBuildTargetHooks} \n");
-print("envHostHostHooks     = $envHostHostHooks     @{$envHostHostHooks}    \n");
-print("envHostTargetHooks   = $envHostTargetHooks   @{$envHostTargetHooks}  \n");
-print("envTargetTargetHooks = $envTargetTargetHooks @{$envTargetTargetHooks}\n");
+print("envBuildBuildHooks   = '$ENV{envBuildBuildHooks}'\n");
+print("envBuildHostHooks    = '$ENV{envBuildHostHooks}'\n");
+print("envBuildTargetHooks  = '$ENV{envBuildTargetHooks}'\n");
+print("envHostHostHooks     = '$ENV{envHostHostHooks}'\n");
+print("envHostTargetHooks   = '$ENV{envHostTargetHooks}'\n");
+print("envTargetTargetHooks = '$ENV{envTargetTargetHooks}'\n");
 #print("_PATH = '".($ENV{'_PATH'})."'\n");
 
 
@@ -871,6 +872,10 @@ sub unpackPhase() {
     # it's rather hacky.
     my %dirsBefore = map { $_ => 1 } (grep { -d $_ } glob("*"));
 
+    # we unpack to %TEMP%, and such folder could appear in %TEMP% (it is still unclear how)
+    $dirsBefore{'AppData'} = 1;
+    $dirsBefore{'VSRemoteControl'} = 1;
+
     # Unpack all source archives.
     for my $i (split / /, $ENV{srcs}) {
         unpackFile($i);
@@ -881,18 +886,17 @@ sub unpackPhase() {
     # set to empty if unset
     my $sourceRoot = $ENV{sourceRoot} || '';
 
-    if ($ENV{setSourceRoot}) {
+    if (exists($ENV{setSourceRoot})) {
         runOneHook('setSourceRoot');
     } elsif (!$ENV{sourceRoot}) {
+        my @produced;
         for my $i (glob('*')) {
-            next unless -d $i;
-            next if exists($dirsBefore{$i});
-            die "unpacker produced multiple directories" if $ENV{sourceRoot};
-            $ENV{sourceRoot} = $i;
+            push @produced, $i if -d $i && !exists($dirsBefore{$i});
         }
+        die "unpacker appears to have produced no directories in '".getcwd()."'"              if scalar(@produced) == 0;
+        die "unpacker produced multiple directories in '".getcwd()."': ".join(' ', @produced) if scalar(@produced) > 1;
+        $ENV{sourceRoot} = shift @produced;
     }
-
-    die "unpacker appears to have produced no directories" unless $ENV{sourceRoot};
 
     print("source root is $ENV{sourceRoot}\n");
 
@@ -1083,21 +1087,21 @@ sub installPhase() {
 # # stripping binaries, running patchelf and setting
 # # propagated-build-inputs.
 sub fixupPhase() {
-#     # Make sure everything is writable so "strip" et al. work.
-#     local output
-#     for output in $outputs; do
-#         if [ -e "${!output}" ]; then chmod -R u+w "${!output}"; fi
-#     done
-#
+    # Make sure everything is writable so "strip" et al. work.
+    for my $output (split /\s+/, $ENV{outputs}) {
+      exists($ENV{$output}) or die "wrong output='$output'";
+      findL { attribL('-r', $_); } $ENV{$output};
+    }
+
     runHook('preFixup');
-#
-#     # Apply fixup to each output.
-#     local output
-#     for output in $outputs; do
-#         prefix="${!output}" runHook fixupOutput
-#     done
-#
-#
+
+    # Apply fixup to each output.
+    for my $output (split /\s+/, $ENV{outputs}) {
+        $ENV{prefix} = $ENV{$output};
+        runHook('fixupOutput');
+    }
+
+
 #     # Propagate dependencies & setup hook into the development output.
 #     declare -ra flatVars=(
 #         # Build
@@ -1127,13 +1131,22 @@ sub fixupPhase() {
 #         # shellcheck disable=SC2086
 #         printWords ${!propagatedInputsSlice} > "${!outputDev}/nix-support/$propagatedInputsFile"
 #     done
-#
-#
-#     if [ -n "${setupHook:-}" ]; then
+
+
+    if (exists($ENV{setupHook})) {
+        make_pathL("$ENV{out}/nix-support");
+        open (my $fh, ">$ENV{out}/nix-support/debug-fixupPhase-env.txt");
+        for my $k (sort (keys %ENV)) {
+           print $fh "$k=$ENV{$k}\n";
+        }
+        close($fh);
+
+        copyL($ENV{setupHook}, "$ENV{out}/nix-support/setup-hook") or die "copyL($ENV{setupHook}, $ENV{out}/nix-support/setup-hook): $!";
+        # WTF is outputDev?
 #         mkdir -p "${!outputDev}/nix-support"
 #         substituteAll "$setupHook" "${!outputDev}/nix-support/setup-hook"
-#     fi
-#
+    }
+
 #     # TODO(@Ericson2314): Remove after https://github.com/NixOS/nixpkgs/pull/31414
 #     if [ -n "${setupHooks:-}" ]; then
 #         mkdir -p "${!outputDev}/nix-support"

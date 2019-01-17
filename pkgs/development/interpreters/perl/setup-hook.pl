@@ -1,5 +1,7 @@
-#addPerlLibPath () {
-#    addToSearchPath PERL5LIB $1/lib/perl5/site_perl
-#}
+# bashism; todo: pass lambda
+$ENV{addPerlLibPath} = q[
+    my ($path) = @_;
+    addToSearchPath('PERL5LIB', "$path/lib");
+];
 
-#addEnvHooks "$hostOffset" addPerlLibPath
+addEnvHooks($hostOffset, 'addPerlLibPath');
