@@ -69,17 +69,17 @@ assert crossSystem == null;
 
     # TODO: build from source
     gnu-utils = let
-      msysPackages  = import (../../development/mingw-modules/msys-packages- + (if stdenv.buildPlatform.is64bit then "x86_64.nix" else "i686.nix")) {
-                        stdenvNoCC = stdenv; # with 7z.exe
-                        fetchurl = stdenv.fetchurlBoot;
-                        inherit msysPackages mingwPackages;
-                      };
-      mingwPackages = import (../../development/mingw-modules/mingw- + (if stdenv.buildPlatform.is64bit then "x86_64.nix" else "i686.nix")) {
-                        stdenvNoCC = stdenv; # with 7z.exe
-                        fetchurl = stdenv.fetchurlBoot;
-                        inherit msysPackages mingwPackages;
-                      };
-      inherit (msysPackages) patch grep gawk sed;
+      msysPacman  = import (../../development/mingw-modules/msys-pacman- + (if stdenv.buildPlatform.is64bit then "x86_64.nix" else "i686.nix")) {
+                      stdenvNoCC = stdenv; # with 7z.exe
+                      fetchurl = stdenv.fetchurlBoot;
+                      inherit msysPacman mingwPacman;
+                    };
+      mingwPacman = import (../../development/mingw-modules/mingw-pacman- + (if stdenv.buildPlatform.is64bit then "x86_64.nix" else "i686.nix")) {
+                      stdenvNoCC = stdenv; # with 7z.exe
+                      fetchurl = stdenv.fetchurlBoot;
+                      inherit msysPacman mingwPacman;
+                    };
+      inherit (msysPacman) patch grep gawk sed;
     in stdenv.mkDerivation {
       name = "gnu-utils";
       buildInputs = [ patch grep sed gawk ];
@@ -93,7 +93,7 @@ assert crossSystem == null;
                                              ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${gawk }/usr/bin/*.dll"    } %out%\bin''
                                              ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${patch}/usr/bin/*.dll"    } %out%\bin''
                                            ];
-      passthru = { inherit (msysPackages) patch grep gawk sed; };
+      passthru = { inherit (msysPacman) patch grep gawk sed; };
     };
 
     perl-for-stdenv-shell = let

@@ -88,7 +88,7 @@ sub emitNix {
   #my $isMsys = exists($repo->{'msys2-runtime'}) ? 'true' : 'false';
 print $out
 q[ # GENERATED FILE
-{stdenvNoCC, fetchurl, mingwPackages, msysPackages}:
+{stdenvNoCC, fetchurl, mingwPacman, msysPacman}:
 
 let
   fetch = { pname, version, srcs, buildInputs ? [], broken ? false }:
@@ -138,7 +138,7 @@ let
           chdir($ENV{out});
           ${ stdenvNoCC.lib.optionalString (!(].($subsystem eq 'msys' ? 'true' : 'false').q[ && builtins.elem pname ["msys2-runtime" "bash" "coreutils" "gmp" "libiconv" "gcc-libs" "libintl"])) ''
                 if (-f ".INSTALL") {
-                  $ENV{PATH} = '${msysPackages.bash}/usr/bin;${msysPackages.coreutils}/usr/bin';
+                  $ENV{PATH} = '${msysPacman.bash}/usr/bin;${msysPacman.coreutils}/usr/bin';
                   system("bash -c \"ls -la ; . .INSTALL ; post_install || (echo 'post_install failed'; true)\"") == 0 or die;
                 }
               '' }
@@ -170,14 +170,14 @@ let
 ];
 
   # aliases
-  print $out  "  sh = bash;\n"                       if !exists($repo->{sh})      && exists($repo->{bash});
-  print $out  "  awk = gawk;\n"                      if !exists($repo->{awk})     && exists($repo->{gawk});
-  print $out  "  libjpeg = libjpeg-turbo;\n"         if !exists($repo->{libjpeg}) && exists($repo->{'libjpeg-turbo'});
-  print $out  "  minizip = minizip2;\n"              if !exists($repo->{minizip}) && exists($repo->{minizip2});
-  print $out  "  vulkan = vulkan-loader;\n"          if !exists($repo->{vulkan})  && exists($repo->{'vulkan-loader'});
-  print $out  "  bash = msysPackages.bash;\n"        if !exists($repo->{bash});
-  print $out  "  winpty = msysPackages.winpty;\n"    if !exists($repo->{winpty});
-  print $out  "  python3 = mingwPackages.python3;\n" if !exists($repo->{python3});
+  print $out  "  sh = bash;\n"                     if !exists($repo->{sh})      && exists($repo->{bash});
+  print $out  "  awk = gawk;\n"                    if !exists($repo->{awk})     && exists($repo->{gawk});
+  print $out  "  libjpeg = libjpeg-turbo;\n"       if !exists($repo->{libjpeg}) && exists($repo->{'libjpeg-turbo'});
+  print $out  "  minizip = minizip2;\n"            if !exists($repo->{minizip}) && exists($repo->{minizip2});
+  print $out  "  vulkan = vulkan-loader;\n"        if !exists($repo->{vulkan})  && exists($repo->{'vulkan-loader'});
+  print $out  "  bash = msysPacman.bash;\n"        if !exists($repo->{bash});
+  print $out  "  winpty = msysPacman.winpty;\n"    if !exists($repo->{winpty});
+  print $out  "  python3 = mingwPacman.python3;\n" if !exists($repo->{python3});
 
   my $one = sub {
     my ($pname, $version, $filenames, $sha256s, $depends) = @_;
@@ -262,7 +262,7 @@ qq<
 for my $arch ('i686', 'x86_64') {
   my %msys_repo = parseDB(File::Fetch->new(uri => "http://repo.msys2.org/msys/$arch/msys.db")->fetch(to => $ENV{TMP}));
   #my %msys_repo = parseDB('msys.db');
-  open(my $out, ">msys-packages-$arch.nix") or die $!;
+  open(my $out, ">msys-pacman-$arch.nix") or die $!;
   binmode $out;
   emitNix($out, 'msys', $arch, \%msys_repo);
   close($out);
@@ -270,7 +270,7 @@ for my $arch ('i686', 'x86_64') {
 
   my %mingw64db_repo = parseDB(File::Fetch->new(uri => "http://repo.msys2.org/mingw/$arch/mingw".($arch eq 'x86_64' ? 64 : 32).".db")->fetch(to => $ENV{TMP}));
   #my %mingw64db_repo = parseDB('mingw64.db');
-  open(my $out, ">mingw-packages-$arch.nix") or die $!;
+  open(my $out, ">mingw-pacman-$arch.nix") or die $!;
   binmode $out;
   emitNix($out, 'mingw', $arch, \%mingw64db_repo);
   close($out);

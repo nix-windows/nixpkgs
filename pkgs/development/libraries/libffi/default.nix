@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, fetchurl, fetchpatch, buildEnv, msysPackages, mingwPackages
+{ stdenv, fetchFromGitHub, fetchurl, fetchpatch, buildEnv, msysPacman, mingwPacman
 , autoreconfHook
 
 # libffi is used in darwin stdenv
@@ -12,11 +12,11 @@ if stdenv.hostPlatform.isMicrosoft then
 let
 # msysenv = buildEnv {
 #   name = "msysenv";
-#   paths = [ mingwPackages.binutils ] ++ (with msysPackages; [ automake-wrapper autoconf libtool make coreutils grep sed texinfo ]);
+#   paths = [ mingwPacman.binutils ] ++ (with msysPacman; [ automake-wrapper autoconf libtool make coreutils grep sed texinfo ]);
 # };
   msysenv = stdenv.mkDerivation rec {
     name         = "msysenv";
-    buildInputs  = [ mingwPackages.binutils ] ++ (with msysPackages; [ automake-wrapper autoconf libtool make coreutils grep sed texinfo ]);
+    buildInputs  = [ mingwPacman.binutils ] ++ (with msysPacman; [ automake-wrapper autoconf libtool make coreutils grep sed texinfo ]);
     phases       = ["installPhase"];
     installPhase = stdenv.lib.concatMapStrings (x: ''symtree_link($ENV{out}, '${x}', '.');'') buildInputs;
   };

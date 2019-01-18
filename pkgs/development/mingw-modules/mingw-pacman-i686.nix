@@ -1,5 +1,5 @@
  # GENERATED FILE
-{stdenvNoCC, fetchurl, mingwPackages, msysPackages}:
+{stdenvNoCC, fetchurl, mingwPacman, msysPacman}:
 
 let
   fetch = { pname, version, srcs, buildInputs ? [], broken ? false }:
@@ -49,7 +49,7 @@ let
           chdir($ENV{out});
           ${ stdenvNoCC.lib.optionalString (!(false && builtins.elem pname ["msys2-runtime" "bash" "coreutils" "gmp" "libiconv" "gcc-libs" "libintl"])) ''
                 if (-f ".INSTALL") {
-                  $ENV{PATH} = '${msysPackages.bash}/usr/bin;${msysPackages.coreutils}/usr/bin';
+                  $ENV{PATH} = '${msysPacman.bash}/usr/bin;${msysPacman.coreutils}/usr/bin';
                   system("bash -c \"ls -la ; . .INSTALL ; post_install || (echo 'post_install failed'; true)\"") == 0 or die;
                 }
               '' }
@@ -77,8 +77,8 @@ let
   libjpeg = libjpeg-turbo;
   minizip = minizip2;
   vulkan = vulkan-loader;
-  bash = msysPackages.bash;
-  winpty = msysPackages.winpty;
+  bash = msysPacman.bash;
+  winpty = msysPacman.winpty;
 
   "3proxy" = fetch {
     pname       = "3proxy";

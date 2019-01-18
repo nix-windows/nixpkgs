@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchFromGitHub, mingwPackages, pkgsCross }:
+{ stdenv, lib, fetchFromGitHub, mingwPacman, pkgsCross }:
 
 stdenv.mkDerivation {
   name = "x64dbg-2019-01-10";
@@ -10,7 +10,7 @@ stdenv.mkDerivation {
     fetchSubmodules = true;
   };
 
-# nativeBuildInputs = [ mingwPackages.tools-git /* genlib.exe */ ];
+# nativeBuildInputs = [ mingwPacman.tools-git /* genlib.exe */ ];
 
   # TODO: use qt from nixpkgs
   QT32PATH      = lib.optionalString (!stdenv.is64bit) "C:/Qt/Qt5.12.0/5.12.0/msvc2017/bin";

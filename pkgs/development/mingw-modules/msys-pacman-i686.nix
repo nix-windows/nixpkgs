@@ -1,5 +1,5 @@
  # GENERATED FILE
-{stdenvNoCC, fetchurl, mingwPackages, msysPackages}:
+{stdenvNoCC, fetchurl, mingwPacman, msysPacman}:
 
 let
   fetch = { pname, version, srcs, buildInputs ? [], broken ? false }:
@@ -49,7 +49,7 @@ let
           chdir($ENV{out});
           ${ stdenvNoCC.lib.optionalString (!(true && builtins.elem pname ["msys2-runtime" "bash" "coreutils" "gmp" "libiconv" "gcc-libs" "libintl"])) ''
                 if (-f ".INSTALL") {
-                  $ENV{PATH} = '${msysPackages.bash}/usr/bin;${msysPackages.coreutils}/usr/bin';
+                  $ENV{PATH} = '${msysPacman.bash}/usr/bin;${msysPacman.coreutils}/usr/bin';
                   system("bash -c \"ls -la ; . .INSTALL ; post_install || (echo 'post_install failed'; true)\"") == 0 or die;
                 }
               '' }
@@ -68,7 +68,7 @@ let
   callPackage = pkgs.newScope self;
   sh = bash;
   awk = gawk;
-  python3 = mingwPackages.python3;
+  python3 = mingwPacman.python3;
 
   "apr" = fetch {
     pname       = "apr";
