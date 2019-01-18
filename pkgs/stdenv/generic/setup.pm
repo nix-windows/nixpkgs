@@ -27,7 +27,7 @@ sub runHook {
 #     set -u # May be called from elsewhere, so do `set -u`.
 #
     my ($hookName, @rest) = @_;
-    my @hooksSlice = split / +/, (($ENV{$hookName."Hooks"} || '') =~ s/^\s+|\s+$//r);
+    my @hooksSlice = split / +/, (($ENV{$hookName."Hooks"} || '') =~ s/^\s+|\s+$//gr);
     print("runHook hookName=$hookName hooksSlice=@hooksSlice\n");
 #   die "TODO" if scalar(@hooksSlice) > 0;
 #     shift
@@ -80,7 +80,7 @@ sub runOneHook {
 #     set -u # May be called from elsewhere, so do `set -u`.
 
     my ($hookName, @rest) = @_;
-    my @hooksSlice = split / +/, ($ENV{$hookName."Hooks"} =~ s/^\s+|\s+$//r);
+    my @hooksSlice = split / +/, ($ENV{$hookName."Hooks"} =~ s/^\s+|\s+$//gr);
     print("runOneHook hookName=$hookName hooksSlice=@hooksSlice\n");
 
     my $ret = 1;
@@ -903,7 +903,7 @@ sub unpackPhase() {
     # By default, add write permission to the sources.  This is often
     # necessary when sources have been copied from other store
     # locations.
-    if ($ENV{dontMakeSourcesWritable} ne '1') {
+    if (($ENV{dontMakeSourcesWritable} || '') ne '1') {
 #       chmod -R u+w -- "$sourceRoot"
         findL { attribL('-r', $_); } $ENV{sourceRoot}; # ignore chmod error
     }
@@ -915,7 +915,7 @@ sub unpackPhase() {
 sub patchPhase() {
     runHook('prePatch');
 #
-    for my $i (split / +/, $ENV{patches}) {
+    for my $i (split / +/, $ENV{patches} || '') {
         print("applying patch $i\n");
         die "patch file `$i' does not exist" unless -f $i;
         if ($i =~ /\.(gz|bz2|xz|lzma|7z)$/) {
@@ -1238,7 +1238,7 @@ sub showPhaseHeader {
 }
 #
 #
-my $phases;
+
 sub genericBuild() {
     for my $k (sort (keys %ENV)) {
       print("genericBuild env: $k=$ENV{$k};\n");
@@ -1258,15 +1258,27 @@ sub genericBuild() {
         return;
     }
 
-    if ($ENV{phases}) {
-        $phases = $ENV{phases};
-    } else {
-        $phases = "$ENV{prePhases} unpackPhase patchPhase $ENV{preConfigurePhases} configurePhase $ENV{preBuildPhases} buildPhase checkPhase $ENV{preInstallPhases} installPhase $ENV{preFixupPhases} fixupPhase installCheckPhase $ENV{preDistPhases} distPhase $ENV{postPhases}";
-    }
-    $phases =~ s/^\s+|\s+$//;
-    print("phases=$phases\n");
+    $ENV{phases} ||= ($ENV{prePhases} || '').
+                     " unpackPhase ".
+                     " patchPhase ".
+                     ($ENV{preConfigurePhases} || '').
+                     " configurePhase ".
+                     ($ENV{preBuildPhases} || '').
+                     " buildPhase ".
+                     " checkPhase ".
+                     ($ENV{preInstallPhases} || '').
+                     " installPhase ".
+                     ($ENV{preFixupPhases} || '').
+                     " fixupPhase ".
+                     " installCheckPhase ".
+                     ($ENV{preDistPhases} || '').
+                     " distPhase ".
+                     ($ENV{postPhases} || '');
+    $ENV{phases} =~ s/^\s+|\s+$//g;
+    $ENV{phases} =~ s/\s+$/ /g;
+    print("phases=$ENV{phases}\n");
 
-    for my $curPhase (split / +/, $phases) {
+    for my $curPhase (split / /, $ENV{phases}) {
         print("curPhase1=$curPhase\n");
         next if $curPhase eq "buildPhase"           && $ENV{dontBuild};
         next if $curPhase eq "checkPhase"           && !$ENV{doCheck};
