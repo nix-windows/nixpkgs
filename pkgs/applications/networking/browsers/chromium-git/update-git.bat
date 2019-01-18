@@ -101,14 +101,15 @@ sub parsedeps {
     # flatten fail because of duplicate valiable names, so rename them
     if (-f 'src\third_party\angle\buildtools\DEPS') {
       changeFile {
-        s/\blibcxx_revision\b/libcxx_revision2/g;
-        s/\blibcxxabi_revision\b/libcxxabi_revision2/g;
+        s/\blibcxx_revision\b/${1}2/g;
+        s/\blibcxxabi_revision\b/${1}2/g;
+        s/\blibunwind_revision\b/${1}2/g;
         $_;
       } 'src\third_party\angle\buildtools\DEPS';
     }
 
     system("$python2 depot_tools/gclient.py config https://chromium.googlesource.com/chromium/src.git") == 0 or die;
-    system("$python2 depot_tools/gclient.py flatten --pin-all-deps > flat"                            ) == 0 or die;
+    system("$python2 depot_tools/gclient.py flatten -v --pin-all-deps > flat"                         ) == 0 or die;
 
     my $content = readFile('flat');
     while ($content =~ /"([^"]+)":\s*\{\s*"url":\s*"(.+)@(.+)"/gm) {
