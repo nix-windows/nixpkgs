@@ -9,7 +9,18 @@
 if stdenv.hostPlatform.isMicrosoft then
 
 # TODO? stdenvMsys.mkDerivation
-stdenv.mkDerivation rec {
+let
+# msysenv = buildEnv {
+#   name = "msysenv";
+#   paths = [ mingwPackages.binutils ] ++ (with msysPackages; [ automake-wrapper autoconf libtool make coreutils grep sed texinfo ]);
+# };
+  msysenv = stdenv.mkDerivation rec {
+    name         = "msysenv";
+    buildInputs  = [ mingwPackages.binutils ] ++ (with msysPackages; [ automake-wrapper autoconf libtool make coreutils grep sed texinfo ]);
+    phases       = ["installPhase"];
+    installPhase = stdenv.lib.concatMapStrings (x: ''symtree_link($ENV{out}, '${x}', '.');'') buildInputs;
+  };
+in stdenv.mkDerivation rec {
   version = "3.3-rc0";  # 3.2.1 hits https://github.com/libffi/libffi/issues/149
   name = "libffi-${version}";
 
@@ -20,19 +31,11 @@ stdenv.mkDerivation rec {
     sha256 = "1nc1jpfm0g6mgkp5xp8m3wjicqnhnszs9wz3wn976s0bwvshq11q";
   };
 
-  buildPhase = let
-    msysenv = buildEnv {
-      name = "msysenv";
-      paths = [ mingwPackages.binutils ] ++ (with msysPackages; [ automake-wrapper autoconf libtool make coreutils grep sed texinfo ]);
-    };
-  in ''
-    # make MSYS FHS with writable /tmp (todo?: use symlinktree_* functions)
+  buildPhase = ''
+    # make a copy of MSYS FHS with writable /tmp
     my $msysroot = "$ENV{NIX_BUILD_TOP}/msysroot";
-    make_pathL("$msysroot/tmp");
-    for my $dirname (glob("${msysenv}/*")) {
-      die "not a dir: $dirname" unless -d $dirname;
-      uncsymlink($dirname => "$msysroot/".basename($dirname)) or die $!;
-    }
+    symtree_link($msysroot, '${msysenv}', '.');
+    symtree_reify($msysroot, 'tmp/_');
     $ENV{PATH} = "$msysroot/mingw64/bin;$msysroot/usr/bin;$ENV{PATH}";
 
     changeFile { s/-nologo -W3/-nologo -W3 -DFFI_BUILDING_DLL/gr; } 'msvcc.sh';
@@ -51,6 +54,8 @@ stdenv.mkDerivation rec {
     copyL 'x86_64-w64-mingw32/.libs/libffi_convenience.lib',  "$ENV{out}/lib/libffi_convenience.lib";
     copyL 'x86_64-w64-mingw32/.libs/libffi-7.lib',            "$ENV{out}/lib/ffi.lib";  # when building llvm, cmake is unable to find libffi-7.lib, only ffi.lib
   '';
+
+  passthru.msysenv = msysenv;
 }
 
 else
