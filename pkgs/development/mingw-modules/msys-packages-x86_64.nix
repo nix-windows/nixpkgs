@@ -57,8 +57,6 @@ let
           unlinkL ".INSTALL";
           unlinkL ".MTREE";
           unlinkL ".PKGINFO";
-
-
         ''
       else /* on mingw or linux */
         throw "todo";

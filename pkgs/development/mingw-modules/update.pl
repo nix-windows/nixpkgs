@@ -87,7 +87,7 @@ sub emitNix {
 
   #my $isMsys = exists($repo->{'msys2-runtime'}) ? 'true' : 'false';
 print $out
-qq[ # GENERATED FILE
+q[ # GENERATED FILE
 {stdenvNoCC, fetchurl, mingwPackages, msysPackages}:
 
 let
@@ -95,13 +95,13 @@ let
     if stdenvNoCC.isShellCmdExe /* on mingw bootstrap */ then
       stdenvNoCC.mkDerivation {
         inherit version buildInputs;
-        name = "$subsystem$bits-\${pname}-\${version}";
+        name = "]."$subsystem$bits".q[-${pname}-${version}";
         srcs = map ({filename, sha256}:
                     fetchurl {
-                      url = "$baseUrl/\${filename}";
+                      url = "].$baseUrl.q[/${filename}";
                       inherit sha256;
                     }) srcs;
-        PATH = stdenvNoCC.lib.concatMapStringsSep ";" (x: "\${x}\\\\bin") stdenvNoCC.initialPath; # it adds 7z.exe to PATH
+        PATH = stdenvNoCC.lib.concatMapStringsSep ";" (x: "${x}\\\\bin") stdenvNoCC.initialPath; # it adds 7z.exe to PATH
         builder = stdenvNoCC.lib.concatStringsSep " & " ( assert (builtins.length srcs == 1);
                                                           [ ''echo PATH=%PATH%''
                                                             ''7z x %srcs% -so  |  7z x -aoa -si -ttar -o%out%''
@@ -109,10 +109,10 @@ let
                                                             ''del .BUILDINFO .INSTALL .MTREE .PKGINFO''
                                                           ]
                                                        ++ stdenvNoCC.lib.concatMap (dep: let
-                                                            tgt = stdenvNoCC.lib.replaceStrings ["/"] ["\\\\"] "\${dep}";
+                                                            tgt = stdenvNoCC.lib.replaceStrings ["/"] ["\\\\"] "${dep}";
                                                           in [
-#                                                           ''FOR /R \${tgt} %G in (*) DO (set localname=%G???? if not exist %localname% mklink %localname% \${tgt})''
-                                                            ''xcopy /E/H/B/F/I/Y \${tgt} .''
+#                                                           ''FOR /R ${tgt} %G in (*) DO (set localname=%G???? if not exist %localname% mklink %localname% ${tgt})''
+                                                            ''xcopy /E/H/B/F/I/Y ${tgt} .''
                                                           ]) buildInputs
                                                        ++ [ ''popd'' ]
                                                         );
@@ -120,40 +120,44 @@ let
     else
     stdenvNoCC.mkDerivation {
       inherit version buildInputs;
-      name = "\${pname}-\${version}";
+      name = "${pname}-${version}";
       srcs = map ({filename, sha256}:
                   fetchurl {
-                    url = "$baseUrl/\${filename}";
+                    url = "].$baseUrl.q[/${filename}";
                     inherit sha256;
                   }) srcs;
       sourceRoot = ".";
       buildPhase = if stdenvNoCC.isShellPerl /* on native windows */ then
         ''
-          dircopy('.', \$ENV{out}) or die "dircopy(., \$ENV{out}): \$!";
-          \${ stdenvNoCC.lib.concatMapStringsSep "\\n" (dep: ''
-                for my \$path (glob('\${dep}/*')) {
-                  symtree_link(\$ENV{out}, \$path, "\$ENV{out}/".basename(\$path)) if basename(\$path) ne 'bin';
+          dircopy('.', $ENV{out}) or die "dircopy(., $ENV{out}): $!";
+          ${ stdenvNoCC.lib.concatMapStringsSep "\n" (dep: ''
+                for my $path (glob('${dep}/*')) {
+                  symtree_link($ENV{out}, $path, basename($path)) if basename($path) ne 'bin';
                 }
               '') buildInputs }
-          chdir(\$ENV{out});
-          \${ stdenvNoCC.lib.optionalString (!(].($subsystem eq 'msys' ? 'true' : 'false').qq[ && builtins.elem pname ["msys2-runtime" "bash" "coreutils" "gmp" "libiconv" "gcc-libs" "libintl"])) ''
+          chdir($ENV{out});
+          ${ stdenvNoCC.lib.optionalString (!(].($subsystem eq 'msys' ? 'true' : 'false').q[ && builtins.elem pname ["msys2-runtime" "bash" "coreutils" "gmp" "libiconv" "gcc-libs" "libintl"])) ''
                 if (-f ".INSTALL") {
-                  \$ENV{PATH} = '\${msysPackages.bash}/usr/bin;\${msysPackages.coreutils}/usr/bin';
-                  system("bash -c \\"ls -la ; . .INSTALL ; post_install || (echo 'post_install failed'; true)\\"") == 0 or die;
+                  $ENV{PATH} = '${msysPackages.bash}/usr/bin;${msysPackages.coreutils}/usr/bin';
+                  system("bash -c \"ls -la ; . .INSTALL ; post_install || (echo 'post_install failed'; true)\"") == 0 or die;
                 }
               '' }
           unlinkL ".BUILDINFO";
           unlinkL ".INSTALL";
           unlinkL ".MTREE";
-          unlinkL ".PKGINFO";
-
-          # make symlinks in /bin, mingw does not need it, it is only for nixpkgs convenience, to have the executables in \$derivation/bin
-          symtree_reify(\$ENV{out}, "bin/_");
-          for my \$file (glob("\$ENV{out}/].($subsystem eq "mingw" ? "mingw$bits" : "usr").qq[/bin/*")) {
-            if (-f \$file) {
-              uncsymlink(\$file => "\$ENV{out}/bin/".basename(\$file)) or die "uncsymlink(\$file => \$ENV{out}/bin/".basename(\$file)."): \$!";
-            }
-          }
+          unlinkL ".PKGINFO";].
+          ( $subsystem eq "mingw"
+            ? q[
+                 # make symlinks in /bin, mingw does not need it, it is only for nixpkgs convenience, to have the executables in $derivation/bin
+                 # do not do it for msys, /bin/sh symlinked to /usr/bin/sh does not works as expected, it tries to assume the FHS root is at $0/../..
+                 symtree_reify($ENV{out}, "bin/_");
+                 for my $file (glob("$ENV{out}/].($subsystem eq "mingw" ? "mingw$bits" : "usr").q[/bin/*")) {
+                   if (-f $file) {
+                     uncsymlink($file => "$ENV{out}/bin/".basename($file)) or die "uncsymlink($file => $ENV{out}/bin/".basename($file)."): $!";
+                   }
+                 }]
+            : q[]
+            ).q[
         ''
       else /* on mingw or linux */
         throw "todo";
