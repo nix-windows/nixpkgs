@@ -43,7 +43,7 @@ let
           dircopy('.', $ENV{out}) or die "dircopy(., $ENV{out}): $!";
           ${ stdenvNoCC.lib.concatMapStringsSep "\n" (dep: ''
                 for my $path (glob('${dep}/*')) {
-                  symtree_link($ENV{out}, $path, "$ENV{out}/".basename($path)) if basename($path) ne 'bin';
+                  symtree_link($ENV{out}, $path, basename($path)) if basename($path) ne 'bin';
                 }
               '') buildInputs }
           chdir($ENV{out});
@@ -58,13 +58,15 @@ let
           unlinkL ".MTREE";
           unlinkL ".PKGINFO";
 
-          # make symlinks in /bin, mingw does not need it, it is only for nixpkgs convenience, to have the executables in $derivation/bin
-          symtree_reify($ENV{out}, "bin/_");
-          for my $file (glob("$ENV{out}/mingw32/bin/*")) {
-            if (-f $file) {
-              uncsymlink($file => "$ENV{out}/bin/".basename($file)) or die "uncsymlink($file => $ENV{out}/bin/".basename($file)."): $!";
-            }
-          }
+              # make symlinks in /bin, mingw does not need it, it is only for nixpkgs convenience, to have the executables in $derivation/bin
+              # do not do it for msys, /bin/sh symlinked to /usr/bin/sh does not works as expected, it tries to assume root is at update.pl/../..
+              symtree_reify($ENV{out}, "bin/_");
+              for my $file (glob("$ENV{out}/mingw32/bin/*")) {
+                if (-f $file) {
+                  uncsymlink($file => "$ENV{out}/bin/".basename($file)) or die "uncsymlink($file => $ENV{out}/bin/".basename($file)."): $!";
+                }
+              }
+
         ''
       else /* on mingw or linux */
         throw "todo";
