@@ -1,5 +1,3 @@
-# TODO: qt needs post-install patch. pacman does it. without the patch qt apps do not work (test case: kate)
-
 use warnings;
 use strict;
 use File::Fetch;
