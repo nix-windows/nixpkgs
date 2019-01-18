@@ -1,3 +1,21 @@
+@rem = '--*-Perl-*--
+@echo off
+set NIX=C:\nix-windows
+set NIX_STORE_DIR=C:\nix\store
+set NIX_PATH=nixpkgs=..\..\..
+
+for /f %%i in ('%NIX%\bin\nix-build.exe --no-out-link -E "(import <nixpkgs> { }).stdenv.cc.perl-for-stdenv-shell"'         ) do set PERL=%%i
+echo NIX=%NIX%
+echo PERL=%PERL%
+
+%PERL%\bin\perl.exe -x -S %0 %*
+
+if errorlevel 1 goto script_failed_so_exit_with_non_zero_val 2>nul
+exit
+@rem ';
+#!/usr/bin/perl
+#line 18
+
 use warnings;
 use strict;
 use File::Fetch;
@@ -134,7 +152,8 @@ let
                 }
               '') buildInputs }
           chdir($ENV{out});
-          ${ stdenvNoCC.lib.optionalString (!(].($subsystem eq 'msys' ? 'true' : 'false').q[ && builtins.elem pname ["msys2-runtime" "bash" "coreutils" "gmp" "libiconv" "gcc-libs" "libintl"])) ''
+          ${ # avoid infinite recursion by skipping `bash' and `coreutils' and their deps (TODO: make a fake env to run post_install)
+             stdenvNoCC.lib.optionalString (!(builtins.elem "].$subsystem.q[/${pname}" ["msys/msys2-runtime" "msys/bash" "msys/coreutils" "msys/gmp" "msys/libiconv" "msys/gcc-libs" "msys/libintl"])) ''
                 if (-f ".INSTALL") {
                   $ENV{PATH} = '${msysPacman.bash}/usr/bin;${msysPacman.coreutils}/usr/bin';
                   system("bash -c \"ls -la ; . .INSTALL ; post_install || (echo 'post_install failed'; true)\"") == 0 or die;
