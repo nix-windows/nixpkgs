@@ -130,7 +130,7 @@ sub parsedeps {
         if ($path ne 'src') {
           die "$basedir/$rev does not exist" unless -d "$basedir/$rev";
           if (-e "$basedir/$path") { # do not let `symtree_link` to do merge
-            remove_treeL("$basedir/$path") or die $!;
+            remove_treeL("$basedir/$path") or die "remove_treeL($basedir/$path): $!";
           }
           symtree_link("$basedir/src", "$basedir/$rev" => "$basedir/$path") or die;
         }

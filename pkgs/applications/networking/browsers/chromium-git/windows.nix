@@ -63,7 +63,7 @@ let
   } #// (extraAttrs.gnFlags or {})
   );
 
-  version = "73.0.3674.2";
+  version = "73.0.3676.0";
   deps = import (./sources- + version + ".nix") { inherit fetchgit; };
   src = stdenv.mkDerivation rec {
     name = "chromium-${version}-src";
