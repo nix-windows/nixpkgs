@@ -872,9 +872,10 @@ sub unpackPhase() {
     # it's rather hacky.
     my %dirsBefore = map { $_ => 1 } (grep { -d $_ } glob("*"));
 
-    # we unpack to %TEMP%, and such folder could appear in %TEMP% (it is still unclear how)
-    $dirsBefore{'AppData'} = 1;
+    # we unpack to %TEMP%, and such folder could appear in %TEMP% (it is still unclear how, as only static 7z.exe is run)
+    $dirsBefore{'AppData'        } = 1;
     $dirsBefore{'VSRemoteControl'} = 1;
+    $dirsBefore{'Microsoft'      } = 1; # for Microsoft\VSApplicationInsights
 
     # Unpack all source archives.
     for my $i (split / /, $ENV{srcs}) {
