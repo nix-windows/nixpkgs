@@ -1,5 +1,11 @@
-{ stdenv, fetchFromGitHub, fetchurl, xmlstarlet, makeWrapper, ant, jdk, rsync, javaPackages, libXxf86vm, gsettings-desktop-schemas }:
+{ stdenv, fetchFromGitHub, fetchurl, xmlstarlet, makeWrapper, ant, jdk, rsync, javaPackages, libXxf86vm, gsettings-desktop-schemas, mingwPacman }:
 
+let
+  reference = fetchurl {
+                url    = http://download.processing.org/reference.zip;
+                sha256 = "1wqil7jjsbd5hj0kp3s2yqaa0a1as8baiwm3qfx421ndwb7m7pnf";
+              };
+in
 stdenv.mkDerivation rec {
   version = "3.4";
   name = "processing3-${version}";
@@ -8,24 +14,34 @@ stdenv.mkDerivation rec {
     owner = "processing";
     repo = "processing";
     rev = "processing-0265-${version}";
-    sha256 = "12wpxgn2wd5vbasx9584w5yb1s319smq1zh8m7dvp7gkqw9plwp4";
+    sha256 = if stdenv.hostPlatform.isMicrosoft then
+               "153bmg1arh27cf86bi57ha61nph18k1j3mpsvf6gizabjcmzxqvr"
+             else
+               "12wpxgn2wd5vbasx9584w5yb1s319smq1zh8m7dvp7gkqw9plwp4";
   };
 
-  nativeBuildInputs = [ ant rsync makeWrapper ];
+  nativeBuildInputs = [ ant ] ++ stdenv.lib.optionals stdenv.hostPlatform.isLinux [ rsync makeWrapper ];
   buildInputs = [ jdk ];
 
-  buildPhase = ''
+  buildPhase = if stdenv.isShellPerl then ''
+    system('${mingwPacman.xmlstarlet-git}/bin/xmlstarlet ed --inplace -P -d "//get[@src=\"http://download.processing.org/reference.zip\"]" build/build.xml') == 0 or die;
+    copyL('${reference}', 'java/reference.zip') or die $!;
+
+    chdir('build');
+    changeFile { s|jre-download,||gr } 'build.xml';
+    system('${mingwPacman.xmlstarlet-git}/bin/xmlstarlet ed --inplace -P -d "//untar[@dest=\"windows/work\"]"       build.xml') == 0 or die;
+    system('${mingwPacman.xmlstarlet-git}/bin/xmlstarlet ed --inplace -P -d "//move[@tofile=\"windows/work/java\"]" build.xml') == 0 or die;
+    system('${mingwPacman.xmlstarlet-git}/bin/xmlstarlet ed --inplace -P -d "//delete[@failonerror=\"true\"]"       build.xml') == 0 or die;
+    system('ant build') == 0 or die;
+    chdir('..');
+  '' else ''
     # use compiled jogl to avoid patchelf'ing .so files inside jars
     rm core/library/*.jar
     cp ${javaPackages.jogl_2_3_2}/share/java/*.jar core/library/
 
     # do not download a file during build
     ${xmlstarlet}/bin/xmlstarlet ed --inplace -P -d '//get[@src="http://download.processing.org/reference.zip"]' build/build.xml
-    install -D -m0444 ${fetchurl {
-                          url    = http://download.processing.org/reference.zip;
-                          sha256 = "0ai0cr62gc7n6y22ki3qibyj1qnlaxv1miqxmmahfk3hpbyfqz9n";
-                        }
-                       } ./java/reference.zip
+    install -D -m0444 ${reference} ./java/reference.zip
 
     # suppress "Not fond of this Java VM" message box
     substituteInPlace app/src/processing/app/platform/LinuxPlatform.java \
@@ -37,7 +53,13 @@ stdenv.mkDerivation rec {
       ant build )
   '';
 
-  installPhase = ''
+  installPhase = if stdenv.isShellPerl then ''
+    dircopy('build/windows/work', "$ENV{out}/${name}");
+    uncsymlink('${jdk}'                                => "$ENV{out}/${name}/java");
+    make_pathL("$ENV{out}/bin");
+    uncsymlink("$ENV{out}/${name}/processing.exe"      => "$ENV{out}/bin/processing.exe");
+    uncsymlink("$ENV{out}/${name}/processing-java.exe" => "$ENV{out}/bin/processing-java.exe");
+  '' else ''
     mkdir $out
     cp -dpR build/linux/work $out/${name}
 
@@ -58,6 +80,6 @@ stdenv.mkDerivation rec {
     description = "A language and IDE for electronic arts";
     homepage = https://processing.org;
     license = licenses.gpl2Plus;
-    platforms = platforms.linux;
+    platforms = platforms.linux ++ platforms.windows;
   };
 }

@@ -18647,7 +18647,7 @@ with pkgs;
 
   processing = processing3;
   processing3 = callPackage ../applications/graphics/processing3 {
-    jdk = oraclejdk8;
+    jdk = if stdenv.hostPlatform.isMicrosoft then openjdk8.override{withFX=true;} else oraclejdk8;
   };
 
   # perhaps there are better apps for this task? It's how I had configured my preivous system.
