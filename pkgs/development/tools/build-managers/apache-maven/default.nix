@@ -6,7 +6,7 @@ let version = "3.5.4"; in
 stdenv.mkDerivation rec {
   name = "apache-maven-${version}";
 
-  builder = ./builder.sh;
+  builder = if stdenv.isShellPerl then ./builder.pl else ./builder.sh;
 
   src = fetchurl {
     url = "mirror://apache/maven/maven-3/${version}/binaries/${name}-bin.tar.gz";
@@ -21,7 +21,6 @@ stdenv.mkDerivation rec {
     description = "Build automation tool (used primarily for Java projects)";
     homepage = http://maven.apache.org/;
     license = licenses.asl20;
-    platforms = platforms.unix;
     maintainers = with maintainers; [ cko ];
   };
 }
