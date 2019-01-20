@@ -25,21 +25,7 @@ assert crossSystem == null;
       shell = builtins.getEnv "COMSPEC"; # "C:/Windows/System32/cmd.exe"; TODO: download some command-interpreter? maybe perl-static.exe?
     };
 
-    p7zip-i686 = stdenv.mkDerivation {
-      name = "7z-18.06-i686";
-      builder = lib.concatStringsSep " & " [ ''md %out%\bin''
-                                             ''copy ${lib.replaceStrings ["/"] ["\\"] "${
-                                                        stdenv.fetchurlBoot {
-                                                          url    = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/7z.exe";
-                                                          sha256 = "1pk8fg65f02dh1ygdq6qgjic7w6w6lzfvvpp0zi8d8y4bfx0baik";
-                                                        }}"} %out%\bin\7z.exe''
-                                             ''copy ${lib.replaceStrings ["/"] ["\\"] "${
-                                                        stdenv.fetchurlBoot {
-                                                          url    = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/7z.dll";
-                                                          sha256 = "0m6x1p6lrnbhlihnn72ir3qqzssaj1gvzg63z5d8mv47a5n39csk";
-                                                        }}"} %out%\bin\7z.dll''
-                                           ];
-    };
+    p7zip-i686 = import ./p7zip.nix { stdenvNoCC = stdenv; };
   })
 
 
