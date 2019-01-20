@@ -2,24 +2,28 @@
 
 if stdenv.hostPlatform.isMicrosoft then
 
-stdenv.mkDerivation rec {
-  version = "18.05";
+let
+  platform = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenv.hostPlatform.config};
+in stdenv.mkDerivation rec {
+  version = "18.06";
   name = "p7zip-${version}";
 
   src = fetchurl {
-    url = https://www.7-zip.org/a/7z1805-src.7z;
-    sha256 = "10sxwxrzllmsvijf01ni2kbxi3im14wzf03fb0sq81xdvjxzrb6r";
+    url = https://www.7-zip.org/a/7z1806-src.7z;
+    sha256 = "1fccqa2f0biy1wbh2m7y3jx8k0vj8kbxy32713ym2g6523i05z40";
   };
 
   sourceRoot = ".";
   dontConfigure = true;
   buildPhase = ''
-    chdir('CPP/7zip/UI/Console');
-    system("nmake CPU=AMD64 NEW_COMPILER=1") == 0 or die $!;
+    chdir('CPP/7zip');
+    system("nmake PLATFORM=${platform}") == 0 or die $!;
+    chdir('../..');
   '';
   installPhase = ''
-    make_pathL("$ENV{out}/bin")                   or die $!;
-    copyL("AMD64/7z.exe", "$ENV{out}/bin/7z.exe") or die $!;
+    make_pathL("$ENV{out}/bin")                                                    or die $!;
+    copyL("CPP/7zip/UI/Console/${platform}/7z.exe",        "$ENV{out}/bin/7z.exe") or die $!;
+    copyL("CPP/7zip/Bundles/Format7zF/${platform}/7z.dll", "$ENV{out}/bin/7z.dll") or die $!;
   '';
 }
 
