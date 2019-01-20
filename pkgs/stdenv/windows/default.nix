@@ -40,7 +40,8 @@ assert crossSystem == null;
       initialPath = [ prevStage.p7zip-i686 ];
     };
 
-    msblobs = import ../../../pkgs/development/compilers/msvc/msvc-2017-blobs.nix { stdenvNoCC = stdenv; };
+#   msblobs = import ../../../pkgs/development/compilers/msvc/msvc-2017-blobs.nix { stdenvNoCC = stdenv; };
+    msblobs = import ../../../pkgs/development/compilers/msvc/ewdk-1809-blobs.nix { stdenvNoCC = stdenv; };
 
 #   # it uses Windows's SSL libs, not openssl
 #   curl-static = stdenv.mkDerivation rec {
@@ -161,10 +162,11 @@ assert crossSystem == null;
       inherit config;
 
       inherit (prevStage.stdenv) buildPlatform targetPlatform hostPlatform shell initialPath fetchurlBoot;
-      cc = (import ../../../pkgs/development/compilers/msvc/msvc-2017.nix {
-              stdenvNoCC = prevStage.stdenv;
-              buildPackages = null;
-            }) // { inherit (prevStage) perl-for-stdenv-shell; };
+      cc = (#import ../../../pkgs/development/compilers/msvc/msvc-2017.nix {
+             import ../../../pkgs/development/compilers/msvc/ewdk-1809.nix {
+               stdenvNoCC = prevStage.stdenv;
+               buildPackages = null;
+             }) // { inherit (prevStage) perl-for-stdenv-shell; };
 #     fetchurlBoot = prevStage.fetchurl-curl-static;
       extraNativeBuildInputs = [];
     };

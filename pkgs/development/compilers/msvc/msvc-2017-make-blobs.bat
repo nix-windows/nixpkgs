@@ -212,7 +212,7 @@ unless (-f "sdk-$sdk_10_version.nar.xz") {
     make_pathL("sdk_10");
 
     dircopy("C:/Program Files (x86)/Windows Kits/10",                                   "sdk_10"        ) or die "$!";
-    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/DIA SDK", "sdk_10/DIA SDK") or die "$!"; # for chromium?
+    dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/DIA SDK", "sdk_10/DIA SDK") or die "$!"; # for chromium? (todo: move to msvc)
 
     # so far there is no `substituteInPlace`
     for my $filename (glob("sdk_10/DesignTime/CommonConfiguration/Neutral/*.props")) {

@@ -56,27 +56,29 @@ let
   makeWrapper =
     if buildPackages != null then
       buildPackages.makeWrapper
-    else if stdenvNoCC.isShellCmdExe then # TODO: no need?
-      stdenvNoCC.mkDerivation rec {
-        name         = "makeWrapper";
-        INCLUDE      = "${(msvc).INCLUDE};${(sdk).INCLUDE}";
-        LIB          = "${(msvc).LIB};${(sdk).LIB}";
-        PATH         = "${(msvc).PATH};${(sdk).PATH}";
-        builder      = lib.concatStringsSep " & " [ ''md %out%\bin''
-                                                    ''cl /O2 /MT /EHsc /Fe:%out%\bin\makeWrapper.exe /DINCLUDE=${INCLUDE} /DLIB=${LIB} /DCC=${(msvc).CLEXE} ${./makeWrapper.cpp}'' ];
-      }
+#   else if stdenvNoCC.isShellCmdExe then # TODO: no need?
+#     stdenvNoCC.mkDerivation rec {
+#       name         = "makeWrapper";
+#       INCLUDE      = "${(msvc).INCLUDE};${(sdk).INCLUDE}";
+#       LIB          = "${(msvc).LIB};${(sdk).LIB}";
+#       PATH         = "${(msvc).PATH};${(sdk).PATH}";
+#       builder      = lib.concatStringsSep " & " [ ''md %out%\bin''
+#                                                   ''cl /O2 /MT /EHsc /Fe:%out%\bin\makeWrapper.exe /DINCLUDE=${INCLUDE} /DLIB=${LIB} /DCC=${(msvc).CLEXE} ${./makeWrapper.cpp}'' ];
+#     }
     else if stdenvNoCC.isShellPerl then
       stdenvNoCC.mkDerivation rec {
         name         = "makeWrapper";
         INCLUDE      = "${(msvc).INCLUDE};${(sdk).INCLUDE}";
         LIB          = "${(msvc).LIB};${(sdk).LIB}";
         PATH         = "${(msvc).PATH};${(sdk).PATH}";
-        buildCommand = lib.concatStringsSep " ; " [ ''make_pathL("$ENV{out}/bin") or die $!''
-                                                    ''system("cl /O2 /MT /EHsc /Fe:$ENV{out}\\bin\\makeWrapper.exe /DINCLUDE=${INCLUDE} /DLIB=${LIB} /DCC=${(msvc).CLEXE} ${./makeWrapper.cpp}") == 0 or die'' ];
+        buildCommand = ''
+          make_pathL("$ENV{out}/bin") or die $!;
+          system("cl /O2 /MT /EHsc /Fe:$ENV{out}\\bin\\makeWrapper.exe /DINCLUDE=${INCLUDE} /DLIB=${LIB} /DCC=${(msvc).CLEXE} ${./makeWrapper.cpp}") == 0 or die;
+        '';
       }
     else throw "???";
-
-  cc2017 = stdenvNoCC.mkDerivation {
+in
+  stdenvNoCC.mkDerivation {
     name = "${msvc.name}+${sdk.name}+${msbuild.name}-${stdenvNoCC.buildPlatform.parsed.cpu.name}+${stdenvNoCC.hostPlatform.parsed.cpu.name}+${stdenvNoCC.targetPlatform.parsed.cpu.name}";
     buildInputs = [ msvc sdk msbuild vc ];
     buildCommand = ''
@@ -148,11 +150,5 @@ let
       LIB     = "${msvc.LIB};${sdk.LIB}";
       PATH    = "${msvc.PATH};${sdk.PATH}";
       LIBPATH = "${msvc.LIBPATH};${sdk.LIBPATH}";
-#     p7zip-static = prevStage.prevStage.p7zip-static;
-#     makeWrapper = prevStage.prevStage.makeWrapper /* todo:  targetPlatform*/;
-#     perl-for-stdenv-shell = prevStage.perl-for-stdenv-shell;
-#     curl-static = prevStage.curl-static;
-#     gnu-utils = prevStage.gnu-utils;
     };
-  };
-in cc2017
+  }
