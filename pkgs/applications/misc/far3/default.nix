@@ -71,7 +71,7 @@ let
 
 in
 stdenv.mkDerivation rec {
-  version = "3.0.5354.738";
+  version = "3.0.5354.738"; # update feed: https://github.com/FarGroup/FarManager/releases
   name = "far-${version}";
 
   src = fetchFromGitHub {

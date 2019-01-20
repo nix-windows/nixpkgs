@@ -23,7 +23,6 @@ goto endofperl
 use strict;
 use warnings;
 use Cwd;
-use File::Path qw(remove_tree make_path);
 use File::Basename  qw(dirname basename);
 use Win32::Utils    qw(readFile writeFile changeFile escapeWindowsArg dircopy readlink_f relsymlink uncsymlink symtree_reify symtree_link make_pathL remove_treeL findL);
 
@@ -70,7 +69,7 @@ unless (-d "$basedir/depot_tools") {
 if (1) {
   my $top = getcwd();
   unless (-d "$basedir/src/.git") {
-    make_path("$basedir/src") or die "make_path: $!";
+    make_pathL("$basedir/src") or die "make_pathL($basedir/src): $!";
     chdir("$basedir/src");
     system("$git init"                                                                    ) == 0 or die;
     system("$git remote add origin \"https://chromium.googlesource.com/chromium/src.git\"") == 0 or die;

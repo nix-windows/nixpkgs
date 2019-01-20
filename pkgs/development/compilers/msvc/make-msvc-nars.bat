@@ -1,25 +1,33 @@
-#!perl
+@rem = '--*-Perl-*--
+@echo off
+set NIX=C:\nix-windows
+set NIX_STORE_DIR=C:\nix\store
+set NIX_PATH=nixpkgs=..\..\..\..
 
-# This is to be run on Windows where Visual Studio, ActivePerl and 7zip are installed; Nix is not needed
+for /f %%i in ('%NIX%\bin\nix-build.exe --no-out-link -E "(import <nixpkgs> { }).stdenv.cc.perl-for-stdenv-shell"'         ) do set PERL=%%i
+echo NIX=%NIX%
+echo PERL=%PERL%
+
+%PERL%\bin\perl.exe -x -S %0 %*
+
+if errorlevel 1 goto script_failed_so_exit_with_non_zero_val 2>nul
+exit
+@rem ';
+#!/usr/bin/perl
+#line 18
 
 use strict;
 use warnings;
 use Cwd;
 use Math::BigInt;
-use Digest::SHA             qw(sha256_hex);
-use Digest::file            qw(digest_file_hex);
-use File::Copy              qw(copy move);
-use File::Path              qw(make_path remove_tree);
+use Digest::SHA     qw(sha256_hex);
+use Digest::file    qw(digest_file_hex);
 use File::Fetch;
-
-sub dircopy {
-  my ($from, $to) = @_;
-  my $exitCode = system('robocopy', $from =~ s|/|\\|gr, $to =~ s|/|\\|gr, '/E', '/SL', '/LOG:nul') == 0;
-  return $exitCode == 0 || $exitCode == 1;
-}
+use Win32::LongPath qw(copyL);
+use Win32::Utils    qw(readFile writeFile changeFile escapeWindowsArg dircopy make_pathL remove_treeL);
 
 unless (-f '7z.exe' && digest_file_hex('7z.exe', "SHA-256") eq '8e679f87ba503f3dfad96266ca79de7bfe3092dc6a58c0fe0438f7d4b19f0bbd') {
-  move(File::Fetch->new(uri => "https://github.com/volth/nixpkgs/releases/download/windows-0.3/7za.exe")->fetch(to=>"./"), '7z.exe') or die $!;
+    copyL(File::Fetch->new(uri => "https://github.com/volth/nixpkgs/releases/download/windows-0.3/7za.exe")->fetch(to=>"./"), '7z.exe') or die $!;
 }
 die unless -f '7z.exe' && digest_file_hex('7z.exe', "SHA-256") eq '8e679f87ba503f3dfad96266ca79de7bfe3092dc6a58c0fe0438f7d4b19f0bbd';
 
@@ -128,8 +136,8 @@ my $wd = getcwd();
 my $compression = '';
 
 unless (-d "msvc-$msvc_version.nar.xz") {
-    remove_tree("msvc");
-    make_path("msvc");
+    remove_treeL("msvc");
+    make_pathL("msvc");
     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc_version}/atlmfc",  "msvc/atlmfc" ) or die "$!";
     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc_version}/bin",     "msvc/bin"    ) or die "$!";
     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc_version}/include", "msvc/include") or die "$!";
@@ -152,8 +160,8 @@ unless (-d "msvc-$msvc_version.nar.xz") {
 }
 
 unless (-d "redist-$redist_version.nar.xz") {
-    remove_tree("redist");
-    make_path("redist");
+    remove_treeL("redist");
+    make_pathL("redist");
 
     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/${redist_version}/x86",                 "redist/x86"                             ) or die "$!";
     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Redist/MSVC/${redist_version}/x64",                 "redist/x64"                             ) or die "$!";
@@ -181,8 +189,8 @@ unless (-d "redist-$redist_version.nar.xz") {
 }
 
 unless (-f "sdk-$sdk_8_1_version.nar.xz") {
-    remove_tree("sdk_8_1");
-    make_path("sdk_8_1");
+    remove_treeL("sdk_8_1");
+    make_pathL("sdk_8_1");
 
     dircopy("C:/Program Files (x86)/Windows Kits/8.1",                                  "sdk_8_1") or die "$!";
 
@@ -201,25 +209,21 @@ unless (-f "sdk-$sdk_8_1_version.nar.xz") {
 }
 
 unless (-f "sdk-$sdk_10_version.nar.xz") {
-    remove_tree("sdk_10");
-    make_path("sdk_10");
+    remove_treeL("sdk_10");
+    make_pathL("sdk_10");
 
-    dircopy("C:/Program Files (x86)/Windows Kits/10",                                   "sdk_10") or die "$!";
+    dircopy("C:/Program Files (x86)/Windows Kits/10",                                   "sdk_10"        ) or die "$!";
     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/DIA SDK", "sdk_10/DIA SDK") or die "$!"; # for chromium?
 
     # so far there is no `substituteInPlace`
     for my $filename (glob("sdk_10/DesignTime/CommonConfiguration/Neutral/*.props")) {
-        open(my $in, $filename) or die $!;
-        open(my $out, ">$filename.new") or die $!;
-        for my $line (<$in>) {
-            $line =~ s|\$\(Registry:HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots\@KitsRoot10\)|\$([MSBUILD]::GetDirectoryNameOfFileAbove('\$(MSBUILDTHISFILEDIRECTORY)', 'sdkmanifest.xml'))\\|g;
-            $line =~ s|(\$\(Registry:[^)]+\))|<!-- $1 -->|g;
-            print $out $line;
-        }
-        close($in);
-        close($out);
-        move("$filename.new", $filename) or die $!;
+        changeFile {
+            s|\$\(Registry:HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots\@KitsRoot10\)|\$([MSBUILD]::GetDirectoryNameOfFileAbove('\$(MSBUILDTHISFILEDIRECTORY)', 'sdkmanifest.xml'))\\|g;
+            s|(\$\(Registry:[^)]+\))|<!-- $1 -->|g;
+            $_
+        } $filename;
     }
+    exit(1);
 
     my $sdk_nar     = writeNar("| 7z a $compression -si sdk-$sdk_10_version.nar.xz",    "sdk_10",     "sha256");
     print qq[
@@ -236,18 +240,15 @@ unless (-f "sdk-$sdk_10_version.nar.xz") {
 }
 
 unless (-f "msbuild-$msbuild_version.nar.xz") {
-    remove_tree("msbuild");
-    make_path("msbuild");
+    remove_treeL("msbuild");
+    make_pathL("msbuild");
 
     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/MSBuild", "msbuild") or die "$!";
 
     # other files refer to this one so msbuild might be unhappy if there is no file
     unless(-f 'msbuild/15.0/bin/Microsoft/WindowsXaml/v15.0/Microsoft.Windows.UI.Xaml.Cpp.targets') {
-      make_path('msbuild/15.0/bin/Microsoft/WindowsXaml/v15.0');
-      open(my $fh, '>msbuild/15.0/bin/Microsoft/WindowsXaml/v15.0/Microsoft.Windows.UI.Xaml.Cpp.targets') or die $!;
-      print $fh "<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n";
-      print $fh "</Project>\n";
-      close($fh);
+      writeFile('msbuild/15.0/bin/Microsoft/WindowsXaml/v15.0/Microsoft.Windows.UI.Xaml.Cpp.targets',
+                "<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n</Project>\n");
     }
 
     my $msbuild_nar = writeNar("| 7z a $compression -si msbuild-$msbuild_version.nar.xz", "msbuild", "sha256");
@@ -265,8 +266,8 @@ unless (-f "msbuild-$msbuild_version.nar.xz") {
 }
 
 unless (-f "vc1-$msbuild_version.nar.xz") {
-    remove_tree("vc1");
-    make_path("vc1");
+    remove_treeL("vc1");
+    make_pathL("vc1");
 
     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/Common7/IDE/VC", "vc1") or die "$!";
 

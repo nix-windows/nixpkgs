@@ -9,6 +9,7 @@ let
   };
 
   jdk = stdenv.mkDerivation {
+    # update feed: https://www.azul.com/downloads/zulu/zulu-windows/
     inherit ({
       name = if withFX then "zulu1.8.0_192-8.33.0.1-fx" else "zulu1.8.0_201-8.34.0.1";
       src = if stdenv.is64bit then

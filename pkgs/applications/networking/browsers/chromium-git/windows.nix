@@ -24,26 +24,14 @@ let
     in attrs: lib.concatStringsSep " " (lib.attrValues (lib.mapAttrs toFlag attrs));
 
 
-  gnFlags = mkGnFlags ({
-#   linux_use_bundled_binutils = false;
-#   use_lld = false;
-#   use_gold = true;
-#   gold_path = "${stdenv.cc}/bin";
+  gnFlags = mkGnFlags {
     is_debug = false;
-    # at least 2X compilation speedup
-    use_jumbo_build = true;
+    use_jumbo_build = true; # at least 2X compilation speedup
 
     proprietary_codecs = false;
     enable_nacl = false;
     is_component_build = true;
     is_clang = true;
-#   enable_nacl = enableNaCl;
-
-#   treat_warnings_as_errors = false;
-#   clang_use_chrome_plugins = false;
-#   remove_webcore_debug_symbols = true;
-#   enable_swiftshader = false;
-#   fieldtrial_testing_like_official_build = true;
 
     # Google API keys, see:
     #   http://www.chromium.org/developers/how-tos/api-keys
@@ -52,18 +40,9 @@ let
     google_api_key = "AIzaSyDGi15Zwl11UNe6Y-5XW_upsfyw31qwZPI";
     google_default_client_id = "404761575300.apps.googleusercontent.com";
     google_default_client_secret = "9rIFQjfnkykEmqb6FfjJQD1D";
-# } // optionalAttrs proprietaryCodecs {
-#   # enable support for the H.264 codec
-#   proprietary_codecs = true;
-#   enable_hangout_services_extension = true;
-#   ffmpeg_branding = "Chrome";
-# } // optionalAttrs pulseSupport {
-#   use_pulseaudio = true;
-#   link_pulseaudio = true;
-  } #// (extraAttrs.gnFlags or {})
-  );
+  };
 
-  version = "73.0.3676.0";
+  version = "73.0.3676.0"; # update feed https://github.com/chromium/chromium/releases
   deps = import (./sources- + version + ".nix") { inherit fetchgit; };
   src = stdenv.mkDerivation rec {
     name = "chromium-${version}-src";
