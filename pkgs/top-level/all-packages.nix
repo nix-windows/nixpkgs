@@ -6935,6 +6935,8 @@ with pkgs;
   ewdk1809 = callPackage ../development/compilers/msvc/ewdk-1809.nix { };
   msvc = ewdk1809;
 
+  processhacker = callPackage ../misc/processhacker { };
+
   gforth = callPackage ../development/compilers/gforth {};
 
   gtk-server = callPackage ../development/interpreters/gtk-server {};
