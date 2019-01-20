@@ -8,6 +8,7 @@ let
     name = "ewdk1809.iso";
     # https://docs.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk
     url = "https://software-download.microsoft.com/download/pr/EWDK_rs5_release_17763_180914-1434.iso";
+#   url = file://C:/Users/User/Downloads/EWDK_rs5_release_17763_180914-1434.iso;
     sha256 = "15hz222saddhbzvcf3yl8warv8rkp8j8zpxs1a1lr0hy0fvxkp4a";
   };
 

@@ -40,7 +40,6 @@ let
       #
       dircopy("${vc1}", $ENV{out}) or die "dircopy(${vc1}, $ENV{out}): $!";
 
-      # so far there is no `substituteInPlace`
       for my $filename (glob("$ENV{out}/VCTargets/*.props"), glob("$ENV{out}/VCTargets/*.targets")) {
         changeFile {
           s|>(\$\(Registry:HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots\@KitsRoot10\))|>${sdk}/<!-- $1 -->|g;
@@ -73,7 +72,12 @@ let
         PATH         = "${(msvc).PATH};${(sdk).PATH}";
         buildCommand = ''
           make_pathL("$ENV{out}/bin") or die $!;
-          system("cl /O2 /MT /EHsc /Fe:$ENV{out}\\bin\\makeWrapper.exe /DINCLUDE=${INCLUDE} /DLIB=${LIB} /DCC=${(msvc).CLEXE} ${./makeWrapper.cpp}") == 0 or die;
+          system('cl', '/O2', '/MT', '/EHsc',
+                 "/Fe:$ENV{out}\\bin\\makeWrapper.exe",
+                 '${lib.escapeWindowsArg "/DINCLUDE=${INCLUDE}"}',
+                 '${lib.escapeWindowsArg "/DLIB=${LIB}"}',
+                 '${lib.escapeWindowsArg "/DCC=${(msvc).CLEXE}"}',
+                 '${./makeWrapper.cpp}') == 0 or die;
         '';
       }
     else throw "???";

@@ -3,6 +3,7 @@
 { stdenvNoCC, buildPackages }:
 
 let
+  inherit (stdenvNoCC) lib;
 # host   = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenvNoCC.  hostPlatform.config};
 # target = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenvNoCC.targetPlatform.config};
 
@@ -20,7 +21,12 @@ let
         PATH         = "${(msvc).PATH};${(sdk).PATH}";
         buildCommand = ''
           make_pathL("$ENV{out}/bin") or die $!;
-          system("cl /O2 /MT /EHsc /Fe:$ENV{out}\\bin\\makeWrapper.exe /DINCLUDE=${INCLUDE} /DLIB=${LIB} /DCC=${(msvc).CLEXE} ${./makeWrapper.cpp}") == 0 or die;
+          system('cl', '/O2', '/MT', '/EHsc',
+                 "/Fe:$ENV{out}\\bin\\makeWrapper.exe",
+                 '${lib.escapeWindowsArg "/DINCLUDE=${INCLUDE}"}',
+                 '${lib.escapeWindowsArg "/DLIB=${LIB}"}',
+                 '${lib.escapeWindowsArg "/DCC=${(msvc).CLEXE}"}',
+                 '${./makeWrapper.cpp}') == 0 or die;
         '';
       }
     else throw "???";
@@ -51,15 +57,24 @@ in
                 , '--set',    'WindowsSDKVersion',       '${sdk.version}'
                 , '--set',    'WindowsSdkVerBinPath',    '${sdk}/bin/${sdk.version}/'
                 , '--set',    'WindowsSdkBinPath',       '${sdk}/bin/'
-                , '--set',    'WindowsSdkDir',           '${sdk}'
+                , '--set',    'WindowsSdkDir',           '${sdk}/'
                 , '--set',    'VCToolsVersion',          '${msvc.version}'
                 , '--set',    'VCToolsInstallDir',       '${msvc}/'
                 , '--set',    'VCToolsRedistDir',        '${msvc}/'
                 , '--set',    'VCTargetsPath',           '${vc}/VCTargets/'
                 , '--set',    'UCRTVersion',             '${sdk.version}'
                 , '--set',    'UniversalCRTSdkDir',      '${sdk}/'
+                # EWDK-specific (as there is DisableRegistryUse and no patch of *.props and *.tatgets; TODO: do the same for msvc2017)
                 , '--set',    'EnterpriseWDK',           'True'
                 , '--set',    'DisableRegistryUse',      'True'
+                , '--set',    'SpectreMitigation',       'False'
+                , '--set',    'WindowsSdkDir_10',        '${sdk}/'
+               #, '--set',    'VCInstallDir',            '${msvc}/../../../'
+               #, '--set',    'VCInstallDir_150',        '${msvc}/../../../'
+                , '--set',    'VCToolsInstallDir_150',   '${msvc}/'
+                , '--set',    'UCRTContentRoot',         '${sdk}/'
+                , '--set',    'UniversalCRTSdkDir_10',   '${sdk}/'
+                , '--set',    'WSKContentRoot',          '${sdk}/'
                 , '--set',    'WDKContentRoot',          '${sdk}/'
                 , '--set',    'WDK_CURRENT_KIT_VERSION', '10'
                 ) == 0 or die "makeWrapper failed: $!";
@@ -79,15 +94,24 @@ in
                 'set WindowsSDKVersion'       ."=${sdk.version}\n".
                 'set WindowsSdkVerBinPath'    ."=${sdk}/bin/${sdk.version}/\n".
                 'set WindowsSdkBinPath'       ."=${sdk}/bin/\n".
-                'set WindowsSdkDir'           ."=${sdk}\n".
+                'set WindowsSdkDir'           ."=${sdk}/\n".
                 'set VCToolsVersion'          ."=${msvc.version}\n".
                 'set VCToolsInstallDir'       ."=${msvc}/\n".
                 'set VCToolsRedistDir'        ."=${msvc}/\n".
                 'set VCTargetsPath'           ."=${vc}/VCTargets/\n".
                 'set UCRTVersion'             ."=${sdk.version}\n".
                 'set UniversalCRTSdkDir'      ."=${sdk}/\n".
+                # EWDK-specific (as there is DisableRegistryUse and no patch of *.props and *.tatgets; TODO: do the same for msvc2017)
                 'set EnterpriseWDK'           ."=True\n".
                 'set DisableRegistryUse'      ."=True\n".
+                'set SpectreMitigation'       ."=False\n".
+               #'set VCInstallDir'            ."=${msvc}/../../../\n".
+               #'set VCInstallDir_150'        ."=${msvc}/../../../\n".
+                'set VCToolsInstallDir_150'   ."=${msvc}/\n".
+                'set WindowsSdkDir_10'        ."=${sdk}/\n".
+                'set UCRTContentRoot'         ."=${sdk}/\n".
+                'set UniversalCRTSdkDir_10'   ."=${sdk}/\n".
+                'set WSKContentRoot'          ."=${sdk}/\n".
                 'set WDKContentRoot'          ."=${sdk}/\n".
                 'set WDK_CURRENT_KIT_VERSION' ."=10\n"
                ) =~ s|/|\\|gr);

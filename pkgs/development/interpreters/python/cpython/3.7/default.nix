@@ -104,7 +104,7 @@ in stdenv.mkDerivation rec {
 
     for my $filename (glob('PCbuild/*.vcxproj')) {
       changeFile {
-        s|(<PropertyGroup Label="Globals">)|\1<WindowsTargetPlatformVersion>${stdenv.cc.sdk.version}</WindowsTargetPlatformVersion>|g;
+        s|(<PropertyGroup Label="Globals">)|$1<WindowsTargetPlatformVersion>${stdenv.cc.sdk.version}</WindowsTargetPlatformVersion>|g;
         s|ToolsVersion="4\.0"|ToolsVersion="${stdenv.cc.msbuild.version}"|g;
         $_;
       } $filename;
