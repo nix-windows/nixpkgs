@@ -8,7 +8,7 @@ in
 
 rec {
 
-  inherit (builtins) stringLength substring head tail isString replaceStrings;
+  inherit (builtins) stringLength substring head tail isString replaceStrings isList;
 
   /* Concatenate a list of strings.
 
@@ -315,13 +315,10 @@ rec {
   */
   escapeWindowsArg = arg:
     let
-      s = replaceStrings [''\"'' ''"''] [''\\\"'' ''\"''] (toString arg);
-      len = stringLength s;
+      m1 = builtins.split ''(\\+$|\\+")'' (toString arg);
+      m2 = concatMapStrings (x: if isList x then replaceStrings [''\''] [''\\''] (head x) else x) m1;
     in
-      if len > 0 && substring (len - 1) 1 == ''\'' then
-        ''"${s}\"''
-      else
-        ''"${s}"'';
+      ''"${replaceStrings [''"''] [''\"''] m2}"'';
 
 
   /* Quote all arguments to be safely passed to the Bourne shell.
