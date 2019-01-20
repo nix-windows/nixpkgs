@@ -3,7 +3,7 @@
 assert stdenvNoCC.isShellPerl;
 let
   inherit (stdenvNoCC) lib;
-  msblobs = (import ./2017-blobs.nix { inherit stdenvNoCC; }) /*msvc redist sdk msbuild vc1*/;
+  msblobs = (import ./msvc-2017-blobs.nix { inherit stdenvNoCC; });
   inherit (msblobs) redist sdk msbuild vc1;
 
   msvc = if false then

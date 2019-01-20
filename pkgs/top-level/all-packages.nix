@@ -6929,7 +6929,11 @@ with pkgs;
 
   gcl_2_6_13_pre = callPackage ../development/compilers/gcl/2.6.13-pre.nix { };
 
-  msvc2017 = callPackage ../development/compilers/msvc/2017.nix { };
+  msvc2017 = callPackage ../development/compilers/msvc/msvc-2017.nix { };
+  msvc = msvc2017;
+
+# ewdk1809 = callPackage ../development/compilers/msvc/ewdk-1809.nix { };
+# msvc = ewdk1809;
 
   gforth = callPackage ../development/compilers/gforth {};
 

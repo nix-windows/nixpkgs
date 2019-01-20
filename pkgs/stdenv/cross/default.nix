@@ -51,7 +51,7 @@ in lib.init bootStages ++ [
            else if crossSystem.useAndroidPrebuilt
              then buildPackages.androidenv."androidndkPkgs_${crossSystem.ndkVer}".gcc
            else if crossSystem.isMicrosoft
-             then buildPackages.msvc2017
+             then buildPackages.msvc
            else buildPackages.gcc;
 
       extraNativeBuildInputs = old.extraNativeBuildInputs

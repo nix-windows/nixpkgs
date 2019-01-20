@@ -4,9 +4,11 @@ set NIX=C:\nix-windows
 set NIX_STORE_DIR=C:\nix\store
 set NIX_PATH=nixpkgs=..\..\..\..
 
-for /f %%i in ('%NIX%\bin\nix-build.exe --no-out-link -E "(import <nixpkgs> { }).stdenv.cc.perl-for-stdenv-shell"'         ) do set PERL=%%i
+for /f %%i in ('%NIX%\bin\nix-build.exe --no-out-link -E "(import <nixpkgs> { }).stdenv.cc.perl-for-stdenv-shell"') do set PERL=%%i
+for /f %%i in ('%NIX%\bin\nix-build.exe --no-out-link -E "(import <nixpkgs> { }).pkgsi686Windows.p7zip"'          ) do set P7ZIP=%%i
 echo NIX=%NIX%
 echo PERL=%PERL%
+echo P7ZIP=%P7ZIP%
 
 %PERL%\bin\perl.exe -x -S %0 %*
 
@@ -14,7 +16,7 @@ if errorlevel 1 goto script_failed_so_exit_with_non_zero_val 2>nul
 exit
 @rem ';
 #!/usr/bin/perl
-#line 18
+#line 20
 
 use strict;
 use warnings;
@@ -26,10 +28,7 @@ use File::Fetch;
 use Win32::LongPath qw(copyL);
 use Win32::Utils    qw(readFile writeFile changeFile escapeWindowsArg dircopy make_pathL remove_treeL);
 
-unless (-f '7z.exe' && digest_file_hex('7z.exe', "SHA-256") eq '8e679f87ba503f3dfad96266ca79de7bfe3092dc6a58c0fe0438f7d4b19f0bbd') {
-    copyL(File::Fetch->new(uri => "https://github.com/volth/nixpkgs/releases/download/windows-0.3/7za.exe")->fetch(to=>"./"), '7z.exe') or die $!;
-}
-die unless -f '7z.exe' && digest_file_hex('7z.exe', "SHA-256") eq '8e679f87ba503f3dfad96266ca79de7bfe3092dc6a58c0fe0438f7d4b19f0bbd';
+my $p7zip = "$ENV{P7ZIP}/bin/7z.exe"; die unless -f $p7zip;
 
 my $msvc_version = "14.16.27023";
 my $redist_version = "14.16.27012";
@@ -145,7 +144,7 @@ unless (-d "msvc-$msvc_version.nar.xz") {
     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc_version}/vcperf",  "msvc/vcperf" ) or die "$!";
     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/VC/Tools/MSVC/${msvc_version}/crt",     "msvc/crt"    ) or die "$!";
 
-    my $msvc_nar    = writeNar("| 7z a $compression -si msvc-$msvc_version.nar.xz",       "msvc",    "sha256");
+    my $msvc_nar    = writeNar("| $p7zip a $compression -si msvc-$msvc_version.nar.xz",       "msvc",    "sha256");
     print qq[
       msvc = (import <nix/fetchurl.nix> {
         name = "msvc-\${msvc-version}";
@@ -174,7 +173,7 @@ unless (-d "redist-$redist_version.nar.xz") {
     dircopy("C:/Program Files (x86)/Windows Kits/10/Redist/$sdk_10_version/ucrt/DLLs/x86",                                        "redist/x86/Microsoft.UniversalCRT"      ) or die "$!";
     dircopy("C:/Program Files (x86)/Windows Kits/10/Redist/$sdk_10_version/ucrt/DLLs/x64",                                        "redist/x64/Microsoft.UniversalCRT"      ) or die "$!";
 
-    my $redist_nar    = writeNar("| 7z a $compression -si redist-$redist_version.nar.xz",       "redist",    "sha256");
+    my $redist_nar    = writeNar("| $p7zip a $compression -si redist-$redist_version.nar.xz",       "redist",    "sha256");
     print qq[
       redist = (import <nix/fetchurl.nix> {
         name = "redist-\${redist-version}";
@@ -194,7 +193,7 @@ unless (-f "sdk-$sdk_8_1_version.nar.xz") {
 
     dircopy("C:/Program Files (x86)/Windows Kits/8.1",                                  "sdk_8_1") or die "$!";
 
-    my $sdk_nar     = writeNar("| 7z a $compression -si sdk-$sdk_8_1_version.nar.xz",   "sdk_8_1",     "sha256");
+    my $sdk_nar     = writeNar("| $p7zip a $compression -si sdk-$sdk_8_1_version.nar.xz",   "sdk_8_1",     "sha256");
     print qq[
       sdk_8_1 = (import <nix/fetchurl.nix> {
         name = "sdk-\${sdk_8_1.version}";
@@ -225,7 +224,7 @@ unless (-f "sdk-$sdk_10_version.nar.xz") {
     }
     exit(1);
 
-    my $sdk_nar     = writeNar("| 7z a $compression -si sdk-$sdk_10_version.nar.xz",    "sdk_10",     "sha256");
+    my $sdk_nar     = writeNar("| $p7zip a $compression -si sdk-$sdk_10_version.nar.xz",    "sdk_10",     "sha256");
     print qq[
       sdk_10 = (import <nix/fetchurl.nix> {
         name = "sdk-\${sdk_10.version}";
@@ -251,7 +250,7 @@ unless (-f "msbuild-$msbuild_version.nar.xz") {
                 "<Project xmlns=\"http://schemas.microsoft.com/developer/msbuild/2003\">\n</Project>\n");
     }
 
-    my $msbuild_nar = writeNar("| 7z a $compression -si msbuild-$msbuild_version.nar.xz", "msbuild", "sha256");
+    my $msbuild_nar = writeNar("| $p7zip a $compression -si msbuild-$msbuild_version.nar.xz", "msbuild", "sha256");
     print qq[
       msbuild = (import <nix/fetchurl.nix> {
         name = "msbuild-\${msbuild-version}";
@@ -271,7 +270,7 @@ unless (-f "vc1-$msbuild_version.nar.xz") {
 
     dircopy("C:/Program Files (x86)/Microsoft Visual Studio/Preview/Community/Common7/IDE/VC", "vc1") or die "$!";
 
-    my $vc1_nar     = writeNar("| 7z a $compression -si vc1-$msbuild_version.nar.xz",     "vc1",     "sha256");
+    my $vc1_nar     = writeNar("| $p7zip a $compression -si vc1-$msbuild_version.nar.xz",     "vc1",     "sha256");
     print qq[
       vc1 = import <nix/fetchurl.nix> {
         name = "vc1-\${msbuild-version}";

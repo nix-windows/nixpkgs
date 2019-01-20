@@ -25,15 +25,20 @@ assert crossSystem == null;
       shell = builtins.getEnv "COMSPEC"; # "C:/Windows/System32/cmd.exe"; TODO: download some command-interpreter? maybe perl-static.exe?
     };
 
-    p7zip-static = stdenv.mkDerivation {
-      name = "7za-18.06-static";
-      src = stdenv.fetchurlBoot {
-        # 32-bit version from https://www.7-zip.org/a/7z1806-extra.7z
-        url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/7za.exe";
-        sha256 = "8e679f87ba503f3dfad96266ca79de7bfe3092dc6a58c0fe0438f7d4b19f0bbd";
-      };
+    p7zip-i686 = stdenv.mkDerivation {
+      name = "7z-18.06-i686";
       builder = lib.concatStringsSep " & " [ ''md %out%\bin''
-                                             ''copy %src% %out%\bin\7z.exe'' ];
+                                             ''copy ${lib.replaceStrings ["/"] ["\\"] "${
+                                                        stdenv.fetchurlBoot {
+                                                          url    = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/7z.exe";
+                                                          sha256 = "1pk8fg65f02dh1ygdq6qgjic7w6w6lzfvvpp0zi8d8y4bfx0baik";
+                                                        }}"} %out%\bin\7z.exe''
+                                             ''copy ${lib.replaceStrings ["/"] ["\\"] "${
+                                                        stdenv.fetchurlBoot {
+                                                          url    = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/7z.dll";
+                                                          sha256 = "0m6x1p6lrnbhlihnn72ir3qqzssaj1gvzg63z5d8mv47a5n39csk";
+                                                        }}"} %out%\bin\7z.dll''
+                                           ];
     };
   })
 
@@ -46,10 +51,10 @@ assert crossSystem == null;
       inherit config;
       inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform fetchurlBoot cc shell;
 
-      initialPath = [ prevStage.p7zip-static ];
+      initialPath = [ prevStage.p7zip-i686 ];
     };
 
-    msblobs = import ../../../pkgs/development/compilers/msvc/2017-blobs.nix { stdenvNoCC = stdenv; };
+    msblobs = import ../../../pkgs/development/compilers/msvc/msvc-2017-blobs.nix { stdenvNoCC = stdenv; };
 
 #   # it uses Windows's SSL libs, not openssl
 #   curl-static = stdenv.mkDerivation rec {
@@ -60,7 +65,7 @@ assert crossSystem == null;
 #     };
 #     INCLUDE = "${(msblobs.msvc).INCLUDE};${(msblobs.sdk).INCLUDE}";
 #     LIB     = "${(msblobs.msvc).LIB};${(msblobs.sdk).LIB}";
-#     PATH    = "${(msblobs.msvc).PATH};${(msblobs.sdk).PATH};${prevStage.p7zip-static}/bin"; # initialPath does not work because it is set up in setup.pm which is not involved here
+#     PATH    = "${(msblobs.msvc).PATH};${(msblobs.sdk).PATH};${prevStage.p7zip-i686}/bin"; # initialPath does not work because it is set up in setup.pm which is not involved here
 #     builder = lib.concatStringsSep " & " [ ''7z x %src% -so  |  7z x -aoa -si -ttar''
 #                                            ''cd ${name}\winbuild''
 #                                            ''nmake /f Makefile.vc mode=static VC=15''
@@ -119,7 +124,7 @@ assert crossSystem == null;
       };
       INCLUDE = "${(msblobs.msvc).INCLUDE};${(msblobs.sdk).INCLUDE}";
       LIB     = "${(msblobs.msvc).LIB};${(msblobs.sdk).LIB}";
-      PATH    = "${(msblobs.msvc).PATH};${(msblobs.sdk).PATH};${prevStage.p7zip-static}/bin"; # initialPath does not work because it is set up in setup.pm which is not involved here
+      PATH    = "${(msblobs.msvc).PATH};${(msblobs.sdk).PATH};${prevStage.p7zip-i686}/bin"; # initialPath does not work because it is set up in setup.pm which is not involved here
       PERL_USE_UNSAFE_INC = "1"; # env var needed to build Win32-LongPath-1.0
       builder = lib.concatStringsSep " & " [ ''7z x %src%                         -so  |  7z x -aoa -si -ttar''
                                              ''7z x ${cpan-Capture-Tiny}          -so  |  7z x -aoa -si -ttar -operl-${version}\cpan''
@@ -170,7 +175,7 @@ assert crossSystem == null;
       inherit config;
 
       inherit (prevStage.stdenv) buildPlatform targetPlatform hostPlatform shell initialPath fetchurlBoot;
-      cc = (import ../../../pkgs/development/compilers/msvc/2017.nix {
+      cc = (import ../../../pkgs/development/compilers/msvc/msvc-2017.nix {
               stdenvNoCC = prevStage.stdenv;
               buildPackages = null;
             }) // { inherit (prevStage) perl-for-stdenv-shell; };
