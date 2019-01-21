@@ -5,9 +5,11 @@
 #include <tuple>
 #include <iostream>
 #include <fstream>
+#include <codecvt>
 
 using namespace std;
 
+// hello -> L"hello"
 string wliteral(const wstring & ws) {
     string rc = "L\"";
     for (wchar_t c : ws) {
@@ -18,6 +20,25 @@ string wliteral(const wstring & ws) {
         } else {
             char sz[7];
             sprintf(sz, "\\u%04X", c);
+            rc += sz;
+        }
+    }
+    rc += '"';
+    return rc;
+}
+
+// hello -> "hello"
+string utf8literal(const wstring & ws) {
+    wstring_convert<codecvt_utf8_utf16<wchar_t>> converter;
+    string rc = "\"";
+    for (char c : converter.to_bytes(ws)) {
+        if (' ' <= c && c <= '~') {
+            if (c == '"' || c == '\\')
+                rc += '\\';
+            rc += c;
+        } else {
+            char sz[5];
+            sprintf(sz, "\\x%02X", c);
             rc += sz;
         }
     }
@@ -56,121 +77,188 @@ int wmain(int argc, const wchar_t** argv) {
         }
     }
 
-    // TODO: generate plain C code (and build with /NODEFAULTLIBS), it could end up in very small wrapper executables
-    string code;
-    code += "#include <windows.h>\n";
-    code += "#include <assert.h>\n";
-    code += "#include <iostream>\n";
-    code += "#include <vector>\n";
-    code += "#include <map>\n";
-    code += "#pragma comment(lib, \"shell32.lib\")\n";
-    code += "using namespace std;\n";
-    code += "wstring windowsEscapeW(const wstring & s) {\n";
-    code += "    if (!s.empty() && s.find_first_of(L\"&()[]{}^=;!'+,`!\\\" \") == wstring::npos)\n";
-    code += "        return s;\n";
-    code += "    wstring r;\n";
-    code += "    for (auto i=0; i < s.length(); i++) {\n";
-    code += "        if (s[i] == L'\"' || (s[i] == L'\\\\' && (i==s.length()-1 || s[i+1] == L'\"'))) r += L'\\\\';\n";
-    code += "        r += s[i];\n";
-    code += "    }\n";
-    code += "    return L'\"' + r + L'\"';\n";
-    code += "}\n";
-    code += "struct no_case_compare {\n";
-    code += "    bool operator() (const wstring & s1, const wstring & s2) const {\n";
-    code += "        return wcsicmp(s1.c_str(), s2.c_str()) < 0;\n";
-    code += "    }\n";
-    code += "};\n";
-    code += "void main() {\n";
-    code += "    map<wstring, wstring, no_case_compare> env;\n";
-    code += "    {\n";
-    code += "        const wchar_t* pw = GetEnvironmentStringsW();\n";
-    code += "        assert(pw);\n";
-    code += "        while (*pw) {\n";
-    code += "            size_t len = wcslen(pw);\n";
-    code += "            const wchar_t* peq = wcschr(pw+1, L'=');\n";
-    code += "            if (peq < pw + len) {\n";
-    code += "                env[wstring(pw, peq-pw)] = wstring(peq+1, pw+len-(peq+1));\n";
-    code += "            } else {\n";
-    code += "                env[wstring(pw, len)] = L\"\";\n";
-    code += "            }\n";
-    code += "            pw += len + 1;\n";
-    code += "        }\n";
-    code += "    }\n";
-    code += "    vector<wstring> args;\n";
-    code += "    {\n";
-    code += "        int numArgs;\n";
-    code += "        LPWSTR* wargv = CommandLineToArgvW(GetCommandLineW(), &numArgs);\n";
-    code += "        assert(wargv);\n";
-    code += "        for (int i=0; i<numArgs; i++) args.push_back(wargv[i]);\n";
-    code += "        LocalFree(wargv);\n";
-    code += "    }\n";
-
+    // TODO: generate plain C code, without C++ and STL (and build with /NODEFAULTLIBS), it could end up in very small wrapper executables
+    string code = R"(
+        #include <windows.h>
+        #include <assert.h>
+        #include <iostream>
+        #include <vector>
+        #include <map>
+        #pragma comment(lib, "shell32.lib")
+        using namespace std;
+        // copy-paste from Nix's libutil/util.cc
+        wstring windowsEscapeW(const wstring & s)
+        {
+            if (s.empty() || s.find_first_of(L"&()<>[]{}^=;!'+,`!\"\t ") != std::wstring::npos) {
+                std::wstring r = L"\"";
+                for (auto i=0; i < s.length(); ) {
+                    if (s[i] == L'"') {
+                        r += L'\\';
+                        r += s[i++];
+                    } else if (s[i] == L'\\') {
+                        for (int j = 1; ; j++) {
+                            if (i+j == s.length()) {
+                                while (j--) { r += L'\\'; r += L'\\'; i++; };
+                                break;
+                            } else if (s[i+j] == L'"') {
+                                while (j--) { r += L'\\'; r += L'\\'; i++; }
+                                r += L'\\';
+                                r += s[i++];
+                                break;
+                            } else if (s[i+j] != L'\\') {
+                                while (j--) { r += L'\\'; i++; };
+                                r += s[i++];
+                                break;
+                            }
+                        }
+                    } else {
+                        r += s[i++];
+                    }
+                }
+                r += L'"';
+                return r;
+            } else
+                return s;
+        }
+        struct no_case_compare {
+            bool operator() (const wstring & s1, const wstring & s2) const {
+                return wcsicmp(s1.c_str(), s2.c_str()) < 0;
+            }
+        };
+        void main() {
+            map<wstring, wstring, no_case_compare> env;
+            {
+                const wchar_t* pw = GetEnvironmentStringsW();
+                assert(pw);
+                while (*pw) {
+                    size_t len = wcslen(pw);
+                    const wchar_t* peq = wcschr(pw+1, L'=');
+                    if (peq < pw + len) {
+                        env[wstring(pw, peq-pw)] = wstring(peq+1, pw+len-(peq+1));
+                    } else {
+                        env[wstring(pw, len)] = L"";
+                    }
+                    pw += len + 1;
+                }
+            }
+            vector<wstring> args;
+            {
+                int numArgs;
+                LPWSTR* wargv = CommandLineToArgvW(GetCommandLineW(), &numArgs);
+                assert(wargv);
+                for (int i=0; i<numArgs; i++) args.push_back(wargv[i]);
+                LocalFree(wargv);
+            }
+    )";
     for (auto & t : env_prefix) {
-        code += "{\n";
-        code += "    auto it = env.find(" + wliteral(get<0>(t)) + ");\n";
-        code += "    env[" + wliteral(get<0>(t)) + "] = it == env.end() ? " + wliteral(get<2>(t)) + " : (" + wliteral(get<2>(t)) + " " + wliteral(get<1>(t)) + ") + it->second;\n";
-        code += "}\n";
+        code += R"(
+            {
+                auto it = env.find()" + wliteral(get<0>(t)) + R"();
+                env[)" + wliteral(get<0>(t)) + "] = it == env.end() ? " + wliteral(get<2>(t)) + " : (" + wliteral(get<2>(t)) + " " + wliteral(get<1>(t)) + R"() + it->second;
+            }
+        )";
     }
     for (auto & t : env_suffix) {
-        code += "{\n";
-        code += "    auto it = env.find(" + wliteral(get<0>(t)) + ");\n";
-        code += "    env[" + wliteral(get<0>(t)) + "] = it == env.end() ? " + wliteral(get<2>(t)) + " : it->second + (" + wliteral(get<1>(t)) + " " + wliteral(get<2>(t)) + ");\n";
-        code += "}\n";
+        code += R"(
+            {
+                auto it = env.find()" + wliteral(get<0>(t)) + R"();
+                env[)" + wliteral(get<0>(t)) + "] = it == env.end() ? " + wliteral(get<2>(t)) + " : it->second + (" + wliteral(get<1>(t)) + " " + wliteral(get<2>(t)) + R"();
+            }
+        )";
     }
     for (auto & t : env_set) {
-        code += "env[" + wliteral(get<0>(t)) + "] = " + wliteral(get<1>(t)) + ";\n";
+        code += R"(
+            env[)" + wliteral(get<0>(t)) + "] = " + wliteral(get<1>(t)) + R"(;
+        )";
     }
     for (auto & t : env_set_default) {
-        code += "if (env.find(" + wliteral(get<0>(t)) + ") == env.end())\n";
-        code += "    env[" + wliteral(get<0>(t)) + "] = " + wliteral(get<1>(t)) + ";\n";
+        code += R"(
+            if (env.find()" + wliteral(get<0>(t)) + R"() == env.end())
+                env[)" + wliteral(get<0>(t)) + "] = " + wliteral(get<1>(t)) + R"(;
+        )";
     }
     for (auto & t : env_unset) {
-        code += "env.erase(" + wliteral(t) + ");\n";
+        code += R"(
+            env.erase()" + wliteral(t) + R"();
+        )";
     }
-
-    code += "args[0] = " + wliteral(original_exe) + ";\n";
+    code += R"(
+        args[0] = )" + wliteral(original_exe) + R"(;
+    )";
     for (auto & t : add_flags) {
-        code += "args.push_back(" + wliteral(t) + ");\n";
+        code += R"(
+            args.push_back()" + wliteral(t) + R"();
+        )";
     }
 
-    code += "    wstring ucmdline, uenvline;\n";
-    code += "    for (const auto & v : args) {\n";
-    code += "        if (!ucmdline.empty()) ucmdline += L' ';\n";
-    code += "        ucmdline += windowsEscapeW(v);\n";
-    code += "    }\n";
-    code += "    for (auto & i : env)\n";
-    code += "        uenvline += i.first + L'=' + i.second + L'\\0';\n";
-    code += "    uenvline += L'\\0';\n";
+    code += R"(
+            wstring ucmdline, uenvline;
+            for (const auto & v : args) {
+                if (!ucmdline.empty()) ucmdline += L' ';
+                ucmdline += windowsEscapeW(v);
+            }
+            for (auto & i : env)
+                uenvline += i.first + L'=' + i.second + L'\0';
+            uenvline += L'\0';
 
-    code += "    STARTUPINFOW si = {sizeof(STARTUPINFOW)};\n";
-    code += "    PROCESS_INFORMATION pi = {0};\n";
-    code += "    if (!CreateProcessW(NULL,\n";                                   // LPCWSTR               lpApplicationName
-    code += "                        const_cast<wchar_t*>(ucmdline.c_str()),\n"; // LPWSTR                lpCommandLine
-    code += "                        NULL,\n";                                   // LPSECURITY_ATTRIBUTES lpProcessAttributes
-    code += "                        NULL,\n";                                   // LPSECURITY_ATTRIBUTES lpThreadAttributes
-    code += "                        TRUE,\n";                                   // BOOL                  bInheritHandles
-    code += "                        CREATE_UNICODE_ENVIRONMENT,\n";             // DWORD                 dwCreationFlags
-    code += "                        const_cast<wchar_t*>(uenvline.c_str()),\n"; // LPVOID                lpEnvironment
-    code += "                        NULL,\n";                                   // LPCWSTR               lpCurrentDirectory
-    code += "                        &si,\n";                                    // LPSTARTUPINFOW        lpStartupInfo
-    code += "                        &pi)) {\n";                                 // LPPROCESS_INFORMATION lpProcessInformation
-    code += "        wcout << L\"CreateProcessW(\" << ucmdline.c_str() << \") failed lastError=\" << GetLastError() << endl;\n";
-    code += "        ExitProcess(1);\n";
-    code += "    }\n";
-    code += "    CloseHandle(pi.hThread);\n";
+            STARTUPINFOW si = {sizeof(STARTUPINFOW)};
+            PROCESS_INFORMATION pi = {0};
+            if (!CreateProcessW(NULL,                                       // LPCWSTR               lpApplicationName
+                                const_cast<wchar_t*>(ucmdline.c_str()),     // LPWSTR                lpCommandLine
+                                NULL,                                       // LPSECURITY_ATTRIBUTES lpProcessAttributes
+                                NULL,                                       // LPSECURITY_ATTRIBUTES lpThreadAttributes
+                                TRUE,                                       // BOOL                  bInheritHandles
+                                CREATE_UNICODE_ENVIRONMENT,                 // DWORD                 dwCreationFlags
+                                const_cast<wchar_t*>(uenvline.c_str()),     // LPVOID                lpEnvironment
+                                NULL,                                       // LPCWSTR               lpCurrentDirectory
+                                &si,                                        // LPSTARTUPINFOW        lpStartupInfo
+                                &pi)) {                                     // LPPROCESS_INFORMATION lpProcessInformation
+                wcout << L"CreateProcessW(" << ucmdline.c_str() << ") failed lastError=" << GetLastError() << endl;
+                ExitProcess(1);
+            }
+            CloseHandle(pi.hThread);
 
-    code += "    if (WaitForSingleObject(pi.hProcess, INFINITE) != WAIT_OBJECT_0) {\n";
-    code += "        cout << \"WaitForSingleObject failed lastError=\" << GetLastError() << endl;\n";
-    code += "        ExitProcess(1);\n";
-    code += "    }\n";
-    code += "    DWORD dwExitCode = 777;\n";
-    code += "    if (!GetExitCodeProcess(pi.hProcess, &dwExitCode)) {\n";
-    code += "        cout << \"GetExitCodeProcess failed lastError=\" << GetLastError() << endl;\n";
-    code += "        ExitProcess(1);\n";
-    code += "    }\n";
-    code += "    CloseHandle(pi.hProcess);\n";
-    code += "    ExitProcess(dwExitCode);\n";
-    code += "}\n";
+            if (WaitForSingleObject(pi.hProcess, INFINITE) != WAIT_OBJECT_0) {
+                wcout << L"WaitForSingleObject failed lastError=" << GetLastError() << endl;
+                ExitProcess(1);
+            }
+            DWORD dwExitCode = 777;
+            if (!GetExitCodeProcess(pi.hProcess, &dwExitCode)) {
+                wcout << L"GetExitCodeProcess failed lastError=" << GetLastError() << endl;
+                ExitProcess(1);
+            }
+            CloseHandle(pi.hProcess);
+            ExitProcess(dwExitCode);
+        }
+    )";
+
+    // Nix's scanForReferences does not scan for Unicode strings (yet), so add all the string constants again as UTF-8
+    code += R"(const char* dummy[] = { )";
+    for (auto & t : env_prefix) {
+        code += utf8literal(get<0>(t)) + ",\n";
+        code += utf8literal(get<1>(t)) + ",\n";
+        code += utf8literal(get<2>(t)) + ",\n";
+    }
+    for (auto & t : env_suffix) {
+        code += utf8literal(get<0>(t)) + ",\n";
+        code += utf8literal(get<1>(t)) + ",\n";
+        code += utf8literal(get<2>(t)) + ",\n";
+    }
+    for (auto & t : env_set) {
+        code += utf8literal(get<0>(t)) + ",\n";
+        code += utf8literal(get<1>(t)) + ",\n";
+    }
+    for (auto & t : env_set_default) {
+        code += utf8literal(get<0>(t)) + ",\n";
+        code += utf8literal(get<1>(t)) + ",\n";
+    }
+    for (auto & t : env_unset) {
+        code += utf8literal(t) + ",\n";
+    }
+    for (auto & t : add_flags) {
+        code += utf8literal(t) + ",\n";
+    }
+    code += R"( ""};)";
 
 //  cout << code.c_str() << endl;
 
@@ -178,36 +266,34 @@ int wmain(int argc, const wchar_t** argv) {
     src << code.c_str() << endl;
     src.close();
 
-    #define S0(x)  #x
-    #define S1(x)  S0(x)
     #define L0(x)  L#x
     #define L1(x)  L0(x)
-    if (!SetEnvironmentVariableA("INCLUDE", S1(INCLUDE))) {
-        cout << "SetEnvironmentVariableA(INCLUDE, " << S1(INCLUDE) << ") failed lastError=" << GetLastError() << endl;
+    if (!SetEnvironmentVariableW(L"INCLUDE", L1(INCLUDE))) {
+        wcout << L"SetEnvironmentVariableW(INCLUDE, " << L1(INCLUDE) << L") failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
-    if (!SetEnvironmentVariableA("LIB", S1(LIB))) {
-        cout << "SetEnvironmentVariableA(LIB, " << S1(LIB) << ") failed lastError=" << GetLastError() << endl;
+    if (!SetEnvironmentVariableW(L"LIB", L1(LIB))) {
+        wcout << L"SetEnvironmentVariableA(LIB, " << L1(LIB) << L") failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
 
     STARTUPINFOW si = {sizeof(STARTUPINFOW)};
     PROCESS_INFORMATION pi = {0};
     if (!CreateProcessW(NULL, const_cast<wchar_t*>(((L1(CC) L" /EHsc /Fe:") + wrapper_exe + L" _wrapper.cpp").c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
-        cout << "CreateProcessW(" << S1(CC) << " _wrapper.cpp) failed lastError=" << GetLastError() << endl;
+        wcout << L"CreateProcessW(" << L1(CC) << L" _wrapper.cpp) failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
 
     if (WaitForSingleObject(pi.hProcess, INFINITE) != WAIT_OBJECT_0) {
-        cout << "WaitForSingleObject failed lastError=" << GetLastError() << endl;
+        wcout << L"WaitForSingleObject failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
     DWORD dwExitCode = 777;
     if (!GetExitCodeProcess(pi.hProcess, &dwExitCode)) {
-        cout << "GetExitCodeProcess failed lastError=" << GetLastError() << endl;
+        wcout << L"GetExitCodeProcess failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
     DeleteFile("_wrapper.cpp");
-//  cout << "exitCode=" << dwExitCode << endl;
+//  wcout << L"exitCode=" << dwExitCode << endl;
     ExitProcess(dwExitCode);
 }
