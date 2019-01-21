@@ -16,6 +16,9 @@ exit
 #!/usr/bin/perl
 #line 18
 
+
+# TODO: add dependency: libvirt -> libssh yajl dbus
+
 use warnings;
 use strict;
 use File::Fetch;
