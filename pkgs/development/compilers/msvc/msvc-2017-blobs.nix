@@ -4,6 +4,7 @@ let
   host   = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenvNoCC.  hostPlatform.config};
   target = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenvNoCC.targetPlatform.config};
 in rec {
+  # TODO: rename msvc to vmtools
   msvc = (import <nix/fetchurl.nix> {
     name = "msvc-${msvc.version}";
     url = "https://github.com/volth/nixpkgs/releases/download/windows-0.3/msvc-${msvc.version}.nar.xz";

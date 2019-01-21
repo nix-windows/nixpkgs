@@ -25,7 +25,7 @@ in rec {
     outputHash     = "0gyyv8sqwsfa2qg64nsfmd03lysmwpnavzc6yy60ha9nsgdmnhp3";
   };
 
-  # exactly as in ./msvc-2017-blobs.nix
+  # exactly as in ./msvc-2017-blobs.nix (TODO: rename msvc to vmtools)
   msvc   .version = "14.15.26726";
   msvc   .outPath = "${ewdk}/Program Files/Microsoft Visual Studio/2017/BuildTools/VC/Tools/MSVC/${msvc.version}";
   sdk    .version = "10.0.17763.0";

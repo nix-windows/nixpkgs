@@ -119,7 +119,6 @@ in stdenv.mkDerivation rec {
   DEPOT_TOOLS_WIN_TOOLCHAIN = "0";
   GYP_MSVS_OVERRIDE_PATH    = "${stdenv.cc}";
   WINDOWSSDKDIR             = "${stdenv.cc.sdk}";
-  WINDIR                    = "C:\\Windows"; # to get msvcp140.dll and other redistributables (todo: try to use stdenv.cc.redist)
 
   configurePhase = ''
     chdir('src');

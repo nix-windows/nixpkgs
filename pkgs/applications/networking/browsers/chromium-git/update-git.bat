@@ -15,7 +15,7 @@ echo PYTHON2=%PYTHON2%
 %PERL%\bin\perl.exe -x -S %0 %*
 
 if errorlevel 1 goto script_failed_so_exit_with_non_zero_val 2>nul
-goto endofperl
+exit
 @rem ';
 #!/usr/bin/perl
 #line 22
@@ -157,5 +157,3 @@ sub parsedeps {
 
 parsedeps();
 
-__END__
-:endofperl
