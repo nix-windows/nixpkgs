@@ -213,27 +213,29 @@ int wmain(int argc, const wchar_t** argv) {
                                 NULL,                                       // LPCWSTR               lpCurrentDirectory
                                 &si,                                        // LPSTARTUPINFOW        lpStartupInfo
                                 &pi)) {                                     // LPPROCESS_INFORMATION lpProcessInformation
-                wcout << L"CreateProcessW(" << ucmdline.c_str() << ") failed lastError=" << GetLastError() << endl;
+                wcerr << L"CreateProcessW(" << ucmdline.c_str() << ") failed lastError=" << GetLastError() << endl;
                 ExitProcess(1);
             }
             CloseHandle(pi.hThread);
 
             if (WaitForSingleObject(pi.hProcess, INFINITE) != WAIT_OBJECT_0) {
-                wcout << L"WaitForSingleObject failed lastError=" << GetLastError() << endl;
+                wcerr << L"WaitForSingleObject failed lastError=" << GetLastError() << endl;
                 ExitProcess(1);
             }
-            DWORD dwExitCode = 777;
+            DWORD dwExitCode;
             if (!GetExitCodeProcess(pi.hProcess, &dwExitCode)) {
-                wcout << L"GetExitCodeProcess failed lastError=" << GetLastError() << endl;
+                wcerr << L"GetExitCodeProcess failed lastError=" << GetLastError() << endl;
                 ExitProcess(1);
             }
             CloseHandle(pi.hProcess);
             ExitProcess(dwExitCode);
         }
-    )";
 
-    // Nix's scanForReferences does not scan for Unicode strings (yet), so add all the string constants again as UTF-8
-    code += R"(const char* dummy[] = { )";
+        // Nix's `scanForReferences' does not scan for Unicode strings (yet),
+        // so add all the string constants again as UTF-8.
+        // __declspec(dllexport) prevents the string from being optimized out.
+        __declspec(dllexport) char* dummy[] = {
+    )";
     for (auto & t : env_prefix) {
         code += utf8literal(get<0>(t)) + ",\n";
         code += utf8literal(get<1>(t)) + ",\n";
@@ -258,7 +260,7 @@ int wmain(int argc, const wchar_t** argv) {
     for (auto & t : add_flags) {
         code += utf8literal(t) + ",\n";
     }
-    code += R"( ""};)";
+    code += utf8literal(original_exe) + "};";
 
 //  cout << code.c_str() << endl;
 
@@ -269,31 +271,43 @@ int wmain(int argc, const wchar_t** argv) {
     #define L0(x)  L#x
     #define L1(x)  L0(x)
     if (!SetEnvironmentVariableW(L"INCLUDE", L1(INCLUDE))) {
-        wcout << L"SetEnvironmentVariableW(INCLUDE, " << L1(INCLUDE) << L") failed lastError=" << GetLastError() << endl;
+        wcerr << L"SetEnvironmentVariableW(INCLUDE, " << L1(INCLUDE) << L") failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
     if (!SetEnvironmentVariableW(L"LIB", L1(LIB))) {
-        wcout << L"SetEnvironmentVariableA(LIB, " << L1(LIB) << L") failed lastError=" << GetLastError() << endl;
+        wcerr << L"SetEnvironmentVariableA(LIB, " << L1(LIB) << L") failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
 
     STARTUPINFOW si = {sizeof(STARTUPINFOW)};
     PROCESS_INFORMATION pi = {0};
-    if (!CreateProcessW(NULL, const_cast<wchar_t*>(((L1(CC) L" /EHsc /Fe:") + wrapper_exe + L" _wrapper.cpp").c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
-        wcout << L"CreateProcessW(" << L1(CC) << L" _wrapper.cpp) failed lastError=" << GetLastError() << endl;
+    if (!CreateProcessW(NULL, wcsdup(L1(CC) L" /EHsc /Fe:_wrapper.exe _wrapper.cpp"), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
+        wcerr << L"CreateProcessW(" << L1(CC) << L" _wrapper.cpp) failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
 
     if (WaitForSingleObject(pi.hProcess, INFINITE) != WAIT_OBJECT_0) {
-        wcout << L"WaitForSingleObject failed lastError=" << GetLastError() << endl;
+        wcerr << L"WaitForSingleObject failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
-    DWORD dwExitCode = 777;
+    DWORD dwExitCode;
     if (!GetExitCodeProcess(pi.hProcess, &dwExitCode)) {
-        wcout << L"GetExitCodeProcess failed lastError=" << GetLastError() << endl;
+        wcerr << L"GetExitCodeProcess failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
-    DeleteFile("_wrapper.cpp");
-//  wcout << L"exitCode=" << dwExitCode << endl;
+    if (dwExitCode != 0) {
+        wcerr << L"cl.exe exited with code=" << dwExitCode << endl;
+        ExitProcess(1);
+    }
+
+    DeleteFileW(L"_wrapper.cpp");
+    if (!CopyFileW(L"_wrapper.exe", wrapper_exe.c_str(), /*bFailIfExists*/ TRUE)) {
+        wcerr << L"CopyFile failed lastError=" << GetLastError() << endl;
+        ExitProcess(1);
+    }
+    DeleteFileW(L"_wrapper.exe");
+    DeleteFileW(L"_wrapper.lib");
+    DeleteFileW(L"_wrapper.exp");
+
     ExitProcess(dwExitCode);
 }
