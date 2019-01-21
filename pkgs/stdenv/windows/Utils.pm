@@ -143,9 +143,10 @@ sub _uniform_path {
     return $path;
 }
 
-# symtree is like buildenv, but
-#  1. mutable (can be used at sourceRoot)
-#  2. other derivations/directories can be merged to any subfolder (not only root as in buildenv)
+# symtree is like buildEnv, but
+#  1. target might be not in nix store
+#  2. target might be mutable (so can be used at sourceRoot)
+#  2. other derivations/directories can be merged to any subfolder (not only root as in buildEnv)
 
 # if $path exists: if it is reachable via symlink, make it real
 # otherwise:       ensure dirname($path) is a directory, so a dir or file $path could be created
