@@ -6939,6 +6939,8 @@ with pkgs;
 
   pe-parse = callPackage ../development/libraries/pe-parse { };
 
+  winchecksec = callPackage ../development/libraries/winchecksec { };
+
   gforth = callPackage ../development/compilers/gforth {};
 
   gtk-server = callPackage ../development/interpreters/gtk-server {};
