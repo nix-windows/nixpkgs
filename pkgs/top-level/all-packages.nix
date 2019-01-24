@@ -6937,6 +6937,8 @@ with pkgs;
 
   processhacker = callPackage ../misc/processhacker { };
 
+  pe-parse = callPackage ../development/libraries/pe-parse { };
+
   gforth = callPackage ../development/compilers/gforth {};
 
   gtk-server = callPackage ../development/interpreters/gtk-server {};
