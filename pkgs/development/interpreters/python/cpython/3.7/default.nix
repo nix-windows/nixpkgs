@@ -116,7 +116,7 @@ in stdenv.mkDerivation rec {
   installPhase = ''
     make_pathL("$ENV{out}/bin", "$ENV{out}/DLLs", "$ENV{out}/libs");
     for my $name ('python.exe', 'python.pdb', 'pythonw.exe', 'pythonw.pdb', 'python3.dll', 'python3.pdb', 'python37.dll', 'python37.pdb') {
-      copyL("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/bin/$name") or die "copy $name: $!";
+      copyL("${if stdenv.is64bit then "amd64/" else ""}$name", "$ENV{out}/bin/$name") or die "copy $name: $!";
     }
     for my $name ('libcrypto-1_1${if stdenv.is64bit then "-x64" else ""}.dll',
                   'libssl-1_1${if stdenv.is64bit then "-x64" else ""}.dll',
@@ -124,20 +124,21 @@ in stdenv.mkDerivation rec {
                   '_bz2.pyd', '_contextvars.pyd', '_ctypes.pyd', '_decimal.pyd', '_distutils_findvs.pyd', '_elementtree.pyd',
                   '_hashlib.pyd', '_lzma.pyd', '_msi.pyd', '_multiprocessing.pyd', '_overlapped.pyd', '_queue.pyd', '_socket.pyd',
                   '_sqlite3.pyd', '_ssl.pyd') {
-      copyL("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/DLLs/$name") or die "copy $name: $!";
+      copyL("${if stdenv.is64bit then "amd64/" else ""}$name", "$ENV{out}/DLLs/$name") or die "copy $name: $!";
     }
     for my $name ('pyexpat.lib', 'python3.lib', 'python37.lib', 'select.lib', 'sqlite3.lib', 'unicodedata.lib', 'winsound.lib',
                   '_asyncio.lib', '_bz2.lib', '_contextvars.lib', '_ctypes.lib', '_decimal.lib',
                  #'_distutils_findvs.lib',
                   '_elementtree.lib', '_hashlib.lib', '_lzma.lib', '_msi.lib', '_multiprocessing.lib', '_overlapped.lib',
                   '_queue.lib', '_socket.lib', '_sqlite3.lib', '_ssl.lib', '_tkinter.lib') {
-      copyL("${if stdenv.is64bit then "amd64" else "win32"}/$name", "$ENV{out}/libs/$name") or die "copy $name: $!";
+      copyL("${if stdenv.is64bit then "amd64/" else ""}$name", "$ENV{out}/libs/$name") or die "copy $name: $!";
     }
     dircopy '../Include',                                         "$ENV{out}/Include"               or die "dircopy Include: $!";
       copyL '../PC/pyconfig.h',                                   "$ENV{out}/Include/pyconfig.h"    or die "copy PC/pyconfig.h: $!";
     dircopy '../Lib',                                             "$ENV{out}/Lib"                   or die "dircopy Lib: $!";
     dircopy '../Tools',                                           "$ENV{out}/Tools"                 or die "dircopy Tools: $!";
-      copyL '${stdenv.cc.msvc}/bin/Hostx64/x64/vcruntime140.dll', "$ENV{out}/bin/vcruntime140.dll"  or die "copy vcruntime140.dll: $!";
+    copyL '${stdenv.cc.redist}/${if stdenv.is64bit then "x64" else "x86"}/Microsoft.VC141.CRT/vcruntime140.dll',
+                                                                  "$ENV{out}/bin/vcruntime140.dll"  or die "copy vcruntime140.dll: $!";
   '';
 # passthru.nuget = nuget-bin;
 # passthru.python-bin = python-bin;
