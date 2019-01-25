@@ -48,8 +48,8 @@ string utf8literal(const wstring & ws) {
 
 int wmain(int argc, const wchar_t** argv) {
     assert(argc >= 3);
-    const wstring original_exe = argv[1];
-    const wstring wrapper_exe = argv[2];
+    const wchar_t* original_exe = argv[1]; // it could be .bat
+    const wchar_t* wrapper_exe = argv[2];
 
     vector<wstring>                          env_unset;
     vector<tuple<wstring, wstring>>          env_set;
@@ -86,6 +86,11 @@ int wmain(int argc, const wchar_t** argv) {
         #include <map>
         #pragma comment(lib, "shell32.lib")
         using namespace std;
+
+        bool isAbsolute(const wchar_t* path) {
+            return (path[0] == '\\') || (('a' <= (path[0]|0x20) && (path[0]|0x20) <= 'z') && path[1] == ':');
+        }
+
         // copy-paste from Nix's libutil/util.cc
         wstring windowsEscapeW(const wstring & s)
         {
@@ -183,7 +188,28 @@ int wmain(int argc, const wchar_t** argv) {
         )";
     }
     code += R"(
-        args[0] = )" + wliteral(original_exe) + R"(;
+        const wchar_t * original_exe = )" + wliteral(original_exe) + R"(;
+
+        // if `original_exe` is a relative path, it is relative to the the wrapper current location, not to the current working dir
+        if (!isAbsolute(original_exe)) {
+            wchar_t self_exe[0x9000];
+            DWORD dw = GetModuleFileNameW(NULL, self_exe, 0x9000);
+            assert(0 < dw && dw < 0x9000);
+            const wchar_t *self_exe_last_slash = max( wcsrchr(self_exe, L'\\'), wcsrchr(self_exe, L'/') );
+            assert(self_exe_last_slash != NULL);
+
+            size_t len1 = self_exe_last_slash - self_exe + 1, len2 = wcslen(original_exe) + 1;
+            wchar_t *buf1 = new wchar_t[len1 + len2];
+            assert(buf1);
+            memcpy(buf1,        self_exe,     len1 * sizeof(wchar_t));
+            memcpy(buf1 + len1, original_exe, len2 * sizeof(wchar_t));
+            wchar_t buf2[0x9000]; /* more than enough, 32768 is the max length */
+            dw = GetFullPathNameW(buf1, 0x9000, buf2, NULL); /* take care on \..\ */
+            assert(0 < dw && dw < 0x9000);
+            original_exe = buf2;
+        }
+
+        args[0] = original_exe;
     )";
     for (auto & t : add_flags) {
         code += R"(
@@ -301,8 +327,8 @@ int wmain(int argc, const wchar_t** argv) {
     }
 
     DeleteFileW(L"_wrapper.cpp");
-    if (!CopyFileW(L"_wrapper.exe", wrapper_exe.c_str(), /*bFailIfExists*/ TRUE)) {
-        wcerr << L"CopyFile failed lastError=" << GetLastError() << endl;
+    if (!CopyFileW(L"_wrapper.exe", wrapper_exe, /*bFailIfExists*/ TRUE)) {
+        wcerr << L"CopyFile(_wrapper.exe," << wrapper_exe << ") failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
     DeleteFileW(L"_wrapper.exe");
