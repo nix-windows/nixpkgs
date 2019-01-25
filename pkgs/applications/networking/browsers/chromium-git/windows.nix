@@ -42,7 +42,7 @@ let
     google_default_client_secret = "9rIFQjfnkykEmqb6FfjJQD1D";
   };
 
-  version = "73.0.3676.0"; # update feed https://github.com/chromium/chromium/releases
+  version = "73.0.3683.1"; # update feed https://github.com/chromium/chromium/releases
   deps = import (./sources- + version + ".nix") { inherit fetchgit; };
   src = stdenv.mkDerivation rec {
     name = "chromium-${version}-src";
