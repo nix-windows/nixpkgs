@@ -33,6 +33,8 @@ stdenv.mkDerivation rec {
       $content =~ s|\@\@sdk-version\@\@|${      builtins.replaceStrings [''/'' ''\''] [''\\'' ''\\''] "${stdenv.cc.sdk.version}"}|g;
       $content =~ s|\@\@msbuild\@\@|${          builtins.replaceStrings [''/'' ''\''] [''\\'' ''\\''] "${stdenv.cc.msbuild}"}|g;
       $content =~ s|\@\@msbuild-version\@\@|${  builtins.replaceStrings [''/'' ''\''] [''\\'' ''\\''] "${stdenv.cc.msbuild.version}"}|g;
+      $content =~ s|\@\@buildplatform\@\@|${ if stdenv.buildPlatform.is64bit then "x64" else "x86"}|g;
+      $content =~ s|\@\@hostplatform\@\@|${  if stdenv.hostPlatform.is64bit  then "x64" else "x86"}|g;
       writeFile('setuptools/msvc.py', $content);
 
 

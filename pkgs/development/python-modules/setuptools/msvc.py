@@ -111,7 +111,7 @@ class EnvironmentInfo:
         """
         Microsoft Visual C++ & Microsoft Foundation Class Libraries
         """
-        return [r'@@msvc@@\lib\x64', r'@@msvc@@\atlmfc\lib\x64']
+        return [r'@@msvc@@\lib\@@hostplatform@@', r'@@msvc@@\atlmfc\lib\@@hostplatform@@']
 
     @property
     def VCStoreRefs(self):
@@ -125,14 +125,15 @@ class EnvironmentInfo:
         """
         Microsoft Visual C++ Tools
         """
-        return [r'@@msvc@@\bin\HostX64\x64']
+        return [r'@@msvc@@\bin\Host@@buildplatform@@\@@hostplatform@@',
+                r'@@msvc@@\bin\Host@@buildplatform@@\@@buildplatform@@']
 
     @property
     def OSLibraries(self):
         """
         Microsoft Windows SDK Libraries
         """
-        return [r'@@sdk@@\lib\@@sdk-version@@\um\x64']
+        return [r'@@sdk@@\lib\@@sdk-version@@\um\@@hostplatform@@']
 
     @property
     def OSIncludes(self):
@@ -156,7 +157,7 @@ class EnvironmentInfo:
         """
         Microsoft Windows SDK Tools
         """
-        return [r'@@sdk@@\bin\@@sdk-version@@\x64', r'@@sdk@@\bin\x64']
+        return [r'@@sdk@@\bin\@@sdk-version@@\@@hostplatform@@', r'@@sdk@@\bin\@@hostplatform@@']
 
     @property
     def SdkSetup(self):
@@ -213,7 +214,7 @@ class EnvironmentInfo:
         """
         Microsoft Universal C Runtime SDK Libraries
         """
-        return [r'@@sdk@@\lib\@@sdk-version@@\ucrt\x64']
+        return [r'@@sdk@@\lib\@@sdk-version@@\ucrt\@@hostplatform@@']
 
     @property
     def UCRTIncludes(self):

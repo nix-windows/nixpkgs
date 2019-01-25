@@ -62,7 +62,8 @@ buildPythonPackage rec {
       renameL($file, "$ENV{out}/bin/".basename($file)) or die "renameL($file): $!";
     }
 
-    copyL('${stdenv.cc.redist}/x64/Microsoft.VC141.MFC/mfc140.dll', "$ENV{out}/${python.sitePackages}/pythonwin/mfc140.dll") or die "copyL(mfc140.dll): $!";
+    copyL('${stdenv.cc.redist}/${if stdenv.is64bit then "x64" else "x86"}/Microsoft.VC141.MFC/mfc140.dll',
+          "$ENV{out}/${python.sitePackages}/pythonwin/mfc140.dll") or die "copyL(mfc140.dll): $!";
   '';
 
   # # lowcase dirnames as buildenv is still case-sensitive
