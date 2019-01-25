@@ -66,7 +66,7 @@ stdenv.mkDerivation rec {
     description = "A meta-build system that generates NinjaBuild files";
     homepage = https://gn.googlesource.com/gn;
     license = licenses.bsd3;
-    platforms = platforms.unix ++ platforms.windows;
+    platforms = platforms.unix ++ [ "x86_64-windows" ];
     maintainers = with maintainers; [ stesie matthewbauer ];
   };
 }
