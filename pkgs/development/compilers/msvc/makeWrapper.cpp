@@ -57,6 +57,7 @@ int wmain(int argc, const wchar_t** argv) {
     vector<tuple<wstring, wstring, wstring>> env_prefix;
     vector<tuple<wstring, wstring, wstring>> env_suffix;
     vector<wstring>                          add_flags;
+    wstring                                  subsystem = L"CONSOLE";
 
     for (int i=3; i<argc; ) {
         const wstring verb = argv[i++];
@@ -71,6 +72,8 @@ int wmain(int argc, const wchar_t** argv) {
         else if (verb == L"--suffix-contents" && i+3 <= argc) assert(!"TODO");
         else if (verb == L"--add-flags"       && i+1 <= argc) add_flags.push_back(argv[i++]);
         else if (verb == L"--argv0"           && i+1 <= argc) assert(!"TODO");
+        else if (verb == L"--gui"                           ) subsystem = L"WINDOWS";
+        else if (verb == L"--console"                       ) subsystem = L"CONSOLE";
         else {
           wcerr << L"unknown verb '" << verb.c_str() << L"'" << endl;
           exit(1);
@@ -130,7 +133,12 @@ int wmain(int argc, const wchar_t** argv) {
                 return wcsicmp(s1.c_str(), s2.c_str()) < 0;
             }
         };
-        void main() {
+    )";
+
+         if (subsystem == L"WINDOWS") code += "int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {\n";
+    else if (subsystem == L"CONSOLE") code += "void main() {\n";
+    else assert(0);
+    code += R"(
             map<wstring, wstring, no_case_compare> env;
             {
                 const wchar_t* pw = GetEnvironmentStringsW();
@@ -307,8 +315,8 @@ int wmain(int argc, const wchar_t** argv) {
 
     STARTUPINFOW si = {sizeof(STARTUPINFOW)};
     PROCESS_INFORMATION pi = {0};
-    if (!CreateProcessW(NULL, wcsdup(L1(CC) L" /EHsc /Fe:_wrapper.exe _wrapper.cpp"), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
-        wcerr << L"CreateProcessW(" << L1(CC) << L" _wrapper.cpp) failed lastError=" << GetLastError() << endl;
+    if (!CreateProcessW(NULL, const_cast<wchar_t*>(((L1(CC) L" /EHsc /Fe:_wrapper.exe _wrapper.cpp /link /SUBSYSTEM:") + subsystem ).c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
+        wcerr << L"CreateProcessW(" << (L1(CC) L" /EHsc /Fe:_wrapper.exe _wrapper.cpp /link /SUBSYSTEM:") << subsystem << L") failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
 
