@@ -156,6 +156,20 @@ let
     };
   };
 
+  AlienLibxml2 = buildPerlPackage {
+    name = "Alien-Libxml2-0.07";
+    src = fetchurl {
+      url = mirror://cpan/authors/id/P/PL/PLICEASE/Alien-Libxml2-0.07.tar.gz;
+      sha256 = "19akfl1rqhsgilgfa0sjdfcjisydjgyirw5h978iqwb0p448nsp9";
+    };
+    propagatedBuildInputs = [ AlienBuild ];
+    buildInputs = [ Test2Suite ];
+    meta = {
+      description = "Install the C libxml2 library on your system";
+      license = with stdenv.lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };
+
   aliased = buildPerlModule rec {
     name = "aliased-0.34";
     src = fetchurl {
@@ -17547,14 +17561,14 @@ let
   };
 
   XMLLibXML = buildPerlPackage rec {
-    name = "XML-LibXML-2.0134";
+    name = "XML-LibXML-2.0200";
     src = fetchurl {
       url = "mirror://cpan/authors/id/S/SH/SHLOMIF/${name}.tar.gz";
-      sha256 = "1ks69xymv6zkj7hvaymjvb78ch81abri7kg4zrwxhdfsqb8a9g7h";
+      sha256 = "10vf6znx7b84906jyk4wjx14a8mxry17i4v7bh31nfah53bvsj42";
     };
     SKIP_SAX_INSTALL = 1;
     buildInputs = [ pkgs.libxml2 ];
-    propagatedBuildInputs = [ XMLSAX ];
+    propagatedBuildInputs = [ AlienLibxml2 XMLSAX ];
 
     # https://rt.cpan.org/Public/Bug/Display.html?id=122958
     preCheck = ''
