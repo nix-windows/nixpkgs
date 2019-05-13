@@ -1,19 +1,22 @@
-{ stdenv, fetchzip}:
+{ lib, fetchFromGitHub }:
 
-fetchzip rec {
+fetchFromGitHub rec {
   name = "dosis-1.007";
 
-  url = https://github.com/impallari/Dosis/archive/12df1e13e58768f20e0d48ff15651b703f9dd9dc.zip;
+  owner = "impallari";
+  repo = "Dosis";
+  rev = "12df1e13e58768f20e0d48ff15651b703f9dd9dc";
 
   postFetch = ''
-    mkdir -p $out/share/{doc,fonts}
-    unzip -j $downloadedFile \*.otf                    -d $out/share/fonts/opentype
-    unzip -j $downloadedFile \*README.md \*FONTLOG.txt -d "$out/share/doc/${name}"
+    tar xf $downloadedFile --strip=1
+    mkdir -p $out/share/fonts/opentype $out/share/doc/${name}
+    find . -name '*.otf' -exec cp {} $out/share/fonts/opentype \;
+    cp README.md FONTLOG.txt         $out/share/doc/${name}
   '';
 
   sha256 = "11a8jmgaly14l7rm3jxkwwv3ngr8fdlkp70nicjk2rg0nny2cvfq";
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "A very simple, rounded, sans serif family";
     longDescription = ''
       Dosis is a very simple, rounded, sans serif family.

@@ -1,4 +1,4 @@
-{ stdenv, fetchzip, p7zip }:
+{ lib, fetchzip, p7zip }:
 
 let
   version = "1.2";
@@ -19,7 +19,7 @@ in fetchzip rec {
 
   sha256 = "0fhz2ixrkm523qlx5pnwyzxgb1cfiiwrhls98xg8a5l3sypn1g8v";
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     homepage = https://github.com/MihailJP/MarathiCursive;
     description = "Modi script font with Graphite and OpenType support";
     maintainers = with maintainers; [ mathnerd314 ];

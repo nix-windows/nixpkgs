@@ -1,4 +1,4 @@
-{stdenv, fetchzip}:
+{ lib, fetchzip }:
 
 let
   version = "2014.10";
@@ -18,7 +18,7 @@ in fetchzip rec {
 
   sha256 = "0mg65f0ydyfmb43jqr1f34njpd10w8npw15cbb7z0nxmy4nkl842";
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     homepage = https://aldusleaf.org/crimson.html;
     description = "A font family inspired by beautiful oldstyle typefaces";
     license = licenses.ofl;

@@ -43,9 +43,6 @@ let
       cp build/*.ttf $out/share/fonts/truetype/
     '';
 
-    outputHashAlgo = "sha256";
-    outputHashMode = "recursive";
-    outputHash = "1cxprzsr826d888ha4zxx28i9jfj1k74q9kfv3v2rf603460iha9";
     inherit meta;
   };
 
@@ -54,9 +51,6 @@ let
     buildCommand = ''
       install -D ${full-ttf}/share/fonts/truetype/DejaVuSans.ttf $out/share/fonts/truetype/DejaVuSans.ttf
     '';
-    outputHashAlgo = "sha256";
-    outputHashMode = "recursive";
-    outputHash = "0ybsynp9904vmd3qv5b438swhx43m5q6gfih3i32iw33rks8nkpj";
     inherit meta;
   };
 in stdenv.mkDerivation {
@@ -66,10 +60,7 @@ in stdenv.mkDerivation {
     cp ${full-ttf}/share/fonts/truetype/*.ttf $out/share/fonts/truetype/
     ln -s --relative --force --target-directory=$out/share/fonts/truetype ${minimal}/share/fonts/truetype/DejaVuSans.ttf
   '';
-  outputHashAlgo = "sha256";
-  outputHashMode = "recursive";
-  outputHash = "15l93xm9mg2ziaxv4nqy2a4jaz54d05xf0hfz1h84bclzb882llh";
   inherit meta;
 
-  passthru.minimal = minimal;
+  passthru = { inherit minimal full-ttf; };
 }

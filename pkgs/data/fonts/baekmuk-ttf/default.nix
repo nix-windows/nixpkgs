@@ -1,4 +1,4 @@
-{ stdenv, fetchzip }:
+{ lib, fetchzip }:
 
 fetchzip rec {
   name = "baekmuk-ttf-2.2";
@@ -16,7 +16,7 @@ fetchzip rec {
     description = "Korean font";
     homepage = http://kldp.net/projects/baekmuk/;
     license = "BSD-like";
-    platforms = stdenv.lib.platforms.linux;
+    platforms = lib.platforms.linux;
   };
 }
 

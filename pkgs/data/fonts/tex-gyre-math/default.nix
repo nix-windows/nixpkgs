@@ -28,15 +28,15 @@ let
     };
   };
 
-  mkVariant = variant: current:
-    let dotless_version = builtins.replaceStrings ["."] [""] current.version; in
+  mkVariant = variant: {displayName, version, sha256, outputHash}:
+    let dotless_version = builtins.replaceStrings ["."] [""] version; in
     stdenv.mkDerivation rec {
-      name = "tex-gyre-${variant}-math-${current.version}";
-      version = "${current.version}";
+      name = "tex-gyre-${variant}-math-${version}";
+      inherit version;
 
       src = fetchzip {
-        url = "www.gust.org.pl/projects/e-foundry/tg-math/download/texgyre${variant}-math-${dotless_version}.zip";
-        sha256 = current.sha256;
+        url = "http://www.gust.org.pl/projects/e-foundry/tg-math/download/texgyre${variant}-math-${dotless_version}.zip";
+        inherit sha256;
       };
 
       installPhase = ''
@@ -48,12 +48,12 @@ let
 
       outputHashAlgo = "sha256";
       outputHashMode = "recursive";
-      outputHash = current.outputHash;
+      inherit outputHash;
 
       meta = with stdenv.lib; {
         longDescription = ''
-          TeX Gyre ${current.displayName} Math is a math companion for the TeX Gyre
-          ${current.displayName} family of fonts (see
+          TeX Gyre ${displayName} Math is a math companion for the TeX Gyre
+          ${displayName} family of fonts (see
           http://www.gust.org.pl/projects/e-foundry/tex-gyre/) in the OpenType format.
         '';
         homepage = http://www.gust.org.pl/projects/e-foundry/tg-math;

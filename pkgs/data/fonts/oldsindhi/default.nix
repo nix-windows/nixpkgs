@@ -1,4 +1,4 @@
-{ stdenv, fetchzip, p7zip }:
+{ lib, fetchzip, p7zip }:
 
 let
   version = "0.1";
@@ -18,7 +18,7 @@ in fetchzip rec {
 
   sha256 = "1na3lxyz008fji5ln3fqzyr562k6kch1y824byhfs4y0rwwz3f3q";
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     homepage = https://github.com/MihailJP/oldsindhi;
     description = "Free Sindhi Khudabadi font";
     maintainers = with maintainers; [ mathnerd314 ];

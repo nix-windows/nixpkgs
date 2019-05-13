@@ -8,7 +8,7 @@ stdenv.mkDerivation rec {
     url = "http://pelulamu.net/${pname}/${name}-src.tar.gz";
     sha256 = "0qcxcnqz2nlwfzlrn115kkp3n8dd7593h762vxs6vfqm13i39lq1";
   };
-  nativeBuildInputs = [perl bdftopcf perlPackages.TextCharWidth fontforge 
+  nativeBuildInputs = [perl bdftopcf perlPackages.TextCharWidth fontforge
     SDL SDL_image];
   preConfigure = ''
     patchShebangs .
@@ -22,10 +22,6 @@ stdenv.mkDerivation rec {
     cp *.svg "$out/share/fonts/svg"
     cp *.woff "$out/share/fonts/web"
   '';
-
-  outputHashAlgo = "sha256";
-  outputHashMode = "recursive";
-  outputHash = "03zvczdka665zcyf9fjrnx434mwpr5q8396j34kjmc67w7nhc49r";
 
   meta = {
     inherit version;

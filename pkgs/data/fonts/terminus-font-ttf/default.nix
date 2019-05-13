@@ -1,4 +1,4 @@
-{ stdenv, fetchzip }:
+{ lib, fetchzip }:
 
 let
   version = "4.47.0";
@@ -20,7 +20,7 @@ in fetchzip rec {
 
   sha256 = "1mnx3vlnl0r15yzsa4zb9qqab4hpi603gdwhlbw960wg03i3xn8z";
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "A clean fixed width TTF font";
     longDescription = ''
       Monospaced bitmap font designed for long work with computers

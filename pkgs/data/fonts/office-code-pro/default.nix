@@ -1,26 +1,27 @@
-{ stdenv, fetchFromGitHub }:
+{ lib, fetchFromGitHub }:
 
-stdenv.mkDerivation rec {
+let
   pname = "office-code-pro";
   version = "1.004";
+in fetchFromGitHub rec {
+  name = "${pname}-${version}";
 
-  src = fetchFromGitHub {
-    owner = "nathco";
-    repo = "Office-Code-Pro";
-    rev = version;
-    sha256 = "0znmjjyn5q83chiafy252bhsmw49r2nx2ls2cmhjp4ihidfr6cmb";
-  };
+  owner = "nathco";
+  repo = "Office-Code-Pro";
+  rev = version;
 
-  installPhase = ''
+  postFetch = ''
+    tar xf $downloadedFile --strip=1
     fontDir=$out/share/fonts/opentype
-    docDir=$out/share/doc/${pname}-${version}
+    docDir=$out/share/doc/${name}
     mkdir -p $fontDir $docDir
     install -Dm644 README.md $docDir
     install -t $fontDir -m644 'Fonts/Office Code Pro/OTF/'*.otf
     install -t $fontDir -m644 'Fonts/Office Code Pro D/OTF/'*.otf
   '';
+  sha256 = "1bagwcaicn6q8qkqazz6wb3x30y4apmkga0mkv8fh6890hfhywr9";
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "A customized version of Source Code Pro";
     longDescription = ''
       Office Code Pro is a customized version of Source Code Pro, the monospaced

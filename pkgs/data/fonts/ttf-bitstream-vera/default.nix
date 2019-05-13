@@ -1,4 +1,4 @@
-{stdenv, fetchzip}:
+{ lib, fetchzip }:
 
 fetchzip {
   name = "ttf-bitstream-vera-1.10";
@@ -15,6 +15,6 @@ fetchzip {
   sha256 = "179hal4yi3367jg8rsvqx6h2w4s0kn9zzrv8c47sslyg28g39s4m";
 
   meta = {
-    platforms = stdenv.lib.platforms.unix;
+    platforms = lib.platforms.unix;
   };
 }

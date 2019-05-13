@@ -1,4 +1,4 @@
-{ stdenv, fetchzip }:
+{ lib, fetchzip }:
 
 let
   version = "1.0";
@@ -15,7 +15,7 @@ in fetchzip rec {
   '';
   sha256 = "035z2k6lwwy2bysw27pirn3vjxnj2h23nyx8jr213rb2bl0m21x1";
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     homepage = https://www.myfonts.com/fonts/jan-fromm/camingo-code/;
     description = "A monospaced typeface designed for source-code editors";
     platforms = platforms.all;

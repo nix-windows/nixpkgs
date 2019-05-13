@@ -1,4 +1,4 @@
-{ stdenv, fetchzip }:
+{ lib, fetchzip }:
 
 let
   version = "0.7.0";
@@ -17,7 +17,7 @@ in fetchzip rec {
 
   sha256 = "1rzz7yhqq3lljyqxbg46jfzfd09qgpgx865lijr4sgc94riy1ypn";
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     homepage = http://canopus.iacp.dvo.ru/~panov/cm-unicode/;
     description = "Computer Modern Unicode fonts";
     maintainers = with maintainers; [ raskin rycee ];

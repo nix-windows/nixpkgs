@@ -35,10 +35,6 @@ stdenv.mkDerivation rec {
     ]))
   ];
 
-  outputHashAlgo = "sha256";
-  outputHashMode = "recursive";
-  outputHash = "09ldviapljn4bb1mcxap2pkz7cq3wr2k2qialbnav5y7ii82acd4";
-
   meta = with stdenv.lib; {
     homepage = https://github.com/hakatashi/RictyDiminished-with-FiraCode;
     description = "The best Japanese programming font meets the awesone ligatures of Firacode";

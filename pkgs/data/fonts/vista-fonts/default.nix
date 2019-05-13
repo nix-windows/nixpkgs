@@ -32,5 +32,6 @@ fetchzip {
     # fontconfig configuration files.
     priority = 5;
     platforms = stdenv.lib.platforms.unix;
+    broken = true; # source url is 404
   };
 }
