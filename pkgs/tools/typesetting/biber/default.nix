@@ -11,6 +11,7 @@ perlPackages.buildPerlModule rec {
   src = "${biberSource}/source/bibtex/biber/biblatex-biber.tar.gz";
 
   buildInputs = with perlPackages; [
+    perl # for patchShebangs
     autovivification BusinessISBN BusinessISMN BusinessISSN ConfigAutoConf
     DataCompare DataDump DateSimple EncodeEUCJPASCII EncodeHanExtra EncodeJIS2K
     DateTime DateTimeFormatBuilder DateTimeCalendarJulian
