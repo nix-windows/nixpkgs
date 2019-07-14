@@ -1,0 +1,67 @@
+diff --git a/meson_options.txt b/meson_options.txt
+index 626baf3d5c2..e36f8827ecd 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -366,3 +366,9 @@ option(
+   value : 25,
+   description : 'Android Platform SDK version. Default: Nougat version.'
+ )
++option(
++  'clang-libdir',
++  type : 'string',
++  value : '',
++  description : 'Locations to search for clang libraries.'
++)
+diff --git a/src/gallium/targets/opencl/meson.build b/src/gallium/targets/opencl/meson.build
+index 907cc74337d..ad135887d19 100644
+--- a/src/gallium/targets/opencl/meson.build
++++ b/src/gallium/targets/opencl/meson.build
+@@ -30,6 +30,7 @@ if with_ld_version_script
+ endif
+ 
+ llvm_libdir = dep_llvm.get_configtool_variable('libdir')
++clang_libdir = get_option('clang-libdir')
+ 
+ opencl_libname = with_opencl_icd ? 'MesaOpenCL' : 'OpenCL'
+ 
+@@ -43,19 +44,19 @@ libopencl = shared_library(
+   dependencies : [
+     idep_mesautil,
+     dep_clock, dep_dl, dep_unwind, dep_elf,
+-    cpp.find_library('clangCodeGen', dirs : llvm_libdir),
+-    cpp.find_library('clangFrontendTool', dirs : llvm_libdir),
+-    cpp.find_library('clangFrontend', dirs : llvm_libdir),
+-    cpp.find_library('clangDriver', dirs : llvm_libdir),
+-    cpp.find_library('clangSerialization', dirs : llvm_libdir),
+-    cpp.find_library('clangParse', dirs : llvm_libdir),
+-    cpp.find_library('clangSema', dirs : llvm_libdir),
+-    cpp.find_library('clangAnalysis', dirs : llvm_libdir),
+-    cpp.find_library('clangAST', dirs : llvm_libdir),
+-    cpp.find_library('clangASTMatchers', dirs : llvm_libdir),
+-    cpp.find_library('clangEdit', dirs : llvm_libdir),
+-    cpp.find_library('clangLex', dirs : llvm_libdir),
+-    cpp.find_library('clangBasic', dirs : llvm_libdir),
++    cpp.find_library('clangCodeGen', dirs : clang_libdir),
++    cpp.find_library('clangFrontendTool', dirs : clang_libdir),
++    cpp.find_library('clangFrontend', dirs : clang_libdir),
++    cpp.find_library('clangDriver', dirs : clang_libdir),
++    cpp.find_library('clangSerialization', dirs : clang_libdir),
++    cpp.find_library('clangParse', dirs : clang_libdir),
++    cpp.find_library('clangSema', dirs : clang_libdir),
++    cpp.find_library('clangAnalysis', dirs : clang_libdir),
++    cpp.find_library('clangAST', dirs : clang_libdir),
++    cpp.find_library('clangASTMatchers', dirs : clang_libdir),
++    cpp.find_library('clangEdit', dirs : clang_libdir),
++    cpp.find_library('clangLex', dirs : clang_libdir),
++    cpp.find_library('clangBasic', dirs : clang_libdir),
+   ],
+   version : '@0@.0.0'.format(opencl_version),
+   install : true,
+@@ -70,6 +71,6 @@ if with_opencl_icd
+     input : 'mesa.icd.in',
+     output : 'mesa.icd',
+     install : true,
+-    install_dir : join_paths(get_option('sysconfdir'), 'OpenCL', 'vendors'),
++    install_dir : join_paths(get_option('prefix'), 'etc', 'OpenCL', 'vendors'),
+   )
+ endif

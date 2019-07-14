@@ -11,6 +11,7 @@
 , eglPlatforms ? [ "x11" "surfaceless" ] ++ lib.optionals stdenv.isLinux [ "wayland" "drm" ]
 , OpenGL, Xplugin
 , withValgrind ? stdenv.hostPlatform.isLinux && !stdenv.hostPlatform.isAarch32, valgrind-light
+, libclc
 }:
 
 /** Packaging design:
@@ -52,7 +53,7 @@ stdenv.mkDerivation {
   #  ~35 MB in $drivers; watch https://launchpad.net/ubuntu/+source/mesa/+changelog
   patches = [
     ./missing-includes.patch # dev_t needs sys/stat.h, time_t needs time.h, etc.-- fixes build w/musl
-    ./opencl-install-dir.patch
+    ./opencl.patch
     ./disk_cache-include-dri-driver-path-in-cache-key.patch
   ] # do not prefix user provided dri-drivers-path
     ++ lib.optional (lib.versionOlder version "19.0.0") (fetchpatch {
@@ -101,16 +102,20 @@ stdenv.mkDerivation {
     "-Dglvnd=true"
     "-Dosmesa=gallium" # used by wine
     "-Dgallium-nine=true" # Direct3D in Wine
+    "-Dgallium-opencl=icd"
+    "-Dopencl-spirv=false"
+    "-Dclang-libdir=${llvmPackages.clang-unwrapped}/lib"
   ];
 
   buildInputs = with xorg; [
     expat llvmPackages.llvm libglvnd xorgproto
     libX11 libXext libxcb libXt libXfixes libxshmfence libXrandr
-    libffi libvdpau libelf libXvMC
+    libffi libvdpau libelf libXvMC libclc llvmPackages.clang llvmPackages.clang-unwrapped
     libpthreadstubs openssl /*or another sha1 provider*/
   ] ++ lib.optionals (elem "wayland" eglPlatforms) [ wayland wayland-protocols ]
     ++ lib.optionals stdenv.isLinux [ libomxil-bellagio libva-minimal ]
     ++ lib.optional withValgrind valgrind-light;
+
 
   nativeBuildInputs = [
     pkgconfig meson ninja
@@ -136,6 +141,16 @@ stdenv.mkDerivation {
     mv -t $drivers/lib       \
       $out/lib/libxatracker* \
       $out/lib/libvulkan_*
+
+    mkdir -p $drivers/lib
+    mv -t "$drivers/lib/"     \
+      $out/lib/gallium-pipe  \
+      $out/lib/libMesaOpenCL*
+
+    # We construct our own .icd file that contains an absolute path.
+    rm -rf $out/etc/OpenCL
+    mkdir -p $drivers/etc/OpenCL/vendors/
+    echo $drivers/lib/libMesaOpenCL.so > $drivers/etc/OpenCL/vendors/mesa.icd
 
     # Move other drivers to a separate output
     mv $out/lib/lib*_mesa* $drivers/lib
@@ -183,7 +198,10 @@ stdenv.mkDerivation {
     done
   '';
 
-  NIX_CFLAGS_COMPILE = stdenv.lib.optionalString stdenv.isDarwin "-fno-common";
+  NIX_CFLAGS_COMPILE =
+    optionals stdenv.isDarwin ["-fno-common"]
+    ++ [ "-UPIPE_SEARCH_DIR"
+         "-DPIPE_SEARCH_DIR=\"${placeholder "drivers"}/lib/gallium-pipe\"" ];
 
   passthru = {
     inherit libdrm;
