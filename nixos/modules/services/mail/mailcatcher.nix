@@ -54,6 +54,7 @@ in
         DynamicUser = true;
         Restart = "always";
         ExecStart = "${pkgs.mailcatcher}/bin/mailcatcher --foreground --no-quit --http-ip ${cfg.http.ip} --http-port ${toString cfg.http.port} --smtp-ip ${cfg.smtp.ip} --smtp-port ${toString cfg.smtp.port}";
+        AmbientCapabilities = lib.optionalString (cfg.http.port < 1024 || cfg.smtp.port < 1024) "cap_net_bind_service";
       };
     };
   };
