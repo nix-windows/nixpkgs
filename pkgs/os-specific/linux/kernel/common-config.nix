@@ -44,7 +44,7 @@ let
       SUNRPC_DEBUG              = yes;
     };
 
-    power-management = {
+    power-management = { CPU_FREQ_STAT = yes; CPU_FREQ_STAT_DETAILS = yes;
       PM_ADVANCED_DEBUG                = yes;
       X86_INTEL_LPSS                   = yes;
       X86_INTEL_PSTATE                 = yes;
@@ -123,6 +123,7 @@ let
       IPV6_FOU_TUNNEL             = whenAtLeast "4.7" module;
       NET_CLS_BPF                 = whenAtLeast "4.4" module;
       NET_ACT_BPF                 = whenAtLeast "4.4" module;
+      NET_SCHED                   = yes;
       L2TP_V3                     = yes;
       L2TP_IP                     = module;
       L2TP_ETH                    = module;
@@ -144,7 +145,7 @@ let
       NF_TABLES_IPV4              = whenAtLeast "4.17" yes;
       NF_TABLES_ARP               = whenAtLeast "4.17" yes;
       NF_TABLES_IPV6              = whenAtLeast "4.17" yes;
-      NF_TABLES_BRIDGE            = whenAtLeast "4.17" yes;
+      NF_TABLES_BRIDGE            = whenBetween "4.17" "5.3" yes;
     };
 
     wireless = {
@@ -157,6 +158,9 @@ let
       ATH9K_AHB             = option yes; # Ditto, AHB bus
       B43_PHY_HT            = option yes;
       BCMA_HOST_PCI         = option yes;
+      RTW88                 = whenAtLeast "5.2" module;
+      RTW88_8822BE          = whenAtLeast "5.2" yes;
+      RTW88_8822CE          = whenAtLeast "5.2" yes;
     };
 
     fb = {
@@ -325,7 +329,7 @@ let
       DEVTMPFS = yes;
     };
 
-    security = {
+    security = { PAGE_TABLE_ISOLATION = option no; RETPOLINE = no; HOTPLUG_SMT = option no;
       # Detect writes to read-only module pages
       DEBUG_SET_MODULE_RONX            = { optional = true; tristate = whenOlder "4.11" "y"; };
       RANDOMIZE_BASE                   = option yes;
@@ -567,6 +571,7 @@ let
     });
 
     misc = {
+      HID_BATTERY_STRENGTH = yes;
       MODULE_COMPRESS    = yes;
       MODULE_COMPRESS_XZ = yes;
       KERNEL_XZ          = yes;
@@ -629,8 +634,8 @@ let
       IDLE_PAGE_TRACKING  = yes;
       IRDA_ULTRA          = whenOlder "4.17" yes; # Ultra (connectionless) protocol
 
-      JOYSTICK_IFORCE_232 = option yes; # I-Force Serial joysticks and wheels
-      JOYSTICK_IFORCE_USB = option yes; # I-Force USB joysticks and wheels
+      JOYSTICK_IFORCE_232 = { optional = true; tristate = whenOlder "5.3" "y"; }; # I-Force Serial joysticks and wheels
+      JOYSTICK_IFORCE_USB = { optional = true; tristate = whenOlder "5.3" "y"; }; # I-Force USB joysticks and wheels
       JOYSTICK_XPAD_FF    = option yes; # X-Box gamepad rumble support
       JOYSTICK_XPAD_LEDS  = option yes; # LED Support for Xbox360 controller 'BigX' LED
 
@@ -697,13 +702,17 @@ let
 
       PREEMPT = no;
       PREEMPT_VOLUNTARY = yes;
+      
+      X86_AMD_PLATFORM_DEVICE = yes;
 
     } // optionalAttrs (stdenv.hostPlatform.system == "x86_64-linux" || stdenv.hostPlatform.system == "aarch64-linux") {
-      # Enable memory hotplug support
-      # Allows you to dynamically add & remove memory to a VM client running NixOS without requiring a reboot
+      # Enable CPU/memory hotplug support
+      # Allows you to dynamically add & remove CPUs/memory to a VM client running NixOS without requiring a reboot
+      ACPI_HOTPLUG_CPU = yes;
       ACPI_HOTPLUG_MEMORY = yes;
       MEMORY_HOTPLUG = yes;
       MEMORY_HOTREMOVE = yes;
+      HOTPLUG_CPU = yes;
       MIGRATION = yes;
       SPARSEMEM = yes;
 

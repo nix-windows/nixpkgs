@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
   };
 
   postPatch = let
-    toDisable = [
+    toDisable = [ "get_passwd" "tcp_writealot"
       "getnameinfo_basic" "udp_send_hang_loop" # probably network-dependent
       "spawn_setuid_fails" "spawn_setgid_fails" "fs_chown" # user namespaces
       "getaddrinfo_fail" "getaddrinfo_fail_sync"

@@ -766,6 +766,8 @@ in {
 
   pdfx = callPackage ../development/python-modules/pdfx { };
 
+  pefile = callPackage ../development/python-modules/pefile { };
+
   perf = callPackage ../development/python-modules/perf { };
 
   perfplot = callPackage ../development/python-modules/perfplot { };

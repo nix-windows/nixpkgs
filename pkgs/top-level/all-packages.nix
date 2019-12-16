@@ -2401,7 +2401,7 @@ in
     brotliSupport = true;
   };
 
-  curl = callPackage ../tools/networking/curl { };
+  curl = callPackage ../tools/networking/curl { }; curl_7_67 = callPackage ../tools/networking/curl/7_67.nix { };
 
   curl_unix_socket = callPackage ../tools/networking/curl-unix-socket rec { };
 
@@ -7720,6 +7720,7 @@ in
         openjdk = openjdk11;
       };
 
+  /* legacy jdk for use as needed by older apps */
   openjdk8 =
     if stdenv.isDarwin then
       callPackage ../development/compilers/openjdk/darwin/8.nix { }
@@ -7729,6 +7730,7 @@ in
         inherit (gnome2) GConf gnome_vfs;
       };
 
+  /* currently maintained LTS JDK */
   openjdk11 =
     if stdenv.isDarwin then
       callPackage ../development/compilers/openjdk/darwin/11.nix { }
@@ -7736,6 +7738,26 @@ in
       callPackage ../development/compilers/openjdk/11.nix {
         openjfx = openjfx11;
         inherit (gnome2) GConf gnome_vfs;
+      };
+
+  openjfx12 =
+    if stdenv.isDarwin then
+      null
+    else
+      callPackage ../development/compilers/openjdk/openjfx/12.nix {
+        openjdk = openjdk12;
+        bootjdk = openjdk11;
+      };
+
+  /* current JDK */
+  openjdk12 =
+    if stdenv.isDarwin then
+      callPackage ../development/compilers/openjdk/darwin/default.nix { }
+    else
+      callPackage ../development/compilers/openjdk/default.nix {
+        openjfx = openjfx12;
+        inherit (gnome2) GConf gnome_vfs;
+        bootjdk = openjdk11;
       };
 
   openjdk = openjdk8;
@@ -7762,6 +7784,15 @@ in
       lib.setName "openjdk-${lib.getVersion pkgs.openjdk11}-headless"
         (lib.addMetaAttrs {}
           ((openjdk11.override { minimal = true; }) // {}));
+
+  jdk12 = openjdk12 // { outputs = [ "out" ]; };
+  jdk12_headless =
+    if stdenv.isDarwin then
+      jdk12
+    else
+      lib.setName "openjdk-${lib.getVersion pkgs.openjdk12}-headless"
+        (lib.addMetaAttrs {}
+          ((openjdk12.override { minimal = true; }) // {}));
 
   jdk = jdk8;
   jre = if stdenv.isAarch32 || stdenv.isAarch64 then adoptopenjdk-jre-bin else jre8;
@@ -9509,7 +9540,7 @@ in
   haskell-ci = haskell.lib.justStaticExecutables haskellPackages.haskell-ci;
 
   neoload = callPackage ../development/tools/neoload {
-    licenseAccepted = (config.neoload.accept_license or false);
+    licenseAccepted = (config.neoload.accept_license or true);
     fontsConf = makeFontsConf {
       fontDirectories = [
         dejavu_fonts.minimal
@@ -9801,6 +9832,8 @@ in
   todolist = callPackage ../applications/misc/todolist { };
 
   travis = callPackage ../development/tools/misc/travis { };
+
+  tree-sitter = callPackage ../development/tools/parsing/tree-sitter { };
 
   trellis = callPackage ../development/tools/trellis { };
 
@@ -14245,6 +14278,7 @@ in
   };
 
   dgraph = callPackage ../servers/dgraph { };
+  dgraph-ratel = callPackage ../servers/dgraph/ratel { };
 
   dico = callPackage ../servers/dico { };
 
@@ -18038,14 +18072,22 @@ in
 
   welle-io = libsForQt5.callPackage ../applications/radio/welle-io { };
 
-  wireshark = callPackage ../applications/networking/sniffers/wireshark {
+  inherit (callPackages ../applications/networking/sniffers/wireshark {
     inherit (darwin.apple_sdk.frameworks) ApplicationServices SystemConfiguration;
-  };
-  wireshark-qt = wireshark;
+  })
+    wireshark-qt_2_6
+    wireshark-cli_2_6
+    wireshark-qt_3_0
+    wireshark-cli_3_0
+    wireshark-qt_3_1
+    wireshark-cli_3_1;
+
+  wireshark = wireshark-qt;
+  wireshark-qt = wireshark-qt_3_0;
+  wireshark-cli = wireshark-cli_3_0;
 
   # The GTK UI is deprecated by upstream. You probably want the QT version.
   wireshark-gtk = throw "Not supported anymore. Use wireshark-qt or wireshark-cli instead.";
-  wireshark-cli = wireshark.override { withQt = false; };
 
   sngrep = callPackage ../applications/networking/sniffers/sngrep {};
 
@@ -19812,8 +19854,7 @@ in
 
   qiv = callPackage ../applications/graphics/qiv { };
 
-  processing = processing3;
-  processing3 = callPackage ../applications/graphics/processing3 {
+  processing = callPackage ../applications/graphics/processing {
     jdk = oraclejdk8;
   };
 
@@ -19869,11 +19910,7 @@ in
 
   qdirstat = libsForQt5.callPackage ../applications/misc/qdirstat {};
 
-  qemu = callPackage ../applications/virtualization/qemu {
-    inherit (darwin.apple_sdk.frameworks) CoreServices Cocoa Hypervisor;
-    inherit (darwin.stubs) rez setfile;
-    python = python3;
-  };
+  qemu = callPackage ../applications/virtualization/qemu { };
 
   qgis-unwrapped = libsForQt5.callPackage ../applications/gis/qgis/unwrapped.nix {
       withGrass = false;

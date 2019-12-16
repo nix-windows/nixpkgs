@@ -107,7 +107,7 @@
   ./programs/environment.nix
   ./programs/firejail.nix
   ./programs/fish.nix
-  ./programs/freetds.nix
+  ./programs/freetds.nix ./programs/fuse.nix
   ./programs/gnupg.nix
   ./programs/gphoto2.nix
   ./programs/iftop.nix

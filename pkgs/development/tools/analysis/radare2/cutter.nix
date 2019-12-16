@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub
+{ stdenv, mkDerivation, fetchFromGitHub
 # nativeBuildInputs
 , qmake, pkgconfig
 # Qt
@@ -7,7 +7,7 @@
 , r2-for-cutter
 , python3 }:
 
-stdenv.mkDerivation rec {
+mkDerivation rec {
   pname = "radare2-cutter";
   version = "1.8.3";
 

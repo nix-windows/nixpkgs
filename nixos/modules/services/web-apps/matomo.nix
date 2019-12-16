@@ -105,8 +105,8 @@ in {
         default = null;
         example = {
           serverAliases = [
-            "matomo.$\{config.networking.domain\}"
-            "stats.$\{config.networking.domain\}"
+            "matomo.\${config.networking.domain}"
+            "stats.\${config.networking.domain}"
           ];
           enableACME = false;
         };
@@ -273,7 +273,7 @@ in {
           fastcgi_pass unix:${phpSocket};
         '';
         # Any other attempt to access any php files is forbidden
-        locations."~* ^.+\.php$".extraConfig = ''
+        locations."~* ^.+\\.php$".extraConfig = ''
           return 403;
         '';
         # Disallow access to unneeded directories
@@ -282,7 +282,7 @@ in {
           return 403;
         '';
         # Disallow access to several helper files
-        locations."~* \.(?:bat|git|ini|sh|txt|tpl|xml|md)$".extraConfig = ''
+        locations."~* \\.(?:bat|git|ini|sh|txt|tpl|xml|md)$".extraConfig = ''
           return 403;
         '';
         # No crawling of this site for bots that obey robots.txt - no useful information here.

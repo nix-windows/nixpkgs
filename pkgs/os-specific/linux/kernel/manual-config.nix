@@ -96,7 +96,7 @@ let
         # Required for deterministic builds along with some postPatch magic.
         ++ optional (stdenv.lib.versionAtLeast version "4.13") ./randstruct-provide-seed.patch;
 
-      prePatch = ''
+      prePatch = ''substituteInPlace arch/x86/kernel/cpu/common.c --replace 'if (x86_match_cpu(cpu_no_speculation))' '//if (x86_match_cpu(cpu_no_speculation))'
         for mf in $(find -name Makefile -o -name Makefile.include -o -name install.sh); do
             echo "stripping FHS paths in \`$mf'..."
             sed -i "$mf" -e 's|/usr/bin/||g ; s|/bin/||g ; s|/sbin/||g'
@@ -190,7 +190,6 @@ let
         # To save space, exclude a bunch of unneeded stuff when copying.
         (cd .. && rsync --archive --prune-empty-dirs \
             --exclude='/build/' \
-            --exclude='/Documentation/' \
             * $dev/lib/modules/${modDirVersion}/source/)
 
         cd $dev/lib/modules/${modDirVersion}/source
@@ -278,7 +277,8 @@ in
 assert stdenv.lib.versionAtLeast version "4.14" -> libelf != null;
 assert stdenv.lib.versionAtLeast version "4.15" -> utillinux != null;
 stdenv.mkDerivation ((drvAttrs config stdenv.hostPlatform.platform kernelPatches configfile) // {
-  name = "linux-${version}";
+  pname = "linux";
+  inherit version;
 
   enableParallelBuilding = true;
 

@@ -10,14 +10,14 @@
 
 assert builtins.langVersion >= 5;
 
-stdenv.mkDerivation {
+stdenv.mkDerivation { preferLocalBuild = true; allowSubstitutes = false;
   name = "closure-info";
 
   __structuredAttrs = true;
 
   exportReferencesGraph.closure = rootPaths;
 
-  preferLocalBuild = true;
+  
 
   PATH = "${buildPackages.coreutils}/bin:${buildPackages.jq}/bin";
 

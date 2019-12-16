@@ -74,7 +74,7 @@ in
 
       enable = mkOption {
         type = types.bool;
-        default = true;
+        default = false;
         description = ''
           Whether to install documentation of packages from
           <option>environment.systemPackages</option> into the generated system path.
@@ -86,7 +86,7 @@ in
 
       man.enable = mkOption {
         type = types.bool;
-        default = true;
+        default = false;
         description = ''
           Whether to install manual pages and the <command>man</command> command.
           This also includes "man" outputs.
@@ -95,7 +95,7 @@ in
 
       info.enable = mkOption {
         type = types.bool;
-        default = true;
+        default = false;
         description = ''
           Whether to install info pages and the <command>info</command> command.
           This also includes "info" outputs.
@@ -104,7 +104,7 @@ in
 
       doc.enable = mkOption {
         type = types.bool;
-        default = true;
+        default = false;
         description = ''
           Whether to install documentation distributed in packages' <literal>/share/doc</literal>.
           Usually plain text and/or HTML.
@@ -130,7 +130,7 @@ in
 
       nixos.enable = mkOption {
         type = types.bool;
-        default = true;
+        default = false;
         description = ''
           Whether to install NixOS's own documentation.
           <itemizedlist>

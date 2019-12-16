@@ -181,7 +181,7 @@ let
             script =
               ''
                 state="/run/nixos/network/addresses/${i.name}"
-                mkdir -p $(dirname "$state")
+                mkdir -p $(dirname "$state"); sleep 1
 
                 ${flip concatMapStrings ips (ip:
                   let
@@ -200,7 +200,7 @@ let
                 )}
 
                 state="/run/nixos/network/routes/${i.name}"
-                mkdir -p $(dirname "$state")
+                mkdir -p $(dirname "$state"); sleep 1
 
                 ${flip concatMapStrings (i.ipv4.routes ++ i.ipv6.routes) (route:
                   let
@@ -239,8 +239,8 @@ let
 
         createTunDevice = i: nameValuePair "${i.name}-netdev"
           { description = "Virtual Network Interface ${i.name}";
-            bindsTo = [ "dev-net-tun.device" ];
-            after = [ "dev-net-tun.device" "network-pre.target" ];
+            bindsTo = optionals (!config.boot.isContainer) [ "dev-net-tun.device" ] ++ [ ];
+            after = optionals (!config.boot.isContainer) [ "dev-net-tun.device" ] ++ [ "network-pre.target" ];
             wantedBy = [ "network-setup.service" (subsystemDevice i.name) ];
             partOf = [ "network-setup.service" ];
             before = [ "network-setup.service" ];

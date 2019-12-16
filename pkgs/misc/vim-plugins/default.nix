@@ -22,7 +22,7 @@ let
     inherit llvmPackages;
   };
 
-  aliases = lib.optionalAttrs (config.allowAliases or true) (import ./aliases.nix lib plugins);
+  aliases = lib.optionalAttrs (config.allowAliases or false) (import ./aliases.nix lib plugins);
 
 in
 

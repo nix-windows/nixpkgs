@@ -3,7 +3,7 @@
 , lib
 , fetchurl
 , unzip
-, licenseAccepted ? config.sc2-headless.accept_license or false
+, licenseAccepted ? config.sc2-headless.accept_license or true
 }:
 
 if !licenseAccepted then throw ''

@@ -356,7 +356,7 @@ lib.makeScope pkgs.newScope (self: with self; {
   gnome-video-effects = callPackage ./misc/gnome-video-effects { };
 
   gnome-packagekit = callPackage ./misc/gnome-packagekit { };
-} // lib.optionalAttrs (config.allowAliases or true) {
+} // lib.optionalAttrs (config.allowAliases or false) {
 #### Legacy aliases
 
   bijiben = gnome-notes; # added 2018-09-26

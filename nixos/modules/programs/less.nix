@@ -54,8 +54,8 @@ in
         type = types.attrsOf types.str;
         default = {};
         example = {
-          "h" = "noaction 5\e(";
-          "l" = "noaction 5\e)";
+          "h" = "noaction 5\\e(";
+          "l" = "noaction 5\\e)";
         };
         description = "Defines new command keys.";
       };
@@ -74,7 +74,7 @@ in
         type = types.attrsOf types.str;
         default = {};
         example = {
-          "\e" = "abort";
+          "\\e" = "abort";
         };
         description = "Defines new line-editing keys.";
       };
