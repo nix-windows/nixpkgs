@@ -42,16 +42,7 @@ let
 
   kernelHasRPFilter = ((kernel.config.isEnabled or (x: false)) "IP_NF_MATCH_RPFILTER") || (kernel.features.netfilterRPFilter or false);
 
-  helpers =
-    ''
-      # Helper command to manipulate both the IPv4 and IPv6 tables.
-      ip46tables() {
-        iptables -w "$@"
-        ${optionalString config.networking.enableIPv6 ''
-          ip6tables -w "$@"
-        ''}
-      }
-    '';
+  helpers = import ./helpers.nix { inherit config lib; };
 
   writeShScript = name: text: let dir = pkgs.writeScriptBin name ''
     #! ${pkgs.runtimeShell} -e
