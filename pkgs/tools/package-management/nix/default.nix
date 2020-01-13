@@ -11,7 +11,7 @@ let
 
 common =
   { lib, stdenv, fetchurl, fetchpatch, perl, curl_7_67, bzip2, sqlite, openssl ? null, xz
-  , pkgconfig, boehmgc, libsodium, brotli, boost, editline
+  , pkgconfig, boehmgc, libsodium, brotli, boost, editline, nlohmann_json
   , autoreconfHook, autoconf-archive, bison, flex, libxml2, libxslt, docbook5, docbook_xsl_ns, jq
   , busybox-sandbox-shell
   , storeDir
@@ -32,31 +32,14 @@ common =
       is20 = lib.versionAtLeast version "2.0pre";
 
       patches = [
-  # canBuildLocally: check for features
-  (fetchurl {
-    url    = "https://github.com/NixOS/nix/pull/2710.patch";  # merged
-    sha256 = "0zrlrl38fybn9mk1rbcwgw7wcb98p2fjkj4nsjpm1x52nlsn5xgi";
-  })
-  # https://github.com/NixOS/nix/pull/3036
-  # https://github.com/NixOS/nix/pull/3038
-  /nix/store/9hqiik14d7lr23iqz078fqhwnmia76av-nix-shell.patch
-  (fetchurl {
-    url    = "https://github.com/NixOS/nix/commit/e07ec8d27e08bf23eccab079b044a6f1b37f3ac9.patch";  # merged, fix allowSubstitutes
-    sha256 = "07an1lyz3g55vgdyz4dshrf9j178wyifmzhz4h6hkyxgxawvvk0p";
-  })
+        # https://github.com/NixOS/nix/pull/3036
+        ./nix-shell.patch
 
-  (fetchurl {
-    url    = "https://github.com/NixOS/nix/pull/3092.patch";  # lexer: fix \r
-    sha256 = "0qa6wi4z5svwbjn3hqvz3v3f3hgmfhmayncgp7ipf6vkpwb9qxap";
-  })
-
-  
-# (fetchurl {
-#   name   = "restrict-escapes.patch";
-#   url    = "https://github.com/NixOS/nix/compare/e8f4b06c7135da819cb7d10232439a6526e3697d~2..e8f4b06c7135da819cb7d10232439a6526e3697d.patch";  # lexer: restrict escapes (hard error)
-#   sha256 = "1xilbsp15w5rr9d140mnv5jlggd64wd1gsslaapkdm9qypw62m9i";
-# })
-];
+        (fetchurl {
+          url    = "https://github.com/NixOS/nix/pull/3092.patch";  # lexer: fix \r
+          sha256 = "0qa6wi4z5svwbjn3hqvz3v3f3hgmfhmayncgp7ipf6vkpwb9qxap";
+        })
+      ];
 
 postPatch = ''
   # do not emit ANSI-code https://github.com/NixOS/nix/issues/2648
@@ -84,8 +67,7 @@ postPatch = ''
     --replace "printMsg(lvlTalkative, format(\"linking '%1%' to '%2%'\") % path % linkPath);" ""
 '';
 
-VERSION_SUFFIX =
- lib.optionalString fromGit suffix;
+      VERSION_SUFFIX = lib.optionalString fromGit suffix;
 
       outputs = [ "out" "dev" "man" "doc" ];
 
@@ -94,7 +76,7 @@ VERSION_SUFFIX =
         ++ lib.optionals (!is20) [ curl_7_67 perl ]
         ++ lib.optionals fromGit [ autoreconfHook autoconf-archive bison flex libxml2 libxslt docbook5 docbook_xsl_ns jq ];
 
-      buildInputs = [ curl_7_67 openssl sqlite xz bzip2 ]
+      buildInputs = [ curl_7_67 openssl sqlite xz bzip2 nlohmann_json ]
         ++ lib.optional (stdenv.isLinux || stdenv.isDarwin) libsodium
         ++ lib.optionals is20 [ brotli boost editline ]
         ++ lib.optional withLibseccomp libseccomp
@@ -112,14 +94,19 @@ VERSION_SUFFIX =
       propagatedBuildInputs = [ boehmgc ];
 
       # Seems to be required when using std::atomic with 64-bit types
-      NIX_LDFLAGS = lib.optionalString (stdenv.hostPlatform.system == "armv6l-linux") "-latomic";
+      NIX_LDFLAGS = lib.optionalString (stdenv.hostPlatform.system == "armv5tel-linux" || stdenv.hostPlatform.system == "armv6l-linux") "-latomic";
 
       preConfigure =
         # Copy libboost_context so we don't get all of Boost in our closure.
         # https://github.com/NixOS/nixpkgs/issues/45462
         if is20 then ''
           mkdir -p $out/lib
-          cp ${boost}/lib/libboost_context* $out/lib
+          cp -pd ${boost}/lib/{libboost_context*,libboost_thread*,libboost_system*} $out/lib
+          rm -f $out/lib/*.a
+          ${lib.optionalString stdenv.isLinux ''
+            chmod u+w $out/lib/*.so.*
+            patchelf --set-rpath $out/lib:${stdenv.cc.cc.lib}/lib $out/lib/libboost_thread.so.*
+          ''}
         '' else ''
           configureFlagsArray+=(BDW_GC_LIBS="-lgc -lgccpp")
         '';
@@ -144,9 +131,9 @@ VERSION_SUFFIX =
            # RISC-V support in progress https://github.com/seccomp/libseccomp/pull/50
         ++ lib.optional (!withLibseccomp) "--disable-seccomp-sandboxing";
 
-      makeFlags = "profiledir=$(out)/etc/profile.d";
+      makeFlags = [ "profiledir=$(out)/etc/profile.d" ];
 
-      installFlags = "sysconfdir=$(out)/etc";
+      installFlags = [ "sysconfdir=$(out)/etc" ];
 
       doInstallCheck = true; # not cross
 
@@ -223,10 +210,10 @@ in rec {
   });
 
   nixStable = callPackage common (rec {
-    name = "nix-2.2.2";
+    name = "nix-2.3.2";
     src = fetchurl {
       url = "http://nixos.org/releases/nix/${name}/${name}.tar.xz";
-      sha256 = "f80a1b4f9837a8d33209f0b7769d5038335459ff4303eccf3e9217a9eca8594c";
+      sha256 = "9fea4b52db0b296dcf05d36f7ecad9f48396af3a682bb21e31f8d04c469beef8";
     };
 
     inherit storeDir stateDir confDir boehmgc;
@@ -236,12 +223,12 @@ in rec {
 
   nixUnstable = lib.lowPrio (callPackage common rec {
     name = "nix-2.3${suffix}";
-    suffix = "pre6779_324a5dc9";
+    suffix = "pre6895_84de821";
     src = fetchFromGitHub {
       owner = "NixOS";
       repo = "nix";
-      rev = "324a5dc92f8e50e6b637c5e67dea48c80be10837";
-      sha256 = "1g8gbam585q4kx8ilbx23ip64jw0r829i374qy0l8kvr8mhvj55r";
+      rev = "84de8210040580ce7189332b43038d52c56a9689";
+      sha256 = "062pdly0m2hk8ly8li5psvpbj1mi7m1a15k8wyzf79q7294l5li3";
     };
     fromGit = true;
 
@@ -249,13 +236,13 @@ in rec {
   });
 
   nixFlakes = lib.lowPrio (callPackage common rec {
-    name = "nix-2.3${suffix}";
-    suffix = "pre20190712_aa82f8b";
+    name = "nix-2.4${suffix}";
+    suffix = "pre20191022_9cac895";
     src = fetchFromGitHub {
       owner = "NixOS";
       repo = "nix";
-      rev = "aa82f8b2d2a2c42f0d713e8404b668cef1a4b108";
-      hash = "sha256-MRY2CCjnTPSWIv0/aguZcg5U+DA+ODLKl9vjB/qXFpU=";
+      rev = "9cac895406724e0304dff140379783c4d786e855";
+      hash = "sha256-Y1cdnCNoJmjqyC/a+Nt2N+5L3Ttg7K7zOD7gmtg1QzA=";
     };
     fromGit = true;
 

@@ -1,0 +1,64 @@
+diff --git a/src/libstore/globals.cc b/src/libstore/globals.cc
+index 1c2c0871..76d912b4 100644
+--- a/src/libstore/globals.cc
++++ b/src/libstore/globals.cc
+@@ -64,7 +64,8 @@ Settings::Settings()
+     }
+ 
+ #if defined(__linux__) && defined(SANDBOX_SHELL)
+-    sandboxPaths = tokenizeString<StringSet>("/bin/sh=" SANDBOX_SHELL);
++    if (SANDBOX_SHELL[0] != '\0')
++      sandboxPaths = tokenizeString<StringSet>("/bin/sh=" SANDBOX_SHELL);
+ #endif
+ 
+     allowedImpureHostPrefixes = tokenizeString<StringSet>(DEFAULT_ALLOWED_IMPURE_PREFIXES);
+diff --git a/src/nix-build/nix-build.cc b/src/nix-build/nix-build.cc
+index 618895d3..ff5ce99a 100755
+--- a/src/nix-build/nix-build.cc
++++ b/src/nix-build/nix-build.cc
+@@ -337,14 +337,14 @@ static void _main(int argc, char * * argv)
+         if (shell == "") {
+ 
+             try {
+-                auto expr = state->parseExprFromString("(import <nixpkgs> {}).bashInteractive", absPath("."));
++                auto expr = state->parseExprFromString("(import <nixpkgs-current> {}).bashInteractive", absPath("."));
+ 
+                 Value v;
+                 state->eval(expr, v);
+ 
+                 auto drv = getDerivation(*state, v, false);
+                 if (!drv)
+-                    throw Error("the 'bashInteractive' attribute in <nixpkgs> did not evaluate to a derivation");
++                    throw Error("the 'bashInteractive' attribute in <nixpkgs-current> did not evaluate to a derivation");
+ 
+                 pathsToBuild.insert(drv->queryDrvPath());
+ 
+@@ -370,7 +370,7 @@ static void _main(int argc, char * * argv)
+         // Set the environment.
+         auto env = getEnv();
+ 
+-        auto tmp = getEnv("TMPDIR", getEnv("XDG_RUNTIME_DIR", "/tmp"));
++        auto tmp = getEnv("NIX_BUILD_TOP", getEnv("TMPDIR", getEnv("XDG_RUNTIME_DIR", "/tmp")));
+ 
+         if (pure) {
+             decltype(env) newEnv;
+@@ -398,6 +398,11 @@ static void _main(int argc, char * * argv)
+                 Path p = (Path) tmpDir + "/" + fn;
+                 writeFile(p, var.second);
+                 env[var.first + "Path"] = p;
++            } else if (drv.outputs.find(var.first) != drv.outputs.end()) {  // 'nix-shell' usualy has no permission to write to nix store, so 'installPhase' fails.
++                if (var.first == "out")                                     // this overrides derivation's $out with path passed in -o switch (or ./result by default).
++                  env[var.first] = absPath(outLink);                        // while in 'nix-build' ./result is a symlink to nix store path, in 'nix-shell' it is a real output path
++                else
++                  env[var.first] = absPath(outLink + "-" + var.first);      // for example "./result-devdoc"
+             } else
+                 env[var.first] = var.second;
+ 
+@@ -409,6 +414,7 @@ static void _main(int argc, char * * argv)
+            lose the current $PATH directories. */
+         auto rcfile = (Path) tmpDir + "/rc";
+         writeFile(rcfile, fmt(
++                (getEnv("NIX_BUILD_TOP", "").empty() ? "" : "mkdir -p " + shellEscape(env["NIX_BUILD_TOP"]) + "; cd " + shellEscape(env["NIX_BUILD_TOP"]) + "; ") +
+                 (keepTmp ? "" : "rm -rf '%1%'; "s) +
+                 "[ -n \"$PS1\" ] && [ -e ~/.bashrc ] && source ~/.bashrc; "
+                 "%2%"
