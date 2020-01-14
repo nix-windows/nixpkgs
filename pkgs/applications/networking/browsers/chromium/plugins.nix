@@ -45,11 +45,11 @@ let
 
   flash = stdenv.mkDerivation rec {
     pname = "flashplayer-ppapi";
-    version = "32.0.0.255";
+    version = "32.0.0.303";
 
     src = fetchzip {
       url = "https://fpdownload.adobe.com/pub/flashplayer/pdc/${version}/flash_player_ppapi_linux.x86_64.tar.gz";
-      sha256 = "1rqb54kqxq66vvqk5yrr3rsy3wcj9r9wnkngk27c7jayzm6bwgvv";
+      sha256 = "0b2cw8y9rif2p0lyy2ir1v5lchxlsh543b9c743a2p85c9p7q62b";
       stripRoot = false;
     };
 
@@ -81,7 +81,11 @@ let
 
     dontStrip = true;
 
-    meta.platforms = platforms.x86_64;
+    meta = {
+      license = stdenv.lib.licenses.unfree;
+      maintainers = with stdenv.lib.maintainers; [ taku0 ];
+      platforms = platforms.x86_64;
+    };
   };
 
 in {
