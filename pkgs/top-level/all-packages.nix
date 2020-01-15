@@ -18128,12 +18128,12 @@ in
     wireshark-cli_2_6
     wireshark-qt_3_0
     wireshark-cli_3_0
-    wireshark-qt_3_1
-    wireshark-cli_3_1;
+    wireshark-qt_3_2
+    wireshark-cli_3_2;
 
   wireshark = wireshark-qt;
-  wireshark-qt = wireshark-qt_3_0;
-  wireshark-cli = wireshark-cli_3_0;
+  wireshark-qt = wireshark-qt_3_2;
+  wireshark-cli = wireshark-cli_3_2;
 
   # The GTK UI is deprecated by upstream. You probably want the QT version.
   wireshark-gtk = throw "Not supported anymore. Use wireshark-qt or wireshark-cli instead.";

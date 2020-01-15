@@ -9,13 +9,10 @@
 with stdenv.lib;
 
 let
-common = { version, sources-sha256, withQt }:
-let
-  variant = if withQt then "qt" else "cli";
-in
+common = { version, sources-sha256 }: { withQt }:
 assert withQt -> qt5 != null;
 stdenv.mkDerivation {
-  pname = "wireshark-${variant}";
+  pname = "wireshark-${if withQt then "qt" else "cli"}";
   inherit version;
   outputs = [ "out" "dev" ];
 
@@ -115,35 +112,25 @@ stdenv.mkDerivation {
     maintainers = with maintainers; [ bjornfor fpletz ];
   };
 };
+
+wireshark-2_6  = common {
+  version        = "2.6.12";
+  sources-sha256 = "1mjb32iwdc15ixyqa78qqbwy4291i668db5w0v0rscarskgkvbc3";
+};
+wireshark-3_0  = common {
+  version        = "3.0.7";
+  sources-sha256 = "1wljg5z994r8zbjig52zlgp0b8lqbzdl1d6ysnw9hcvm2y82farv";
+};
+wireshark-3_2 = common {
+  version        = "3.2.0";
+  sources-sha256 = "0v5nn7i2nbqr59jsw8cs2052hr7xd96x1sa3480g8ks5kahk7zac";
+};
+
 in {
-  wireshark-qt_2_6  = common {
-    version        = "2.6.12";
-    sources-sha256 = "1mjb32iwdc15ixyqa78qqbwy4291i668db5w0v0rscarskgkvbc3";
-    withQt         = true;
-  };
-  wireshark-cli_2_6 = common {
-    version        = "2.6.12";
-    sources-sha256 = "1mjb32iwdc15ixyqa78qqbwy4291i668db5w0v0rscarskgkvbc3";
-    withQt         = false;
-  };
-  wireshark-qt_3_0  = common {
-    version        = "3.0.6";
-    sources-sha256 = "0gp3qg0280ysrsaa97yfazka8xcyrspsrw8bfgqxnpf1l0i40zx8";
-    withQt         = true;
-  };
-  wireshark-cli_3_0 = common {
-    version        = "3.0.6";
-    sources-sha256 = "0gp3qg0280ysrsaa97yfazka8xcyrspsrw8bfgqxnpf1l0i40zx8";
-    withQt         = false;
-  };
-  wireshark-qt_3_1  = common {
-    version        = "3.1.0";
-    sources-sha256 = "1qrxzliw9dh5aq8biifyfm556q42xz5lw465r8fjjsgw6ng4zdd7";
-    withQt         = true;
-  };
-  wireshark-cli_3_1 = common {
-    version        = "3.1.0";
-    sources-sha256 = "1qrxzliw9dh5aq8biifyfm556q42xz5lw465r8fjjsgw6ng4zdd7";
-    withQt         = false;
-  };
+  wireshark-qt_2_6  = wireshark-2_6 { withQt = true;  };
+  wireshark-cli_2_6 = wireshark-2_6 { withQt = false; };
+  wireshark-qt_3_0  = wireshark-3_0 { withQt = true;  };
+  wireshark-cli_3_0 = wireshark-3_0 { withQt = false; };
+  wireshark-qt_3_2  = wireshark-3_2 { withQt = true;  };
+  wireshark-cli_3_2 = wireshark-3_2 { withQt = false; };
 }
