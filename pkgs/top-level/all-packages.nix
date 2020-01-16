@@ -16512,6 +16512,8 @@ in
 
   iwona = callPackage ../data/fonts/iwona { };
 
+  jetbrains-mono = callPackage ../data/fonts/jetbrains-mono { };
+
   jost = callPackage ../data/fonts/jost { };
 
   junicode = callPackage ../data/fonts/junicode { };
