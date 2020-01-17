@@ -140,6 +140,7 @@
   ./programs/sway.nix
   ./programs/thefuck.nix
   ./programs/tmux.nix
+  ./programs/traceroute.nix
   ./programs/tsm-client.nix
   ./programs/udevil.nix
   ./programs/venus.nix
