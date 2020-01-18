@@ -9,10 +9,16 @@ stdenv.mkDerivation rec {
   pname = "wireguard";
   version = "0.0.20200105";
 
+# src = /home/user/m/_absalon/wireguard-source;
   src = fetchzip {
     url = "https://git.zx2c4.com/wireguard-linux-compat/snapshot/wireguard-linux-compat-${version}.tar.xz";
     sha256 = "1b0amq4xjnl0bfxy6g0awbgnfymx3knd4ldai25z53j8f7d9xri7";
   };
+
+  # accept packets from any IP (so `allowedIPs` is for egress only)
+  postPatch = ''
+    substituteInPlace src/receive.c --replace 'goto dishonest_packet_peer' '/**/'
+  '';
 
   preConfigure = ''
     cd src
