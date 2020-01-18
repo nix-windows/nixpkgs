@@ -91,7 +91,7 @@ with super;
     ];
     buildInputs = [
       pkgs.glib
-      pkgs.gobjectIntrospection
+      pkgs.gobject-introspection
     ];
     patches = [
       (pkgs.fetchpatch {
