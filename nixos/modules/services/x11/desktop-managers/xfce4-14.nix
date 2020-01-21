@@ -15,6 +15,7 @@ in
         description = "Enable the Xfce desktop environment.";
       };
 
+    # TODO: support thunar plugins
 #     thunarPlugins = mkOption {
 #       default = [];
 #       type = types.listOf types.package;
@@ -30,14 +31,6 @@ in
         description = "Don't install XFCE desktop components (xfdesktop, panel and notification daemon).";
       };
 
-      extraSessionCommands = mkOption {
-        default = "";
-        type = types.lines;
-        description = ''
-          Shell commands executed just before XFCE is started.
-        '';
-      };
-
       enableXfwm = mkOption {
         type = types.bool;
         default = true;
@@ -48,78 +41,76 @@ in
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs.xfce4-14 // pkgs; [
-      # Get GTK+ themes and gtk-update-icon-cache
-      gtk2.out
+      glib # for gsettings
+      gtk3.out # gtk-update-icon-cache
 
-      # Supplies some abstract icons such as:
-      # utilities-terminal, accessories-text-editor
+      gnome3.gnome-themes-extra
       gnome3.adwaita-icon-theme
-
       hicolor-icon-theme
       tango-icon-theme
       xfce4-icon-theme
 
       desktop-file-utils
-      shared-mime-info
+      shared-mime-info # for update-mime-database
+
+      # For a polkit authentication agent
+      polkit_gnome
 
       # Needed by Xfce's xinitrc script
-      # TODO: replace with command -v
-      which
+      xdg-user-dirs # Update user dirs as described in https://freedesktop.org/wiki/Software/xdg-user-dirs/
 
       exo
       garcon
-      gtk-xfce-engine
-      gvfs
       libxfce4ui
-      tumbler
       xfconf
 
       mousepad
+      parole
       ristretto
       xfce4-appfinder
       xfce4-screenshooter
       xfce4-session
       xfce4-settings
+      xfce4-taskmanager
       xfce4-terminal
 
-      thunar # (thunar.override {  thunarPlugins = cfg.thunarPlugins; })
-    # thunar-volman # TODO: drop
-    ] ++ (if config.hardware.pulseaudio.enable
-          then [ xfce4-pulseaudio-plugin xfce4-volumed-pulse ]
-          else [ xfce4-mixer xfce4-volumed ])
-      # TODO: NetworkManager doesn't belong here
-      ++ optionals config.networking.networkmanager.enable [ networkmanagerapplet ]
-      ++ optionals config.powerManagement.enable [ xfce4-power-manager ]
-      ++ optionals cfg.enableXfwm [ xfwm4 ]
-      ++ optionals (!cfg.noDesktop) [
-        xfce4-panel
+      # TODO: resync patch for plugins
+      #(thunar.override { thunarPlugins = cfg.thunarPlugins; })
+      thunar
+    ] # TODO: NetworkManager doesn't belong here
+      ++ optional config.networking.networkmanager.enable networkmanagerapplet
+      ++ optional config.powerManagement.enable xfce4-power-manager
+      ++ optionals config.hardware.pulseaudio.enable [
+        pavucontrol
+        # volume up/down keys support:
+        # xfce4-pulseaudio-plugin includes all the functionalities of xfce4-volumed-pulse
+        # but can only be used with xfce4-panel, so for no-desktop usage we still include
+        # xfce4-volumed-pulse
+        (if cfg.noDesktop then xfce4-volumed-pulse else xfce4-pulseaudio-plugin)
+      ] ++ optionals cfg.enableXfwm [
+        xfwm4
+        xfwm4-themes
+      ] ++ optionals (!cfg.noDesktop) [
         xfce4-notifyd
+        xfce4-panel
         xfdesktop
       ];
 
     environment.pathsToLink = [
       "/share/xfce4"
-      "/share/themes"
-      "/share/mime"
-      "/share/desktop-directories"
+      "/lib/xfce4"
       "/share/gtksourceview-3.0"
+      "/share/gtksourceview-4.0"
     ];
-
-    environment.variables = {
-      GDK_PIXBUF_MODULE_FILE = "${pkgs.librsvg.out}/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache";
-      GIO_EXTRA_MODULES = [ "${pkgs.gvfs}/lib/gio/modules" ];
-    };
 
     services.xserver.desktopManager.session = [{
       name = "xfce4-14";
       bgSupport = true;
       start = ''
-        ${cfg.extraSessionCommands}
-
-        # Set GTK_PATH so that GTK+ can find the theme engines.
+        # Set GTK_PATH so that GTK can find the theme engines.
         export GTK_PATH="${config.system.path}/lib/gtk-2.0:${config.system.path}/lib/gtk-3.0"
 
-        # Set GTK_DATA_PREFIX so that GTK+ can find the Xfce themes.
+        # Set GTK_DATA_PREFIX so that GTK can find the Xfce themes.
         export GTK_DATA_PREFIX=${config.system.path}
 
         ${pkgs.runtimeShell} ${pkgs.xfce4-14.xinitrc} &
@@ -128,9 +119,31 @@ in
     }];
 
     services.xserver.updateDbusEnvironment = true;
+    services.xserver.gdk-pixbuf.modulePackages = [ pkgs.librsvg ];
 
     # Enable helpful DBus services.
     services.udisks2.enable = true;
+    security.polkit.enable = true;
+    services.accounts-daemon.enable = true;
     services.upower.enable = config.powerManagement.enable;
+    services.gnome3.glib-networking.enable = true;
+    services.gnome3.gvfs.enable = true;
+#   services.gvfs.package = pkgs.xfce.gvfs;
+    services.tumbler.enable = true;
+    services.system-config-printer.enable = (mkIf config.services.printing.enable (mkDefault true));
+    services.xserver.libinput.enable = mkDefault true; # used in xfce4-settings-manager
+
+    # Enable default programs
+    programs.dconf.enable = true;
+
+    # Shell integration for VTE terminals
+#   programs.bash.vteIntegration = mkDefault true;
+#   programs.zsh.vteIntegration = mkDefault true;
+
+    # Systemd services
+    systemd.packages = with pkgs.xfce4-14; [
+      thunar
+    ] ++ optional (!cfg.noDesktop) xfce4-notifyd;
+
   };
 }
