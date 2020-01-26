@@ -15,7 +15,6 @@ in
         description = "Enable the Xfce desktop environment.";
       };
 
-    # TODO: support thunar plugins
 #     thunarPlugins = mkOption {
 #       default = [];
 #       type = types.listOf types.package;
@@ -29,6 +28,14 @@ in
         type = types.bool;
         default = false;
         description = "Don't install XFCE desktop components (xfdesktop, panel and notification daemon).";
+      };
+
+      extraSessionCommands = mkOption {
+        default = "";
+        type = types.lines;
+        description = ''
+          Shell commands executed just before XFCE is started.
+        '';
       };
 
       enableXfwm = mkOption {
@@ -107,6 +114,8 @@ in
       name = "xfce4-14";
       bgSupport = true;
       start = ''
+        ${cfg.extraSessionCommands}
+
         # Set GTK_PATH so that GTK can find the theme engines.
         export GTK_PATH="${config.system.path}/lib/gtk-2.0:${config.system.path}/lib/gtk-3.0"
 
