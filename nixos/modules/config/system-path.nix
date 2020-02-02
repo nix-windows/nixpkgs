@@ -33,7 +33,7 @@ let
       pkgs.nano
       pkgs.ncurses
       pkgs.netcat
-      
+
       config.programs.ssh.package
       pkgs.perl
       pkgs.procps
