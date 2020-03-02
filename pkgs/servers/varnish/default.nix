@@ -25,8 +25,11 @@ let
         wrapProgram "$out/sbin/varnishd" --prefix PATH : "${stdenv.lib.makeBinPath [ stdenv.cc ]}"
       '';
 
-      # https://github.com/varnishcache/varnish-cache/issues/1875
-      NIX_CFLAGS_COMPILE = stdenv.lib.optionalString stdenv.isi686 "-fexcess-precision=standard";
+      NIX_CFLAGS_COMPILE = builtins.toString (
+           # https://github.com/varnishcache/varnish-cache/issues/1875
+           stdenv.lib.optional stdenv.isi686                           "-fexcess-precision=standard"
+        ++ stdenv.lib.optional (stdenv.lib.versionOlder version "6.0") "-Wno-error=format-overflow"
+      );
 
       outputs = [ "out" "dev" "man" ];
 
