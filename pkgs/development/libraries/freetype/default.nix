@@ -70,4 +70,10 @@ in stdenv.mkDerivation rec {
       --set PKG_CONFIG_PATH "$PKG_CONFIG_PATH:$dev/lib/pkgconfig"
   '';
 
+
+  postPatch = ''
+    find . -type f -name ftoption.h \
+      -exec sed -r -i 's/^#define TT_CONFIG_OPTION_SUBPIXEL_HINTING.*$//'   {} \; \
+      -exec sed -r -i 's/^#define FT_CONFIG_OPTION_SUBPIXEL_RENDERING.*$//' {} \;
+  '';
 }

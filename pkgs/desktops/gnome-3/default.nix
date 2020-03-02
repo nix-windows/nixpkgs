@@ -288,7 +288,7 @@ lib.makeScope pkgs.newScope (self: with self; {
   gnome-autoar = callPackage ./misc/gnome-autoar { };
 
   gnome-packagekit = callPackage ./misc/gnome-packagekit { };
-} // lib.optionalAttrs (config.allowAliases or true) {
+} // lib.optionalAttrs (config.allowAliases or false) {
 #### Legacy aliases
 
   bijiben = gnome-notes; # added 2018-09-26

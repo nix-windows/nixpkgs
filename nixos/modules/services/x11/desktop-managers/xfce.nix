@@ -28,9 +28,9 @@ in
     (mkRenamedOptionModule
       [ "services" "xserver" "desktopManager" "xfce4-14" "enableXfwm" ]
       [ "services" "xserver" "desktopManager" "xfce" "enableXfwm" ])
-    (mkRenamedOptionModule
-      [ "services" "xserver" "desktopManager" "xfce" "extraSessionCommands" ]
-      [ "services" "xserver" "displayManager" "sessionCommands" ])
+#   (mkRenamedOptionModule
+#     [ "services" "xserver" "desktopManager" "xfce" "extraSessionCommands" ]
+#     [ "services" "xserver" "displayManager" "sessionCommands" ])
     (mkRemovedOptionModule [ "services" "xserver" "desktopManager" "xfce" "screenLock" ] "")
   ];
 
@@ -55,6 +55,14 @@ in
         type = types.bool;
         default = false;
         description = "Don't install XFCE desktop components (xfdesktop, panel and notification daemon).";
+      };
+
+      extraSessionCommands = mkOption {
+        default = "";
+        type = types.lines;
+        description = ''
+          Shell commands executed just before XFCE is started.
+        '';
       };
 
       enableXfwm = mkOption {
@@ -131,6 +139,8 @@ in
       name = "xfce";
       bgSupport = true;
       start = ''
+        ${cfg.extraSessionCommands}
+
         ${pkgs.runtimeShell} ${pkgs.xfce.xfce4-session.xinitrc} &
         waitPID=$!
       '';

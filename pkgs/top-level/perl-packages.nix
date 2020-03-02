@@ -21102,7 +21102,7 @@ let
     };
   };
 
-} // stdenv.lib.optionalAttrs (config.allowAliases or true) {
+} // stdenv.lib.optionalAttrs (config.allowAliases or false) {
   autodie = null; # part of Perl
   AutoLoader = null; # part of Perl 5.22
   constant = null; # part of Perl 5.22

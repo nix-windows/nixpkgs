@@ -52,7 +52,7 @@ let
       SCHED_DEBUG               = yes;
     };
 
-    power-management = {
+    power-management = { CPU_FREQ_STAT = yes; CPU_FREQ_STAT_DETAILS = yes;
       PM_ADVANCED_DEBUG                = yes;
       X86_INTEL_LPSS                   = yes;
       X86_INTEL_PSTATE                 = yes;
@@ -360,7 +360,7 @@ let
       DEVTMPFS = yes;
     };
 
-    security = {
+    security = { PAGE_TABLE_ISOLATION = option no; RETPOLINE = no; HOTPLUG_SMT = option no;
       # Detect writes to read-only module pages
       DEBUG_SET_MODULE_RONX            = { optional = true; tristate = whenOlder "4.11" "y"; };
       RANDOMIZE_BASE                   = option yes;

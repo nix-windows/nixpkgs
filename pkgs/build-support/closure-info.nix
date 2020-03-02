@@ -18,6 +18,7 @@ stdenv.mkDerivation {
   exportReferencesGraph.closure = rootPaths;
 
   preferLocalBuild = true;
+  allowSubstitutes = false;
 
   PATH = "${buildPackages.coreutils}/bin:${buildPackages.jq}/bin";
 

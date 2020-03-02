@@ -100,6 +100,8 @@ in
       (pkgs.stdenv.mkDerivation {
         name = "check-varnish-syntax";
         buildCommand = "${cfg.package}/sbin/varnishd -C ${commandLine} 2> $out || (cat $out; exit 1)";
+        preferLocalBuild = true;
+        allowSubstitutes = false;
       })
     ];
 

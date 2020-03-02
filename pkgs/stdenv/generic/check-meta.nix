@@ -13,7 +13,7 @@ let
   # for why this defaults to false, but I (@copumpkin) want to default it to true soon.
   shouldCheckMeta = config.checkMeta or false;
 
-  allowUnfree = config.allowUnfree or false
+  allowUnfree = config.allowUnfree or true
     || builtins.getEnv "NIXPKGS_ALLOW_UNFREE" == "1";
 
   whitelist = config.whitelistedLicenses or [];

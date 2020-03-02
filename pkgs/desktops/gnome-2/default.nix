@@ -68,7 +68,7 @@ lib.makeScope pkgs.newScope (self: with self; {
 
   libglademm = callPackage ./bindings/libglademm { };
 
-} // lib.optionalAttrs (config.allowAliases or true) {
+} // lib.optionalAttrs (config.allowAliases or false) {
   inherit (pkgs)
     # GTK Libs
     glib glibmm atk atkmm cairo pango pangomm gdk_pixbuf gtkmm2 libcanberra-gtk2

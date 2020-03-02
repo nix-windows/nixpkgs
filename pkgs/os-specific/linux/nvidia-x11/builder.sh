@@ -72,7 +72,7 @@ installPhase() {
                 sed "s#__NV_VK_ICD__#$i/lib/libGLX_nvidia.so#" nvidia_icd.json.template > nvidia_icd.json.fixed
             else
                 sed -E "s#(libGLX_nvidia)#$i/lib/\\1#" nvidia_icd.json > nvidia_icd.json.fixed
-            fi
+        fi
             install -Dm644 nvidia_icd.json.fixed $i/share/vulkan/icd.d/nvidia.json
         fi
 

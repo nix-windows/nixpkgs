@@ -196,7 +196,11 @@ in
     # Implement consoleLogLevel both in early boot and using sysctl
     # (so you don't need to reboot to have changes take effect).
     boot.kernelParams =
-      [ "loglevel=${toString config.boot.consoleLogLevel}" ] ++
+      (optionals (pkgs.stdenv.isx86_64 || pkgs.stdenv.isi686) [
+              /* https://make-linux-fast-again.com/ */
+              "noibrs" "noibpb" "nopti" "nospectre_v2" "nospectre_v1" "l1tf=off" "nospec_store_bypass_disable" "no_stf_barrier" "mds=off" "mitigations=off"
+             ]) ++
+             [ "loglevel=${toString config.boot.consoleLogLevel}" ] ++
       optionals config.boot.vesa [ "vga=0x317" "nomodeset" ];
 
     boot.kernel.sysctl."kernel.printk" = mkDefault config.boot.consoleLogLevel;

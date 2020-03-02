@@ -241,7 +241,7 @@ stdenv.lib.makeScope pkgs.newScope (self: with self; {
   };
   */
 
-} // stdenv.lib.optionalAttrs (config.allowAliases or true) {
+} // stdenv.lib.optionalAttrs (config.allowAliases or false) {
 
   resynthesizer2 = resynthesizer;
 

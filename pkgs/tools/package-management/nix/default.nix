@@ -1,4 +1,5 @@
-{ lib, fetchurl, callPackage
+{ lib, fetchurl, fetchFromGitHub, callPackage
+, perl
 , storeDir ? "/nix/store"
 , stateDir ? "/nix/var"
 , confDir ? "/etc"
@@ -9,17 +10,18 @@
 let
 
 common =
-  { lib, stdenv, fetchpatch, perl, curl, bzip2, sqlite, openssl ? null, xz
-  , pkgconfig, boehmgc, perlPackages, libsodium, brotli, boost, editline, nlohmann_json
+  { lib, stdenv, fetchurl, fetchpatch, perl, curl, bzip2, sqlite, openssl ? null, xz
+  , pkgconfig, boehmgc, libsodium, brotli, boost, editline, nlohmann_json
+  , autoreconfHook, autoconf-archive, bison, flex, libxml2, libxslt, docbook5, docbook_xsl_ns
   , jq, libarchive, rustc, cargo
   , busybox-sandbox-shell
   , storeDir
   , stateDir
   , confDir
   , withLibseccomp ? lib.any (lib.meta.platformMatch stdenv.hostPlatform) libseccomp.meta.platforms, libseccomp
-  , withAWS ? stdenv.isLinux || stdenv.isDarwin, aws-sdk-cpp
+  , withAWS ? false, aws-sdk-cpp
 
-  , name, suffix ? "", src, includesPerl ? false
+  , name, suffix ? "", src, fromGit ? false
 
   }:
   let
@@ -31,6 +33,42 @@ common =
       is20 = lib.versionAtLeast version "2.0pre";
       is24 = lib.versionAtLeast version "2.4pre";
 
+      patches = [
+        # https://github.com/NixOS/nix/pull/3036
+        ./nix-shell.patch
+
+        (fetchurl {
+          url    = "https://github.com/NixOS/nix/pull/3092.patch";  # lexer: fix \r
+          sha256 = "0qa6wi4z5svwbjn3hqvz3v3f3hgmfhmayncgp7ipf6vkpwb9qxap";
+        })
+      ];
+
+postPatch = ''
+  # do not emit ANSI-code https://github.com/NixOS/nix/issues/2648
+  find . -type f -name '*.cc' -exec sed -r -i 's,isatty\([A-Z_]+\),0,g' {} +
+
+  # allow self-signed https certificates on substituers
+  substituteInPlace src/libstore/download.cc \
+    --replace 'if (request.verifyTLS) {' \
+              'if (false) {'
+
+  substituteInPlace src/libexpr/primops.cc \
+    --replace 'if (drvs.empty()) return;' \
+              'if (drvs.empty()) return;
+
+               for (auto & drv : drvs)
+                  printError(format("realize IFD: %1%") % drv);
+              '
+
+  # force alloc remote terminal to kill remote processes on connection abort
+  substituteInPlace src/libstore/ssh.cc \
+    --replace '"-M",' '"-M", "-t", "-t",'
+
+  # suppress too talkalive message
+  substituteInPlace src/libstore/optimise-store.cc \
+    --replace "printMsg(lvlTalkative, format(\"linking '%1%' to '%2%'\") % path % linkPath);" ""
+'';
+
       VERSION_SUFFIX = suffix;
 
       outputs = [ "out" "dev" "man" "doc" ];
@@ -38,6 +76,7 @@ common =
       nativeBuildInputs =
         [ pkgconfig ]
         ++ lib.optionals (!is20) [ curl perl ]
+        ++ lib.optionals fromGit [ autoreconfHook autoconf-archive bison flex libxml2 libxslt docbook5 docbook_xsl_ns jq ]
         ++ lib.optionals is24 [ jq ];
 
       buildInputs = [ curl openssl sqlite xz bzip2 nlohmann_json ]
@@ -84,9 +123,9 @@ common =
           "--enable-gc"
         ]
         ++ lib.optionals (!is20) [
-          "--with-dbi=${perlPackages.DBI}/${perl.libPrefix}"
-          "--with-dbd-sqlite=${perlPackages.DBDSQLite}/${perl.libPrefix}"
-          "--with-www-curl=${perlPackages.WWWCurl}/${perl.libPrefix}"
+          "--with-dbi=${perl.pkgs.DBI}/${perl.libPrefix}"
+          "--with-dbd-sqlite=${perl.pkgs.DBDSQLite}/${perl.libPrefix}"
+          "--with-www-curl=${perl.pkgs.WWWCurl}/${perl.libPrefix}"
         ] ++ lib.optionals (is20 && stdenv.isLinux) [
           "--with-sandbox-shell=${sh}/bin/busybox"
         ]
@@ -128,7 +167,12 @@ common =
       };
 
       passthru = {
-        perl-bindings = if includesPerl then nix else stdenv.mkDerivation {
+        inherit fromGit;
+
+        perl-bindings = if perl.pkgs.hasPerlModule nix then
+                          nix    # Nix1 has the perl bindings by default, so no need to build the manually.
+                        else
+                          perl.pkgs.toPerlModule(stdenv.mkDerivation {
           pname = "nix-perl";
           inherit version;
 
@@ -140,17 +184,18 @@ common =
           # but noting for future travellers.
           nativeBuildInputs =
             [ perl pkgconfig curl nix libsodium ]
+            ++ lib.optionals fromGit [ autoreconfHook autoconf-archive ]
             ++ lib.optional is20 boost;
 
           configureFlags =
-            [ "--with-dbi=${perlPackages.DBI}/${perl.libPrefix}"
-              "--with-dbd-sqlite=${perlPackages.DBDSQLite}/${perl.libPrefix}"
+            [ "--with-dbi=${perl.pkgs.DBI}/${perl.libPrefix}"
+              "--with-dbd-sqlite=${perl.pkgs.DBDSQLite}/${perl.libPrefix}"
             ];
 
           preConfigure = "export NIX_STATE_DIR=$TMPDIR";
 
           preBuild = "unset NIX_INDENT_MAKE";
-        };
+        });
       };
     };
   in nix;
@@ -159,18 +204,15 @@ in rec {
 
   nix = nixStable;
 
-  nix1 = callPackage common rec {
+  nix1 = perl.pkgs.toPerlModule(callPackage common rec {
     name = "nix-1.11.16";
     src = fetchurl {
       url = "http://nixos.org/releases/nix/${name}/${name}.tar.xz";
       sha256 = "0ca5782fc37d62238d13a620a7b4bff6a200bab1bd63003709249a776162357c";
     };
 
-    # Nix1 has the perl bindings by default, so no need to build the manually.
-    includesPerl = true;
-
     inherit storeDir stateDir confDir boehmgc;
-  };
+  });
 
   nixStable = callPackage common (rec {
     name = "nix-2.3.2";

@@ -193,6 +193,8 @@ rec {
    '';
 
   writeNginxConfig = name: text: pkgs.runCommand name {
+    preferLocalBuild = true;
+    allowSubstitutes = false;
     inherit text;
     passAsFile = [ "text" ];
   } /* sh */ ''
