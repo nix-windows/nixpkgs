@@ -74,7 +74,7 @@ postPatch = ''
       outputs = [ "out" "dev" "man" "doc" ];
 
       nativeBuildInputs =
-        [ pkgconfig ]
+        [ bison flex pkgconfig ]
         ++ lib.optionals (!is20) [ curl perl ]
         ++ lib.optionals fromGit [ autoreconfHook autoconf-archive bison flex libxml2 libxslt docbook5 docbook_xsl_ns jq ]
         ++ lib.optionals is24 [ jq ];
