@@ -7365,8 +7365,10 @@ in
   valum = callPackage ../development/web/valum { };
 
   inherit (callPackages ../servers/varnish { })
-    varnish60 varnish62 varnish63;
+    varnish4 varnish5 varnish60 varnish62 varnish63;
   inherit (callPackages ../servers/varnish/packages.nix { })
+    varnish4Packages
+    varnish5Packages
     varnish60Packages
     varnish62Packages
     varnish63Packages;
