@@ -8738,10 +8738,14 @@ in
   rust_1_38_0 = callPackage ../development/compilers/rust/1_38_0.nix {
     inherit (darwin.apple_sdk.frameworks) CoreFoundation Security;
   };
+  rust_1_37_0 = callPackage ../development/compilers/rust/1_37_0.nix {
+    inherit (darwin.apple_sdk.frameworks) CoreFoundation Security;
+  };
   rust = rust_1_41_0;
 
   rustPackages_1_41_0 = rust_1_41_0.packages.stable;
   rustPackages_1_38_0 = rust_1_38_0.packages.stable;
+  rustPackages_1_37_0 = rust_1_37_0.packages.stable;
   rustPackages = rustPackages_1_41_0;
 
   inherit (rustPackages) cargo clippy rustc rustPlatform;
@@ -19146,6 +19150,24 @@ in
   firefox-wayland = wrapFirefox firefox-unwrapped { gdkWayland = true; };
   firefox-esr-68 = wrapFirefox firefox-esr-68-unwrapped { };
   firefox-esr = firefox-esr-68;
+
+  firefoxEsrPackages = recurseIntoAttrs (callPackage ../applications/networking/browsers/firefox-esr/packages.nix {
+    callPackage = pkgs.newScope {
+      inherit (gnome2) libIDL;
+      libpng = libpng_apng;
+      python = python2;
+      gnused = gnused_422;
+      inherit (darwin.apple_sdk.frameworks) CoreMedia ExceptionHandling
+                                            Kerberos AVFoundation MediaToolbox
+                                            CoreLocation Foundation AddressBook;
+      inherit (darwin) libobjc;
+    };
+  });
+  firefox-esr-52-unwrapped = firefoxEsrPackages.firefox-esr-52;
+  firefox-esr-60-unwrapped = firefoxEsrPackages.firefox-esr-60;
+  firefox-esr-52 = wrapFirefox firefox-esr-52-unwrapped { };
+  firefox-esr-60 = wrapFirefox firefox-esr-60-unwrapped { };
+
 
   firefox-bin-unwrapped = callPackage ../applications/networking/browsers/firefox-bin {
     channel = "release";

@@ -1,0 +1,19 @@
+diff --git a/tools/profiler/core/platform.h b/tools/profiler/core/platform.h
+index 2e736d9..bb5373d 100644
+--- a/tools/profiler/core/platform.h
++++ b/tools/profiler/core/platform.h
+@@ -65,10 +65,10 @@
+ #include <unistd.h>
+ #if !defined(__BIONIC__)
+ #include <sys/syscall.h>
+-static inline pid_t gettid()
+-{
+-  return (pid_t) syscall(SYS_gettid);
+-}
++//static inline pid_t gettid()
++//{
++//  return (pid_t) syscall(SYS_gettid);
++//}
+ #endif
+ #endif
+ 

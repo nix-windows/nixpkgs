@@ -1,6 +1,6 @@
 { stdenv, removeReferencesTo, pkgsBuildBuild, pkgsBuildHost, pkgsBuildTarget
 , fetchurl, file, python3
-, llvm_9, darwin, git, cmake, rust, rustPlatform
+, pkgs, darwin, git, cmake, rust, rustPlatform
 , pkgconfig, openssl
 , which, libffi
 , withBundledLLVM ? false
@@ -10,15 +10,19 @@
 }:
 
 let
-  inherit (stdenv.lib) optionals optional optionalString;
+  inherit (stdenv.lib) optionals optional optionalString versionOlder;
   inherit (darwin.apple_sdk.frameworks) Security;
+  llvmVersion = if versionOlder version "1.38.0" then
+                  "llvmPackages_7"
+                else
+                  "llvmPackages_9";
 
-  llvmSharedForBuild = pkgsBuildBuild.llvm_9.override { enableSharedLibraries = true; };
-  llvmSharedForHost = pkgsBuildHost.llvm_9.override { enableSharedLibraries = true; };
-  llvmSharedForTarget = pkgsBuildTarget.llvm_9.override { enableSharedLibraries = true; };
+  llvmSharedForBuild = pkgsBuildBuild.${llvmVersion}.llvm.override { enableSharedLibraries = true; };
+  llvmSharedForHost = pkgsBuildHost.${llvmVersion}.llvm.override { enableSharedLibraries = true; };
+  llvmSharedForTarget = pkgsBuildTarget.${llvmVersion}.llvm.override { enableSharedLibraries = true; };
 
   # For use at runtime
-  llvmShared = llvm_9.override { enableSharedLibraries = true; };
+  llvmShared = pkgs.${llvmVersion}.llvm.override { enableSharedLibraries = true; };
 in stdenv.mkDerivation rec {
   pname = "rustc";
   inherit version;
@@ -27,6 +31,12 @@ in stdenv.mkDerivation rec {
     url = "https://static.rust-lang.org/dist/rustc-${version}-src.tar.gz";
     inherit sha256;
   };
+
+  # Provide the compiler-rt sources needed for profiling.
+  preConfigure = optionalString (versionOlder version "1.38.0") ''
+    mkdir src/llvm-project/compiler-rt
+    tar xf ${pkgs.${llvmVersion}.compiler-rt.src} -C src/llvm-project/compiler-rt --strip-components=1
+  '';
 
   __darwinAllowLocalNetworking = true;
 
