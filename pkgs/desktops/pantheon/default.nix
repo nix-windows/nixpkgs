@@ -194,7 +194,7 @@ lib.makeScope pkgs.newScope (self: with self; {
 
   elementary-wallpapers = callPackage ./artwork/elementary-wallpapers { };
 
-} // lib.optionalAttrs (config.allowAliases or true) {
+} // lib.optionalAttrs (config.allowAliases or false) {
 
   ### ALIASES
 

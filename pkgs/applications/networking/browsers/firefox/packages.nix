@@ -52,7 +52,7 @@ rec {
       versionKey = "ffversion";
     };
   };
-} // lib.optionalAttrs (config.allowAliases or true) {
+} // lib.optionalAttrs (config.allowAliases or false) {
   #### ALIASES
   #### remove after 20.03 branchoff
 
