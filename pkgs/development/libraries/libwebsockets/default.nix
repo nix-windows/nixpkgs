@@ -39,8 +39,8 @@ rec {
   };
 
   libwebsockets_3_2 = generic {
-    version = "3.2.0";
-    sha256 = "0ac5755h3w1pl6cznqbvg63dwkqy544fqlhvqyp7s11hgs7jx6l8";
+    version = "3.2.2";
+    sha256 = "0m1kn4p167jv63zvwhsvmdn8azx3q7fkk8qc0fclwyps2scz6dna";
   };
 
   libwebsockets = libwebsockets_3_2;
