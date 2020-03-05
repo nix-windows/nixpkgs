@@ -9,25 +9,25 @@ in
 {
 
   imports = [
-    # added 2019-08-18
-    # needed to preserve some semblance of UI familarity
-    # with original XFCE module
-    (mkRenamedOptionModule
-      [ "services" "xserver" "desktopManager" "xfce4-14" "extraSessionCommands" ]
-      [ "services" "xserver" "displayManager" "sessionCommands" ])
-
-    # added 2019-11-04
-    # xfce4-14 module removed and promoted to xfce.
-    # Needed for configs that used xfce4-14 module to migrate to this one.
-    (mkRenamedOptionModule
-      [ "services" "xserver" "desktopManager" "xfce4-14" "enable" ]
-      [ "services" "xserver" "desktopManager" "xfce" "enable" ])
-    (mkRenamedOptionModule
-      [ "services" "xserver" "desktopManager" "xfce4-14" "noDesktop" ]
-      [ "services" "xserver" "desktopManager" "xfce" "noDesktop" ])
-    (mkRenamedOptionModule
-      [ "services" "xserver" "desktopManager" "xfce4-14" "enableXfwm" ]
-      [ "services" "xserver" "desktopManager" "xfce" "enableXfwm" ])
+#   # added 2019-08-18
+#   # needed to preserve some semblance of UI familarity
+#   # with original XFCE module
+#   (mkRenamedOptionModule
+#     [ "services" "xserver" "desktopManager" "xfce4-14" "extraSessionCommands" ]
+#     [ "services" "xserver" "displayManager" "sessionCommands" ])
+#
+#   # added 2019-11-04
+#   # xfce4-14 module removed and promoted to xfce.
+#   # Needed for configs that used xfce4-14 module to migrate to this one.
+#   (mkRenamedOptionModule
+#     [ "services" "xserver" "desktopManager" "xfce4-14" "enable" ]
+#     [ "services" "xserver" "desktopManager" "xfce" "enable" ])
+#   (mkRenamedOptionModule
+#     [ "services" "xserver" "desktopManager" "xfce4-14" "noDesktop" ]
+#     [ "services" "xserver" "desktopManager" "xfce" "noDesktop" ])
+#   (mkRenamedOptionModule
+#     [ "services" "xserver" "desktopManager" "xfce4-14" "enableXfwm" ]
+#     [ "services" "xserver" "desktopManager" "xfce" "enableXfwm" ])
 #   (mkRenamedOptionModule
 #     [ "services" "xserver" "desktopManager" "xfce" "extraSessionCommands" ]
 #     [ "services" "xserver" "displayManager" "sessionCommands" ])
