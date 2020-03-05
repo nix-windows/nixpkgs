@@ -11,7 +11,7 @@ with lib;
   services.xserver.desktopManager.gnome3.enable = true;
 
   # Auto-login as root.
-  services.xserver.displayManager.gdm.autoLogin = {
+  services.xserver.displayManager.autoLogin = {
     enable = true;
     user = "root";
   };
