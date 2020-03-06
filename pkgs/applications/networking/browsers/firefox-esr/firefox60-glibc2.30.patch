@@ -1,0 +1,13 @@
+diff --git a/tools/profiler/core/platform.h b/tools/profiler/core/platform.h
+index c8fc604..ef313b7 100644
+--- a/tools/profiler/core/platform.h
++++ b/tools/profiler/core/platform.h
+@@ -47,7 +47,7 @@
+ #if defined(__GLIBC__)
+ #include <unistd.h>
+ #include <sys/syscall.h>
+-static inline pid_t gettid() { return (pid_t)syscall(SYS_gettid); }
++//static inline pid_t gettid() { return (pid_t)syscall(SYS_gettid); }
+ #elif defined(GP_OS_darwin)
+ #include <unistd.h>
+ #include <sys/syscall.h>
