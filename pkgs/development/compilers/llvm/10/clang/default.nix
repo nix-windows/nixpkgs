@@ -35,8 +35,7 @@ let
       "-DSPHINX_OUTPUT_HTML=OFF"
       "-DSPHINX_WARNINGS_AS_ERRORS=OFF"
     ] ++ stdenv.lib.optionals enablePolly [
-      "-DWITH_POLLY=ON"
-      "-DLINK_POLLY_INTO_TOOLS=ON"
+      "-DCMAKE_SHARED_LINKER_FLAGS=${llvm}/lib/LLVMPolly.so"
     ];
 
     patches = [
