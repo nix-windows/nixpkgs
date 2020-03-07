@@ -60,8 +60,8 @@ in {
     python = python2;
   };
   arangodb_3_4 = common {
-    version = "3.4.9";
-    sha256 = "13841r4130yl983s0zlyd1mng30m7mhvwcll8ks3ycrcclllixz5";
+    version = "3.4.8";
+    sha256 = "0vm94lf1i1vvs04vy68bkkv9q43rsaf1y3kfs6s3jcrs3ay0h0jn";
     stdenv = gcc8Stdenv;
     python = python2;
   };
