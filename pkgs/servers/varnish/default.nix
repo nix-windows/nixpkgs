@@ -1,8 +1,8 @@
 { stdenv, fetchurl, pcre, libxslt, groff, ncurses, pkgconfig, readline, libedit
-, python2, python3, makeWrapper }:
+, python3, makeWrapper }:
 
 let
-  common = { version, sha256, python, extraNativeBuildInputs ? [] }:
+  common = { version, sha256, extraNativeBuildInputs ? [] }:
     stdenv.mkDerivation rec {
       pname = "varnish";
       inherit version;
@@ -12,11 +12,11 @@ let
         inherit sha256;
       };
 
-      passthru.python = python;
+      passthru.python = python3;
 
-      nativeBuildInputs = with python.pkgs; [ pkgconfig docutils ] ++ extraNativeBuildInputs;
+      nativeBuildInputs = with python3.pkgs; [ pkgconfig docutils sphinx ];
       buildInputs = [
-        pcre libxslt groff ncurses readline libedit makeWrapper python
+        pcre libxslt groff ncurses readline libedit makeWrapper python3
       ];
 
       buildFlags = [ "localstatedir=/var/spool" ];
@@ -25,11 +25,8 @@ let
         wrapProgram "$out/sbin/varnishd" --prefix PATH : "${stdenv.lib.makeBinPath [ stdenv.cc ]}"
       '';
 
-      NIX_CFLAGS_COMPILE = builtins.toString (
-           # https://github.com/varnishcache/varnish-cache/issues/1875
-           stdenv.lib.optional stdenv.isi686                           "-fexcess-precision=standard"
-        ++ stdenv.lib.optional (stdenv.lib.versionOlder version "6.0") "-Wno-error=format-overflow"
-      );
+      # https://github.com/varnishcache/varnish-cache/issues/1875
+      NIX_CFLAGS_COMPILE = stdenv.lib.optionalString stdenv.isi686 "-fexcess-precision=standard";
 
       outputs = [ "out" "dev" "man" ];
 
@@ -43,32 +40,16 @@ let
     };
 in
 {
-  varnish4 = common {
-    version = "4.1.10";
-    sha256 = "08kwx0il6cqxsx3897042plh1yxjaanbaqjbspfl0xgvyvxk6j1n";
-    python = python2;
-  };
-  varnish5 = common {
-    version = "5.2.1";
-    sha256 = "1cqlj12m426c1lak1hr1fx5zcfsjjvka3hfirz47hvy1g2fjqidq";
-    python = python2;
-  };
   varnish60 = common {
     version = "6.0.5";
     sha256 = "11aw202s7zdp5qp66hii5nhgm2jk0d86pila7gqrnjgc7x8fs8a0";
-    python = python3;
-    extraNativeBuildInputs = [ python3.pkgs.sphinx ];
   };
   varnish62 = common {
     version = "6.2.2";
     sha256 = "10s3qdvb95pkwp3wxndrigb892h0109yqr8dw4smrhfi0knhnfk5";
-    python = python3;
-    extraNativeBuildInputs = [ python3.pkgs.sphinx ];
   };
   varnish63 = common {
     version = "6.3.1";
     sha256 = "0xa14pd68zpi5hxcax3arl14rcmh5d1cdwa8gv4l5f23mmynr8ni";
-    python = python3;
-    extraNativeBuildInputs = [ python3.pkgs.sphinx ];
   };
 }
