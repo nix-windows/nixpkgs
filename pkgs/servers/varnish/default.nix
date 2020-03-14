@@ -30,6 +30,8 @@ let
 
       outputs = [ "out" "dev" "man" ];
 
+      doCheck = true;
+
       meta = with stdenv.lib; {
         description = "Web application accelerator also known as a caching HTTP reverse proxy";
         homepage = https://www.varnish-cache.org;
