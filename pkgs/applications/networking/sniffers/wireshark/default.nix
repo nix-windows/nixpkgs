@@ -123,8 +123,8 @@ wireshark-3_0  = common {
   sources-sha256 = "1wljg5z994r8zbjig52zlgp0b8lqbzdl1d6ysnw9hcvm2y82farv";
 };
 wireshark-3_2 = common {
-  version        = "3.2.1";
-  sources-sha256 = "0nz84zyhs4177ljxmv34vgc9kgg7ssxhxa4mssxqwh6nb00697sq";
+  version        = "3.2.2";
+  sources-sha256 = "0ygdxpz0i4jxp55fg9x4xcan093wycjb66yas073gviz9kpj6naz";
 };
 
 in {
