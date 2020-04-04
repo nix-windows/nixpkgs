@@ -314,6 +314,7 @@ self: super: {
   hs2048 = dontCheck super.hs2048;
   hsbencher = dontCheck super.hsbencher;
   hsexif = dontCheck super.hsexif;
+  hspec-core = if pkgs.stdenv.isi686 then dontCheck super.hspec-core else super.hspec-core; # tests rely on `Int` being 64-bit; https://github.com/hspec/hspec/issues/431
   hspec-server = dontCheck super.hspec-server;
   HTF = dontCheck super.HTF;
   htsn = dontCheck super.htsn;
@@ -1051,22 +1052,14 @@ self: super: {
   # `removeTrailingWhitespace` is buggy in earlier versions.
   # This will probably be able to be removed when we update to LTS-15.
   dhall_1_29_0 =
-    dontCheck (super.dhall_1_29_0.override {
+    dontCheck (super.dhall_1_29_0.overrideScope (self: super: {
       prettyprinter = self.prettyprinter_1_6_0;
-      prettyprinter-ansi-terminal =
-        self.prettyprinter-ansi-terminal.override {
-          prettyprinter = self.prettyprinter_1_6_0;
-        };
-    });
+    }));
   dhall-bash_1_0_27 = super.dhall-bash_1_0_27.override { dhall = self.dhall_1_29_0; };
-  dhall-json_1_6_1 = super.dhall-json_1_6_1.override {
+  dhall-json_1_6_1 = super.dhall-json_1_6_1.overrideScope (self: super: {
     dhall = self.dhall_1_29_0;
     prettyprinter = self.prettyprinter_1_6_0;
-    prettyprinter-ansi-terminal =
-      self.prettyprinter-ansi-terminal.override {
-        prettyprinter = self.prettyprinter_1_6_0;
-      };
-  };
+  });
 
   # Tests for dhall access the network.
   dhall_1_27_0 = dontCheck super.dhall_1_27_0;
@@ -1080,7 +1073,10 @@ self: super: {
 
   dhall-nix =
     generateOptparseApplicativeCompletion "dhall-to-nix" (
-      super.dhall-nix
+      (super.dhall-nix.overrideScope (self: super: {
+        dhall = self.dhall_1_29_0;
+        prettyprinter = self.prettyprinter_1_6_0;
+      }))
   );
 
   # https://github.com/haskell-hvr/netrc/pull/2#issuecomment-469526558
@@ -1413,5 +1409,11 @@ self: super: {
   streamly-bytestring = super.streamly-bytestring.override {
     streamly = self.streamly_0_7_0;
   };
+
+  # This breaks because of version bounds, but compiles and runs fine.
+  # Last commit is 5 years ago, so we likely won't get upstream fixed soon.
+  # https://bitbucket.org/rvlm/hakyll-contrib-hyphenation/src/master/
+  # Therefore we jailbreak it.
+  hakyll-contrib-hyphenation = doJailbreak super.hakyll-contrib-hyphenation;
 
 } // import ./configuration-tensorflow.nix {inherit pkgs haskellLib;} self super

@@ -7,7 +7,8 @@
 with stdenv.lib;
 
 let
-  common = { version, sha256, patches ? [], withDocs ? false }: stdenv.mkDerivation rec {
+  common = { version, sha256, patches ? [], withDocs ? false, extraMeta ? {} }:
+   stdenv.mkDerivation rec {
     pname = "openssl";
     inherit version;
 
@@ -57,7 +58,9 @@ let
                                      (stdenv.hostPlatform.parsed.cpu.bits != 32)
                                      (toString stdenv.hostPlatform.parsed.cpu.bits)}"
         else if stdenv.hostPlatform.isLinux
-          then "./Configure linux-generic${toString stdenv.hostPlatform.parsed.cpu.bits}"
+          then (if stdenv.hostPlatform.isx86_64
+            then "./Configure linux-x86_64"
+            else "./Configure linux-generic${toString stdenv.hostPlatform.parsed.cpu.bits}")
         else if stdenv.hostPlatform.isiOS
           then "./Configure ios${toString stdenv.hostPlatform.parsed.cpu.bits}-cross"
         else
@@ -130,7 +133,7 @@ let
       license = licenses.openssl;
       platforms = platforms.all;
       maintainers = [ maintainers.peti ];
-    };
+    } // extraMeta;
   };
 
 in {
@@ -145,6 +148,7 @@ in {
        then ./1.0.2/use-etc-ssl-certs-darwin.patch
        else ./1.0.2/use-etc-ssl-certs.patch)
     ];
+    extraMeta.knownVulnerabilities = [ "Support for OpenSSL 1.0.2 ended with 2019." ];
   };
 
   openssl_1_1 = common {

@@ -214,12 +214,11 @@ in {
     };
 
     systemd.services.libvirtd = {
-#     wantedBy = [ "multi-user.target" ];
       requires = [ "libvirtd-config.service" ];
       after = [ "systemd-udev-settle.service" "libvirtd-config.service" ]
               ++ optional vswitch.enable "vswitchd.service";
 
-      environment.LIBVIRTD_ARGS = concatMapStringsSep " " escapeShellArg (
+      environment.LIBVIRTD_ARGS = escapeShellArgs (
         [ "--config" configFile
           "--timeout" "120"     # from ${libvirt}/var/lib/sysconfig/libvirtd
         ] ++ cfg.extraOptions);
