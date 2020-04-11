@@ -182,7 +182,6 @@ postPatch = ''
       };
 
       passthru = {
-<<<<<<< HEAD
         inherit fromGit;
 
         perl-bindings = perl.pkgs.toPerlModule(stdenv.mkDerivation {
