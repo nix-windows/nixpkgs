@@ -41,8 +41,6 @@
    <listitem>
     <para>
      Linux kernel is updated to branch 5.4 by default (from 4.19).
-     Users of Intel GPUs may prefer to explicitly set branch to 4.19 to avoid some regressions.
-     <programlisting>boot.kernelPackages = pkgs.linuxPackages_4_19;</programlisting>
     </para>
    </listitem>
    <listitem>
@@ -933,6 +931,15 @@ services.dnsmasq.servers = [ "127.0.0.1#43" ];
      Please note that this means that this means that the <package>oraclejdk</package> is now
      required. For further information please read the
      <link xlink:href="https://www.oracle.com/technetwork/developer-tools/sql-developer/downloads/sqldev-relnotes-194-5908846.html">release notes</link>.
+    </para>
+   </listitem>
+   <listitem>
+    <para>
+      Haskell <varname>env</varname> and <varname>shellFor</varname> dev shell environments now organized dependencies the same way as regular builds.
+      In particular, rather than receiving all the different lists of dependencies master together as one big lists, and then partitioning into Haskell and non-Hakell dependencies, they work from the original many different dependency parameters and don't need to algorithmically partition anything.
+    </para>
+    <para>
+      This means that if you incorrectly categorize a dependency, e.g. non-Haskell library dependency as a <varname>buildDepends</varname> or run-time Haskell dependency as a <varname>setupDepends</varname>, whereas things would have worked before they may not work now.
     </para>
    </listitem>
    <listitem>
