@@ -37,8 +37,6 @@ let
 
     patches = [
       ./purity.patch
-      # https://reviews.llvm.org/D51899
-      ./compiler-rt-baremetal.patch
     ];
 
     postPatch = ''

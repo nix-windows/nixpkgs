@@ -7977,6 +7977,7 @@ in
   gcc7Stdenv = overrideCC gccStdenv buildPackages.gcc7;
   gcc8Stdenv = overrideCC gccStdenv buildPackages.gcc8;
   gcc9Stdenv = overrideCC gccStdenv buildPackages.gcc9;
+  gcc10Stdenv = overrideCC gccStdenv buildPackages.gcc10;
 
   wrapCCMulti = cc:
     if stdenv.targetPlatform.system == "x86_64-linux" then let
@@ -8140,6 +8141,20 @@ in
     isl = if !stdenv.isDarwin then isl_0_17 else null;
   }));
 
+  gcc10 = lowPrio (wrapCC (callPackage ../development/compilers/gcc/10 {
+    inherit noSysDirs;
+
+    # PGO seems to speed up compilation by gcc by ~10%, see #445 discussion
+    profiledCompiler = with stdenv; (!isDarwin && (isi686 || isx86_64));
+
+    enableLTO = !stdenv.isi686;
+
+    libcCross = if stdenv.targetPlatform != stdenv.buildPlatform then libcCross else null;
+    threadsCross = if stdenv.targetPlatform != stdenv.buildPlatform then threadsCross else null;
+
+    isl = if !stdenv.isDarwin then isl_0_17 else null;
+  }));
+
   gfortran = gfortran9;
 
   gfortran48 = wrapCC (gcc48.cc.override {
@@ -8183,6 +8198,14 @@ in
   });
 
   gfortran9 = wrapCC (gcc9.cc.override {
+    name = "gfortran";
+    langFortran = true;
+    langCC = false;
+    langC = false;
+    profiledCompiler = false;
+  });
+
+  gfortran10 = wrapCC (gcc10.cc.override {
     name = "gfortran";
     langFortran = true;
     langCC = false;
@@ -14527,6 +14550,8 @@ in
   tk-8_6 = callPackage ../development/libraries/tk/8.6.nix { };
   tk-8_5 = callPackage ../development/libraries/tk/8.5.nix { tcl = tcl-8_5; };
 
+  tl-expected = callPackage ../development/libraries/tl-expected { };
+
   tnt = callPackage ../development/libraries/tnt { };
 
   tntnet = callPackage ../development/libraries/tntnet { };
@@ -16525,6 +16550,22 @@ in
     ];
   };
 
+  linux_5_6 = callPackage ../os-specific/linux/kernel/linux-5.6.nix {
+    kernelPatches = [
+      kernelPatches.bridge_stp_helper
+      kernelPatches.request_key_helper
+      kernelPatches.export_kernel_fpu_functions."5.3"
+    ];
+  };
+
+  linux_5_7 = callPackage ../os-specific/linux/kernel/linux-5.7.nix {
+    kernelPatches = [
+      kernelPatches.bridge_stp_helper
+      kernelPatches.request_key_helper
+      kernelPatches.export_kernel_fpu_functions."5.3"
+    ];
+  };
+
   linux_testing = callPackage ../os-specific/linux/kernel/linux-testing.nix {
     kernelPatches = [
       kernelPatches.bridge_stp_helper
@@ -16732,7 +16773,7 @@ in
   linux = linuxPackages.kernel;
 
   # Update this when adding the newest kernel major version!
-  linuxPackages_latest = linuxPackages_5_5;
+  linuxPackages_latest = linuxPackages_5_7;
   linux_latest = linuxPackages_latest.kernel;
 
   # Build the kernel modules for the some of the kernels.
@@ -16747,6 +16788,8 @@ in
   linuxPackages_4_19 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_19);
   linuxPackages_5_4 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_5_4);
   linuxPackages_5_5 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_5_5);
+  linuxPackages_5_6 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_5_6);
+  linuxPackages_5_7 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_5_7);
 
   # When adding to this list:
   # - Update linuxPackages_latest to the latest version
