@@ -26,11 +26,11 @@ in stdenv.mkDerivation rec {
 
   pname = "postfix";
 
-  version = "3.4.9";
+  version = "3.4.16";
 
   src = fetchurl {
     url = "ftp://ftp.cs.uu.nl/mirror/postfix/postfix-release/official/${pname}-${version}.tar.gz";
-    sha256 = "19rdb92q77japw6gy7niiyj1h3nqfdakkcsq2avn9l160vxrqw54";
+    sha256 = "0x0c3a1g4czhms2g7j25rdrwpjn149gzhbvg2x97ddv722chb23p";
   };
 
   nativeBuildInputs = [ makeWrapper m4 ];
@@ -48,7 +48,6 @@ in stdenv.mkDerivation rec {
     ./postfix-3.0-no-warnings.patch
     ./post-install-script.patch
     ./relative-symlinks.patch
-    ./0001-Fix-build-with-glibc-2.30.patch
   ];
 
   postPatch = stdenv.lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) ''
@@ -98,7 +97,7 @@ in stdenv.mkDerivation rec {
   '';
 
   meta = with lib; {
-    homepage = http://www.postfix.org/;
+    homepage = "http://www.postfix.org/";
     description = "A fast, easy to administer, and secure mail server";
     license = with licenses; [ ipl10 epl20 ];
     platforms = platforms.linux;

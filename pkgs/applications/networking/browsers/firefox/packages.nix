@@ -1,20 +1,20 @@
-{ config, stdenv, lib, callPackage, fetchurl }:
+{ config, stdenv, lib, callPackage, fetchurl, fetchpatch, nodejs-13_x }:
 
 let
-  common = opts: callPackage (import ./common.nix opts) {};
+  common = opts: callPackage (import ./common.nix opts) { nodejs = nodejs-13_x; };
 in
 
 rec {
   firefox = common rec {
     pname = "firefox";
-    ffversion = "75.0";
+    ffversion = "78.0.1";
     src = fetchurl {
       url = "mirror://mozilla/firefox/releases/${ffversion}/source/firefox-${ffversion}.source.tar.xz";
-      sha512 = "0m3ibm6dy9cpvsxkzkzwj7na5rm5qz7sm3bpx604ibay9pccvgv59jxapisvmswzmlz2nv02l6p2gxlz3b0lbcg7rd5zasia92y7j99";
+      sha512 = "mdO6masIpiZBvYi6kpYUTSnsOda04CUs2CL1LNf1Yad+rfY4ga4aFuLtfKqfgV5IcIIl86XeiC+0grd4irbCYg==";
     };
 
     patches = [
-      ./no-buildconfig-ffx65.patch
+      ./no-buildconfig-ffx76.patch
     ];
 
     meta = {
@@ -33,12 +33,40 @@ rec {
     };
   };
 
-  firefox-esr-68 = common rec {
+  firefox-esr-78 = common rec {
     pname = "firefox-esr";
-    ffversion = "68.7.0esr";
+    ffversion = "78.1.0esr";
     src = fetchurl {
       url = "mirror://mozilla/firefox/releases/${ffversion}/source/firefox-${ffversion}.source.tar.xz";
-      sha512 = "29qbcc78hz1rsnz735a5miwfj0c3r1c5qm2043vyd9qz879vsh4ab82k7wncm3xa04kqdff26zh1rpbbjmdr7gwn4q8nmjzzs7wzpd3";
+      sha512 = "223v796vjsvgs3yw442c8qbsbh43l1aniial05rl70hx44rh9sg108ripj8q83p5l9m0sp67x6ixd2xvifizv6461a1zra1rvbb1caa";
+    };
+
+    patches = [
+      ./no-buildconfig-ffx76.patch
+    ];
+
+    meta = {
+      description = "A web browser built from Firefox Extended Support Release source tree";
+      homepage = "http://www.mozilla.com/en-US/firefox/";
+      maintainers = with lib.maintainers; [ eelco andir ];
+      platforms = lib.platforms.unix;
+      badPlatforms = lib.platforms.darwin;
+      broken = stdenv.buildPlatform.is32bit; # since Firefox 60, build on 32-bit platforms fails with "out of memory".
+                                             # not in `badPlatforms` because cross-compilation on 64-bit machine might work.
+      license = lib.licenses.mpl20;
+    };
+    updateScript = callPackage ./update.nix {
+      attrPath = "firefox-esr-78-unwrapped";
+      versionKey = "ffversion";
+    };
+  };
+
+  firefox-esr-68 = common rec {
+    pname = "firefox-esr";
+    ffversion = "68.11.0esr";
+    src = fetchurl {
+      url = "mirror://mozilla/firefox/releases/${ffversion}/source/firefox-${ffversion}.source.tar.xz";
+      sha512 = "0zg41jnbnpsa07xaizwfsmfav0cgxdqnh8i4yanxy49a45gigk895zqrx2if7pfsmdnj9zpwj9prj8cpnpsfhv6p62f3g2596aa9kvx";
     };
 
     patches = [

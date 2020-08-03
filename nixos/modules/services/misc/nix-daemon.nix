@@ -282,7 +282,7 @@ in
       trustedBinaryCaches = mkOption {
         type = types.listOf types.str;
         default = [ ];
-        example = [ http://hydra.nixos.org/ ];
+        example = [ "https://hydra.nixos.org/" ];
         description = ''
           List of binary cache URLs that non-root users can use (in
           addition to those specified using
@@ -441,6 +441,12 @@ in
     nix.binaryCachePublicKeys = [ "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=" ];
     nix.binaryCaches = [ "https://cache.nixos.org/" ];
 
+    environment.systemPackages =
+      [ nix
+        pkgs.nix-info
+      ]
+      ++ optional (config.programs.bash.enableCompletion && !versionAtLeast nixVersion "2.4pre") pkgs.nix-bash-completions;
+
     environment.etc."nix/nix.conf".source = nixConf;
 
     environment.etc."nix/registry.json".text = builtins.toJSON {
@@ -510,7 +516,7 @@ in
     system.activationScripts.nix = stringAfter [ "etc" "users" ]
       ''
         # Create directories in /nix.
-        ${nix}/bin/nix ping-store --no-net
+        install -m 0755 -d /nix/var/nix/{gcroots,profiles}/per-user
 
         # Subscribe the root user to the NixOS channel by default.
         if [ ! -e "/root/.nix-channels" ]; then

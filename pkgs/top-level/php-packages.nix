@@ -69,17 +69,17 @@ let
       description = "An application for building and managing Phars";
       license = licenses.mit;
       homepage = https://box-project.github.io/box2/;
-      maintainers = with maintainers; [ jtojnar ];
+      maintainers = with maintainers; [ ];
     };
   };
 
   composer = mkDerivation rec {
-    version = "1.9.1";
+    version = "1.10.6";
     pname = "composer";
 
     src = pkgs.fetchurl {
       url = "https://getcomposer.org/download/${version}/composer.phar";
-      sha256 = "04a1fqxhxrckgxw9xbx7mplkzw808k2dz4jqsxq2dy7w6y80n88z";
+      sha256 = "0yzfzgg9qlc388g91bdg7y7rp1q8vqb5hkwykwmr1n1lv8dsrg99";
     };
 
     dontUnpack = true;
@@ -333,7 +333,7 @@ let
       description = "A tool to automatically fix PHP coding standards issues";
       license = licenses.mit;
       homepage = http://cs.sensiolabs.org/;
-      maintainers = with maintainers; [ jtojnar ];
+      maintainers = with maintainers; [ ];
     };
   };
 
@@ -366,7 +366,7 @@ let
       description = "This tool check syntax of PHP files faster than serial check with fancier output";
       license = licenses.bsd2;
       homepage = https://github.com/JakubOnderka/PHP-Parallel-Lint;
-      maintainers = with maintainers; [ jtojnar ];
+      maintainers = with maintainers; [ ];
     };
   };
 
@@ -441,12 +441,12 @@ let
   };
 
   phpstan = mkDerivation rec {
-    version = "0.12.4";
+    version = "0.12.25";
     pname = "phpstan";
 
     src = pkgs.fetchurl {
       url = "https://github.com/phpstan/phpstan/releases/download/${version}/phpstan.phar";
-      sha256 = "1h386zsbfw9f1r00pjbvj749q1fg5q22sgrnx7rqjrnwmbl5mh36";
+      sha256 = "1a864v7fxpv5kp24nkvczrir3ldl6wxvaq85rd391ppa8ahdhvdd";
     };
 
     phases = [ "installPhase" ];

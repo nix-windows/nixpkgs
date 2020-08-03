@@ -2,6 +2,7 @@
 
 { stdenv
 , fetchurl
+, fetchpatch
 , substituteAll
 , gtk-doc
 , pkgconfig
@@ -87,11 +88,11 @@ in
 
 stdenv.mkDerivation rec {
   pname = "fwupd";
-  version = "1.3.7";
+  version = "1.3.9";
 
   src = fetchurl {
     url = "https://people.freedesktop.org/~hughsient/releases/fwupd-${version}.tar.xz";
-    sha256 = "02mzn3whk5mba4nxyrkypawr1gzjx79n4nrkhrp8vja6mxxgsf10";
+    sha256 = "ZuRG+UN8ebXv5Z8fOYWT0eCtHykGXoB8Ysu3wAeqx0A=";
   };
 
   # libfwupd goes to lib
@@ -161,6 +162,12 @@ stdenv.mkDerivation rec {
       src = ./installed-tests-path.patch;
       # needs a different set of modules than po/make-images
       inherit installedTestsPython;
+    })
+
+    (fetchpatch {
+      name = "CVE-2020-10759.patch";
+      url = "https://github.com/fwupd/fwupd/commit/21f2d12fccef63b8aaa99ec53278ce18250b0444.patch";
+      sha256 = "1lgfm1k8723i1dawg71nv21lgmbbyzlm8hxkra8xpf73qmpxygnk";
     })
   ];
 
@@ -264,6 +271,7 @@ stdenv.mkDerivation rec {
       "fwupd/remotes.d/vendor.conf"
       "fwupd/remotes.d/vendor-directory.conf"
       "fwupd/thunderbolt.conf"
+      "fwupd/upower.conf"
       # "fwupd/uefi.conf" # already created by the module
       "pki/fwupd/GPG-KEY-Hughski-Limited"
       "pki/fwupd/GPG-KEY-Linux-Foundation-Firmware"
@@ -287,7 +295,7 @@ stdenv.mkDerivation rec {
 
   meta = with stdenv.lib; {
     homepage = "https://fwupd.org/";
-    maintainers = with maintainers; [ jtojnar ];
+    maintainers = with maintainers; [ ];
     license = [ licenses.gpl2 ];
     platforms = platforms.linux;
   };

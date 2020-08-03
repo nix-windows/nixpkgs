@@ -33,7 +33,7 @@ let
     cd ${cfg.package}
     sudo=exec
     if [[ "$USER" != nextcloud ]]; then
-      sudo='exec /run/wrappers/bin/sudo -u nextcloud --preserve-env=NEXTCLOUD_CONFIG_DIR'
+      sudo='exec /run/wrappers/bin/sudo -u nextcloud --preserve-env=NEXTCLOUD_CONFIG_DIR --preserve-env=OC_PASS'
     fi
     export NEXTCLOUD_CONFIG_DIR="${cfg.home}/config"
     $sudo \
@@ -69,7 +69,7 @@ in {
     package = mkOption {
       type = types.package;
       description = "Which package to use for the Nextcloud instance.";
-      relatedPackages = [ "nextcloud17" "nextcloud18" ];
+      relatedPackages = [ "nextcloud17" "nextcloud18" "nextcloud19" ];
     };
 
     maxUploadSize = mkOption {
@@ -302,6 +302,14 @@ in {
           When to run the update. See `systemd.services.&lt;name&gt;.startAt`.
         '';
       };
+    };
+    occ = mkOption {
+      type = types.package;
+      default = occ;
+      internal = true;
+      description = ''
+        The nextcloud-occ program preconfigured to target this Nextcloud instance.
+      '';
     };
   };
 

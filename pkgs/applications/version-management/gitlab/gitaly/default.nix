@@ -19,19 +19,21 @@ let
       };
   };
 in buildGoPackage rec {
-  version = "12.8.8";
+  version = "12.10.14";
   pname = "gitaly";
 
   src = fetchFromGitLab {
     owner = "gitlab-org";
     repo = "gitaly";
     rev = "v${version}";
-    sha256 = "182jqglzbzq8jnlq6l634125jkvi67pfr1xck68n4k09gyzqllxv";
+    sha256 = "0v2ikj4vvlgj2cpp4m5di9kw63nsc3p9hgjfacvzr7nj3ar2pwqa";
   };
 
   # Fix a check which assumes that hook files are writeable by their
   # owner.
-  patches = [ ./fix-executable-check.patch ];
+  patches = [
+    ./fix-executable-check.patch
+  ];
 
   goPackagePath = "gitlab.com/gitlab-org/gitaly";
 
@@ -52,8 +54,8 @@ in buildGoPackage rec {
     # code by default which doesn't work in nixos because it's a
     # read-only filesystem
     substituteInPlace $ruby/gitlab-shell/lib/gitlab_config.rb --replace \
-       "File.join(ROOT_PATH, 'config.yml')" \
-       "'/run/gitlab/shell-config.yml'"
+       "ROOT_PATH.join('config.yml')" \
+       "Pathname.new('/run/gitlab/shell-config.yml')"
   '';
 
   outputs = [ "bin" "out" "ruby" ];

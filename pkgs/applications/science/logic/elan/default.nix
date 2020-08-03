@@ -2,16 +2,16 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "elan";
-  version = "0.7.5";
-
-  cargoSha256 = "0q0xlvyyf88dbz43r7kk9v8rrp6hj0nl5i2i9mg6ibk2gphgdv6v";
+  version = "0.10.0";
 
   src = fetchFromGitHub {
     owner = "kha";
     repo = "elan";
     rev = "v${version}";
-    sha256 = "1147f3lzr6lgvf580ppspn20bdwnf6l8idh1h5ana0p0lf5a0dn1";
+    sha256 = "0aw538shvpfbk481y0gw3z97nsazdnk8qh8fwsb6ji62p2r51v6f";
   };
+
+  cargoSha256 = "0q0xlvyyf88dbz43r7kk9v8rrp6hj0nl5i2i9mg6ibk2gphgdv6v";
 
   nativeBuildInputs = [ pkgconfig ];
 
@@ -22,7 +22,7 @@ rustPlatform.buildRustPackage rec {
   postInstall = ''
     pushd $out/bin
     mv elan-init elan
-    for link in lean leanpkg leanchecker; do
+    for link in lean leanpkg leanchecker leanc leanmake; do
       ln -s elan $link
     done
     popd

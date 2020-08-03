@@ -1,5 +1,6 @@
 { stdenv, buildGoPackage, fetchurl, makeWrapper
 , git, bash, gzip, openssh, pam
+, fetchpatch
 , sqliteSupport ? true
 , pamSupport ? true
 }:
@@ -8,11 +9,11 @@ with stdenv.lib;
 
 buildGoPackage rec {
   pname = "gitea";
-  version = "1.11.4";
+  version = "1.11.8";
 
   src = fetchurl {
     url = "https://github.com/go-gitea/gitea/releases/download/v${version}/gitea-src-${version}.tar.gz";
-    sha256 = "18k6kcdq0ijpzgay2aq1w95qkgfvrn1dgh4cxyj9c4i0pwb3ar7f";
+    sha256 = "1f5sj49zjcsi0bcryr41xzsvmy3zn3m4khlkcq5k5abxiyynbygl";
   };
 
   unpackPhase = ''
@@ -22,7 +23,9 @@ buildGoPackage rec {
 
   sourceRoot = "source";
 
-  patches = [ ./static-root-path.patch ];
+  patches = [
+    ./static-root-path.patch
+  ];
 
   postPatch = ''
     patchShebangs .
