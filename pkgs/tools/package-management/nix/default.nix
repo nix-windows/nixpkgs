@@ -15,6 +15,8 @@ common =
   , pkgconfig, boehmgc, perlPackages, libsodium, brotli, boost, editline, nlohmann_json
   , autoreconfHook, autoconf-archive, bison, flex, libxml2, libxslt, docbook5, docbook_xsl_ns
   , jq, libarchive
+  # Used by tests
+  , gmock
   , busybox-sandbox-shell
   , storeDir
   , stateDir
@@ -75,9 +77,9 @@ postPatch = ''
       outputs = [ "out" "dev" "man" "doc" ];
 
       nativeBuildInputs =
-        [ bison flex pkgconfig ]
-        ++ lib.optionals fromGit [ autoreconfHook autoconf-archive bison flex libxml2 libxslt docbook5 docbook_xsl_ns jq ]
-        ++ lib.optionals is24 [ autoreconfHook autoconf-archive bison flex libxml2 libxslt docbook5 docbook_xsl_ns jq ];
+        [ pkgconfig ]
+        ++ lib.optionals (fromGit || is24) [ autoreconfHook autoconf-archive bison flex libxml2 libxslt
+                                             docbook5 docbook_xsl_ns jq gmock ];
 
       buildInputs =
         [ curl openssl sqlite xz bzip2 nlohmann_json
