@@ -77,8 +77,8 @@ postPatch = ''
       outputs = [ "out" "dev" "man" "doc" ];
 
       nativeBuildInputs =
-        [ pkgconfig ]
-        ++ lib.optionals (fromGit || is24) [ autoreconfHook autoconf-archive bison flex libxml2 libxslt
+        [ pkgconfig bison flex ]
+        ++ lib.optionals (fromGit || is24) [ autoreconfHook autoconf-archive libxml2 libxslt
                                              docbook5 docbook_xsl_ns jq gmock ];
 
       buildInputs =
