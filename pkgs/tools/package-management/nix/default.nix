@@ -12,9 +12,9 @@ let
 common =
   { lib, stdenv, fetchurl, fetchpatch, perl, curl, bzip2, sqlite, openssl ? null, xz
   , bash, coreutils, gzip, gnutar
-  , pkgconfig, boehmgc, libsodium, brotli, boost, editline, nlohmann_json
+  , pkgconfig, boehmgc, perlPackages, libsodium, brotli, boost, editline, nlohmann_json
   , autoreconfHook, autoconf-archive, bison, flex, libxml2, libxslt, docbook5, docbook_xsl_ns
-  , jq, libarchive, rustc, cargo
+  , jq, libarchive
   , busybox-sandbox-shell
   , storeDir
   , stateDir
@@ -22,7 +22,7 @@ common =
   , withLibseccomp ? lib.any (lib.meta.platformMatch stdenv.hostPlatform) libseccomp.meta.platforms, libseccomp
   , withAWS ? false, aws-sdk-cpp
 
-  , name, suffix ? "", src, crates ? null, fromGit ? false
+  , name, suffix ? "", src, fromGit ? false
 
   }:
   let
@@ -84,7 +84,7 @@ postPatch = ''
           brotli boost editline
         ]
         ++ lib.optional (stdenv.isLinux || stdenv.isDarwin) libsodium
-        ++ lib.optionals is24 [ libarchive rustc cargo ]
+        ++ lib.optionals is24 [ libarchive ]
         ++ lib.optional withLibseccomp libseccomp
         ++ lib.optional withAWS
             ((aws-sdk-cpp.override {
@@ -113,11 +113,6 @@ postPatch = ''
             chmod u+w $out/lib/*.so.*
             patchelf --set-rpath $out/lib:${stdenv.cc.cc.lib}/lib $out/lib/libboost_thread.so.*
           ''}
-        '' +
-        # Unpack the Rust crates.
-        lib.optionalString is24 ''
-          tar xvf ${crates} -C nix-rust/
-          mv nix-rust/nix-vendored-crates* nix-rust/vendor
         '' +
         # For Nix-2.3, patch around an issue where the Nix configure step pulls in the
         # build system's bash and other utilities when cross-compiling
@@ -228,40 +223,18 @@ in rec {
 
   nixUnstable = lib.lowPrio (callPackage common rec {
     name = "nix-2.4${suffix}";
-    suffix = "pre7346_5e7ccdc9";
+    suffix = "pre20200721_ff314f1";
 
     src = fetchFromGitHub {
       owner = "NixOS";
       repo = "nix";
-      rev = "5e7ccdc9e3ddd61dc85e20c898001345bfb497a5";
-      sha256 = "10jg0rq92xbigbbri7harn4b75blqaf6rjgq4hhvlnggf2w9iprg";
-    };
-
-    crates = fetchurl {
-      url = https://hydra.nixos.org/build/115942497/download/1/nix-vendored-crates-2.4pre20200403_3473b19.tar.xz;
-      sha256 = "a83785553bb4bc5b28220562153e201ec555a00171466ac08b716f0c97aee45a";
+      rev = "ff314f186e3f91d87af6ad96c0ae3b472494b940";
+      hash = "sha256-QibpLo4/gf2xYGoeQcgjZzH/qy5TBRVH+QCHgqOwur0=";
     };
 
     inherit storeDir stateDir confDir boehmgc;
   });
 
-  nixFlakes = lib.lowPrio (callPackage common rec {
-    name = "nix-2.4${suffix}";
-    suffix = "pre20200403_3473b19";
-
-    src = fetchFromGitHub {
-      owner = "NixOS";
-      repo = "nix";
-      rev = "3473b1950a90d596a3baa080fdfdb080f55a5cc0";
-      sha256 = "1bb7a8a5lzmb3pzq80zxd3s9y3qv757q7032s5wvp75la9wgvmvr";
-    };
-
-    crates = fetchurl {
-      url = https://hydra.nixos.org/build/115942497/download/1/nix-vendored-crates-2.4pre20200403_3473b19.tar.xz;
-      sha256 = "a83785553bb4bc5b28220562153e201ec555a00171466ac08b716f0c97aee45a";
-    };
-
-    inherit storeDir stateDir confDir boehmgc;
-  });
+  nixFlakes = nixUnstable;
 
 }
