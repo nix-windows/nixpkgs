@@ -2,7 +2,7 @@
 , guiSupport ? false, libX11
 
   # see http://dlib.net/compile.html
-, avxSupport ? true
+, avxSupport ? stdenv.hostPlatform.avxSupport
 }:
 
 stdenv.mkDerivation rec {
