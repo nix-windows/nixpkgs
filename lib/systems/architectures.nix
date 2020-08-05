@@ -1,9 +1,10 @@
 { lib }:
 
 rec {
+  # platform.gcc.arch to its features (as in /proc/cpuinfo)
   features = {
     default        = [ ];
-    # Intel
+    # x86_64Intel
     westmere       = [ "sse3" "ssse3" "sse4_1" "sse4_2"         "aes"                                    ];
     sandybridge    = [ "sse3" "ssse3" "sse4_1" "sse4_2"         "aes" "avx"                              ];
     ivybridge      = [ "sse3" "ssse3" "sse4_1" "sse4_2"         "aes" "avx"                              ];
@@ -11,7 +12,7 @@ rec {
     broadwell      = [ "sse3" "ssse3" "sse4_1" "sse4_2"         "aes" "avx" "avx2"          "fma"        ];
     skylake        = [ "sse3" "ssse3" "sse4_1" "sse4_2"         "aes" "avx" "avx2"          "fma"        ];
     skylake-avx512 = [ "sse3" "ssse3" "sse4_1" "sse4_2"         "aes" "avx" "avx2" "avx512" "fma"        ];
-    # AMD
+    # x86_64AMD
     btver1         = [ "sse3" "ssse3" "sse4_1" "sse4_2"                                                  ];
     btver2         = [ "sse3" "ssse3" "sse4_1" "sse4_2"         "aes" "avx"                              ];
     bdver1         = [ "sse3" "ssse3" "sse4_1" "sse4_2" "sse4a" "aes" "avx"                 "fma" "fma4" ];
@@ -20,10 +21,13 @@ rec {
     bdver4         = [ "sse3" "ssse3" "sse4_1" "sse4_2" "sse4a" "aes" "avx" "avx2"          "fma" "fma4" ];
     znver1         = [ "sse3" "ssse3" "sse4_1" "sse4_2" "sse4a" "aes" "avx" "avx2"          "fma"        ];
     znver2         = [ "sse3" "ssse3" "sse4_1" "sse4_2" "sse4a" "aes" "avx" "avx2"          "fma"        ];
+    # AArch64
+    armv8-a        = [ ];
   };
-  # a superior CPU has all the features of an inferion one and is able to build and test code for it
+
+  # a superior CPU has all the features of an inferior and is able to build and test code for it
   inferiors = {
-    # Intel
+    # x86_64 Intel
     default        = [ ];
     westmere       = [ ];
     sandybridge    = [ "westmere" ];
@@ -32,7 +36,7 @@ rec {
     broadwell      = [ "westmere" "sandybridge" "ivybridge" "haswell" ];
     skylake        = [ "westmere" "sandybridge" "ivybridge" "haswell" "broadwell" ];
     skylake-avx512 = [ "westmere" "sandybridge" "ivybridge" "haswell" "broadwell" "skylake" ];
-    # AMD
+    # x86_64 AMD
     btver1         = [ ];
     btver2         = [ ];
     bdver1         = [ ];
@@ -41,6 +45,8 @@ rec {
     bdver4         = [ ];
     znver1         = [ ];
     znver2         = [ ];
+    # AArch64
+    armv8-a        = [ ];
   };
 
   predicates = {
