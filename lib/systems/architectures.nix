@@ -4,7 +4,7 @@ rec {
   features = {
     default        = [ ];
     # Intel
-    westmere       = [ "sse3" "ssse3" "sse4_1" "sse4_2"                                                  ];
+    westmere       = [ "sse3" "ssse3" "sse4_1" "sse4_2"         "aes"                                    ];
     sandybridge    = [ "sse3" "ssse3" "sse4_1" "sse4_2"         "aes" "avx"                              ];
     ivybridge      = [ "sse3" "ssse3" "sse4_1" "sse4_2"         "aes" "avx"                              ];
     haswell        = [ "sse3" "ssse3" "sse4_1" "sse4_2"         "aes" "avx" "avx2"          "fma"        ];
