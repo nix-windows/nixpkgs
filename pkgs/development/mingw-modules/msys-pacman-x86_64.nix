@@ -27,40 +27,40 @@ let
                                                         );
       }
     else
-    stdenvNoCC.mkDerivation {
-      inherit version buildInputs;
-      name = "${pname}-${version}";
-      srcs = map ({filename, sha256}:
-                  fetchurl {
-                    url = "http://repo.msys2.org/msys/x86_64/${filename}";
-                    inherit sha256;
-                  }) sources;
-      sourceRoot = ".";
-      buildPhase = if stdenvNoCC.isShellPerl /* on native windows */ then
-        ''
-          dircopy('.', $ENV{out}) or die "dircopy(., $ENV{out}): $!";
-          ${ stdenvNoCC.lib.concatMapStringsSep "\n" (dep: ''
-                for my $path (glob('${dep}/*')) {
-                  symtree_link($ENV{out}, $path, basename($path)) if basename($path) ne 'bin';
-                }
-              '') buildInputs }
-          chdir($ENV{out});
-          ${ # avoid infinite recursion by skipping `bash' and `coreutils' and their deps (TODO: make a fake env to run post_install)
-             stdenvNoCC.lib.optionalString (!(builtins.elem "msys/${pname}" ["msys/msys2-runtime" "msys/bash" "msys/coreutils" "msys/gmp" "msys/libiconv" "msys/gcc-libs" "msys/libintl"])) ''
-                if (-f ".INSTALL") {
-                  $ENV{PATH} = '${msysPacman.bash}/usr/bin;${msysPacman.coreutils}/usr/bin';
-                  system("bash -c \"ls -la ; . .INSTALL ; post_install || (echo 'post_install failed'; true)\"") == 0 or die;
-                }
-              '' }
-          unlinkL ".BUILDINFO";
-          unlinkL ".INSTALL";
-          unlinkL ".MTREE";
-          unlinkL ".PKGINFO";
-        ''
-      else /* on mingw or linux */
-        throw "todo";
-      meta.broken = broken;
-    };
+      stdenvNoCC.mkDerivation {
+        inherit version buildInputs;
+        name = "${pname}-${version}";
+        srcs = map ({filename, sha256}:
+                    fetchurl {
+                      url = "http://repo.msys2.org/msys/x86_64/${filename}";
+                      inherit sha256;
+                    }) sources;
+        sourceRoot = ".";
+        buildPhase = if stdenvNoCC.isShellPerl /* on native windows */ then
+          ''
+            dircopy('.', $ENV{out}) or die "dircopy(., $ENV{out}): $!";
+            ${ stdenvNoCC.lib.concatMapStringsSep "\n" (dep: ''
+                  for my $path (glob('${dep}/*')) {
+                    symtree_link($ENV{out}, $path, basename($path)) if basename($path) ne 'bin';
+                  }
+                '') buildInputs }
+            chdir($ENV{out});
+            ${ # avoid infinite recursion by skipping `bash' and `coreutils' and their deps (TODO: make a fake env to run post_install)
+               stdenvNoCC.lib.optionalString (!(builtins.elem "msys/${pname}" ["msys/msys2-runtime" "msys/bash" "msys/coreutils" "msys/gmp" "msys/libiconv" "msys/gcc-libs" "msys/libintl"])) ''
+                  if (-f ".INSTALL") {
+                    $ENV{PATH} = '${msysPacman.bash}/usr/bin;${msysPacman.coreutils}/usr/bin';
+                    system("bash -c \"ls -la ; . .INSTALL ; post_install || (echo 'post_install failed'; true)\"") == 0 or die;
+                  }
+                '' }
+            unlinkL ".BUILDINFO";
+            unlinkL ".INSTALL";
+            unlinkL ".MTREE";
+            unlinkL ".PKGINFO";
+          ''
+        else /* on mingw or linux */
+          throw "todo";
+        meta.broken = broken;
+      };
   self = _self;
   _self = with self;
 {

@@ -1,6 +1,6 @@
 @rem = '--*-Perl-*--
 @echo off
-set NIX=C:\nix-windows
+set NIX=C:\work\nix-bootstrap
 set NIX_STORE_DIR=C:\nix\store
 set NIX_PATH=nixpkgs=..\..\..
 
@@ -110,23 +110,21 @@ q[ # GENERATED FILE
 {stdenvNoCC, fetchurl, mingwPacman, msysPacman}:
 
 let
-  fetch = { pname, version, srcs, buildInputs ? [], broken ? false }:
+  fetch = { pname, version, sources, buildInputs ? [], broken ? false }:
     if stdenvNoCC.isShellCmdExe /* on mingw bootstrap */ then
-      stdenvNoCC.mkDerivation {
+      stdenvNoCC.mkDerivation rec {
         inherit version buildInputs;
         name = "]."$subsystem$bits".q[-${pname}-${version}";
         srcs = map ({filename, sha256}:
                     fetchurl {
                       url = "].$baseUrl.q[/${filename}";
                       inherit sha256;
-                    }) srcs;
+                    }) sources;
         PATH = stdenvNoCC.lib.concatMapStringsSep ";" (x: "${x}\\\\bin") stdenvNoCC.initialPath; # it adds 7z.exe to PATH
-        builder = stdenvNoCC.lib.concatStringsSep " & " ( assert (builtins.length srcs == 1);
-                                                          [ ''echo PATH=%PATH%''
-                                                            ''7z x %srcs% -so  |  7z x -aoa -si -ttar -o%out%''
-                                                            ''pushd %out%''
-                                                            ''del .BUILDINFO .INSTALL .MTREE .PKGINFO''
-                                                          ]
+        builder = stdenvNoCC.lib.concatStringsSep " & " ( [ ''echo PATH=%PATH%'' ]
+                                                       ++ map (src: ''7z x ${src} -so  |  7z x -aoa -si -ttar -o%out%'') srcs
+                                                       ++ [ ''pushd %out%''
+                                                            ''del .BUILDINFO .INSTALL .MTREE .PKGINFO'' ]
                                                        ++ stdenvNoCC.lib.concatMap (dep: let
                                                             tgt = stdenvNoCC.lib.replaceStrings ["/"] ["\\\\"] "${dep}";
                                                           in [
@@ -137,52 +135,52 @@ let
                                                         );
       }
     else
-    stdenvNoCC.mkDerivation {
-      inherit version buildInputs;
-      name = "${pname}-${version}";
-      srcs = map ({filename, sha256}:
-                  fetchurl {
-                    url = "].$baseUrl.q[/${filename}";
-                    inherit sha256;
-                  }) srcs;
-      sourceRoot = ".";
-      buildPhase = if stdenvNoCC.isShellPerl /* on native windows */ then
-        ''
-          dircopy('.', $ENV{out}) or die "dircopy(., $ENV{out}): $!";
-          ${ stdenvNoCC.lib.concatMapStringsSep "\n" (dep: ''
-                for my $path (glob('${dep}/*')) {
-                  symtree_link($ENV{out}, $path, basename($path)) if basename($path) ne 'bin';
-                }
-              '') buildInputs }
-          chdir($ENV{out});
-          ${ # avoid infinite recursion by skipping `bash' and `coreutils' and their deps (TODO: make a fake env to run post_install)
-             stdenvNoCC.lib.optionalString (!(builtins.elem "].$subsystem.q[/${pname}" ["msys/msys2-runtime" "msys/bash" "msys/coreutils" "msys/gmp" "msys/libiconv" "msys/gcc-libs" "msys/libintl"])) ''
-                if (-f ".INSTALL") {
-                  $ENV{PATH} = '${msysPacman.bash}/usr/bin;${msysPacman.coreutils}/usr/bin';
-                  system("bash -c \"ls -la ; . .INSTALL ; post_install || (echo 'post_install failed'; true)\"") == 0 or die;
-                }
-              '' }
-          unlinkL ".BUILDINFO";
-          unlinkL ".INSTALL";
-          unlinkL ".MTREE";
-          unlinkL ".PKGINFO";].
-          ( $subsystem eq "mingw"
-            ? q[
-                 # make symlinks in /bin, mingw does not need it, it is only for nixpkgs convenience, to have the executables in $derivation/bin
-                 # do not do it for msys, /bin/sh symlinked to /usr/bin/sh does not works as expected, it tries to assume the FHS root is at $0/../..
-                 symtree_reify($ENV{out}, "bin/_");
-                 for my $file (glob("$ENV{out}/].($subsystem eq "mingw" ? "mingw$bits" : "usr").q[/bin/*")) {
-                   if (-f $file) {
-                     uncsymlink($file => "$ENV{out}/bin/".basename($file)) or die "uncsymlink($file => $ENV{out}/bin/".basename($file)."): $!";
-                   }
-                 }]
-            : q[]
-            ).q[
-        ''
-      else /* on mingw or linux */
-        throw "todo";
-      meta.broken = broken;
-    };
+      stdenvNoCC.mkDerivation {
+        inherit version buildInputs;
+        name = "${pname}-${version}";
+        srcs = map ({filename, sha256}:
+                    fetchurl {
+                      url = "].$baseUrl.q[/${filename}";
+                      inherit sha256;
+                    }) sources;
+        sourceRoot = ".";
+        buildPhase = if stdenvNoCC.isShellPerl /* on native windows */ then
+          ''
+            dircopy('.', $ENV{out}) or die "dircopy(., $ENV{out}): $!";
+            ${ stdenvNoCC.lib.concatMapStringsSep "\n" (dep: ''
+                  for my $path (glob('${dep}/*')) {
+                    symtree_link($ENV{out}, $path, basename($path)) if basename($path) ne 'bin';
+                  }
+                '') buildInputs }
+            chdir($ENV{out});
+            ${ # avoid infinite recursion by skipping `bash' and `coreutils' and their deps (TODO: make a fake env to run post_install)
+               stdenvNoCC.lib.optionalString (!(builtins.elem "].$subsystem.q[/${pname}" ["msys/msys2-runtime" "msys/bash" "msys/coreutils" "msys/gmp" "msys/libiconv" "msys/gcc-libs" "msys/libintl"])) ''
+                  if (-f ".INSTALL") {
+                    $ENV{PATH} = '${msysPacman.bash}/usr/bin;${msysPacman.coreutils}/usr/bin';
+                    system("bash -c \"ls -la ; . .INSTALL ; post_install || (echo 'post_install failed'; true)\"") == 0 or die;
+                  }
+                '' }
+            unlinkL ".BUILDINFO";
+            unlinkL ".INSTALL";
+            unlinkL ".MTREE";
+            unlinkL ".PKGINFO";].
+            ( $subsystem eq "mingw"
+              ? q[
+                   # make symlinks in /bin, mingw does not need it, it is only for nixpkgs convenience, to have the executables in $derivation/bin
+                   # do not do it for msys, /bin/sh symlinked to /usr/bin/sh does not works as expected, it tries to assume the FHS root is at $0/../..
+                   symtree_reify($ENV{out}, "bin/_");
+                   for my $file (glob("$ENV{out}/].($subsystem eq "mingw" ? "mingw$bits" : "usr").q[/bin/*")) {
+                     if (-f $file) {
+                       uncsymlink($file => "$ENV{out}/bin/".basename($file)) or die "uncsymlink($file => $ENV{out}/bin/".basename($file)."): $!";
+                     }
+                   }]
+              : q[]
+              ).q[
+          ''
+        else /* on mingw or linux */
+          throw "todo";
+        meta.broken = broken;
+      };
   self = _self;
   _self = with self;
 {
@@ -206,7 +204,7 @@ qq<
   "$pname" = fetch {
     pname       = "$pname";
     version     = "$version";
-    srcs        = [> . join("\n                   ", map { "{ filename = \"@{$filenames}[$_]\"; sha256 = \"@{$sha256s}[$_]\"; }" } (0 .. scalar(@{$filenames})-1)) . qq<];
+    sources     = [> . join("\n                   ", map { "{ filename = \"@{$filenames}[$_]\"; sha256 = \"@{$sha256s}[$_]\"; }" } (0 .. scalar(@{$filenames})-1)) . qq<];
 >;
     if ($depends) {
       print $out qq<    buildInputs = [ >.
