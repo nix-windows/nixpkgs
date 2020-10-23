@@ -46,7 +46,7 @@ let
                 '') buildInputs }
             chdir($ENV{out});
             ${ # avoid infinite recursion by skipping `bash' and `coreutils' and their deps (TODO: make a fake env to run post_install)
-               stdenvNoCC.lib.optionalString (!(builtins.elem "msys/${pname}" ["msys/msys2-runtime" "msys/bash" "msys/coreutils" "msys/gmp" "msys/libiconv" "msys/gcc-libs" "msys/libintl"])) ''
+               stdenvNoCC.lib.optionalString (!(builtins.elem "msys/${pname}" ["msys/msys2-runtime" "msys/bash" "msys/coreutils" "msys/gmp" "msys/gcc-libs" "msys/libiconv" "msys/libintl" "msys/libiconv+libintl"])) ''
                   if (-f ".INSTALL") {
                     $ENV{PATH} = '${msysPacman.bash}/usr/bin;${msysPacman.coreutils}/usr/bin';
                     system("bash -c \"ls -la ; . .INSTALL ; post_install || (echo 'post_install failed'; true)\"") == 0 or die;

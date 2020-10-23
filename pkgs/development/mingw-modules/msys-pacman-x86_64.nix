@@ -46,7 +46,7 @@ let
                 '') buildInputs }
             chdir($ENV{out});
             ${ # avoid infinite recursion by skipping `bash' and `coreutils' and their deps (TODO: make a fake env to run post_install)
-               stdenvNoCC.lib.optionalString (!(builtins.elem "msys/${pname}" ["msys/msys2-runtime" "msys/bash" "msys/coreutils" "msys/gmp" "msys/libiconv" "msys/gcc-libs" "msys/libintl"])) ''
+               stdenvNoCC.lib.optionalString (!(builtins.elem "msys/${pname}" ["msys/msys2-runtime" "msys/bash" "msys/coreutils" "msys/gmp" "msys/gcc-libs" "msys/libiconv" "msys/libintl" "msys/libiconv+libintl"])) ''
                   if (-f ".INSTALL") {
                     $ENV{PATH} = '${msysPacman.bash}/usr/bin;${msysPacman.coreutils}/usr/bin';
                     system("bash -c \"ls -la ; . .INSTALL ; post_install || (echo 'post_install failed'; true)\"") == 0 or die;
@@ -863,8 +863,8 @@ let
 
   "git" = fetch {
     pname       = "git";
-    version     = "2.28.0";
-    sources     = [{ filename = "git-2.28.0-1-x86_64.pkg.tar.zst"; sha256 = "2bb999dbe2f9f53e69e77784acad89f0baacc5b419d670d64de504d8e65ef697"; }];
+    version     = "2.29.0";
+    sources     = [{ filename = "git-2.29.0-1-x86_64.pkg.tar.zst"; sha256 = "e9fcdce98c4572a580776bdf220c5ce3c871a16085072ede2b745eb7b5677c9c"; }];
     buildInputs = [ curl (assert stdenvNoCC.lib.versionAtLeast expat.version "2.0"; expat) libpcre2_8 vim openssh openssl perl-Error (assert stdenvNoCC.lib.versionAtLeast perl.version "5.14.0"; perl) perl-Authen-SASL perl-libwww perl-MIME-tools perl-Net-SMTP-SSL perl-TermReadKey ];
     broken      = true; # broken dependency perl-MIME-tools -> perl-IO-stringy
   };
@@ -1590,9 +1590,9 @@ let
   "libiconv+libintl" = fetch {
     pname       = "libiconv+libintl";
     version     = "1.16+0.19.8.1";
-    sources     = [{ filename = "libintl-0.19.8.1-1-x86_64.pkg.tar.xz"; sha256 = "5eadc3cc42da78948d65d994f1f8326706afe011f28e2e5bd0872a37612072d2"; }
-                   { filename = "libiconv-1.16-2-x86_64.pkg.tar.zst"; sha256 = "4d23674f25e9d558295464b4f50689698f8ce240616410da9a4d9420b5130ced"; }];
-    buildInputs = [ gcc-libs ];
+    sources     = [{ filename = "libiconv-1.16-2-x86_64.pkg.tar.zst";   sha256 = "4d23674f25e9d558295464b4f50689698f8ce240616410da9a4d9420b5130ced"; }
+                   { filename = "libintl-0.19.8.1-1-x86_64.pkg.tar.xz"; sha256 = "5eadc3cc42da78948d65d994f1f8326706afe011f28e2e5bd0872a37612072d2"; }];
+    buildInputs = [ gcc-libs libintl ];
   };
 
   "libiconv" = self."libiconv+libintl";
@@ -2376,14 +2376,14 @@ let
   "msys2-runtime" = fetch {
     pname       = "msys2-runtime";
     version     = "3.1.7";
-    sources     = [{ filename = "msys2-runtime-3.1.7-2-x86_64.pkg.tar.xz"; sha256 = "cea16e60334e36a0b8250e1b30c5deddfdeb341e19729fb27c6450cb13d7b628"; }];
+    sources     = [{ filename = "msys2-runtime-3.1.7-3-x86_64.pkg.tar.xz"; sha256 = "521efd0dfb41e6e749ef82472dbd446d772c3f0c54ca568c8fb07b54d0bb129e"; }];
     buildInputs = [  ];
   };
 
   "msys2-runtime-devel" = fetch {
     pname       = "msys2-runtime-devel";
     version     = "3.1.7";
-    sources     = [{ filename = "msys2-runtime-devel-3.1.7-2-x86_64.pkg.tar.xz"; sha256 = "50d7dae072875b6c17376062ccb773d45ac274774faf1f1995550807736d0813"; }];
+    sources     = [{ filename = "msys2-runtime-devel-3.1.7-3-x86_64.pkg.tar.xz"; sha256 = "af6c9be41ceccd703e58515ef746bf05ee743a745acdfbbd3feaca4284acb81a"; }];
     buildInputs = [ (assert msys2-runtime.version=="3.1.7"; msys2-runtime) ];
   };
 
