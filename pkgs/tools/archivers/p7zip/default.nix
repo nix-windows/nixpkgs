@@ -5,25 +5,24 @@ if stdenv.hostPlatform.isMicrosoft then
 let
   platform = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenv.hostPlatform.config};
 in stdenv.mkDerivation rec {
-  version = "18.06";
-  name = "p7zip-${version}";
+  version = "19.00";
+  name = "p7zip-zstd-${version}";
 
   src = fetchurl {
-    url = https://www.7-zip.org/a/7z1806-src.7z;
-    sha256 = "1fccqa2f0biy1wbh2m7y3jx8k0vj8kbxy32713ym2g6523i05z40";
+    url = https://github.com/mcmilk/7-Zip-zstd/archive/19.00-v1.4.5-R3.zip;
+    sha256 = "1rll0lv9c8yhaam0hsm1af950657ninivddd5zs8m9nymc20x32r";
   };
 
-  sourceRoot = ".";
   dontConfigure = true;
   buildPhase = ''
-    chdir('CPP/7zip');
-    system("nmake PLATFORM=${platform}") == 0 or die $!;
-    chdir('../..');
+    $ENV{VC}='15.0'; # as for Visual Studio 2017
+    $ENV{SUBSYS}='6.00';
+    $ENV{PLATFORM}='${platform}';
+    chdir('CPP');
+    system("build-it.cmd") == 0 or die $!;
   '';
   installPhase = ''
-    make_pathL("$ENV{out}/bin")                                                    or die $!;
-    copyL("CPP/7zip/UI/Console/${platform}/7z.exe",        "$ENV{out}/bin/7z.exe") or die $!;
-    copyL("CPP/7zip/Bundles/Format7zF/${platform}/7z.dll", "$ENV{out}/bin/7z.dll") or die $!;
+    dircopy('/bin-15.0-x64', "$ENV{out}/bin") or die $!;
   '';
 }
 
