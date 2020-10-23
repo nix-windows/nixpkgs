@@ -1592,7 +1592,7 @@ let
     version     = "1.16+0.19.8.1";
     sources     = [{ filename = "libiconv-1.16-2-x86_64.pkg.tar.zst";   sha256 = "4d23674f25e9d558295464b4f50689698f8ce240616410da9a4d9420b5130ced"; }
                    { filename = "libintl-0.19.8.1-1-x86_64.pkg.tar.xz"; sha256 = "5eadc3cc42da78948d65d994f1f8326706afe011f28e2e5bd0872a37612072d2"; }];
-    buildInputs = [ gcc-libs libintl ];
+    buildInputs = [ gcc-libs ];
   };
 
   "libiconv" = self."libiconv+libintl";
