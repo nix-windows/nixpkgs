@@ -22,7 +22,7 @@ in stdenv.mkDerivation rec {
     system("build-it.cmd") == 0 or die $!;
   '';
   installPhase = ''
-    dircopy('/bin-15.0-x64', "$ENV{out}/bin") or die $!;
+    dircopy('/bin-15.0-${platform}', "$ENV{out}/bin") or die $!;
   '';
 }
 
