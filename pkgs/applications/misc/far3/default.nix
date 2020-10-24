@@ -22,24 +22,24 @@ let
       owner = "colorer";
       repo = "farcolorer";
       rev = version;
-      sha256 = "0rplxfp78xk1hkg62zyqzj49r61bxf9mzhh4zly9yzs72j70yn62";
+      sha256 = "044y3wqfmm5jab9jp35iym1817v5lrp08p4g4a9f68pcjlfr9zg2";
       fetchSubmodules = true;
     };
     nativeBuildInputs = [ cmake ];
     buildPhase = ''
-      mkdir('build');
-      chdir('build');
-      system("cmake -G \"NMake Makefiles\" -DCMAKE_BUILD_TYPE=Release ..\\src") == 0 or die;
+      chdir('scripts');
+      system("cmake -G \"NMake Makefiles\" -DCMAKE_BUILD_TYPE=Release ..") == 0 or die;
       system("nmake") == 0 or die;
       chdir('..');
     '';
+
     installPhase = ''
       dircopy('misc', "$ENV{out}/bin");
-      copyL('build/colorer.dll',   "$ENV{out}/bin/colorer.dll") or die $!;
-      copyL('build/colorer.map',   "$ENV{out}/bin/colorer.map") or die $!;
-      copyL('README.md',           "$ENV{out}/README.md"      ) or die $!;
-      copyL('LICENSE',             "$ENV{out}/LICENSE"        ) or die $!;
-      copyL('docs/history.ru.txt', "$ENV{out}/history.ru.txt" ) or die $!;
+      copyL('scripts/src/colorer.dll', "$ENV{out}/bin/colorer.dll") or die $!;
+      copyL('scripts/src/colorer.map', "$ENV{out}/bin/colorer.map") or die $!;
+      copyL('README.md',               "$ENV{out}/README.md"      ) or die $!;
+      copyL('LICENSE',                 "$ENV{out}/LICENSE"        ) or die $!;
+      copyL('docs/history.ru.txt',     "$ENV{out}/history.ru.txt" ) or die $!;
     '';
   };
 
@@ -85,6 +85,9 @@ stdenv.mkDerivation rec {
   nmakeFlags = lib.optional stdenv.is64bit "CPU=AMD64";
 
   buildPhase = ''
+    # stdenv compiler is a bit older but still good enough
+    changeFile { s|#error Visual C\+\+ 2017.+required||gr } 'far/headers.hpp';
+
     chdir("far");
     system("nmake -f makefile_vc         $ENV{nmakeFlags}"                                                 ) == 0 or die;
     system("nmake -f makefile_vc install $ENV{nmakeFlags} INSTALLDIR=..\\out"                              ) == 0 or die;

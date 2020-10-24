@@ -3,10 +3,10 @@
 }:
 
 let
-  version = "3.13.2";
+  version = "3.18.4";
   cmake-bin = fetchzip {
     url = "https://github.com/Kitware/CMake/releases/download/v${version}/cmake-${version}-win64-x64.zip";
-    sha256 = "19cjsan1hk0mhamp2fqxzmzqsypwydyk8rhdvjq1n2bvkdsjnl99";
+    sha256 = "0jz9nq2h4pddjhbhcmq708salxm3gn0nk2yvkqg35clfgwizxx3g";
   };
 in
   if isBinaryDistribution then
@@ -21,7 +21,7 @@ in
         owner = "Kitware";
         repo = "CMake";
         rev = "v${version}";
-        sha256 = "0jwl208z9v4gyd4jzpfksvjlgq28kc3h9ajjqzjib7w5b5jhxly3";
+        sha256 = "1bqqz64bv1vy295rbpmi9hvlx4vgl6q36sajga7y8yxs9v74azdn";
       };
 
       configurePhase = ''
