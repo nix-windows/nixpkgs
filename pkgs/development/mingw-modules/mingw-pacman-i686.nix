@@ -1747,7 +1747,7 @@ let
     sources     = [{ filename = "mingw-w64-i686-freetds-1.2.5-1-any.pkg.tar.zst"; sha256 = "5e5269b6a38ec51b7588960d7c36e78ecd8ca2482574b1fc413c5c0437147743"; }];
     buildInputs = [ gcc-libs openssl libiconv ];
   };
-  freetype = freetype-and-harfbuzz;
+  freetype = self."freetype+harfbuzz";
 
   "fribidi" = fetch {
     pname       = "fribidi";
@@ -2629,7 +2629,7 @@ let
     sources     = [{ filename = "mingw-w64-i686-gxml-0.18.2-1-any.pkg.tar.zst"; sha256 = "5d3da75dbb08a462b887ac3b8f249682719dac8f19ee9da218fe0a5aac47f610"; }];
     buildInputs = [ gcc-libs gettext (assert stdenvNoCC.lib.versionAtLeast glib2.version "2.34.0"; glib2) libgee libxml2 xz zlib ];
   };
-  harfbuzz = freetype-and-harfbuzz;
+  harfbuzz = self."freetype+harfbuzz";
 
   "hclient-git" = fetch {
     pname       = "hclient-git";
@@ -5981,7 +5981,7 @@ let
   "p11-kit" = fetch {
     pname       = "p11-kit";
     version     = "0.23.21";
-    sources     = [{ filename = "mingw-w64-i686-p11-kit-0.23.21-2-any.pkg.tar.zst"; sha256 = "0ade5173e59f71b4da76148b0aee41cbb7285ad62acca0ead896e946a10d785e"; }];
+    sources     = [{ filename = "mingw-w64-i686-p11-kit-0.23.21-3-any.pkg.tar.zst"; sha256 = "0f347a4b0f955f1e7ffbefa839e5b264f1f7534f3920eeb9ed0244b3973de05c"; }];
     buildInputs = [ libtasn1 libffi gettext ];
   };
 
@@ -9745,7 +9745,7 @@ let
   "spice-protocol" = fetch {
     pname       = "spice-protocol";
     version     = "0.14.3";
-    sources     = [{ filename = "mingw-w64-i686-spice-protocol-0.14.3-1-any.pkg.tar.zst"; sha256 = "98d00c9c283fbfb228f42b3ccb951fe3ee301af0ee2ff2619083afeafc9b1b63"; }];
+    sources     = [{ filename = "mingw-w64-i686-spice-protocol-0.14.3-2-any.pkg.tar.zst"; sha256 = "b9fc3ecaa706580e78f17a7a5d5af7b54eddfeded3bd011c29c6fb31fa37f60f"; }];
   };
 
   "spirv-headers" = fetch {
@@ -11312,8 +11312,8 @@ let
     buildInputs = [ zlib ];
   };
 
-  "freetype-and-harfbuzz" = fetch {
-    pname       = "freetype-and-harfbuzz";
+  "freetype+harfbuzz" = fetch {
+    pname       = "freetype+harfbuzz";
     version     = "2.10.4-1+2.7.2-1";
     sources     = [{ filename = "mingw-w64-i686-freetype-2.10.4-1-any.pkg.tar.zst"; sha256 = "c6de8f05b1d3997c3dab7c3124d2b6ca1af49412236fa7af543849b56880ab91"; }
                    { filename = "mingw-w64-i686-harfbuzz-2.7.2-1-any.pkg.tar.zst"; sha256 = "619663fa83f10316759c3b44a802f7b3f0c1be493727781bb4413d3564c0e22b"; }];

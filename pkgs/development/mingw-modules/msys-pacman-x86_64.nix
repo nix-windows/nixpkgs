@@ -408,8 +408,8 @@ let
 
   "cloc" = fetch {
     pname       = "cloc";
-    version     = "1.86";
-    sources     = [{ filename = "cloc-1.86-1-any.pkg.tar.zst"; sha256 = "12a747e61e0126744b120bb397fc669813f1d08ba93ba26dc7740d28fbf262c4"; }];
+    version     = "1.88";
+    sources     = [{ filename = "cloc-1.88-1-any.pkg.tar.zst"; sha256 = "d3db12c09ea60b83ebcede070467a7f29460aca53bf4045b22ea01561d468585"; }];
     buildInputs = [ perl perl-Algorithm-Diff perl-Regexp-Common perl-Parallel-ForkManager ];
     broken      = true; # broken dependency perl-Data-OptList -> perl-Scalar-List-Utils
   };
@@ -713,8 +713,8 @@ let
 
   "expat" = fetch {
     pname       = "expat";
-    version     = "2.2.9";
-    sources     = [{ filename = "expat-2.2.9-1-x86_64.pkg.tar.xz"; sha256 = "c8765b1abdb7d42ea9ee20f858ac0b4dd3675e252b27b7a8e658adff590cf931"; }];
+    version     = "2.2.10";
+    sources     = [{ filename = "expat-2.2.10-1-x86_64.pkg.tar.zst"; sha256 = "1a424a2113b290e94f59c663042be8fd5f867760dfcd967a25e9b578559adec0"; }];
     buildInputs = [  ];
   };
 
@@ -1053,8 +1053,8 @@ let
 
   "help2man" = fetch {
     pname       = "help2man";
-    version     = "1.47.15";
-    sources     = [{ filename = "help2man-1.47.15-1-x86_64.pkg.tar.zst"; sha256 = "a8aaa6b340bd82615511ba16618d488c9e67f3664c4116f8e859b43f7f6b2c6b"; }];
+    version     = "1.47.16";
+    sources     = [{ filename = "help2man-1.47.16-1-x86_64.pkg.tar.zst"; sha256 = "8de0ecda82801e0bf19c704488028903d7dc2c8ad2adda7ffec55e1806b6883c"; }];
     buildInputs = [ perl-Locale-Gettext libintl ];
   };
 
@@ -1407,16 +1407,16 @@ let
 
   "libexpat" = fetch {
     pname       = "libexpat";
-    version     = "2.2.9";
-    sources     = [{ filename = "libexpat-2.2.9-1-x86_64.pkg.tar.xz"; sha256 = "cafa0584d1160e78312d4189cab446d5183184c7e28e3edf89020825d53bc634"; }];
+    version     = "2.2.10";
+    sources     = [{ filename = "libexpat-2.2.10-1-x86_64.pkg.tar.zst"; sha256 = "0d9fc5f35e0129921d48428722d5c10585abe5bd3378666be55b0755771bb7a4"; }];
     buildInputs = [ gcc-libs ];
   };
 
   "libexpat-devel" = fetch {
     pname       = "libexpat-devel";
-    version     = "2.2.9";
-    sources     = [{ filename = "libexpat-devel-2.2.9-1-x86_64.pkg.tar.xz"; sha256 = "5a73ccb2f770ca0d320910b85c32dda66bcce38d8bd00e1e7e8064ae8f5056c3"; }];
-    buildInputs = [ (assert libexpat.version=="2.2.9"; libexpat) ];
+    version     = "2.2.10";
+    sources     = [{ filename = "libexpat-devel-2.2.10-1-x86_64.pkg.tar.zst"; sha256 = "6b89f6e32d31091421c82c20ada52db5c9b7e669ebc1296e6f0d6b157df1be90"; }];
+    buildInputs = [ (assert libexpat.version=="2.2.10"; libexpat) ];
   };
 
   "libffi" = fetch {
@@ -1551,6 +1551,7 @@ let
     sources     = [{ filename = "libhogweed-3.6-1-x86_64.pkg.tar.zst"; sha256 = "82fff1ebb15f64a7186f01191c36e133ae9e67831597b3f978523d8d6816bc1f"; }];
     buildInputs = [ gmp ];
   };
+  libiconv = self."libiconv+libintl";
 
   "libiconv-devel" = fetch {
     pname       = "libiconv-devel";
@@ -1561,16 +1562,16 @@ let
 
   "libidn" = fetch {
     pname       = "libidn";
-    version     = "1.35";
-    sources     = [{ filename = "libidn-1.35-1-x86_64.pkg.tar.xz"; sha256 = "f436d30f6ae1f6c8bc74d456dc3a6d54a4c8abbab9649b2acf020681c12f4095"; }];
+    version     = "1.36";
+    sources     = [{ filename = "libidn-1.36-1-x86_64.pkg.tar.zst"; sha256 = "2c61f3ac3b1690ffd8ba2ab821457192b9586c6f1e91a31d50a286d843e479b6"; }];
     buildInputs = [ info ];
   };
 
   "libidn-devel" = fetch {
     pname       = "libidn-devel";
-    version     = "1.35";
-    sources     = [{ filename = "libidn-devel-1.35-1-x86_64.pkg.tar.xz"; sha256 = "711c69fb1a62627b1088f1c6b58c705c89f586dabb36cbfce10ec77d790a7019"; }];
-    buildInputs = [ (assert libidn.version=="1.35"; libidn) ];
+    version     = "1.36";
+    sources     = [{ filename = "libidn-devel-1.36-1-x86_64.pkg.tar.zst"; sha256 = "e7fd8cd58cd217826fc068924bcd474600a0ada12aab9c5979f73a181212bf86"; }];
+    buildInputs = [ (assert libidn.version=="1.36"; libidn) ];
   };
 
   "libidn2" = fetch {
@@ -1586,17 +1587,7 @@ let
     sources     = [{ filename = "libidn2-devel-2.3.0-1-x86_64.pkg.tar.xz"; sha256 = "38660a261c522c3c05ed4fa742fcf6bf128ae5d2b1d309169567cad7a74643e8"; }];
     buildInputs = [ (assert libidn2.version=="2.3.0"; libidn2) ];
   };
-
-  "libiconv+libintl" = fetch {
-    pname       = "libiconv+libintl";
-    version     = "1.16+0.19.8.1";
-    sources     = [{ filename = "libiconv-1.16-2-x86_64.pkg.tar.zst";   sha256 = "4d23674f25e9d558295464b4f50689698f8ce240616410da9a4d9420b5130ced"; }
-                   { filename = "libintl-0.19.8.1-1-x86_64.pkg.tar.xz"; sha256 = "5eadc3cc42da78948d65d994f1f8326706afe011f28e2e5bd0872a37612072d2"; }];
-    buildInputs = [ gcc-libs ];
-  };
-
-  "libiconv" = self."libiconv+libintl";
-  "libintl" = self."libiconv+libintl";
+  libintl = self."libiconv+libintl";
 
   "libksba" = fetch {
     pname       = "libksba";
@@ -1733,8 +1724,8 @@ let
 
   "libopenssl" = fetch {
     pname       = "libopenssl";
-    version     = "1.1.1.g";
-    sources     = [{ filename = "libopenssl-1.1.1.g-3-x86_64.pkg.tar.zst"; sha256 = "1c33bc8b42ca94cce1c6aae148a9253c516406907d26ef0b12fcde78059e3164"; }];
+    version     = "1.1.1.h";
+    sources     = [{ filename = "libopenssl-1.1.1.h-1-x86_64.pkg.tar.zst"; sha256 = "83dc9f2f4f06105d9605b0b1d16dc7fce3581d165e09a1102489dd689ace5374"; }];
     buildInputs = [ zlib ];
   };
 
@@ -2506,22 +2497,22 @@ let
 
   "openssl" = fetch {
     pname       = "openssl";
-    version     = "1.1.1.g";
-    sources     = [{ filename = "openssl-1.1.1.g-3-x86_64.pkg.tar.zst"; sha256 = "776c0a9edbc548d2c53a9bdf732801a38de5bff795741a993fd803890de73b16"; }];
+    version     = "1.1.1.h";
+    sources     = [{ filename = "openssl-1.1.1.h-1-x86_64.pkg.tar.zst"; sha256 = "a3da15d5756a38b81290e87f15e9ebc82feb5ce2ea04ab464b23cdff7311df67"; }];
     buildInputs = [ libopenssl zlib ];
   };
 
   "openssl-devel" = fetch {
     pname       = "openssl-devel";
-    version     = "1.1.1.g";
-    sources     = [{ filename = "openssl-devel-1.1.1.g-3-x86_64.pkg.tar.zst"; sha256 = "bd777e71596fc811e08db3a1c564d14eb88e4126dc582f27fe1030d9069b413b"; }];
-    buildInputs = [ (assert libopenssl.version=="1.1.1.g"; libopenssl) zlib-devel ];
+    version     = "1.1.1.h";
+    sources     = [{ filename = "openssl-devel-1.1.1.h-1-x86_64.pkg.tar.zst"; sha256 = "13e39036f85c86393d5bdd51ee6bf7bf86be2d13801f1a1c5201b48c76b0f0a1"; }];
+    buildInputs = [ (assert libopenssl.version=="1.1.1.h"; libopenssl) zlib-devel ];
   };
 
   "openssl-docs" = fetch {
     pname       = "openssl-docs";
-    version     = "1.1.1.g";
-    sources     = [{ filename = "openssl-docs-1.1.1.g-3-x86_64.pkg.tar.zst"; sha256 = "70658a9af1290fcfaf812c2b4933783f3db5ace9518ac4913fa10928a86c9af7"; }];
+    version     = "1.1.1.h";
+    sources     = [{ filename = "openssl-docs-1.1.1.h-1-x86_64.pkg.tar.zst"; sha256 = "9a1353c3fb0e9801af446987eadd538be68446a71e55e65cc3f18e2a09a6eb2a"; }];
     buildInputs = [ zlib ];
   };
 
@@ -3707,8 +3698,8 @@ let
 
   "python" = fetch {
     pname       = "python";
-    version     = "3.8.5";
-    sources     = [{ filename = "python-3.8.5-6-x86_64.pkg.tar.zst"; sha256 = "d557e1896da25e07040e636056bcf600d6e9439db054862d1d15c90280f4b567"; }];
+    version     = "3.8.6";
+    sources     = [{ filename = "python-3.8.6-1-x86_64.pkg.tar.zst"; sha256 = "d48e2a27ecb752acf5d10302abf79a37c1bacbaa3df96c02488902ca3d634b22"; }];
     buildInputs = [ libbz2 libexpat libffi liblzma ncurses libopenssl libreadline mpdecimal libsqlite zlib ];
   };
 
@@ -3763,9 +3754,9 @@ let
 
   "python-devel" = fetch {
     pname       = "python-devel";
-    version     = "3.8.5";
-    sources     = [{ filename = "python-devel-3.8.5-6-x86_64.pkg.tar.zst"; sha256 = "02ca68f55e5509e94d811ac6af618da277263f3fe3f7721b61b494974f6bdd61"; }];
-    buildInputs = [ (assert python.version=="3.8.5"; python) libcrypt-devel ];
+    version     = "3.8.6";
+    sources     = [{ filename = "python-devel-3.8.6-1-x86_64.pkg.tar.zst"; sha256 = "a529f52ec01b6e5a67a7f214128ecf1c67f14ce9b005f02352c630eb56eba885"; }];
+    buildInputs = [ (assert python.version=="3.8.6"; python) libcrypt-devel ];
   };
 
   "python-dulwich" = fetch {
@@ -4243,8 +4234,8 @@ let
 
   "tzcode" = fetch {
     pname       = "tzcode";
-    version     = "2020a";
-    sources     = [{ filename = "tzcode-2020a-1-x86_64.pkg.tar.zst"; sha256 = "c6e5afedb5fe89b4554f1ec77171550f42e1f906fe52887ada7732c5d41034b9"; }];
+    version     = "2020c";
+    sources     = [{ filename = "tzcode-2020c-1-x86_64.pkg.tar.zst"; sha256 = "591db2ca3e15d38927e562c84632f9c9d6a88d8688c0cbc88f2f906680d2bd39"; }];
     buildInputs = [ coreutils gawk sed ];
   };
 
@@ -4499,6 +4490,14 @@ let
     version     = "1.4.5";
     sources     = [{ filename = "zstd-1.4.5-2-x86_64.pkg.tar.xz"; sha256 = "4f3a0ccb02ba783f8fbd41f9ae21fbf2059151f927a462352b343b5a6f85bc8d"; }];
     buildInputs = [ gcc-libs libzstd ];
+  };
+
+  "libiconv+libintl" = fetch {
+    pname       = "libiconv+libintl";
+    version     = "1.16-2+0.19.8.1-1";
+    sources     = [{ filename = "libiconv-1.16-2-x86_64.pkg.tar.zst"; sha256 = "4d23674f25e9d558295464b4f50689698f8ce240616410da9a4d9420b5130ced"; }
+                   { filename = "libintl-0.19.8.1-1-x86_64.pkg.tar.xz"; sha256 = "5eadc3cc42da78948d65d994f1f8326706afe011f28e2e5bd0872a37612072d2"; }];
+    buildInputs = [ gcc-libs ];
   };
 
 }; in self

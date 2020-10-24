@@ -35,7 +35,8 @@ sub parseDesc {
 
 sub parseDB {
   my %repo;
-  my $tar = Archive::Tar->new(shift);
+  my $dbfilename = shift;
+  my $tar = Archive::Tar->new($dbfilename);
   for my $file ($tar->get_files()) {
     next unless $file->is_file && $file->full_path =~ /\/desc$/;
     my $content = $file->get_content;
@@ -253,9 +254,10 @@ for my $pname (sort (keys %$repo)) {
   my $version = $desc{VERSION} =~ s/-\d+$//r;
 
   # freetype and harfbuzz are mutable deps
-  if ($pname eq 'freetype' || $pname eq 'harfbuzz') {
-    print $out  "  $pname = freetype-and-harfbuzz;\n";
-#   print $out  "  $pname = freetype-and-harfbuzz // { name = \"$pname-$version\"; version = \"$version\"; };\n";
+  if (exists($repo->{freetype}) && exists($repo->{harfbuzz}) && ($pname eq 'freetype' || $pname eq 'harfbuzz')) {
+    print $out  "  $pname = self.\"freetype+harfbuzz\";\n";
+  } elsif (exists($repo->{libiconv}) && exists($repo->{libintl}) && ($pname eq 'libiconv' || $pname eq 'libintl')) {
+    print $out  "  $pname = self.\"libiconv+libintl\";\n";
   } else {
     &$one($desc{NAME}, $version, [$desc{FILENAME}], [$desc{SHA256SUM}], $desc{DEPENDS});
   }
@@ -263,11 +265,19 @@ for my $pname (sort (keys %$repo)) {
 
 # freetype and harfbuzz are mutable deps
 if (exists($repo->{freetype}) && exists($repo->{harfbuzz})) {
-  &$one(  'freetype-and-harfbuzz'
+  &$one(  'freetype+harfbuzz'
        ,   $repo->{freetype}->{VERSION}."+".$repo->{harfbuzz}->{VERSION}
        , [ $repo->{freetype}->{FILENAME},   $repo->{harfbuzz}->{FILENAME}  ]
        , [ $repo->{freetype}->{SHA256SUM},  $repo->{harfbuzz}->{SHA256SUM} ]
        , [ grep { ! /^freetype|harfbuzz$/ } (@{$repo->{freetype}->{DEPENDS}}, @{$repo->{harfbuzz}->{DEPENDS}}) ]
+       );
+}
+if (exists($repo->{libiconv}) && exists($repo->{libintl})) {
+  &$one(  'libiconv+libintl'
+       ,   $repo->{libiconv}->{VERSION}."+".$repo->{libintl}->{VERSION}
+       , [ $repo->{libiconv}->{FILENAME},   $repo->{libintl}->{FILENAME}  ]
+       , [ $repo->{libiconv}->{SHA256SUM},  $repo->{libintl}->{SHA256SUM} ]
+       , [ grep { ! /^libiconv|libintl$/ } (@{$repo->{freetype}->{DEPENDS}}, @{$repo->{libintl}->{DEPENDS}}) ]
        );
 }
 
