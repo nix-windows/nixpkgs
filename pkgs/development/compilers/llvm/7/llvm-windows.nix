@@ -11,6 +11,7 @@
 #, ncurses
 , version
 , zlib
+, perl
 , debugVersion ? false
 #, enableManpages ? false
 #, enableSharedLibraries ? true
@@ -67,20 +68,20 @@ in stdenv.mkDerivation rec {
       system('del       libcxx-${version}.src\test\std\input.output\filesystems\Inputs\static_test_env\dir1\dir2\symlink_to_dir3'     ) == 0 or die "unlink: $!";
       system('mklink /D libcxx-${version}.src\test\std\input.output\filesystems\Inputs\static_test_env\dir1\dir2\symlink_to_dir3 dir3') == 0 or die "mklink: $!";
 
-      move('llvm-${version}.src',              "$ENV{out}"                        ) or die "move: $!";
-      move('lld-${version}.src',               "$ENV{out}/tools/lld"              ) or die "move: $!";
-      move('lldb-${version}.src',              "$ENV{out}/tools/lldb"             ) or die "move: $!";
-      move('cfe-${version}.src',               "$ENV{out}/tools/clang"            ) or die "move: $!";
-      move('clang-tools-extra-${version}.src', "$ENV{out}/tools/clang/tools/extra") or die "move: $!";
-      move('compiler-rt-${version}.src',       "$ENV{out}/projects/compiler-rt"   ) or die "move: $!";
-      move('libunwind-${version}.src',         "$ENV{out}/projects/libunwind"     ) or die "move: $!";
-      move('libcxxabi-${version}.src',         "$ENV{out}/projects/libcxxabi"     ) or die "move: $!";
-      move('libcxx-${version}.src',            "$ENV{out}/projects/libcxx"        ) or die "move: $!";
-      move('openmp-${version}.src',            "$ENV{out}/projects/openmp"        ) or die "move: $!";
+      dircopy('llvm-${version}.src',              "$ENV{out}"                        ) or die "dircopy: $!";
+      dircopy('lld-${version}.src',               "$ENV{out}/tools/lld"              ) or die "dircopy: $!";
+      dircopy('lldb-${version}.src',              "$ENV{out}/tools/lldb"             ) or die "dircopy: $!";
+      dircopy('cfe-${version}.src',               "$ENV{out}/tools/clang"            ) or die "dircopy: $!";
+      dircopy('clang-tools-extra-${version}.src', "$ENV{out}/tools/clang/tools/extra") or die "dircopy: $!";
+      dircopy('compiler-rt-${version}.src',       "$ENV{out}/projects/compiler-rt"   ) or die "dircopy: $!";
+      dircopy('libunwind-${version}.src',         "$ENV{out}/projects/libunwind"     ) or die "dircopy: $!";
+      dircopy('libcxxabi-${version}.src',         "$ENV{out}/projects/libcxxabi"     ) or die "dircopy: $!";
+      dircopy('libcxx-${version}.src',            "$ENV{out}/projects/libcxx"        ) or die "dircopy: $!";
+      dircopy('openmp-${version}.src',            "$ENV{out}/projects/openmp"        ) or die "dircopy: $!";
     '';
   };
 
-  nativeBuildInputs = [ cmake python ninja ];
+  nativeBuildInputs = [ cmake python perl ninja ];
 
   buildInputs = [ libxml2 /* dll */
                   zlib    /* static lib */ ]
