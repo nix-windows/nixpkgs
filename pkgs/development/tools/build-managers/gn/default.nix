@@ -45,15 +45,21 @@ stdenv.mkDerivation rec {
     AppKit
   ]);
 
-  buildPhase = if stdenv.hostPlatform.isMicrosoft then ''
-    system('python build/gen.py --no-sysroot --no-last-commit-position') == 0 or die;
-    copyL('${lastCommitPosition}', 'out/last_commit_position.h') or die;
-    system("ninja -j $ENV{NIX_BUILD_CORES} -C out gn.exe") == 0 or die;
-  '' else ''
-    python build/gen.py --no-sysroot --no-last-commit-position
-    ln -s ${lastCommitPosition} out/last_commit_position.h
-    ninja -j $NIX_BUILD_CORES -C out gn
-  '';
+  buildPhase =
+    if stdenv.hostPlatform.isMicrosoft then
+      lib.optionalString stdenv.hostPlatform.is32bit ''
+        changeFile { s|MACHINE:x64|MACHINE:x86|gr } 'build/gen.py';
+      '' + ''
+        system('python build/gen.py --no-sysroot --no-last-commit-position') == 0 or die;
+        copyL('${lastCommitPosition}', 'out/last_commit_position.h') or die;
+        system("ninja -j $ENV{NIX_BUILD_CORES} -C out gn.exe") == 0 or die;
+      ''
+    else
+      ''
+        python build/gen.py --no-sysroot --no-last-commit-position
+        ln -s ${lastCommitPosition} out/last_commit_position.h
+        ninja -j $NIX_BUILD_CORES -C out gn
+      '';
 
   installPhase = if stdenv.hostPlatform.isMicrosoft then ''
     make_pathL("$ENV{out}/bin") or die $!;
@@ -66,7 +72,7 @@ stdenv.mkDerivation rec {
     description = "A meta-build system that generates NinjaBuild files";
     homepage = https://gn.googlesource.com/gn;
     license = licenses.bsd3;
-    platforms = platforms.unix ++ [ "x86_64-windows" ];
+    platforms = platforms.unix ++ [ "x86_64-windows" "i686-windows" ];
     maintainers = with maintainers; [ stesie matthewbauer ];
   };
 }

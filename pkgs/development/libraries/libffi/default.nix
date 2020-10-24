@@ -21,14 +21,14 @@ let
     installPhase = stdenv.lib.concatMapStrings (x: ''symtree_link($ENV{out}, '${x}', '.');'') buildInputs;
   };
 in stdenv.mkDerivation rec {
-  version = "3.3-rc0";  # 3.2.1 hits https://github.com/libffi/libffi/issues/149
+  version = "3.3";  # 3.2.1 hits https://github.com/libffi/libffi/issues/149
   name = "libffi-${version}";
 
   src = fetchFromGitHub {
     owner = "libffi";
     repo = "libffi";
     rev = "v${version}";
-    sha256 = "1nc1jpfm0g6mgkp5xp8m3wjicqnhnszs9wz3wn976s0bwvshq11q";
+    sha256 = "0x23s932b9dywjnl2iyckmh2klj98q5nqhalfa0h6fic7jjbkga1";
   };
 
   buildPhase = ''
@@ -41,18 +41,22 @@ in stdenv.mkDerivation rec {
     changeFile { s/-nologo -W3/-nologo -W3 -DFFI_BUILDING_DLL/gr; } 'msvcc.sh';
 
     system('bash.exe -c ./autogen.sh') == 0 or die;
-    system('bash.exe -c "./configure --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32 CC=\"$(pwd)/msvcc.sh -m64\" CXX=\"$(pwd)/msvcc.sh -m64\" LD=link.exe CPP=\"cl -nologo -EP\" CXXCPP=\"cl -nologo -EP\""') == 0 or die;
+    system('bash.exe -c "./configure --build=${if stdenv.buildPlatform.is64bit then "x86_64-pc-mingw64" else "i686-pc-mingw32"}'.
+                                   ' --host=${if stdenv.is64bit then "x86_64-pc-mingw64" else "i686-pc-mingw32"}'.
+                                   ' CC=\"$(pwd)/msvcc.sh -m${if stdenv.is64bit then "64" else "32"}\"'.
+                                   ' CXX=\"$(pwd)/msvcc.sh -m${if stdenv.is64bit then "64" else "32"}\"'.
+                                   ' LD=link.exe CPP=\"cl -nologo -EP\" CXXCPP=\"cl -nologo -EP\""') == 0 or die;
     system('bash.exe -c make') == 0 or die;
   '';
 
   installPhase = ''
     make_pathL("$ENV{out}/bin", "$ENV{out}/include", "$ENV{out}/lib");
-    copyL 'x86_64-w64-mingw32/include/ffi.h',                 "$ENV{out}/include/ffi.h";
-    copyL 'x86_64-w64-mingw32/include/ffitarget.h',           "$ENV{out}/include/ffitarget.h";
-    copyL 'x86_64-w64-mingw32/.libs/libffi-7.dll',            "$ENV{out}/bin/libffi-7.dll";
-    copyL 'x86_64-w64-mingw32/.libs/libffi-7.lib',            "$ENV{out}/lib/libffi-7.lib";
-    copyL 'x86_64-w64-mingw32/.libs/libffi_convenience.lib',  "$ENV{out}/lib/libffi_convenience.lib";
-    copyL 'x86_64-w64-mingw32/.libs/libffi-7.lib',            "$ENV{out}/lib/ffi.lib";  # when building llvm, cmake is unable to find libffi-7.lib, only ffi.lib
+    copyL '${if stdenv.is64bit then "x86_64-pc-mingw64" else "i686-pc-mingw32"}/include/ffi.h',                 "$ENV{out}/include/ffi.h";
+    copyL '${if stdenv.is64bit then "x86_64-pc-mingw64" else "i686-pc-mingw32"}/include/ffitarget.h',           "$ENV{out}/include/ffitarget.h";
+    copyL '${if stdenv.is64bit then "x86_64-pc-mingw64" else "i686-pc-mingw32"}/.libs/libffi-7.dll',            "$ENV{out}/bin/libffi-7.dll";
+    copyL '${if stdenv.is64bit then "x86_64-pc-mingw64" else "i686-pc-mingw32"}/.libs/libffi-7.lib',            "$ENV{out}/lib/libffi-7.lib";
+    copyL '${if stdenv.is64bit then "x86_64-pc-mingw64" else "i686-pc-mingw32"}/.libs/libffi_convenience.lib',  "$ENV{out}/lib/libffi_convenience.lib";
+    copyL '${if stdenv.is64bit then "x86_64-pc-mingw64" else "i686-pc-mingw32"}/.libs/libffi-7.lib',            "$ENV{out}/lib/ffi.lib";  # when building llvm, cmake is unable to find libffi-7.lib, only ffi.lib
   '';
 
   passthru.msysenv = msysenv;

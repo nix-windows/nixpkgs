@@ -166,7 +166,7 @@ let
     pname       = "automake-wrapper";
     version     = "11";
     sources     = [{ filename = "automake-wrapper-11-1-any.pkg.tar.xz"; sha256 = "a2900e2a050398f0451b730f4780cee1e780feda7f8296f5dcad438825f5d473"; }];
-    buildInputs = [ bash gawk self."automake1.6" self."automake1.7" self."automake1.7" self."automake1.8" self."automake1.9" self."automake1.10" self."automake1.11" self."automake1.12" self."automake1.13" self."automake1.14" self."automake1.15" self."automake1.16" ];
+    buildInputs = [ bash gawk /*self."automake1.6" self."automake1.7" self."automake1.8" self."automake1.9" self."automake1.10" self."automake1.11"*/ self."automake1.12" self."automake1.13" self."automake1.14" self."automake1.15" self."automake1.16" ];
   };
 
   "automake1.10" = fetch {
