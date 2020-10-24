@@ -18,6 +18,10 @@ let
 in
 
 if stdenv.hostPlatform.isMicrosoft then
+
+let
+  platform = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenv.hostPlatform.config};
+in
 stdenv.mkDerivation rec {
   inherit name version src;
   # TODO: add enablers from NIX_CFLAGS_COMPILE
@@ -26,7 +30,7 @@ stdenv.mkDerivation rec {
     # https://github.com/Microsoft/angle/issues/150#issuecomment-416317269
     changeFile { s|/d2guard4|/d2guard4 /guard:cf|gr } "Makefile.msc";
 
-    system("nmake /f Makefile.msc core FOR_WIN10=1 PLATFORM=x64") == 0 or die $!;
+    system("nmake /f Makefile.msc core FOR_WIN10=1 PLATFORM=${platform}") == 0 or die $!;
   '';
   installPhase = ''
     make_pathL("$ENV{out}/bin", "$ENV{out}/lib", "$ENV{out}/include");
