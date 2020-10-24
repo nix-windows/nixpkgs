@@ -7815,7 +7815,7 @@ with pkgs;
 
   ocropus = callPackage ../applications/misc/ocropus { };
 
-  inherit (callPackages ../development/interpreters/perl {}) perl526 perl528 perldevel;
+  inherit (callPackages ../development/interpreters/perl {}) perl532 perldevel;
 
   pachyderm = callPackage ../applications/networking/cluster/pachyderm { };
 
@@ -13162,13 +13162,9 @@ with pkgs;
 
   ### DEVELOPMENT / PERL MODULES
 
-  perl526Packages = recurseIntoAttrs (callPackage ./perl-packages.nix {
-    perl = perl526;
-    overrides = (config.perlPackageOverrides or (p: {})) pkgs;
-  });
   # the latest Maint version
-  perl528Packages = recurseIntoAttrs (callPackage ./perl-packages.nix {
-    perl = perl528;
+  perl532Packages = recurseIntoAttrs (callPackage ./perl-packages.nix {
+    perl = perl532;
     overrides = (config.perlPackageOverrides or (p: {})) pkgs;
   });
   # the latest Devel version
@@ -13177,7 +13173,7 @@ with pkgs;
     overrides = (config.perlPackageOverrides or (p: {})) pkgs;
   });
 
-  perlPackages = perl528Packages;
+  perlPackages = perl532Packages;
   inherit (perlPackages) perl;
 
   ack = perlPackages.ack;
