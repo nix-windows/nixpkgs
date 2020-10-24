@@ -2,13 +2,13 @@
 
 let
   colorer-schemes = stdenv.mkDerivation rec {
-    version = "2019-01-07";
+    version = "2020-10-21";
     name = "colorer-schemes-${version}";
     src = fetchFromGitHub {
       owner = "colorer";
       repo = "colorer-schemes";
-      rev = "7f02d76568513772da44163a4ee6926a08aba115";
-      sha256 = "1yq89sb7fn4m9vpng73bf5d28f4lbk2dk6yimkcv968m432bfhdl";
+      rev = "f5ee9f028fcff1111802ddadd33f6b9c75bc91da";
+      sha256 = "0h5sbffkh6s3cf4k5fr3c1bzgi2wp23v8jkxla1hzdhfa34ny1i7";
     };
     nativeBuildInputs = [ perl jdk8 ant ];
     buildPhase   = ''system('build.cmd base.far');'';
@@ -16,13 +16,13 @@ let
   };
 
   colorer = stdenv.mkDerivation rec {
-    version = "1.2.9.1";
+    version = "1.3.22";
     name = "farcolorer-${version}";
     src = fetchFromGitHub {
       owner = "colorer";
       repo = "farcolorer";
       rev = version;
-      sha256 = "0y70p4nzx9mdjailifljxqr61rciqjhcmk70br7ph4srwi428c5p";
+      sha256 = "0rplxfp78xk1hkg62zyqzj49r61bxf9mzhh4zly9yzs72j70yn62";
       fetchSubmodules = true;
     };
     nativeBuildInputs = [ cmake ];
@@ -44,13 +44,13 @@ let
   };
 
   netbox = stdenv.mkDerivation rec {
-    version = "2018-08-01";
+    version = "2020-03-30";
     name = "farnetbox-${version}";
     src = fetchFromGitHub {
       owner = "michaellukashov";
       repo = "Far-NetBox";
-      rev = "82b9ecd2f10ddf4c784f0e09be6ff790fbd94507"; # far3 branch
-      sha256 = "0mxnrp2fw5nr06j80dc4pbqx2s5x3ps6yb2p0pxkwsclcl73mrg8";
+      rev = "f27f64f0c81091d91316a61317671492e218b82a"; # far3 branch
+      sha256 = "0rplxfp78xk1hkg62zyqzj49r61bxf9mzhh4zly9yzs72j70yn62";
     };
     nativeBuildInputs = [ cmake ];
     buildPhase = ''
@@ -71,14 +71,14 @@ let
 
 in
 stdenv.mkDerivation rec {
-  version = "3.0.5354.738"; # update feed: https://github.com/FarGroup/FarManager/releases
+  version = "3.0.5687.1751"; # update feed: https://github.com/FarGroup/FarManager/releases
   name = "far-${version}";
 
   src = fetchFromGitHub {
     owner = "FarGroup";
     repo = "FarManager";
-    rev = "v${version}";
-    sha256 = "1dl8yvr6axc2a6w0327y1b3ns44n0d3cv0r0zkdsdv0j9wjzbpl8";
+    rev = "ci/v${version}";
+    sha256 = "1qphn2rrzndhxjz87iq9zw7n6ahdb5ky6q8mpcmf6n9x9vz5sqws";
   };
 
   # do not use `makeFlags`, nmake.exe does read %MAKEFLAGS% and interprets it in unexpected way
