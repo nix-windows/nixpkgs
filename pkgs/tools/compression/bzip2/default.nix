@@ -4,20 +4,20 @@
 }:
 
 let
-  version = "1.0.6.0.1";
+  version = "1.0.6.0.2";
 
   /* We use versions patched to use autotools style properly,
       saving lots of trouble. */
   src = fetchurl {
     urls = map
-      (prefix: prefix + "/people/sbrabec/bzip2/tarballs/bzip2-${name}.tar.gz")
+      (prefix: prefix + "/people/sbrabec/bzip2/tarballs/bzip2-${version}.tar.gz")
       [
         "http://ftp.uni-kl.de/pub/linux/suse"
         "ftp://ftp.hs.uni-hamburg.de/pub/mirrors/suse"
         "ftp://ftp.mplayerhq.hu/pub/linux/suse"
         "http://ftp.suse.com/pub" # the original patched version but slow
       ];
-    sha256 = "0b5b5p8c7bslc6fslcr1nj9136412v3qcvbg6yxi9argq9g72v8c";
+    sha256 = "1c65cmvf6bvwg4phsph7y43xq74kllh618nfwhfyy78f5qvp0y0n";
   };
 
   meta = with stdenv.lib; {
@@ -51,7 +51,8 @@ stdenv.mkDerivation rec {
 }
 
 else
-
+  throw "xxx"
+/*
 stdenv.mkDerivation rec {
   inherit name version src meta;
 
@@ -70,3 +71,4 @@ stdenv.mkDerivation rec {
   configureFlags =
     stdenv.lib.optionals static [ "--enable-static" "--disable-shared" ];
 }
+*/
