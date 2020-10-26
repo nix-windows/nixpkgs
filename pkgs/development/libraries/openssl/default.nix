@@ -1,6 +1,7 @@
 { stdenv, fetchurl, buildPackages, perl, coreutils
 , withCryptodev ? false, cryptodev
 , enableSSL2 ? false
+, staticRuntime ? false # false for /MD, true for /MT
 , static ? false
 , mingwPacman
 }:
@@ -28,11 +29,9 @@ let
   in if stdenv.hostPlatform.isMicrosoft then stdenv.mkDerivation rec {
     inherit name version src meta;
 
-    patches =
-      (args.patches or [])
-      ++ [ ./nix-ssl-cert-file.patch ];
+    patches = args.patches;
 
-    nativeBuildInputs = [ perl ] ++ stdenv.lib.optional (!stdenv.is64bit && !(versionOlder version "1.1.0")) mingwPacman.nasm;
+    nativeBuildInputs = [ perl ] ++ stdenv.lib.optional (!stdenv.is64bit && versionAtLeast version "1.1.0") mingwPacman.nasm;
 
     configureFlags = [
       "shared" # "shared" builds both shared and static libraries
@@ -59,12 +58,15 @@ let
           system("perl Configure VC-WIN32        --prefix=$ENV{out} $ENV{configureFlags}");
         '';
 
-    buildPhase = if (versionOlder version "1.1.0") then ''
-      system('ms\${if stdenv.is64bit then "do_win64a" else "do_ms"}') == 0 or die "$!";
-      system('nmake -f ms\ntdll.mak') == 0 or die "nmake failed: $!";
-    '' else ''
-      system('nmake') == 0 or die "nmake failed: $!";
-    '';
+    buildPhase =
+      if (versionOlder version "1.1.0") then ''
+        system('ms\${if stdenv.is64bit then "do_win64a" else "do_ms"}') == 0 or die "$!";
+        ${stdenv.lib.optionalString staticRuntime "changeFile { s|\\bMD\\b|MT|gr; } 'ms/ntdll.mak';"}
+        system('nmake -f ms\ntdll.mak') == 0 or die "nmake failed: $!";
+      '' else ''
+        ${stdenv.lib.optionalString staticRuntime "changeFile { s|\\bMD\\b|MT|gr; } 'makefile';"}
+        system('nmake') == 0 or die "nmake failed: $!";
+      '';
 
     doCheck = true;
     checkPhase = if (versionOlder version "1.1.0") then ''
@@ -183,13 +185,15 @@ let
 in {
 
   openssl_1_0_2 = common {
-    version = "1.0.2p";
-    sha256 = "003xh9f898i56344vpvpxxxzmikivxig4xwlm7vbi7m8n43qxaah";
+    version = "1.0.2u";
+    sha256 = "05lxcs4hzyfqd5jn0d9p0fvqna62v2s4pc9qgmq0dpcknkzwdl7c";
+    patches = [ ./1.0.2/nix-ssl-cert-file.patch ];
   };
 
   openssl_1_1 = common {
-    version = "1.1.1";
-    sha256 = "0gbab2fjgms1kx5xjvqx8bxhr98k4r8l2fa8vw7kvh491xd8fdi8";
+    version = "1.1.1g";
+    sha256 = "0ikdcc038i7jk8h7asq5xcn8b1xc2rrbc88yfm4hqbz3y5s4gc6x";
+    patches = [ ./1.1/nix-ssl-cert-file.patch ];
   };
 
 }

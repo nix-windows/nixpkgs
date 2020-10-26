@@ -73,7 +73,7 @@ rec {
   # Mirrors of ftp://ftp.kde.org/pub/kde/.
   kde = [
     "http://download.kde.org/download.php?url="
-    http://ftp.gwdg.de/pub/x11/kde/
+  # http://ftp.gwdg.de/pub/x11/kde/
     ftp://ftp.heanet.ie/mirrors/ftp.kde.org/
     ftp://ftp.kde.org/pub/kde/
     ftp://ftp.funet.fi/pub/mirrors/ftp.kde.org/pub/kde/
@@ -157,7 +157,7 @@ rec {
 
   # CPAN mirrors.
   cpan = [
-    https://ftp.gwdg.de/pub/languages/perl/CPAN/
+  # https://ftp.gwdg.de/pub/languages/perl/CPAN/
     https://download.xs4all.nl/mirror/CPAN/
     https://cpan.metacpan.org/
     https://cpan.perl.org/
@@ -219,7 +219,7 @@ rec {
     http://ftp.belnet.be/mirror/ftp.opensuse.org/distribution/
     http://ftp.uni-kassel.de/opensuse/distribution/
     http://ftp.opensuse.org/pub/opensuse/distribution/
-    http://ftp5.gwdg.de/pub/opensuse/discontinued/distribution/
+  # http://ftp5.gwdg.de/pub/opensuse/discontinued/distribution/
     http://ftp.hosteurope.de/mirror/ftp.opensuse.org/discontinued/
     http://opensuse.mirror.server4you.net/distribution/
     http://ftp.nsysu.edu.tw/Linux/OpenSuSE/distribution/
@@ -260,7 +260,7 @@ rec {
   # X.org.
   xorg = [
     http://xorg.freedesktop.org/releases/
-    http://ftp.gwdg.de/pub/x11/x.org/pub/
+  # http://ftp.gwdg.de/pub/x11/x.org/pub/
     http://ftp.x.org/pub/ # often incomplete (e.g. files missing from X.org 7.4)
   ];
 
@@ -286,7 +286,7 @@ rec {
 
   metalab = [
     ftp://mirrors.kernel.org/metalab/
-    ftp://ftp.gwdg.de/pub/linux/metalab/
+  # ftp://ftp.gwdg.de/pub/linux/metalab/
     ftp://ftp.xemacs.org/sites/metalab.unc.edu/
   ];
 

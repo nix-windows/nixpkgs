@@ -1,4 +1,5 @@
 { stdenv, fetchurl
+, staticRuntime ? false # false for /MD, true for /MT
 , linkStatic ? (stdenv.hostPlatform.system == "i686-cygwin")
 }:
 
@@ -32,7 +33,9 @@ if stdenv.hostPlatform.isMicrosoft then
 
 stdenv.mkDerivation rec {
   inherit name version src meta;
-  buildPhase = ''
+  buildPhase = stdenv.lib.optionalString staticRuntime ''
+    changeFile { s|MD|MT|gr; } 'makefile.msc';
+  '' + ''
     system("nmake -f makefile.msc") == 0 or die $!;
   '';
   installPhase = ''

@@ -3,6 +3,7 @@
 , buildPackages
 , toolset ? /**/ if stdenv.cc.isClang  then "clang"
             else null
+, staticRuntime ? false # false for /MD, true for /MT
 , enableRelease ? true
 , enableDebug ? false
 , enableSingleThreaded ? false
@@ -23,7 +24,7 @@
 
 if stdenv.hostPlatform.isMicrosoft then
 let
-  b2Args = "--prefix=$ENV{out} -j$ENV{NIX_BUILD_CORES} address-model=64 variant=release threading=multi link=static runtime-link=shared toolset=msvc";
+  b2Args = "--prefix=$ENV{out} -j$ENV{NIX_BUILD_CORES} address-model=64 variant=release threading=multi link=static runtime-link=${if staticRuntime then "static" else "shared"} toolset=msvc";
 in stdenv.mkDerivation {
   name = "boost-${version}";
 

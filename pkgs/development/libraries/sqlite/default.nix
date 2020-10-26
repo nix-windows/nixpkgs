@@ -1,4 +1,6 @@
-{ stdenv, fetchurl, zlib, interactive ? false, readline ? null, ncurses ? null }:
+{ stdenv, fetchurl, zlib
+, staticRuntime ? false # false for /MD, true for /MT
+, interactive ? false, readline ? null, ncurses ? null }:
 
 assert interactive -> readline != null && ncurses != null;
 
@@ -8,12 +10,12 @@ let
   archiveVersion = import ./archive-version.nix stdenv.lib;
 
   name = "sqlite-${version}";
-  version = "3.24.0";
+  version = "3.33.0";
 
   # NB! Make sure to update analyzer.nix src (in the same directory).
   src = fetchurl {
-    url = "https://sqlite.org/2018/sqlite-autoconf-${archiveVersion version}.tar.gz";
-    sha256 = "0jmprv2vpggzhy7ma4ynmv1jzn3pfiwzkld0kkg6hvgvqs44xlfr";
+    url = "https://sqlite.org/2020/sqlite-autoconf-${archiveVersion version}.tar.gz";
+    sha256 = "05dvdfaxd552gj5p7k0i72sfam7lykaw1g2pfn52jnppqx42qshh";
   };
 in
 
@@ -26,19 +28,15 @@ stdenv.mkDerivation rec {
   inherit name version src;
   # TODO: add enablers from NIX_CFLAGS_COMPILE
   buildPhase = ''
-    # fix 'sqlite3.lo : error LNK2019: unresolved external symbol _guard_dispatch_icall referenced in function winShmUnmap'
-    # https://github.com/Microsoft/angle/issues/150#issuecomment-416317269
-    changeFile { s|/d2guard4|/d2guard4 /guard:cf|gr } "Makefile.msc";
-
-    system("nmake /f Makefile.msc core FOR_WIN10=1 PLATFORM=${platform}") == 0 or die $!;
+    system("nmake /f Makefile.msc core DYNAMIC_SHELL=1 PLATFORM=${platform} USE_CRT_DLL=${if staticRuntime then "0" else "1"}") == 0 or die $!;
   '';
   installPhase = ''
     make_pathL("$ENV{out}/bin", "$ENV{out}/lib", "$ENV{out}/include");
-    copyL 'winsqlite3shell.exe', "$ENV{out}/bin/winsqlite3shell.exe";
-    copyL 'winsqlite3.dll',      "$ENV{out}/bin/winsqlite3.dll";
-    copyL 'winsqlite3.lib',      "$ENV{out}/lib/winsqlite3.lib";
-    copyL 'sqlite3.h',           "$ENV{out}/include/sqlite3.h";
-    copyL 'sqlite3ext.h',        "$ENV{out}/include/sqlite3ext.h";
+    copyL 'sqlite3.exe',  "$ENV{out}/bin/sqlite3.exe";
+    copyL 'sqlite3.dll',  "$ENV{out}/bin/sqlite3.dll";
+    copyL 'sqlite3.lib',  "$ENV{out}/lib/sqlite3.lib";
+    copyL 'sqlite3.h',    "$ENV{out}/include/sqlite3.h";
+    copyL 'sqlite3ext.h', "$ENV{out}/include/sqlite3ext.h";
   '';
 }
 else

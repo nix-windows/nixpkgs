@@ -1,5 +1,6 @@
 { stdenv
 , fetchurl
+, staticRuntime ? false # false for /MD, true for /MT
 , static ? false
 }:
 
@@ -22,7 +23,9 @@ if stdenv.hostPlatform.isMicrosoft then
 stdenv.mkDerivation (rec {
   inherit name version src;
   dontConfigure = true;
-  buildPhase = ''
+  buildPhase = stdenv.lib.optionalString staticRuntime ''
+    changeFile { s|MD|MT|gr; } 'win32/Makefile.msc';
+  '' + ''
     system('nmake -f win32/Makefile.msc') == 0 or die;
   '';
   installPhase = if static then ''

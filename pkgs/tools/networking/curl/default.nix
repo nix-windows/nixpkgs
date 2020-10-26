@@ -1,4 +1,5 @@
 { stdenv, lib, fetchurl, pkgconfig, perl
+, staticRuntime ? false # false for /MD, true for /MT
 , http2Support ? true, nghttp2
 , idnSupport ? false, libidn ? null
 , ldapSupport ? false, openldap ? null
@@ -24,14 +25,14 @@ assert brotliSupport -> brotli != null;
 assert gssSupport -> libkrb5 != null;
 
 let
-  name = "curl-7.62.0";
+  name = "curl-7.73.0";
 
   src = fetchurl {
     urls = [
       "https://curl.haxx.se/download/${name}.tar.bz2"
       "https://github.com/curl/curl/releases/download/${lib.replaceStrings ["."] ["_"] name}/${name}.tar.bz2"
     ];
-    sha256 = "084niy7cin13ba65p8x38w2xcyc54n3fgzbin40fa2shfr0ca0kq";
+    sha256 = "0cfi8vhvx948knia9p24w38gcj7m5a5nx6j93b0g205q0w5zwd6g";
   };
 in if stdenv.hostPlatform.isMicrosoft then
 
@@ -41,15 +42,15 @@ stdenv.mkDerivation rec {
 
   buildPhase = ''
     chdir("winbuild");
-    system("nmake /f Makefile.vc mode=dll VC=15 USE_SSL=true USE_SSPI=false WITH_SSL=dll SSL_PATH=${openssl} WITH_ZLIB=dll ZLIB_PATH=${zlib}");
+    system("nmake /f Makefile.vc mode=dll VC=15 USE_SSL=true USE_SSPI=false WITH_SSL=dll SSL_PATH=${openssl} WITH_ZLIB=dll ZLIB_PATH=${zlib} RTLIBCFG=${if staticRuntime then "static" else "shared"}");
   '';
   installPhase = ''
     for my $dir (glob('../builds/*')) {
       dircopy($dir, $ENV{out}) or die "dircopy($dir, $ENV{out}): $!" if -f "$dir/bin/curl.exe";
     }
-    copyL('${openssl}/bin/libeay32.dll', "$ENV{out}/bin/LIBEAY32.dll") or die $!;
-    copyL('${openssl}/bin/ssleay32.dll', "$ENV{out}/bin/SSLEAY32.dll") or die $!;
-    copyL('${zlib}/bin/zlib1.dll',       "$ENV{out}/bin/zlib1.dll"   ) or die $!;
+    copyL('${openssl}/bin/libeay32.dll', "$ENV{out}/bin/LIBEAY32.dll") or die $!;  # <- todo: hardlink
+    copyL('${openssl}/bin/ssleay32.dll', "$ENV{out}/bin/SSLEAY32.dll") or die $!;  # <- todo: hardlink
+    copyL('${zlib}/bin/zlib1.dll',       "$ENV{out}/bin/zlib1.dll"   ) or die $!;  # <- todo: hardlink
   '';
 }
 

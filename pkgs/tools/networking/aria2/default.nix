@@ -4,6 +4,28 @@
 , Security
 }:
 
+if stdenv.hostPlatform.isMicrosoft then
+
+stdenv.mkDerivation rec {
+  name = "aria2-${version}";
+  version = "1.35.0";
+
+  src = fetchFromGitHub {
+    owner = "aria2";
+    repo = "aria2";
+    rev = "release-${version}";
+    sha256 = "0ckg3g5i2h7wgqr862py445b55fbfh7bgcr61crglwvwizb99n1j";
+  };
+  dontConfigure = true;
+  buildPhase = ''
+    exit(1);
+  '';
+  installPhase = ''
+    exit(1);
+  '';
+}
+
+else
 stdenv.mkDerivation rec {
   name = "aria2-${version}";
   version = "1.34.0";

@@ -1,4 +1,6 @@
-{ stdenv, fetchurl, enableStatic ? false }:
+{ stdenv, fetchurl
+, staticRuntime ? false # false for /MD, true for /MT
+, enableStatic ? false }:
 
 let
   name = "xz-5.2.4";
@@ -34,7 +36,10 @@ in
 
 if stdenv.hostPlatform.isMicrosoft then
 
-stdenv.mkDerivation rec {
+let
+  platform      = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenv.hostPlatform.config};
+  configuration = if staticRuntime then "ReleaseMT" else "Release";
+in stdenv.mkDerivation rec {
   inherit name src meta;
 
   dontConfigure = true;
@@ -42,20 +47,20 @@ stdenv.mkDerivation rec {
     for my $filename (glob('windows/vs2017/*.vcxproj')) {
       changeFile { s|<WindowsTargetPlatformVersion>10\.[0-9.]+<|<WindowsTargetPlatformVersion>${stdenv.cc.sdk.version}<|gr } $filename;
     }
-    system('msbuild windows\vs2017\xz_win.sln /p:Configuration=Release /p:Platform=x64') == 0 or die;
+    system('msbuild windows\vs2017\xz_win.sln /p:Configuration=${configuration} /p:Platform=${platform}') == 0 or die;
   '';
 
   installPhase = ''
     make_pathL("$ENV{out}/lib", "$ENV{out}/include") or die $!;
     ${if enableStatic then ''
-        copyL("windows/vs2017/Release/x64/liblzma/liblzma.lib",     "$ENV{out}/lib/liblzma.lib") or die $!; # static lib
-        copyL("src/liblzma/api/lzma.h",                             "$ENV{out}/include/lzma.h" ) or die $!; # static lib
-        changeFile { "#define LZMA_API_STATIC 1\n".$_ }             "$ENV{out}/include/lzma.h";
+        copyL("windows/vs2017/${configuration}/x64/liblzma/liblzma.lib",      "$ENV{out}/lib/liblzma.lib") or die $!; # static lib
+        copyL("src/liblzma/api/lzma.h",                                       "$ENV{out}/include/lzma.h" ) or die $!; # static lib
+        changeFile { "#define LZMA_API_STATIC 1\n".$_ }                       "$ENV{out}/include/lzma.h";
       '' else ''
         make_pathL("$ENV{out}/bin") or die $!;
-        copyL("windows/vs2017/Release/x64/liblzma_dll/liblzma.dll", "$ENV{out}/bin/liblzma.dll") or die $!;
-        copyL("windows/vs2017/Release/x64/liblzma_dll/liblzma.lib", "$ENV{out}/lib/liblzma.lib") or die $!;
-        copyL("src/liblzma/api/lzma.h",                             "$ENV{out}/include/lzma.h" ) or die $!;
+        copyL("windows/vs2017/${configuration}/x64/liblzma_dll/liblzma.dll",  "$ENV{out}/bin/liblzma.dll") or die $!;
+        copyL("windows/vs2017/${configuration}/x64/liblzma_dll/liblzma.lib",  "$ENV{out}/lib/liblzma.lib") or die $!;
+        copyL("src/liblzma/api/lzma.h",                                       "$ENV{out}/include/lzma.h" ) or die $!;
       ''}
     dircopy("src/liblzma/api/lzma", "$ENV{out}/include/lzma") or die "dircopy(src/liblzma/api/lzma, $ENV{out}/include/lzma): $!";
   '';
