@@ -1,12 +1,13 @@
 { stdenv, fetchurl
 , staticRuntime ? false # false for /MD, true for /MT
-, enableStatic ? false }:
+, static ? false
+}:
 
 let
-  name = "xz-5.2.4";
+  version = "5.2.4";
 
   src = fetchurl {
-    url = "https://tukaani.org/xz/${name}.tar.bz2";
+    url = "https://tukaani.org/xz/xz-${version}.tar.bz2";
     sha256 = "1gxpayfagb4v7xfhs2w6h7k56c6hwwav1rk48bj8hggljlmgs4rk";
   };
 
@@ -40,7 +41,8 @@ let
   platform      = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "Win32"; }.${stdenv.hostPlatform.config};
   configuration = if staticRuntime then "ReleaseMT" else "Release";
 in stdenv.mkDerivation rec {
-  inherit name src meta;
+  name = "xz-${if static then "lib" else "dll"}-${if staticRuntime then "mt" else "md"}-${version}";
+  inherit src meta;
 
   dontConfigure = true;
   buildPhase = ''
@@ -52,7 +54,7 @@ in stdenv.mkDerivation rec {
 
   installPhase = ''
     make_pathL("$ENV{out}/lib", "$ENV{out}/include") or die $!;
-    ${if enableStatic then ''
+    ${if static then ''
         copyL("windows/vs2017/${configuration}/${platform}/liblzma/liblzma.lib",      "$ENV{out}/lib/liblzma.lib") or die $!; # static lib
         copyL("src/liblzma/api/lzma.h",                                               "$ENV{out}/include/lzma.h" ) or die $!; # static lib
         changeFile { "#define LZMA_API_STATIC 1\n".$_ }                               "$ENV{out}/include/lzma.h";
@@ -64,16 +66,19 @@ in stdenv.mkDerivation rec {
       ''}
     dircopy("src/liblzma/api/lzma", "$ENV{out}/include/lzma") or die "dircopy(src/liblzma/api/lzma, $ENV{out}/include/lzma): $!";
   '';
+  passthru.static        = static;
+  passthru.staticRuntime = staticRuntime;
 }
 
 else
-
+  throw "xxx"
+/*
 stdenv.mkDerivation rec {
   inherit name src meta;
 
   outputs = [ "bin" "dev" "out" "man" "doc" ];
 
-  configureFlags = stdenv.lib.optional enableStatic "--disable-shared";
+  configureFlags = stdenv.lib.optional static "--disable-shared";
 
   doCheck = true;
 
@@ -87,3 +92,4 @@ stdenv.mkDerivation rec {
 
   postInstall = "rm -rf $out/share/doc";
 }
+*/

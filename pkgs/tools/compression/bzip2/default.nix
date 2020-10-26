@@ -1,17 +1,16 @@
 { stdenv, fetchurl
 , staticRuntime ? false # false for /MD, true for /MT
-, linkStatic ? (stdenv.hostPlatform.system == "i686-cygwin")
+, static ? (stdenv.hostPlatform.system == "i686-cygwin" || stdenv.hostPlatform.isMicrosoft)
 }:
 
 let
-  name = "bzip2-${version}";
   version = "1.0.6.0.1";
 
   /* We use versions patched to use autotools style properly,
       saving lots of trouble. */
   src = fetchurl {
     urls = map
-      (prefix: prefix + "/people/sbrabec/bzip2/tarballs/${name}.tar.gz")
+      (prefix: prefix + "/people/sbrabec/bzip2/tarballs/bzip2-${name}.tar.gz")
       [
         "http://ftp.uni-kl.de/pub/linux/suse"
         "ftp://ftp.hs.uni-hamburg.de/pub/mirrors/suse"
@@ -31,8 +30,10 @@ in
 
 if stdenv.hostPlatform.isMicrosoft then
 
+assert static;
 stdenv.mkDerivation rec {
-  inherit name version src meta;
+  name = "bzip2-${if static then "lib" else "dll"}-${if staticRuntime then "mt" else "md"}-${version}";
+  inherit version src meta;
   buildPhase = stdenv.lib.optionalString staticRuntime ''
     changeFile { s|MD|MT|gr; } 'makefile.msc';
   '' + ''
@@ -45,6 +46,8 @@ stdenv.mkDerivation rec {
     copyL('bzlib.h',           "$ENV{out}/include/bzlib.h"      )     or die $!;
     copyL('libbz2.lib',        "$ENV{out}/lib/libbz2.lib"       )     or die $!;
   '';
+  passthru.static        = static;
+  passthru.staticRuntime = staticRuntime;
 }
 
 else
@@ -65,5 +68,5 @@ stdenv.mkDerivation rec {
   outputs = [ "bin" "dev" "out" "man" ];
 
   configureFlags =
-    stdenv.lib.optionals linkStatic [ "--enable-static" "--disable-shared" ];
+    stdenv.lib.optionals static [ "--enable-static" "--disable-shared" ];
 }

@@ -5,13 +5,12 @@
 }:
 
 let
-  name = "zlib-${version}";
   version = "1.2.11";
 
   src = fetchurl {
     urls =
-      [ "https://www.zlib.net/fossils/${name}.tar.gz"  # stable archive path
-        "mirror://sourceforge/libpng/zlib/${version}/${name}.tar.gz"
+      [ "https://www.zlib.net/fossils/zlib-${version}.tar.gz"  # stable archive path
+        "mirror://sourceforge/libpng/zlib/${version}/zlib-${version}.tar.gz"
       ];
     sha256 = "c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1";
   };
@@ -21,7 +20,8 @@ in
 if stdenv.hostPlatform.isMicrosoft then
 
 stdenv.mkDerivation (rec {
-  inherit name version src;
+  name = "zlib-${if static then "lib" else "dll"}-${if staticRuntime then "mt" else "md"}-${version}";
+  inherit version src;
   dontConfigure = true;
   buildPhase = stdenv.lib.optionalString staticRuntime ''
     changeFile { s|MD|MT|gr; } 'win32/Makefile.msc';
@@ -40,9 +40,13 @@ stdenv.mkDerivation (rec {
     copyL('zconf.h',   "$ENV{out}/include/zconf.h")                   or die $!;
     copyL('zdll.lib',  "$ENV{out}/lib/zdll.lib"   )                   or die $!;
   '';
+  passthru.static        = static;
+  passthru.staticRuntime = staticRuntime;
 })
 
 else
+ throw "xxx"
+/*
 stdenv.mkDerivation (rec {
   inherit name version src;
 
@@ -116,3 +120,4 @@ stdenv.mkDerivation (rec {
 } // stdenv.lib.optionalAttrs (stdenv.hostPlatform.libc == "msvcrt") {
   configurePhase = ":";
 })
+*/

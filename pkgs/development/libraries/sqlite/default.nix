@@ -25,7 +25,8 @@ let
   platform = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenv.hostPlatform.config};
 in
 stdenv.mkDerivation rec {
-  inherit name version src;
+  name = "sqlite-${if staticRuntime then "mt" else "md"}-${version}";
+  inherit version src;
   # TODO: add enablers from NIX_CFLAGS_COMPILE
   buildPhase = ''
     system("nmake /f Makefile.msc core DYNAMIC_SHELL=1 PLATFORM=${platform} USE_CRT_DLL=${if staticRuntime then "0" else "1"}") == 0 or die $!;
@@ -38,6 +39,7 @@ stdenv.mkDerivation rec {
     copyL 'sqlite3.h',    "$ENV{out}/include/sqlite3.h";
     copyL 'sqlite3ext.h', "$ENV{out}/include/sqlite3ext.h";
   '';
+  passthru.staticRuntime = staticRuntime;
 }
 else
 stdenv.mkDerivation rec {

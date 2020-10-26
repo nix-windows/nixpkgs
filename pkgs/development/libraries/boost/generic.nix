@@ -4,15 +4,16 @@
 , toolset ? /**/ if stdenv.cc.isClang  then "clang"
             else null
 , staticRuntime ? false # false for /MD, true for /MT
+, static ? false
 , enableRelease ? true
 , enableDebug ? false
 , enableSingleThreaded ? false
 , enableMultiThreaded ? true
-, enableShared ? !(stdenv.hostPlatform.libc == "msvcrt") # problems for now
-, enableStatic ? !enableShared
+#, enableShared ? !(stdenv.hostPlatform.libc == "msvcrt") # problems for now
+#, enableStatic ? !enableShared
 , enablePython ? false
 , enableNumpy ? false
-, taggedLayout ? ((enableRelease && enableDebug) || (enableSingleThreaded && enableMultiThreaded) || (enableShared && enableStatic))
+#, taggedLayout ? ((enableRelease && enableDebug) || (enableSingleThreaded && enableMultiThreaded) || (enableShared && enableStatic))
 , patches ? []
 , mpi ? null
 
@@ -24,9 +25,9 @@
 
 if stdenv.hostPlatform.isMicrosoft then
 let
-  b2Args = "--prefix=$ENV{out} -j$ENV{NIX_BUILD_CORES} address-model=${if stdenv.is64bit then "64" else "32"} variant=release threading=multi link=static runtime-link=${if staticRuntime then "static" else "shared"} toolset=msvc";
+  b2Args = "--prefix=$ENV{out} -j$ENV{NIX_BUILD_CORES} address-model=${if stdenv.is64bit then "64" else "32"} variant=release threading=multi link=${if static then "static" else "shared"} runtime-link=${if staticRuntime then "static" else "shared"} toolset=msvc";
 in stdenv.mkDerivation {
-  name = "boost-${version}";
+  name = "boost-${if static then "lib" else "dll"}-${if staticRuntime then "mt" else "md"}-${version}";
 
   inherit src;
 # src = ./boost_1_67_0;
@@ -59,13 +60,21 @@ in stdenv.mkDerivation {
 
   installPhase = ''
     system("b2 ${b2Args} install");
-    renameL("$ENV{out}/include/boost-1_67/boost", "$ENV{out}/include/boost") or die;
-    rmdirL("$ENV{out}/include/boost-1_67") or die;
+    renameL("$ENV{out}/include/boost-".('${version}' =~ s/^(\d+)\.(\d+).*/$1_$2/r)."/boost", "$ENV{out}/include/boost") or die $!;
+    rmdirL("$ENV{out}/include/boost-".('${version}' =~ s/^(\d+)\.(\d+).*/$1_$2/r))                                      or die $!;
+  '' + stdenv.lib.optionalString (!static) ''
+    mkdirL("$ENV{out}/bin") or die $!;
+    for my $dll (glob("$ENV{out}/lib/*.dll")) {
+      renameL($dll, "$ENV{out}/bin/".basename($dll)) or die $!;
+    }
   '';
+  passthru.static        = static;
+  passthru.staticRuntime = staticRuntime;
 }
 
 else
-
+  throw "xxx"
+/*
 # We must build at least one type of libraries
 assert enableShared || enableStatic;
 
@@ -222,3 +231,4 @@ stdenv.mkDerivation {
   outputs = [ "out" "dev" ];
   setOutputFlags = false;
 }
+*/

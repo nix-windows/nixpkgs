@@ -10,7 +10,7 @@ with stdenv.lib;
 
 let
   common = args@{ version, sha256, patches ? [] }: let
-    name = "openssl-${version}";
+    name = "openssl-${if static then "lib" else "dll"}-${if staticRuntime then "mt" else "md"}-${version}";
 
     src = fetchurl {
       url = "https://www.openssl.org/source/${name}.tar.gz";
@@ -80,6 +80,9 @@ let
     '' else ''
       system('nmake install') == 0 or die "nmake failed: $!";
     '';
+
+    passthru.static        = static;
+    passthru.staticRuntime = staticRuntime;
   }
   else stdenv.mkDerivation rec {
     inherit name version src meta;

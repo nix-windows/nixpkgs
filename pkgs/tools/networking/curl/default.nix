@@ -1,5 +1,6 @@
 { stdenv, lib, fetchurl, pkgconfig, perl
 , staticRuntime ? false # false for /MD, true for /MT
+, static ? false
 , http2Support ? true, nghttp2
 , idnSupport ? false, libidn ? null
 , ldapSupport ? false, openldap ? null
@@ -25,12 +26,12 @@ assert brotliSupport -> brotli != null;
 assert gssSupport -> libkrb5 != null;
 
 let
-  name = "curl-7.73.0";
+  version = "7.73.0";
 
   src = fetchurl {
     urls = [
-      "https://curl.haxx.se/download/${name}.tar.bz2"
-      "https://github.com/curl/curl/releases/download/${lib.replaceStrings ["."] ["_"] name}/${name}.tar.bz2"
+      "https://curl.haxx.se/download/curl-${version}.tar.bz2"
+      "https://github.com/curl/curl/releases/download/curl-${lib.replaceStrings ["."] ["_"] version}/${version}.tar.bz2"
     ];
     sha256 = "0cfi8vhvx948knia9p24w38gcj7m5a5nx6j93b0g205q0w5zwd6g";
   };
@@ -38,24 +39,30 @@ in if stdenv.hostPlatform.isMicrosoft then
 
 assert stdenv.hostPlatform == stdenv.buildPlatform; # not yet tested
 stdenv.mkDerivation rec {
-  inherit name src;
+  name = "curl-${if static then "lib" else "dll"}-${if staticRuntime then "mt" else "md"}-${version}";
+  inherit src;
 
   buildPhase = ''
     chdir("winbuild");
-    system("nmake /f Makefile.vc mode=dll VC=15 USE_SSL=true USE_SSPI=false WITH_SSL=dll SSL_PATH=${openssl} WITH_ZLIB=dll ZLIB_PATH=${zlib} RTLIBCFG=${if staticRuntime then "static" else "shared"}");
+    system("nmake /f Makefile.vc mode=${if static then "static" else "dll"} VC=15 USE_SSL=true USE_SSPI=false WITH_SSL=${if openssl.static then "static" else "dll"} SSL_PATH=${openssl} WITH_ZLIB=${if zlib.static then "static" else "dll"} ZLIB_PATH=${zlib} RTLIBCFG=${if staticRuntime then "static" else "shared"}");
   '';
   installPhase = ''
     for my $dir (glob('../builds/*')) {
       dircopy($dir, $ENV{out}) or die "dircopy($dir, $ENV{out}): $!" if -f "$dir/bin/curl.exe";
     }
+  '' + lib.optionalString (!openssl.static) ''
     copyL('${openssl}/bin/libeay32.dll', "$ENV{out}/bin/LIBEAY32.dll") or die $!;  # <- todo: hardlink
     copyL('${openssl}/bin/ssleay32.dll', "$ENV{out}/bin/SSLEAY32.dll") or die $!;  # <- todo: hardlink
+  '' + lib.optionalString (!zlib.static) ''
     copyL('${zlib}/bin/zlib1.dll',       "$ENV{out}/bin/zlib1.dll"   ) or die $!;  # <- todo: hardlink
   '';
+  passthru.static        = static;
+  passthru.staticRuntime = staticRuntime;
 }
 
 else
-
+  throw "xxx"
+/*
 stdenv.mkDerivation rec {
   inherit name src;
 
@@ -138,3 +145,4 @@ stdenv.mkDerivation rec {
     platforms = platforms.all;
   };
 }
+*/
