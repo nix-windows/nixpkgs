@@ -24,7 +24,7 @@
 
 if stdenv.hostPlatform.isMicrosoft then
 let
-  b2Args = "--prefix=$ENV{out} -j$ENV{NIX_BUILD_CORES} address-model=64 variant=release threading=multi link=static runtime-link=${if staticRuntime then "static" else "shared"} toolset=msvc";
+  b2Args = "--prefix=$ENV{out} -j$ENV{NIX_BUILD_CORES} address-model=${if stdenv.is64bit then "64" else "32"} variant=release threading=multi link=static runtime-link=${if staticRuntime then "static" else "shared"} toolset=msvc";
 in stdenv.mkDerivation {
   name = "boost-${version}";
 
@@ -40,8 +40,8 @@ in stdenv.mkDerivation {
 #   ;
 
   configurePhase = ''
-    $ENV{PATH} = "$ENV{PATH};${stdenv.cc.redist}/x64/Microsoft.VC141.DebugCRT";     # vcruntime140d.dll and msvcp140d.dll for /MDd builds to work
-    $ENV{PATH} = "$ENV{PATH};${stdenv.cc.redist}/x64/Microsoft.UniversalCRT.Debug"; # ucrtbased.dll                       for /MDd builds to work
+    $ENV{PATH} = "$ENV{PATH};${stdenv.cc.redist}/${if stdenv.is64bit then "x64" else "x86"}/Microsoft.VC141.DebugCRT";     # vcruntime140d.dll and msvcp140d.dll for /MDd builds to work
+    $ENV{PATH} = "$ENV{PATH};${stdenv.cc.redist}/${if stdenv.is64bit then "x64" else "x86"}/Microsoft.UniversalCRT.Debug"; # ucrtbased.dll                       for /MDd builds to work
 
     system("bootstrap.bat vc141");
 
