@@ -1,7 +1,7 @@
 { stdenv, fetchzip, perl, curl, openssl, zlib }:
 
 let
-  version = "2.20.1";
+  version = "2.29.1";
 in
 fetchzip {
   name = "git-${version}";
@@ -12,7 +12,7 @@ fetchzip {
       s/symlinks = false/symlinks = true/g;
       s/autocrlf = true/autocrlf = false/g;
       $_
-    } "$ENV{out}/mingw64/etc/gitconfig";
+    } "$ENV{out}/etc/gitconfig";
   '';
-  sha256 = "0rbilp0rj1qr6m84piimkprwhgnd2fjxmqw33k8fymifa41lrvw0";
+  sha256 = "1nlz452gk7gi2yyn1rx44nlyqwqpz7ynffqlcq6h5z1vhcf5k5vx";
 }
