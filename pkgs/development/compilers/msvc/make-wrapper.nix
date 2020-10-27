@@ -13,7 +13,7 @@ stdenv.mkDerivation rec {
   buildCommand = ''
     make_pathL("$ENV{out}/bin") or die $!;
     system('cl', '/O2', '/MT', '/EHsc',
-           "/Fe:$ENV{out}\\bin\\makeWrapper.exe",
+           "/Fe$ENV{out}\\bin\\makeWrapper.exe",
            '${lib.escapeWindowsArg "/DINCLUDE=${targetPackages.stdenv.cc.INCLUDE}"}',
            '${lib.escapeWindowsArg "/DLIB=${targetPackages.stdenv.cc.LIB}"}',
            '${lib.escapeWindowsArg "/DCC=${targetPackages.stdenv.cc}/bin/cl.exe"}',
