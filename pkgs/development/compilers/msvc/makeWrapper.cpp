@@ -197,7 +197,7 @@ int wmain(int argc, const wchar_t** argv) {
         code << "}\n";
     }
     for (vector<pair<wstring, wstring>>::const_iterator t = env_set.begin(); t != env_set.end(); t++) {
-        code << "env[" << wliteral(t->first) << "] = " << wliteral(t->second) << "\n";
+        code << "env[" << wliteral(t->first) << "] = " << wliteral(t->second) << ";\n";
     }
     for (vector<pair<wstring, wstring>>::const_iterator t = env_set_default.begin(); t != env_set_default.end(); t++) {
         code << "if (env.find(" << wliteral(t->first) << ") == env.end())\n";
