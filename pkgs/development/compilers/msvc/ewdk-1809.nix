@@ -1,12 +1,8 @@
 # https://docs.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk
 
-{ stdenvNoCC, buildPackages }:
+{ stdenvNoCC, lib, buildPackages }:
 
 let
-  inherit (stdenvNoCC) lib;
-# host   = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenvNoCC.  hostPlatform.config};
-# target = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenvNoCC.targetPlatform.config};
-
   msblobs = (import ./ewdk-1809-blobs.nix { inherit stdenvNoCC; });
   inherit (msblobs) redist sdk msbuild msvc ewdk vc;
 
@@ -22,7 +18,7 @@ let
         buildCommand = ''
           make_pathL("$ENV{out}/bin") or die $!;
           system('cl', '/O2', '/MT', '/EHsc',
-                 "/Fe:$ENV{out}\\bin\\makeWrapper.exe",
+                 "/Fe$ENV{out}\\bin\\makeWrapper.exe",
                  '${lib.escapeWindowsArg "/DINCLUDE=${INCLUDE}"}',
                  '${lib.escapeWindowsArg "/DLIB=${LIB}"}',
                  '${lib.escapeWindowsArg "/DCC=${(msvc).CLEXE}"}',
@@ -122,9 +118,10 @@ in
     '';
 
     passthru = {
-      targetPrefix = "";
+#     targetPrefix = "";
+      isMSVC  = true;
       isClang = false;
-      isGNU = false;
+      isGNU   = false;
       inherit msvc redist sdk msbuild ewdk;
       INCLUDE = "${msvc.INCLUDE};${sdk.INCLUDE}";  # TODO: a hook should set them
       LIB     = "${msvc.LIB};${sdk.LIB}";

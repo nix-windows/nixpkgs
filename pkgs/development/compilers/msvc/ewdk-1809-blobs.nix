@@ -25,7 +25,7 @@ in rec {
   };
 
   # exactly as in ./msvc-2017-blobs.nix (TODO: rename msvc to vmtools)
-  msvc   .version = "14.15.26726";
+  msvc   .version = "14.15.26726"; /* cl.exe reports as 19.15.26726, link.exe and lib.exe are more honest */
   msvc   .outPath = "${ewdk}/Program Files/Microsoft Visual Studio/2017/BuildTools/VC/Tools/MSVC/${msvc.version}";
   sdk    .version = "10.0.17763.0";
   sdk    .outPath = "${ewdk}/Program Files/Windows Kits/10";
