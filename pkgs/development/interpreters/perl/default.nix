@@ -58,6 +58,14 @@ let
                                                           throw "???"} ${if stdenv.is64bit then "WIN64=define PROCESSOR_ARCHITECTURE=AMD64" else "WIN64=undef PROCESSOR_ARCHITECTURE=X86"} BUILD_STATIC=define");
     '';
 
+    # todo: common hook looking for missing dlls and copying/hardlinking them into %out%/bin/
+    fixupPhase = lib.optionalString (stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "14.10" && lib.versionOlder stdenv.cc.msvc.version "14.20") ''
+      copyL('${stdenv.cc.redist}/${if stdenv.is64bit then "x64" else "x86"}/Microsoft.VC141.CRT/vcruntime140.dll'   => "$ENV{out}/bin/vcruntime140.dll"  );
+    '' + lib.optionalString (stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "14.20" && lib.versionOlder stdenv.cc.msvc.version "14.30") ''
+      copyL('${stdenv.cc.redist}/${if stdenv.is64bit then "x64" else "x86"}/Microsoft.VC142.CRT/vcruntime140.dll'   => "$ENV{out}/bin/vcruntime140.dll"  );
+      copyL('${stdenv.cc.redist}/${if stdenv.is64bit then "x64" else "x86"}/Microsoft.VC142.CRT/vcruntime140_1.dll' => "$ENV{out}/bin/vcruntime140_1.dll");
+    '';
+
     setupHook = ./setup-hook.pl;
 
     passthru.libPrefix = "lib";
