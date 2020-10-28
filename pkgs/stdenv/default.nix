@@ -33,7 +33,7 @@ let
   stagesCross = import ./cross args;
 
   stagesWindowsMSVC2005 = import ./windows/msvc2005.nix args; # <-- can compile openssl, zlib, curl, but no p7zip
-  stagesWindowsMSVC2008 = import ./windows/msvc2008.nix args;
+# stagesWindowsMSVC2008 = import ./windows/msvc2008.nix args;
   stagesWindowsMSVC2017 = import ./windows/msvc2017.nix args;
   stagesWindowsMSVC2019 = import ./windows/msvc2019.nix args;
   stagesWindowsMinGW    = import ./windows/mingw.nix    args;
@@ -62,6 +62,6 @@ in
     "i686-cygwin" = stagesNative;
     "x86_64-cygwin" = stagesNative;
     "x86_64-freebsd" = stagesFreeBSD;
-    "x86_64-windows" = stagesWindowsMSVC2019;
-    "i686-windows" = stagesWindowsMSVC2005;
+    "x86_64-windows" = stagesWindowsMSVC2019; # stagesWindowsMSVC2019 | stagesWindowsMSVC2017                                                 | stagesWindowsMinGW
+    "i686-windows" = stagesWindowsMinGW;      # stagesWindowsMSVC2019 | stagesWindowsMSVC2017 | stagesWindowsMSVC2008 | stagesWindowsMSVC2005 | stagesWindowsMinGW
   }.${localSystem.system} or stagesNative
