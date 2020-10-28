@@ -5,11 +5,11 @@ let
 # exe = C:/work/nix-windows/7z/7z.exe;
 # dll = C:/work/nix-windows/7z/7z.dll;
   exe = stdenvNoCC.fetchurlBoot {
-    url    = "https://github.com/volth/nixpkgs/releases/download/windows-0.4/7z.exe"; # ${pkgs.pkgsi686Windows.p7zip}/bin/7z.exe
+    url    = "https://github.com/volth/nixpkgs/releases/download/windows-0.4/7z.exe"; # ${pkgs.pkgsi686Windows.p7zip.override{stdenv=stdenv2005;}}/bin/7z.exe
     sha256 = "0iqrnfs4rs68v322hkg2sq4l8h1h84v9vy7p619ppb4c8q4y7asg";
   };
   dll = stdenvNoCC.fetchurlBoot {
-    url    = "https://github.com/volth/nixpkgs/releases/download/windows-0.4/7z.dll"; # ${pkgs.pkgsi686Windows.p7zip}/bin/7z.dll
+    url    = "https://github.com/volth/nixpkgs/releases/download/windows-0.4/7z.dll"; # ${pkgs.pkgsi686Windows.p7zip.override{stdenv=stdenv2005;}}/bin/7z.dll
     sha256 = "0xkfxk7hsyflc11islj498f3cy84s4aacap4almklflm44xkafd0";
   };
 in if stdenvNoCC.isShellCmdExe then
@@ -30,4 +30,5 @@ else if stdenvNoCC.isShellPerl then
       copyL('${dll}' => "$ENV{out}/bin/7z.dll");
     '';
   }
-else throw "stdenvNoCC.shell=${stdenvNoCC.shell}"
+else
+  throw "stdenvNoCC.shell=${stdenvNoCC.shell}"

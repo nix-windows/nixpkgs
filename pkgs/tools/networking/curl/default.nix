@@ -26,14 +26,14 @@ assert brotliSupport -> brotli != null;
 assert gssSupport -> libkrb5 != null;
 
 let
-  version = "7.73.0";
+  version = if stdenv.is64bit then "7.73.0" else "7.62.0";
 
   src = fetchurl {
     urls = [
       "https://curl.haxx.se/download/curl-${version}.tar.bz2"
       "https://github.com/curl/curl/releases/download/curl-${lib.replaceStrings ["."] ["_"] version}/${version}.tar.bz2"
     ];
-    sha256 = "0cfi8vhvx948knia9p24w38gcj7m5a5nx6j93b0g205q0w5zwd6g";
+    sha256 = if stdenv.is64bit then "0cfi8vhvx948knia9p24w38gcj7m5a5nx6j93b0g205q0w5zwd6g" else "084niy7cin13ba65p8x38w2xcyc54n3fgzbin40fa2shfr0ca0kq";
   };
 in if stdenv.hostPlatform.isMicrosoft then
 
@@ -44,7 +44,17 @@ stdenv.mkDerivation rec {
 
   buildPhase = ''
     chdir("winbuild");
-    system("nmake /f Makefile.vc mode=${if static then "static" else "dll"} VC=15 USE_SSL=true USE_SSPI=false WITH_SSL=${if openssl.static then "static" else "dll"} SSL_PATH=${openssl} WITH_ZLIB=${if zlib.static then "static" else "dll"} ZLIB_PATH=${zlib} RTLIBCFG=${if staticRuntime then "static" else "shared"}");
+    system("nmake /f Makefile.vc mode=${if static then "static" else "dll"}".
+                               " VC=${if stdenv.is64bit then "15" else "8"}".
+                               " MACHINE=${if stdenv.is64bit then "x64" else "x86"}".
+                               " ENABLE_IDN=${if stdenv.is64bit then "yes" else "no" /* IdnToUnicode() requires Windows Vista */}".
+                               " ENABLE_IPV6=yes".
+                               " ENABLE_SSPI=no".
+                               " WITH_SSL=${if openssl.static then "static" else "dll"}".
+                               " SSL_PATH=${openssl}".
+                               " WITH_ZLIB=${if zlib.static then "static" else "dll"}".
+                               " ZLIB_PATH=${zlib}".
+                               " RTLIBCFG=${if staticRuntime then "static" else "shared"}");
   '';
   installPhase = ''
     for my $dir (glob('../builds/*')) {

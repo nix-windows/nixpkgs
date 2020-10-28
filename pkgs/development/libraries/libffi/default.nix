@@ -60,10 +60,13 @@ in stdenv.mkDerivation rec {
   '';
 
   passthru.msysenv = msysenv;
+  passthru.static        = false;
+  passthru.staticRuntime = false;
 }
 
 else
-
+  throw "xxx"
+/*
 stdenv.mkDerivation rec {
   name = "libffi-3.2.1";
 
@@ -152,3 +155,4 @@ stdenv.mkDerivation rec {
     platforms = platforms.all;
   };
 }
+*/

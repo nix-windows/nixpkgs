@@ -2,20 +2,20 @@
 , zlib, xz, python2, ncurses, findXMLCatalogs
 , pythonSupport ? stdenv.buildPlatform == stdenv.hostPlatform
 , icuSupport ? false, icu ? null
-, enableShared ? stdenv.hostPlatform.libc != "msvcrt"
-, enableStatic ? !enableShared,
+#, enableShared ? stdenv.hostPlatform.libc != "msvcrt"
+#, enableStatic ? !enableShared,
 }:
 
 let
   python = python2;
   name = "libxml2-${version}";
-  version = "2.9.8";
+  version = "2.9.9";
 
   src = fetchurl {
     url = "http://xmlsoft.org/sources/${name}.tar.gz";
-    sha256 = "0ci7is75bwqqw2p32vxvrk6ds51ik7qgx73m920rakv5jlayax0b";
+    sha256 = "0wd881jzvqayx0ihzba29jl80k06xj9ywp16kxacdqs3064p1ywl";
   };
-
+/*
   patches = [
     (fetchpatch {
       name = "CVE-2018-14567_CVE-2018-9251.patch";
@@ -28,7 +28,7 @@ let
       sha256 = "19vp7p32vrninnfa7vk9ipw7n4cl1gg16xxbhjy2d0kwp1crvzqh";
     })
   ];
-
+*/
   meta = {
     homepage = http://xmlsoft.org/;
     description = "An XML parsing library for C";
@@ -53,11 +53,15 @@ stdenv.mkDerivation {
     system("nmake -f Makefile.msvc install PREFIX=$ENV{out}") == 0 or die;
   '';
 
-  passthru = { inherit version; pythonSupport = false; };
+  passthru.version       = version;
+  passthru.pythonSupport = false;
+  passthru.static        = false;
+  passthru.staticRuntime = false;
 }
 
 else
-
+  throw "xxx"
+/*
 stdenv.mkDerivation {
   inherit name version src patches meta;
 
@@ -103,3 +107,4 @@ stdenv.mkDerivation {
 
   passthru = { inherit version; pythonSupport = pythonSupport; };
 }
+*/

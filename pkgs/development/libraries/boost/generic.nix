@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, icu, expat, zlib, bzip2, python, fixDarwinDylibNames, libiconv
+{ stdenv, lib, fetchurl, icu, expat, zlib, bzip2, python, fixDarwinDylibNames, libiconv
 , which
 , buildPackages
 , toolset ? /**/ if stdenv.cc.isClang  then "clang"
@@ -25,7 +25,16 @@
 
 if stdenv.hostPlatform.isMicrosoft then
 let
-  b2Args = "--prefix=$ENV{out} -j$ENV{NIX_BUILD_CORES} address-model=${if stdenv.is64bit then "64" else "32"} variant=release threading=multi link=${if static then "static" else "shared"} runtime-link=${if staticRuntime then "static" else "shared"} toolset=msvc";
+  b2Args = lib.concatStringsSep " " [
+              "--prefix=$ENV{out}"
+              "-j$ENV{NIX_BUILD_CORES}"
+              "address-model=${if stdenv.is64bit then "64" else "32"}"
+              "variant=release"
+              "threading=multi"
+              "link=${if static then "static" else "shared"}"
+              "runtime-link=${if staticRuntime then "static" else "shared"}"
+              "toolset=${if stdenv.cc.isMSVC then "msvc" else throw "???"}"
+           ];
 in stdenv.mkDerivation {
   name = "boost-${if static then "lib" else "dll"}-${if staticRuntime then "mt" else "md"}-${version}";
 
@@ -40,15 +49,25 @@ in stdenv.mkDerivation {
 #   ++ optional enableNumpy python.pkgs.numpy
 #   ;
 
-  configurePhase = ''
+  configurePhase = stdenv.lib.optionalString (stdenv.cc?redist) ''
     $ENV{PATH} = "$ENV{PATH};${stdenv.cc.redist}/${if stdenv.is64bit then "x64" else "x86"}/Microsoft.VC141.DebugCRT";     # vcruntime140d.dll and msvcp140d.dll for /MDd builds to work
     $ENV{PATH} = "$ENV{PATH};${stdenv.cc.redist}/${if stdenv.is64bit then "x64" else "x86"}/Microsoft.UniversalCRT.Debug"; # ucrtbased.dll                       for /MDd builds to work
-
-    system("bootstrap.bat vc141");
+  '' + ''
+    system("bootstrap.bat ${if stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "8" && lib.versionOlder stdenv.cc.msvc.version "9" then
+                              "vc8"
+                            else if stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "14.10" && lib.versionOlder stdenv.cc.msvc.version "15" then
+                              "vc141"
+                            else
+                              throw "???"}");
 
     writeFile("project-config.jam", qq[
     import option ;
-    using msvc : 14.1 : : <setup>${stdenv.cc}/VC/vcvarsall.bat ;
+    using msvc : ${if stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "8" && lib.versionOlder stdenv.cc.msvc.version "9" then
+                     "8.0"
+                   else if stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "14.10" && lib.versionOlder stdenv.cc.msvc.version "15" then
+                     "14.1"
+                   else
+                     throw "???"} : : <setup>${stdenv.cc}/VC/vcvarsall.bat ;
     option.set keep-going : false ;
     ]);
   '';

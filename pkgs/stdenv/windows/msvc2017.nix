@@ -102,12 +102,12 @@ assert crossSystem == null;
         url = "https://cpan.metacpan.org/authors/id/R/RB/RBOISVERT/Win32-LongPath-1.0.tar.gz";
         sha256 = "1wnfy43i3h5c9xq4lw47qalgfi5jq5z01sv6sb6r3qcb75y3zflx";
       };
-      version = "5.28.1";
+      version = "5.32.0";
     in stdenv.mkDerivation {
       name = "perl-for-stdenv-shell-${version}";
       src = stdenv.fetchurlBoot {
         url = "https://www.cpan.org/src/5.0/perl-${version}.tar.gz";
-        sha256 = "0iy3as4hnbjfyws4in3j9d6zhhjxgl5m95i5n9jy2bnzcpz8bgry";
+        sha256 = "1d6001cjnpxfv79000bx00vmv2nvdz7wrnyas451j908y7hirszg";
       };
       INCLUDE = "${(msblobs.msvc).INCLUDE};${(msblobs.sdk).INCLUDE}";
       LIB     = "${(msblobs.msvc).LIB};${(msblobs.sdk).LIB}";
@@ -117,7 +117,12 @@ assert crossSystem == null;
                                              ''7z x ${cpan-Capture-Tiny}          -so  |  7z x -aoa -si -ttar -operl-${version}\cpan''
                                              ''7z x ${cpan-Data-Dump}             -so  |  7z x -aoa -si -ttar -operl-${version}\cpan''
                                              ''cd perl-${version}\win32''
-                                             ''nmake install INST_TOP=%out% CCTYPE=MSVC141 WIN64=${if stdenv.buildPlatform.is64bit then "define" else "undef"}''
+                                             ''nmake install INST_TOP=%out% CCTYPE=${if lib.versionAtLeast msblobs.msvc.version "8" && lib.versionOlder msblobs.msvc.version "9" then
+                                                                                       "MSVC80"
+                                                                                     else if lib.versionAtLeast msblobs.msvc.version "14.10" && lib.versionOlder msblobs.msvc.version "15" then
+                                                                                       "MSVC141"
+                                                                                     else
+                                                                                       throw "???"} ${if stdenv.is64bit then "WIN64=define PROCESSOR_ARCHITECTURE=AMD64" else "WIN64=undef PROCESSOR_ARCHITECTURE=X86"}''
                                              # it does not built being copied to \cpan or \ext
                                              ''7z x ${cpan-Win32-LongPath}        -so  |  7z x -aoa -si -ttar''
                                              ''cd Win32-LongPath-1.0''

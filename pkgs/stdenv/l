@@ -1,0 +1,414 @@
+commit 47075812ce0ca06e647ca8d2ab439dce060055a2
+Author: Eelco Dolstra <eelco.dolstra@logicblox.com>
+Date:   Mon Jun 30 13:31:08 2014 +0200
+
+    Remove the unmaintained (and AFAIK unused) stdenv for mingw
+
+commit 1f6a15d7ded115ece48419cb1e642816b2145db5
+Author: Vladimír Čunát <vcunat@gmail.com>
+Date:   Mon Mar 10 20:30:27 2014 +0100
+
+    Merge #1901: add preFixupPhases to stdenv; for gsettings
+    
+    Without this stdenv change it seems difficult to fix some glib's gsettings issues,
+    as the folders in question may (not) be created in installPhase.
+
+commit 82f94df719fe9fe5a861eafb575ccb1f8b5b5efb
+Author: aszlig <aszlig@redmoonstudios.org>
+Date:   Wed Feb 27 12:37:42 2013 +0100
+
+    stdenv/setup.sh: Always run postPatch hook.
+    
+    I'm not sure whether this was by intention, but so far postPatch hooks were
+    silently skipped whenever the patches list was empty. This change could possibly
+    change the build results of the following packages:
+    
+     * gcc
+     * cmake (264)
+     * systemtap
+     * quemu-kvm
+    
+    These packages all have in common that they have a postPatch hook and the
+    patches list can be empty when certain conditions are met.
+    
+    Signed-off-by: aszlig <aszlig@redmoonstudios.org>
+
+commit f35cf876000d2ba02dda9da1e411cfd4d55f9e21
+Author: Peter Simons <simons@cryp.to>
+Date:   Tue Apr 3 06:31:19 2012 +0000
+
+    removed executable bits from Nix files
+    
+    svn path=/nixpkgs/trunk/; revision=33552
+
+commit c556a6ea46e71e1907d78b71fab36df30297b3ad
+Author: Eelco Dolstra <eelco.dolstra@logicblox.com>
+Date:   Wed Jan 18 20:16:00 2012 +0000
+
+    * "ensureDir" -> "mkdir -p".  "ensureDir" is a rather pointless
+      function, so obsolete it.
+    
+    svn path=/nixpkgs/branches/stdenv-updates/; revision=31644
+
+commit 3ea1c308466d2daad18ceac4ef8176bb1c3c85de
+Author: Eelco Dolstra <eelco.dolstra@logicblox.com>
+Date:   Mon Dec 12 14:02:12 2011 +0000
+
+    * Remove the NIX_STRIP_DEBUG flag.  It was undocumented and confusing
+      in its interaction with the ‘dontStrip’ attribute.
+    
+    svn path=/nixpkgs/branches/stdenv-updates/; revision=30848
+
+commit 1aa8b54c41efe4821302ad2126ed778625dad0e0
+Author: Yury G. Kudryashov <urkud.urkud@gmail.com>
+Date:   Fri Aug 6 20:23:35 2010 +0000
+
+    Typos
+    
+    svn path=/nixpkgs/trunk/; revision=23011
+
+commit a1e834e85ade13317ed51853b600d5df5a870d50
+Author: Eelco Dolstra <eelco.dolstra@logicblox.com>
+Date:   Fri Aug 6 10:34:34 2010 +0000
+
+    * Get rid of the ugly `useFromStdenv' hack in all-packages.nix.
+      Instead, use the generic package override mechanism to use packages
+      from earlier bootstrap phases.
+    * Don't rely on the existence of attributes such as
+      `stdenv.coreutils'.
+    
+    svn path=/nixpkgs/trunk/; revision=22991
+
+commit 94a659596be3188484fc1cdeb46ea46093afd437
+Author: Rob Vermaas <rob.vermaas@gmail.com>
+Date:   Mon Nov 16 12:22:55 2009 +0000
+
+    ln issue mingw
+    
+    svn path=/nixpkgs/trunk/; revision=18372
+
+commit 4e50b362f7da96e825d5e74f13c42cf11cd92285
+Author: Rob Vermaas <rob.vermaas@gmail.com>
+Date:   Mon Nov 16 11:24:49 2009 +0000
+
+    svn path=/nixpkgs/trunk/; revision=18371
+
+commit e0389e41f09668997f6c308e93a094a8f0b34d26
+Author: Rob Vermaas <rob.vermaas@gmail.com>
+Date:   Mon Nov 16 11:22:11 2009 +0000
+
+    different behaviour of ln on mingw
+    
+    svn path=/nixpkgs/trunk/; revision=18370
+
+commit b7ebd57d93dc3c78fc01b94455f7b29692d3f7ff
+Author: Rob Vermaas <rob.vermaas@gmail.com>
+Date:   Mon Nov 16 08:47:31 2009 +0000
+
+    mingw related stuff
+    
+    svn path=/nixpkgs/trunk/; revision=18369
+
+commit f26614bb789cf4099beb8dfd7d1c9627cb09a4fd
+Author: Rob Vermaas <rob.vermaas@gmail.com>
+Date:   Fri Nov 13 11:58:17 2009 +0000
+
+    stuff for mingw
+    
+    svn path=/nixpkgs/trunk/; revision=18339
+
+commit 079451fa9e7dfbd0a54fc74cdeeb5d8d2efb94ed
+Author: Rob Vermaas <rob.vermaas@gmail.com>
+Date:   Fri Nov 13 11:41:56 2009 +0000
+
+    other location for msys
+    
+    svn path=/nixpkgs/trunk/; revision=18338
+
+commit 290d47d0f39b52b37cbd29ac9dc268aa00192513
+Author: Rob Vermaas <rob.vermaas@gmail.com>
+Date:   Fri Nov 13 10:30:29 2009 +0000
+
+    trying to fix mingw setup
+    
+    svn path=/nixpkgs/trunk/; revision=18337
+
+commit 7d56212df25ccd2a6f482dab7cdb7d75ab8606bc
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Mon Jun 16 23:18:56 2008 +0000
+
+    MinGW stdenv needs replace
+    
+    svn path=/nixpkgs/trunk/; revision=12130
+
+commit 607b0d3e8026ff7ea28f580a40a2b51bd27a3965
+Author: Eelco Dolstra <eelco.dolstra@logicblox.com>
+Date:   Mon Aug 27 13:01:33 2007 +0000
+
+    * Rewrite all the SourceForge URLs to mirror://sourceforge/.
+    
+      find . -name "*.nix" | while read fn; do sed 's^http://[a-z]*.dl.sourceforge.net/sourceforge/^mirror://sourceforge/^g' < $fn > $fn.new; mv $fn.new $fn; done
+    
+    svn path=/nixpkgs/trunk/; revision=9198
+
+commit a0159dee8e6fd9e41a9d5994538b25153e418d5c
+Author: Eelco Dolstra <eelco.dolstra@logicblox.com>
+Date:   Fri Aug 24 12:32:36 2007 +0000
+
+    * Reverted r6713, r6711, r4623, r3660, r2237.  There rewrote fetchurl
+      URLs to http://nix.cs.uu.nl/dist/tarballs.  With content-addressable
+      mirror support (r9190, NIXPKGS-70) this is no longer necessary:
+      fetchurl will try to download from that location automatically.  So
+      we can keep the original URLs.
+    
+    svn path=/nixpkgs/trunk/; revision=9192
+
+commit 75b6eec2d5a8b0e42e5c6f2421166210c5a30a13
+Author: Eelco Dolstra <eelco.dolstra@logicblox.com>
+Date:   Sun Dec 31 19:52:41 2006 +0000
+
+    * Second attempt.
+    
+    svn path=/nixpkgs/trunk/; revision=7521
+
+commit 5c192229b0ea05581c6e193bf0127d351b88988a
+Author: Eelco Dolstra <eelco.dolstra@logicblox.com>
+Date:   Sun Dec 31 19:10:40 2006 +0000
+
+    * Urgh.
+    
+    svn path=/nixpkgs/trunk/; revision=7520
+
+commit a26e70c2af4d4754b8af17f50cf41d57b5492d5d
+Author: Eelco Dolstra <eelco.dolstra@logicblox.com>
+Date:   Sun Dec 31 19:07:33 2006 +0000
+
+    * Quick attempt at fixing stdenv-mingw.
+    
+    svn path=/nixpkgs/trunk/; revision=7519
+
+commit d7fcf2f810ba422290b871340d31de82a8102158
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Mon Nov 13 10:09:56 2006 +0000
+
+    Added /usr/local/bin to the initial search path to support Massala
+    
+    svn path=/nixpkgs/trunk/; revision=7011
+
+commit 76405f2b7fc80cd1524a2e8e33e82f53b383d25f
+Author: Eelco Dolstra <eelco.dolstra@logicblox.com>
+Date:   Tue Oct 17 14:06:18 2006 +0000
+
+    * `drv + /path' is deprecated, so don't do that anymore.
+    
+    svn path=/nixpkgs/trunk/; revision=6754
+
+commit 1442e8ec22c37f8bbe19a7fc3b2fb855e39a3d10
+Author: Eelco Dolstra <eelco.dolstra@logicblox.com>
+Date:   Thu Oct 12 13:50:54 2006 +0000
+
+    * Copy a bunch of files to nix.cs.uu.nl.
+    
+    svn path=/nixpkgs/trunk/; revision=6711
+
+commit bef5dd93a8f3b2041342d6b1ba9282dd56449f64
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Mon Oct 2 21:16:55 2006 +0000
+
+    Use ++ for constructing builder args
+    
+    svn path=/nixpkgs/trunk/; revision=6643
+
+commit 5634042fa9eb57579d6eee45b25d6264be95593f
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Sun Aug 27 12:52:06 2006 +0000
+
+    M    stdenv/mingw/pkgs/default.nix
+    A    stdenv/mingw/pkgs/pkgconfig-builder.sh
+    
+    Bootstrap pkg-config: support the setup hook.
+    
+    M    stdenv/mingw/fix-builder.sh
+    
+    Fix the "system" variable.
+    
+    
+    svn path=/nixpkgs/trunk/; revision=6267
+
+commit 1838237d25506fbe91fd7ec47c8b149b1a760cf0
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Sun Aug 27 11:27:25 2006 +0000
+
+    More variables to fix
+    
+    svn path=/nixpkgs/trunk/; revision=6266
+
+commit a2dd4f89050fdd02eb6dd7904d7a8709442652e9
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Sun Aug 27 03:56:58 2006 +0000
+
+    More variables to fix
+    
+    svn path=/nixpkgs/trunk/; revision=6265
+
+commit 4b5fd3990ae9b575f24fa9a29b535434e18b1fa8
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Sun Aug 27 00:28:53 2006 +0000
+
+    Fix in install of curl
+    
+    svn path=/nixpkgs/trunk/; revision=6258
+
+commit 961b20c1b7bc6894f0ca0d834cc518aabc7d2d5c
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Sat Aug 26 20:11:31 2006 +0000
+
+    Added pre release of stratego libraries, fixed support for configureFlags in MinGW, add binary pkg-config distribution for bootstrapping. Optionally use pkgconfig from the stdenv (again, for bootstrapping)
+    
+    svn path=/nixpkgs/trunk/; revision=6253
+
+commit f0129a3f446021b55e05cf9a77ad9684d3ea207a
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Fri Aug 25 20:58:02 2006 +0000
+
+    Fixes to support the new stdenvType
+    
+    svn path=/nixpkgs/trunk/; revision=6242
+
+commit 97202ee3b72f5c3a373be1482344adbde7eb073d
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Thu Aug 17 15:33:49 2006 +0000
+
+    Patch for aterm library on mingw (see meta-devel-list)
+    
+    Moved all the shell fixes to fix-builder.sh, which is now always invoked.
+    
+    Added aterm to the list of packages provided by mingw.nix
+    
+    svn path=/nixpkgs/trunk/; revision=6152
+
+commit 77a52729228f0a5657bff191d8a91b0c597910cd
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Thu Aug 17 01:49:53 2006 +0000
+
+    Added a fix-builder to fix most of the builder scripts automatically. Basic packages, such as zlib and getopt now build.
+    
+    svn path=/nixpkgs/trunk/; revision=6143
+
+commit 18d81e23fe022ce9a6f36685e2819f12a1840556
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Thu Aug 17 01:25:46 2006 +0000
+
+    Cleanup of various echo and debug messages. Added top-level mingw.nix for use with nix-env, because many asserts are broken all-packages.nix does not work with mingw stdenv.
+    
+    svn path=/nixpkgs/trunk/; revision=6142
+
+commit bda8fc5621b6b0b8c8805b608de1fe1c98912747
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Thu Aug 17 00:55:03 2006 +0000
+
+    Dropped gcc-wrapper
+    
+    svn path=/nixpkgs/trunk/; revision=6141
+
+commit 688fff92ded502db4f2e9b93f93d87da31338da2
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Thu Aug 17 00:54:32 2006 +0000
+
+    Major work on the mingw stdenv. Basics now works.
+    
+    - clone of fetchurl that invokes a given chmod to workaround problems
+    with inappropriate file permissions (executable files are not allowed
+    by Nix)
+    
+    - cygpath tool to determine the full windows path of a cygwin
+    tool. This tool is used to give fetchurl the windows path to chmod.
+    
+    - native curl.exe
+    
+    - gcc-wrapper no longer used
+    
+    - all-packages.nix: allows stdenv to specify fetchurl.
+    
+    
+    svn path=/nixpkgs/trunk/; revision=6140
+
+commit 44f6c2ef74ecbe89d1a6c5be7e9f7faa2c981578
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Wed Aug 16 19:13:43 2006 +0000
+
+    Build the mingw w32api from source for the mingw stdenv
+    
+    svn path=/nixpkgs/trunk/; revision=6137
+
+commit d1f3a668a018f13199947b7e839309dad12ec8a6
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Wed Aug 16 18:35:39 2006 +0000
+
+    Victory: mingw stdenv with mingw-runtime from source
+    
+    svn path=/nixpkgs/trunk/; revision=6136
+
+commit 890ce7f2661e865ec6e6eee21ae7a7df40559a34
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Wed Aug 16 15:48:20 2006 +0000
+
+    Cleanup
+    
+    svn path=/nixpkgs/trunk/; revision=6135
+
+commit 38de63873c8148bf3afb1292bb9f6389074411d6
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Wed Aug 16 15:43:34 2006 +0000
+
+    Another initial MinGW environment, having some more basic tools. This will allow us to compile some packages for the stdenv from source.
+    
+    svn path=/nixpkgs/trunk/; revision=6134
+
+commit 4957325c314ae45502e52483bda4e45e435ccdda
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Wed Aug 16 15:03:13 2006 +0000
+
+    Use gcc wrapper
+    
+    svn path=/nixpkgs/trunk/; revision=6133
+
+commit 5f88a929ccf2b44e9468948ac8b4443d5fa32d5c
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Wed Aug 16 14:35:43 2006 +0000
+
+    Added mingw gcc
+    
+    svn path=/nixpkgs/trunk/; revision=6132
+
+commit 884b6f9a0daed92f6bf75888ee025f896fdf9021
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Wed Aug 16 14:15:00 2006 +0000
+
+    Added make
+    
+    svn path=/nixpkgs/trunk/; revision=6131
+
+commit 5992b95b646c864e1e7d5e53158f4e0a8477abd7
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Tue Aug 15 21:25:14 2006 +0000
+
+    Basic stdenv for mingw. No compiler yet and setup needs more fixing.
+    
+    svn path=/nixpkgs/trunk/; revision=6124
+
+commit 42187add34a1c2b679ed415fad1dc680908af3a3
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Tue Aug 15 16:26:21 2006 +0000
+
+    Various mingw fixes
+    
+    svn path=/nixpkgs/trunk/; revision=6123
+
+commit 56315425c93edd6d9261630cebdd47a08f4d7407
+Author: Martin Bravenboer <martin.bravenboer@logicblox.com>
+Date:   Tue Aug 15 14:46:41 2006 +0000
+
+    Initial work on MinGW/MSYS standard environment
+    
+    svn path=/nixpkgs/trunk/; revision=6122

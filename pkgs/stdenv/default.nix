@@ -32,17 +32,20 @@ let
 
   stagesCross = import ./cross args;
 
-  stagesWindows = import ./windows args;
-
-  stagesMinGW = import ./mingw args;
+  stagesWindowsMSVC2005 = import ./windows/msvc2005.nix args; # <-- can compile openssl, zlib, curl, but no p7zip
+  stagesWindowsMSVC2008 = import ./windows/msvc2008.nix args;
+  stagesWindowsMSVC2017 = import ./windows/msvc2017.nix args;
+  stagesWindowsMSVC2019 = import ./windows/msvc2019.nix args;
+  stagesWindowsMinGW    = import ./windows/mingw.nix    args;
+# stagesMinGW = import ./mingw args;
 
   stagesCustom = import ./custom args;
 
   # Select the appropriate stages for the platform `system'.
 in
 /*  if localSystem.isMicrosoft then stagesWindows
-  else*/ if localSystem.isMinGW then stagesMinGW
-  else if crossSystem != null then stagesCross
+  else if localSystem.isMinGW then stagesMinGW
+  else*/ if crossSystem != null then stagesCross
   else if config ? replaceStdenv then stagesCustom
   else { # switch
     "i686-linux" = stagesLinux;
@@ -59,6 +62,6 @@ in
     "i686-cygwin" = stagesNative;
     "x86_64-cygwin" = stagesNative;
     "x86_64-freebsd" = stagesFreeBSD;
-    "x86_64-windows" = stagesWindows;
-    "i686-windows" = stagesWindows;
+    "x86_64-windows" = stagesWindowsMSVC2017;
+    "i686-windows" = stagesWindowsMSVC2005;
   }.${localSystem.system} or stagesNative
