@@ -4,7 +4,7 @@
 
 let
   msblobs = (import ./ewdk-1809-blobs.nix { inherit stdenvNoCC; });
-  inherit (msblobs) redist sdk msbuild msvc ewdk vc;
+  inherit (msblobs) redist sdk msbuild msvc ewdk;
 
   makeWrapper =
     if buildPackages != null then
@@ -44,7 +44,7 @@ in
         }
         if ($target) {
           system( "${makeWrapper}/bin/makeWrapper.exe", $target, "$ENV{out}/bin/$name.exe"
-                , '--prefix', 'PATH',               ';', '${msvc.PATH};${sdk.PATH};${msbuild.PATH}'
+                , '--prefix', 'PATH',               ';', "$ENV{out}/bin;${msvc.PATH};${sdk.PATH};${msbuild.PATH}"
                 , '--suffix', 'INCLUDE',            ';', '${msvc.INCLUDE};${sdk.INCLUDE}'
                 , '--suffix', 'LIB',                ';', '${msvc.LIB};${sdk.LIB}'
                 , '--suffix', 'LIBPATH',            ';', '${msvc.LIBPATH};${sdk.LIBPATH}'
@@ -57,7 +57,7 @@ in
                 , '--set',    'VCToolsVersion',          '${msvc.version}'
                 , '--set',    'VCToolsInstallDir',       '${msvc}/'
                 , '--set',    'VCToolsRedistDir',        '${msvc}/'
-                , '--set',    'VCTargetsPath',           '${vc}/VCTargets/'
+                , '--set',    'VCTargetsPath',           '${msbuild}/../Common7/IDE/VC/VCTargets/'
                 , '--set',    'UCRTVersion',             '${sdk.version}'
                 , '--set',    'UniversalCRTSdkDir',      '${sdk}/'
                 # EWDK-specific (as there is DisableRegistryUse and no patch of *.props and *.tatgets; TODO: do the same for msvc2017)
@@ -81,7 +81,7 @@ in
 
       # for those who want to deal with (execute or even parse) vcvarsall.bat (chromium, boost, ...)
       writeFile("$ENV{out}/VC/vcvarsall.bat",
-                   ('PATH'                    ."=${msvc.PATH};${sdk.PATH};${msbuild.PATH};%PATH%\n".
+                   ('PATH'                    ."=$ENV{out}/bin;${msvc.PATH};${sdk.PATH};${msbuild.PATH};%PATH%\n".
                 'set INCLUDE'                 ."=%INCLUDE%;${msvc.INCLUDE};${sdk.INCLUDE}\n".
                 'set LIB'                     ."=%LIB%;${msvc.LIB};${sdk.LIB}\n".
                 'set LIBPATH'                 ."=%LIBPATH%;${msvc.LIBPATH};${sdk.LIBPATH}\n".
@@ -94,7 +94,7 @@ in
                 'set VCToolsVersion'          ."=${msvc.version}\n".
                 'set VCToolsInstallDir'       ."=${msvc}/\n".
                 'set VCToolsRedistDir'        ."=${msvc}/\n".
-                'set VCTargetsPath'           ."=${vc}/VCTargets/\n".
+                'set VCTargetsPath'           ."=${msbuild}/../Common7/IDE/VC/VCTargets/\n".
                 'set UCRTVersion'             ."=${sdk.version}\n".
                 'set UniversalCRTSdkDir'      ."=${sdk}/\n".
                 # EWDK-specific (as there is DisableRegistryUse and no patch of *.props and *.tatgets; TODO: do the same for msvc2017)

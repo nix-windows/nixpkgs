@@ -31,7 +31,6 @@ in rec {
   sdk    .outPath = "${ewdk}/Program Files/Windows Kits/10";
   msbuild.version = "15.0";
   msbuild.outPath = "${ewdk}/Program Files/Microsoft Visual Studio/2017/BuildTools/MSBuild";
-  vc     .outPath = "${ewdk}/Program Files/Microsoft Visual Studio/2017/BuildTools/Common7/IDE/VC";
 
   msvc   .INCLUDE = "${msvc}/include;${msvc}/atlmfc/include";
   msvc   .LIB     = "${msvc}/lib/${target};${msvc}/atlmfc/lib/${target}";
