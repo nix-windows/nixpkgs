@@ -42,7 +42,7 @@ in rec {
   sdk    .LIB     = "${sdk}/lib/${sdk.version}/ucrt/${target};${sdk}/lib/${sdk.version}/um/${target}";
   sdk    .LIBPATH = "${sdk}/UnionMetadata/${sdk.version};${sdk}/References/${sdk.version}";
   sdk    .PATH    = "${sdk}/bin/${sdk.version}/${host};${sdk}/bin/${host}";
-  msbuild.PATH    = "${msbuild}/${msbuild.version}/bin/Roslyn;${msbuild}/${msbuild.version}/bin";
+  msbuild.PATH    = "${msbuild}/15.0/bin/Roslyn;${msbuild}/Current/bin";
 
   redist = stdenvNoCC.mkDerivation rec {
     version = "14.23.27820";
