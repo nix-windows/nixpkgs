@@ -49,8 +49,12 @@ in stdenv.mkDerivation {
 #   ++ optional enableNumpy python.pkgs.numpy
 #   ;
 
-  configurePhase = stdenv.lib.optionalString (stdenv.cc?redist) ''
+
+  configurePhase = stdenv.lib.optionalString (stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "14.10" && lib.versionOlder stdenv.cc.msvc.version "14.20") ''
     $ENV{PATH} = "$ENV{PATH};${stdenv.cc.redist}/${if stdenv.is64bit then "x64" else "x86"}/Microsoft.VC141.DebugCRT";     # vcruntime140d.dll and msvcp140d.dll for /MDd builds to work
+    $ENV{PATH} = "$ENV{PATH};${stdenv.cc.redist}/${if stdenv.is64bit then "x64" else "x86"}/Microsoft.UniversalCRT.Debug"; # ucrtbased.dll                       for /MDd builds to work
+  '' + stdenv.lib.optionalString (stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "14.20" && lib.versionOlder stdenv.cc.msvc.version "14.30") ''
+    $ENV{PATH} = "$ENV{PATH};${stdenv.cc.redist}/${if stdenv.is64bit then "x64" else "x86"}/Microsoft.VC142.DebugCRT";     # vcruntime140d.dll and msvcp140d.dll for /MDd builds to work
     $ENV{PATH} = "$ENV{PATH};${stdenv.cc.redist}/${if stdenv.is64bit then "x64" else "x86"}/Microsoft.UniversalCRT.Debug"; # ucrtbased.dll                       for /MDd builds to work
   '' + ''
     system("bootstrap.bat ${if stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "8" && lib.versionOlder stdenv.cc.msvc.version "9" then
