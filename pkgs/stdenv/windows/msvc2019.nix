@@ -116,12 +116,8 @@ assert crossSystem == null;
                                              ''7z x ${cpan-Capture-Tiny}          -so  |  7z x -aoa -si -ttar -operl-${version}\cpan''
                                              ''7z x ${cpan-Data-Dump}             -so  |  7z x -aoa -si -ttar -operl-${version}\cpan''
                                              ''cd perl-${version}\win32''
-                                             ''nmake install INST_TOP=%out% CCTYPE=${if lib.versionAtLeast msblobs.msvc.version "8" && lib.versionOlder msblobs.msvc.version "9" then
-                                                                                       "MSVC80"
-                                                                                     else if lib.versionAtLeast msblobs.msvc.version "14.10" && lib.versionOlder msblobs.msvc.version "15" then
-                                                                                       "MSVC141"
-                                                                                     else
-                                                                                       throw "???"} ${if stdenv.is64bit then "WIN64=define PROCESSOR_ARCHITECTURE=AMD64" else "WIN64=undef PROCESSOR_ARCHITECTURE=X86"}''
+                                             ''${gnu-utils}\bin\sed.exe -i -e s/MD/MT/g -e s/vcruntime/libvcruntime/ Makefile config.vc''  # let it run without VCRUNTIME140_1.dll
+                                             ''nmake install INST_TOP=%out% CCTYPE=${assert lib.versionAtLeast msblobs.msvc.version "14.20" && lib.versionOlder msblobs.msvc.version "14.30"; "MSVC142"} ${if stdenv.is64bit then "WIN64=define PROCESSOR_ARCHITECTURE=AMD64" else "WIN64=undef PROCESSOR_ARCHITECTURE=X86"}''
                                              # it does not built being copied to \cpan or \ext
                                              ''7z x ${cpan-Win32-LongPath}        -so  |  7z x -aoa -si -ttar''
                                              ''cd Win32-LongPath-1.0''
