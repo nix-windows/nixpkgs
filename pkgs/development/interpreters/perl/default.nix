@@ -50,9 +50,9 @@ let
 
       system("nmake install INST_TOP=$ENV{out} CCTYPE=${if stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "8" && lib.versionOlder stdenv.cc.msvc.version "9" then
                                                           "MSVC80"
-                                                        else if lib.versionAtLeast msblobs.msvc.version "14.10" && lib.versionOlder msblobs.msvc.version "14.20" then
+                                                        else if stdenv.cc.isMSVC && lib.versionAtLeast msblobs.msvc.version "14.10" && lib.versionOlder msblobs.msvc.version "14.20" then
                                                           "MSVC141"
-                                                        else if lib.versionAtLeast msblobs.msvc.version "14.20" && lib.versionOlder msblobs.msvc.version "14.30" then
+                                                        else if stdenv.cc.isMSVC && lib.versionAtLeast msblobs.msvc.version "14.20" && lib.versionOlder msblobs.msvc.version "14.30" then
                                                           "MSVC142"
                                                         else
                                                           throw "???"} ${if stdenv.is64bit then "WIN64=define PROCESSOR_ARCHITECTURE=AMD64" else "WIN64=undef PROCESSOR_ARCHITECTURE=X86"} BUILD_STATIC=define");
