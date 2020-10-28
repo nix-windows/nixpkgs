@@ -113,7 +113,7 @@ in
                ) =~ s|/|\\|gr);
 
       # make symlinks to help chromium builder which expects a particular directory structure (todo: move to chromium.nix)
-      uncsymlink('${ewdk}/Program Files/Microsoft Visual Studio/2017/BuildTools/DIA SDK' => "$ENV{out}/DIA SDK"                      ) or die $!;
+      uncsymlink('${ewdk}/Program Files/Microsoft Visual Studio/2019/BuildTools/DIA SDK' => "$ENV{out}/DIA SDK"                      ) or die $!;
       uncsymlink('${msvc}'                                                               => "$ENV{out}/VC/Tools/MSVC/${msvc.version}") or die $!;
     '';
 
