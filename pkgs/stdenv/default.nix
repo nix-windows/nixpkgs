@@ -62,6 +62,6 @@ in
     "i686-cygwin" = stagesNative;
     "x86_64-cygwin" = stagesNative;
     "x86_64-freebsd" = stagesFreeBSD;
-    "x86_64-windows" = stagesWindowsMSVC2017;
+    "x86_64-windows" = stagesWindowsMSVC2019;
     "i686-windows" = stagesWindowsMSVC2005;
   }.${localSystem.system} or stagesNative

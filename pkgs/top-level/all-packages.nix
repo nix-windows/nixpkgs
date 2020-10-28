@@ -6930,10 +6930,14 @@ with pkgs;
   gcl_2_6_13_pre = callPackage ../development/compilers/gcl/2.6.13-pre.nix { };
 
 # msvc2017 = callPackage ../development/compilers/msvc/msvc-2017.nix { };
-# msvc = msvc2017;
+
+  msvc2005 = callPackage ../development/compilers/msvc/msvc-2005.nix { };
 
   ewdk1809 = callPackage ../development/compilers/msvc/ewdk-1809.nix { };
-  msvc = ewdk1809;
+  msvc2017 = ewdk1809;
+
+  ewdk2004 = callPackage ../development/compilers/msvc/ewdk-2004.nix { };
+  msvc2019 = ewdk2004;
 
   processhacker = callPackage ../misc/processhacker { };
 
@@ -7285,6 +7289,12 @@ with pkgs;
       callPackage ../development/compilers/llvm/8/windows.nix {}
     else
       throw "llvm8";
+
+  llvmPackages_11 =
+    if stdenv.hostPlatform.isMicrosoft then
+      callPackage ../development/compilers/llvm/11/windows.nix {}
+    else
+      throw "llvm11";
 
   manticore = callPackage ../development/compilers/manticore { };
 

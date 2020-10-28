@@ -4,34 +4,34 @@ let
   host   = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenvNoCC.  hostPlatform.config};
   target = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenvNoCC.targetPlatform.config};
 
-  ewdk1809-iso = import <nix/fetchurl.nix> {
-    name = "ewdk1809.iso";
+  # EWDK for Windows 10, version 2004 with Visual Studio Build Tools 16.3
+  ewdk2004-iso = import <nix/fetchurl.nix> {
+    name = "ewdk2004.iso";
     # https://docs.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk
-    url = "https://software-download.microsoft.com/download/pr/EWDK_rs5_release_17763_180914-1434.iso";
-    sha256 = "15hz222saddhbzvcf3yl8warv8rkp8j8zpxs1a1lr0hy0fvxkp4a";
+    url = "https://software-download.microsoft.com/download/pr/EWDK_vb_release_19041_191206-1406.iso";
+    sha256 = "0zp69c00xigmp2x90c9962qqimfxrx3zybq9wdm7pqi013bxq3r3";
   };
 
   p7zip-i686 = import ../../../stdenv/windows/p7zip.nix { inherit stdenvNoCC; };
 in rec {
   ewdk = derivation {
-    name = "ewdk1809";
+    name = "ewdk2004";
     system = builtins.currentSystem;
     builder = builtins.getEnv "COMSPEC";
-    args = ["/c" ''${p7zip-i686}\bin\7z.exe x -o%out% ${ewdk1809-iso}''];
+    args = ["/c" ''${p7zip-i686}\bin\7z.exe x -o%out% ${ewdk2004-iso}''];
 
     outputHashMode = "recursive";
     outputHashAlgo = "sha256";
-    outputHash     = "0gyyv8sqwsfa2qg64nsfmd03lysmwpnavzc6yy60ha9nsgdmnhp3";
+    outputHash     = "12yk6p52zskabmzp2iq96gm2z4h28njw1zkgmnas64vrzf5sy9qh";
   };
 
-  # exactly as in ./msvc-2017-blobs.nix (TODO: rename msvc to vmtools)
-  msvc   .version = "14.15.26726"; # cl.exe reports as 19.15.26726, link.exe and lib.exe are more honest
-  msvc   .outPath = "${ewdk}/Program Files/Microsoft Visual Studio/2017/BuildTools/VC/Tools/MSVC/${msvc.version}";
-  sdk    .version = "10.0.17763.0";
+  msvc   .version = "14.23.28105"; # cl.exe reports as 19.23.28105.4, link.exe and lib.exe are more honest
+  msvc   .outPath = "${ewdk}/Program Files/Microsoft Visual Studio/2019/BuildTools/VC/Tools/MSVC/${msvc.version}";
+  sdk    .version = "10.0.19041.0";
   sdk    .outPath = "${ewdk}/Program Files/Windows Kits/10";
-  msbuild.version = "15.0";
-  msbuild.outPath = "${ewdk}/Program Files/Microsoft Visual Studio/2017/BuildTools/MSBuild";
-  vc     .outPath = "${ewdk}/Program Files/Microsoft Visual Studio/2017/BuildTools/Common7/IDE/VC";
+  msbuild.version = "16.3.0+0f4c62fea";
+  msbuild.outPath = "${ewdk}/Program Files/Microsoft Visual Studio/2019/BuildTools/MSBuild";
+  vc     .outPath = "${ewdk}/Program Files/Microsoft Visual Studio/2019/BuildTools/Common7/IDE/VC";
 
   msvc   .INCLUDE = "${msvc}/include;${msvc}/atlmfc/include";
   msvc   .LIB     = "${msvc}/lib/${target};${msvc}/atlmfc/lib/${target}";
@@ -44,15 +44,14 @@ in rec {
   sdk    .PATH    = "${sdk}/bin/${sdk.version}/${host};${sdk}/bin/${host}";
   msbuild.PATH    = "${msbuild}/${msbuild.version}/bin/Roslyn;${msbuild}/${msbuild.version}/bin";
 
-  # as in ./msvc-2017-make-blobs.bat
   redist = stdenvNoCC.mkDerivation rec {
-    version = "14.15.26706";
+    version = "14.23.27820";
     name = "redist-${redist.version}";
     buildCommand = ''
-      dircopy("${ewdk}/Program Files/Microsoft Visual Studio/2017/BuildTools/VC/Redist/MSVC/${version}/x86",                 "$ENV{out}/x86"                             ) or die "$!";
-      dircopy("${ewdk}/Program Files/Microsoft Visual Studio/2017/BuildTools/VC/Redist/MSVC/${version}/x64",                 "$ENV{out}/x64"                             ) or die "$!";
-      dircopy("${ewdk}/Program Files/Microsoft Visual Studio/2017/BuildTools/VC/Redist/MSVC/${version}/debug_nonredist/x86", "$ENV{out}/x86"                             ) or die "$!";
-      dircopy("${ewdk}/Program Files/Microsoft Visual Studio/2017/BuildTools/VC/Redist/MSVC/${version}/debug_nonredist/x64", "$ENV{out}/x64"                             ) or die "$!";
+      dircopy("${ewdk}/Program Files/Microsoft Visual Studio/2019/BuildTools/VC/Redist/MSVC/${version}/x86",                 "$ENV{out}/x86"                             ) or die "$!";
+      dircopy("${ewdk}/Program Files/Microsoft Visual Studio/2019/BuildTools/VC/Redist/MSVC/${version}/x64",                 "$ENV{out}/x64"                             ) or die "$!";
+      dircopy("${ewdk}/Program Files/Microsoft Visual Studio/2019/BuildTools/VC/Redist/MSVC/${version}/debug_nonredist/x86", "$ENV{out}/x86"                             ) or die "$!";
+      dircopy("${ewdk}/Program Files/Microsoft Visual Studio/2019/BuildTools/VC/Redist/MSVC/${version}/debug_nonredist/x64", "$ENV{out}/x64"                             ) or die "$!";
       # ucrtbased.dll
       dircopy("${ewdk}/Program Files/Windows Kits/10/bin/${sdk.version}/x86/ucrt",                                           "$ENV{out}/x86/Microsoft.UniversalCRT.Debug") or die "$!";
       dircopy("${ewdk}/Program Files/Windows Kits/10/bin/${sdk.version}/x64/ucrt",                                           "$ENV{out}/x64/Microsoft.UniversalCRT.Debug") or die "$!";
