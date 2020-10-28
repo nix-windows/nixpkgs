@@ -59,8 +59,10 @@ in stdenv.mkDerivation {
   '' + ''
     system("bootstrap.bat ${if stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "8" && lib.versionOlder stdenv.cc.msvc.version "9" then
                               "vc8"
-                            else if stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "14.10" && lib.versionOlder stdenv.cc.msvc.version "15" then
+                            else if stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "14.10" && lib.versionOlder stdenv.cc.msvc.version "14.20" then
                               "vc141"
+                            else if stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "14.20" && lib.versionOlder stdenv.cc.msvc.version "15" then
+                              assert lib.versionAtLeast version "1.70" /* not sure: 1.67 is too old. 1.74 is ok */; "vc142"
                             else
                               throw "???"}");
 
@@ -68,8 +70,10 @@ in stdenv.mkDerivation {
     import option ;
     using msvc : ${if stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "8" && lib.versionOlder stdenv.cc.msvc.version "9" then
                      "8.0"
-                   else if stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "14.10" && lib.versionOlder stdenv.cc.msvc.version "15" then
+                   else if stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "14.10" && lib.versionOlder stdenv.cc.msvc.version "14.20" then
                      "14.1"
+                   else if stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "14.20" && lib.versionOlder stdenv.cc.msvc.version "15" then
+                     "14.2"
                    else
                      throw "???"} : : <setup>${stdenv.cc}/VC/vcvarsall.bat ;
     option.set keep-going : false ;
@@ -78,11 +82,13 @@ in stdenv.mkDerivation {
 
   buildPhase = ''
     $ENV{ProgramFiles} = $ENV{TEMP};                        # let jam not crash
-    system("b2 ${b2Args}");
+    print("EXEC: b2 ${b2Args}\n");
+    die "b2: $!" if system("b2 ${b2Args}");
   '';
 
   installPhase = ''
-    system("b2 ${b2Args} install");
+    print("EXEC: b2 ${b2Args} install\n");
+    die $! if system("b2 ${b2Args} install");
     renameL("$ENV{out}/include/boost-".('${version}' =~ s/^(\d+)\.(\d+).*/$1_$2/r)."/boost", "$ENV{out}/include/boost") or die $!;
     rmdirL("$ENV{out}/include/boost-".('${version}' =~ s/^(\d+)\.(\d+).*/$1_$2/r))                                      or die $!;
   '' + stdenv.lib.optionalString (!static) ''
@@ -91,6 +97,7 @@ in stdenv.mkDerivation {
       renameL($dll, "$ENV{out}/bin/".basename($dll)) or die $!;
     }
   '';
+
   passthru.static        = static;
   passthru.staticRuntime = staticRuntime;
 }
