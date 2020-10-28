@@ -74,7 +74,7 @@ int wmain(int argc, const wchar_t** argv) {
     vector<pair<wstring, pair<wstring, wstring>>> env_prefix;
     vector<pair<wstring, pair<wstring, wstring>>> env_suffix;
     vector<wstring>                               add_flags;
-    const wchar_t*                                subsystem = L"CONSOLE";
+    const wchar_t*                                subsystem = L"console";
 
     for (int i=3; i<argc; ) {
         const wchar_t* verb = argv[i++];
@@ -89,15 +89,15 @@ int wmain(int argc, const wchar_t** argv) {
         else if (0==wcscmp(verb, L"--suffix-contents") && i+3 <= argc) assert(!"TODO");
         else if (0==wcscmp(verb, L"--add-flags"      ) && i+1 <= argc) add_flags.push_back(argv[i++]);
         else if (0==wcscmp(verb, L"--argv0"          ) && i+1 <= argc) assert(!"TODO");
-        else if (0==wcscmp(verb, L"--gui"            )               ) subsystem = L"WINDOWS";
-        else if (0==wcscmp(verb, L"--console"        )               ) subsystem = L"CONSOLE";
+        else if (0==wcscmp(verb, L"--gui"            )               ) subsystem = L"windows";
+        else if (0==wcscmp(verb, L"--console"        )               ) subsystem = L"console";
         else {
           wcerr << L"unknown verb '" << verb << L"'" << endl;
           exit(1);
         }
     }
 
-    // TODO: generate plain C code, without C++ and STL (and build with /NODEFAULTLIBS), it could end up in very small wrapper executables
+    // TODO: generate plain C code, without C++ and STL (and build with /NODEFAULTLIBS), it could end up in very small wrapper executables (currently they are 200-1100kb)
     ostrstream code;
     code << "#define _CRT_SECURE_NO_DEPRECATE\n";
     code << "#include <windows.h>\n";
@@ -153,8 +153,8 @@ int wmain(int argc, const wchar_t** argv) {
     code << "    }\n";
     code << "};\n";
 
-         if (0 == wcscmp(subsystem, L"WINDOWS")) code << "int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {\n";
-    else if (0 == wcscmp(subsystem, L"CONSOLE")) code << "void main() {\n";
+         if (0 == wcscmp(subsystem, L"windows")) code << "int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {\n";
+    else if (0 == wcscmp(subsystem, L"console")) code << "int wmain() {\n";
     else {
       wcerr << L"unknown subsystem '" << subsystem << L"'" << endl;
       assert(0);
@@ -277,7 +277,7 @@ int wmain(int argc, const wchar_t** argv) {
     code << " // Nix's `scanForReferences' does not scan for Unicode strings (yet),\n";
     code << " // so add all the string constants again as UTF-8.\n";
     code << " // __declspec(dllexport) prevents the string from being optimized out.\n";
-    code << " __declspec(dllexport) char* dummy[] = {\n";
+    code << " __declspec(dllexport) const char* dummy[] = {\n";
     for (vector<pair<wstring, pair<wstring, wstring>>>::const_iterator t = env_prefix.begin(); t != env_prefix.end(); t++) {
         code << utf8literal(t->first        ) << ",\n";
         code << utf8literal(t->second.first ) << ",\n";
@@ -310,25 +310,44 @@ int wmain(int argc, const wchar_t** argv) {
     src << code.str() << endl;
     src.close();
 
-    #define L0(x)  L#x
+    #define L0(x)  L###x
     #define L1(x)  L0(x)
+#ifdef INCLUDE
     if (!SetEnvironmentVariableW(L"INCLUDE", L1(INCLUDE))) {
         wcerr << L"SetEnvironmentVariableW(INCLUDE, " << L1(INCLUDE) << L") failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
+#endif
+#ifdef LIB
     if (!SetEnvironmentVariableW(L"LIB", L1(LIB))) {
         wcerr << L"SetEnvironmentVariableA(LIB, " << L1(LIB) << L") failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
+#endif
+#ifdef PATH
+    if (!SetEnvironmentVariableW(L"PATH", L1(PATH))) {
+        wcerr << L"SetEnvironmentVariableA(PATH, " << L1(PATH) << L") failed lastError=" << GetLastError() << endl;
+        ExitProcess(1);
+    }
+#endif
 
-    wcerr << L"CreateProcessW(" << L1(CC) << L" /EHsc /Fe_wrapper.exe _wrapper.cpp /link /SUBSYSTEM:" << subsystem << L")..." << endl;
     STARTUPINFOW si = {sizeof(STARTUPINFOW)};
     PROCESS_INFORMATION pi = {0};
+#ifdef _MSC_VER
+    wcerr << L"CreateProcessW(" << L1(CC) << L" /EHsc /Fe_wrapper.exe _wrapper.cpp /link /SUBSYSTEM:" << subsystem << L")..." << endl;
     if (!CreateProcessW(NULL, const_cast<wchar_t*>((wstring(L1(CC) L" /EHsc /Fe_wrapper.exe _wrapper.cpp /link /SUBSYSTEM:") + subsystem).c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
         wcerr << L"CreateProcessW(" << L1(CC) << L" /EHsc /Fe_wrapper.exe _wrapper.cpp /link /SUBSYSTEM:" << subsystem << L") failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
     }
-
+#elif __MINGW32__
+    wcerr << L"CreateProcessW(" << L1(CC) << L" -o _wrapper.exe _wrapper.cpp -static -municode -Wl,-subsystem:" << subsystem << L")" << endl;
+    if (!CreateProcessW(NULL, const_cast<wchar_t*>((wstring(L1(CC) L" -o _wrapper.exe _wrapper.cpp -static -municode -Wl,-subsystem:") + subsystem).c_str()), NULL, NULL, TRUE, 0, NULL, NULL, &si, &pi)) {
+        wcerr << L"CreateProcessW(" << L1(CC) << L" -o _wrapper.exe _wrapper.cpp -static -municode -Wl,-subsystem:" << subsystem << L") failed lastError=" << GetLastError() << endl;
+        ExitProcess(1);
+    }
+#else
+#error "unknown compiler"
+#endif
     if (WaitForSingleObject(pi.hProcess, INFINITE) != WAIT_OBJECT_0) {
         wcerr << L"WaitForSingleObject failed lastError=" << GetLastError() << endl;
         ExitProcess(1);
@@ -339,7 +358,7 @@ int wmain(int argc, const wchar_t** argv) {
         ExitProcess(1);
     }
     if (dwExitCode != 0) {
-        wcerr << L"cl.exe exited with code=" << dwExitCode << endl;
+        wcerr << L1(CC) << L" exited with code=" << dwExitCode << endl;
         ExitProcess(1);
     }
 
@@ -354,4 +373,3 @@ int wmain(int argc, const wchar_t** argv) {
 
     ExitProcess(dwExitCode);
 }
-

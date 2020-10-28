@@ -84,7 +84,7 @@ assert crossSystem == null;
                                              ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${gawk }/usr/bin/*.dll"    } %out%\bin''
                                              ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${patch}/usr/bin/*.dll"    } %out%\bin''
                                            ];
-      passthru = { inherit (msysPacman) patch grep gawk sed; };
+      passthru = { inherit patch grep gawk sed; };
     };
 
     perl-for-stdenv-shell = let
