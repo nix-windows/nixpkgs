@@ -13196,9 +13196,9 @@ with pkgs;
 
   perlcritic = perlPackages.PerlCritic;
 
-  msysPacman = recurseIntoAttrs (callPackage (../development/mingw-modules/msys-pacman- + (if stdenv.is64bit then "x86_64.nix" else "i686.nix")) { });
+  msysPacman = recurseIntoAttrs (callPackage (../development/mingw-modules/msys-pacman- + (if stdenv.is64bit then "x86_64.nix" else "i686.nix")) { fetchurl = fetchurlBoot; });
 
-  mingwPacman = recurseIntoAttrs (callPackage (../development/mingw-modules/mingw-pacman- + (if stdenv.is64bit then "x86_64.nix" else "i686.nix")) { });
+  mingwPacman = recurseIntoAttrs (callPackage (../development/mingw-modules/mingw-pacman- + (if stdenv.is64bit then "x86_64.nix" else "i686.nix")) { fetchurl = fetchurlBoot; });
 
   sqitchPg = callPackage ../development/tools/misc/sqitch {
     name = "sqitch-pg";
