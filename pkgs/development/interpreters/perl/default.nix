@@ -55,7 +55,7 @@ let
         patches = [ ../../../stdenv/windows/perl-on-gcc10.patch ];
         buildPhase = ''
           chdir('win32');
-          system("make.exe -j$ENV{NIX_BUILD_CORES} -f GNUmakefile install PLMAKE=make.exe INST_TOP=$ENV{out} CCTYPE=GCC ${if stdenv.is64bit then "WIN64=define GCCTARGET=x86_64-w64-mingw32" else "WIN64=undef GCCTARGET=i686-w64-mingw32"}");
+          system("mingw32-make.exe -j$ENV{NIX_BUILD_CORES} -f GNUmakefile install PLMAKE=mingw32-make.exe INST_TOP=$ENV{out} CCTYPE=GCC ${if stdenv.is64bit then "WIN64=define GCCTARGET=x86_64-w64-mingw32" else "WIN64=undef GCCTARGET=i686-w64-mingw32"}");
         '';
         # todo: common hook looking for missing dlls and copying/hardlinking them into %out%/bin/
         fixupPhase = ''
