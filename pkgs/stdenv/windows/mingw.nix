@@ -42,7 +42,7 @@ assert crossSystem == null;
 
 
     # here is no $out\bin because I do not know how to make them sing only cmd.exe as a shell
-    msysPacmanNoBin  = import (../../development/mingw-modules/msys-pacman- + (if stdenv.buildPlatform.is64bit then "x86_64.nix" else "i686.nix")) {
+    msysPacmanNoBin  = import (../../development/mingw-modules/msys-pacman- + (if stdenv.buildPlatform.is64bit then "x86_64.nix" else "i686.nix")) { # <- no need, it is always nobin
                          stdenvNoCC = stdenv; # with 7z.exe
                          fetchurl = stdenv.fetchurlBoot;
                          msysPacman = mingwPacmanNoBin;
@@ -54,28 +54,6 @@ assert crossSystem == null;
                          msysPacman = mingwPacmanNoBin;
                          mingwPacman = mingwPacmanNoBin;
                        };
-
-    # TODO: build from source
-    gnu-utils = let
-      inherit (msysPacmanNoBin) patch gawk grep sed;
-      inherit (mingwPacmanNoBin) make;
-    in stdenv.mkDerivation {
-      name = "gnu-utils";
-      buildInputs = [ patch grep sed gawk make ];
-      builder = lib.concatStringsSep " & " [ ''md %out%\bin''
-                                             ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${sed  }/usr/bin/sed.exe             "} %out%\bin''          # TODO: hardlink?
-                                             ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${grep }/usr/bin/grep.exe            "} %out%\bin''
-                                             ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${gawk }/usr/bin/gawk.exe            "} %out%\bin''
-                                             ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${patch}/usr/bin/patch.exe           "} %out%\bin''
-                                             ''copy               ${lib.replaceStrings ["/"] ["\\"] "${make }/mingw32/bin/mingw32-make.exe"} %out%\bin\make.exe''
-                                             ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${sed  }/usr/bin/*.dll               "} %out%\bin''
-                                             ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${grep }/usr/bin/*.dll               "} %out%\bin''
-                                             ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${gawk }/usr/bin/*.dll               "} %out%\bin''
-                                             ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${patch}/usr/bin/*.dll               "} %out%\bin''
-                                             ''xcopy /E/H/B/F/I/Y ${lib.replaceStrings ["/"] ["\\"] "${make }/mingw32/bin/*.dll           "} %out%\bin''
-                                           ];
-      passthru = { inherit patch grep gawk sed make; };
-    };
 
     perl-for-stdenv-shell = let
       # useful libs not included by default
@@ -98,11 +76,14 @@ assert crossSystem == null;
         url = "https://www.cpan.org/src/5.0/perl-${version}.tar.gz";
         sha256 = "1d6001cjnpxfv79000bx00vmv2nvdz7wrnyas451j908y7hirszg";
       };
-#     INCLUDE = "${(msblobs.msvc).INCLUDE};${(msblobs.sdk).INCLUDE}";
-#     LIB     = "${(msblobs.msvc).LIB};${(msblobs.sdk).LIB}";
-#     PATH    = "${(msblobs.msvc).PATH};${(msblobs.sdk).PATH};${prevStage.p7zip-i686}/bin"; # initialPath does not work because it is set up in setup.pm which is not involved here
-      PATH    = "${prevStage.p7zip-i686}/bin;${gnu-utils}/bin;${mingwPacmanNoBin.gcc}/mingw32/bin"; # ;${mingwPacman.make}/mingw32/bin
-#     PATH    = "${prevStage.p7zip-i686}/bin;${gnu-utils}/bin;${msysPacman.gcc}/usr/bin;${mingwPacman.make}/mingw32/bin";
+      PATH    = lib.concatStringsSep ";" [ "${prevStage.p7zip-i686}/bin"
+                                           "${msysPacmanNoBin .patch}/usr/bin"
+                                           "${msysPacmanNoBin .gawk }/usr/bin"
+                                           "${mingwPacmanNoBin.make }/mingw32/bin"
+                                           "${mingwPacmanNoBin.grep }/mingw32/bin"
+                                           "${mingwPacmanNoBin.sed  }/mingw32/bin"
+                                           "${mingwPacmanNoBin.gcc  }/mingw32/bin"
+                                         ];
       PERL_USE_UNSAFE_INC = "1"; # env var needed to build Win32-LongPath-1.0
       builder = lib.concatStringsSep " & " [ ''echo %PATH%''
                                              ''7z x %src%                         -so  |  7z x -aoa -si -ttar''
@@ -113,7 +94,7 @@ assert crossSystem == null;
                                              ''patch.exe -p1 < ${./perl-on-gcc10.patch}''
 
                                              ''cd win32''
-                                             ''make.exe -j%NIX_BUILD_CORES% -f GNUmakefile install PLMAKE=make.exe INST_TOP=%out% CCTYPE=GCC ${if stdenv.is64bit then "WIN64=define GCCTARGET=x86_64-w64-mingw32" else "WIN64=undef GCCTARGET=i686-w64-mingw32"}''
+                                             ''mingw32-make.exe -j%NIX_BUILD_CORES% -f GNUmakefile install PLMAKE=mingw32-make.exe INST_TOP=%out% CCTYPE=GCC ${if stdenv.is64bit then "WIN64=define GCCTARGET=x86_64-w64-mingw32" else "WIN64=undef GCCTARGET=i686-w64-mingw32"}''
 
                                              ''copy ${lib.replaceStrings ["/"] ["\\"] "${mingwPacmanNoBin.gcc}/mingw32/bin/libgcc_s_dw2*.dll" } %out%\bin\''     # TODO: hardlink
                                              ''copy ${lib.replaceStrings ["/"] ["\\"] "${mingwPacmanNoBin.gcc}/mingw32/bin/libstdc*.dll"      } %out%\bin\''     # TODO: hardlink
@@ -124,15 +105,15 @@ assert crossSystem == null;
                                            # # it does not built being copied to \cpan or \ext
                                              ''7z x ${cpan-Win32-LongPath}        -so  |  7z x -aoa -si -ttar''
                                              ''cd Win32-LongPath-1.0''
-                                             ''${gnu-utils}\bin\patch.exe -p1 < ${./Win32-LongPath.patch}'' # FIX https://github.com/rdboisvert/Win32-LongPath/issues/8
+                                             ''patch.exe -p1 < ${./Win32-LongPath.patch}'' # FIX https://github.com/rdboisvert/Win32-LongPath/issues/8
                                              ''%out%\bin\perl.exe Makefile.PL''
-                                             ''make.exe -j%NIX_BUILD_CORES%''
-                                             ''make.exe -j%NIX_BUILD_CORES% test''
-                                             ''make.exe -j%NIX_BUILD_CORES% install''
+                                             ''mingw32-make.exe -j%NIX_BUILD_CORES%''
+                                             ''mingw32-make.exe -j%NIX_BUILD_CORES% test''
+                                             ''mingw32-make.exe -j%NIX_BUILD_CORES% install''
                                            # #
                                              ''copy ${lib.replaceStrings ["/"] ["\\"] "${./Utils.pm}"} %out%\site\lib\Win32\Utils.pm''
                                            ];
-       passthru.gnu-utils = gnu-utils;
+      passthru = { inherit mingwPacmanNoBin msysPacmanNoBin; };
     };
   })
 
@@ -145,7 +126,7 @@ assert crossSystem == null;
       inherit config;
       inherit (prevStage.stdenv) buildPlatform hostPlatform targetPlatform fetchurlBoot;
 
-      initialPath = prevStage.stdenv.initialPath ++ [ /*prevStage.curl-static*/ prevStage.gnu-utils ];
+      initialPath = prevStage.stdenv.initialPath ++ [ /*prevStage.curl-static*/ /*prevStage.gnu-utils*/ ];
       cc = null;
       shell = "${prevStage.perl-for-stdenv-shell}/bin/perl.exe";
     };
@@ -161,12 +142,6 @@ assert crossSystem == null;
                          fetchurl = stdenv.fetchurlBoot;
                          inherit msysPacman mingwPacman;
                        };
-
-#   fetchurl-curl-static = import ../../build-support/fetchurl {
-#     inherit lib;
-#     stdenvNoCC = stdenv; # with perl as .shell
-#     curl = prevStage.curl-static;
-#   };
   })
 
 
@@ -176,14 +151,18 @@ assert crossSystem == null;
       name = "stdenv";
       inherit config;
 
-      inherit (prevStage.stdenv) buildPlatform targetPlatform hostPlatform shell initialPath fetchurlBoot;
+      initialPath = with prevStage; stdenv.initialPath ++ [
+        mingwPacman.make mingwPacman.grep mingwPacman.sed
+        # FIXME: so far msysPacman.patch and msysPacman.gawk have no /bin/ and cannot get not to path, there is a workawound in gcc-wrapper
+      ];
+
+      inherit (prevStage.stdenv) buildPlatform targetPlatform hostPlatform shell fetchurlBoot;
       cc = ( import ./gcc-wrapper.nix {
                stdenvNoCC = prevStage.stdenv;
 #              buildPackages = null;
                lib = prevStage.stdenv.lib;
                inherit (prevStage) msysPacman mingwPacman;
              }) // { inherit (prevStage) perl-for-stdenv-shell; };
-#     fetchurlBoot = prevStage.fetchurl-curl-static;
       extraNativeBuildInputs = [];
     };
   })
