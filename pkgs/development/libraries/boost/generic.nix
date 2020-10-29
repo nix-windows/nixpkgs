@@ -24,6 +24,14 @@
 
 
 if stdenv.hostPlatform.isMicrosoft then
+
+# or it will silently produce empty result
+assert staticRuntime -> static;
+
+assert stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "14.20" && lib.versionOlder stdenv.cc.msvc.version "15" ->
+  lib.versionAtLeast version "1.71" && # "v142" is supported since boost-1.71 ; might older version be compiled by VS2019 using "v141"?
+  lib.versionOlder   version "1.73";   # 1.73 and 1.74 think that VS2019 supports long long
+
 let
   b2Args = lib.concatStringsSep " " [
               "--prefix=$ENV{out}"
@@ -62,7 +70,7 @@ in stdenv.mkDerivation {
                             else if stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "14.10" && lib.versionOlder stdenv.cc.msvc.version "14.20" then
                               "vc141"
                             else if stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "14.20" && lib.versionOlder stdenv.cc.msvc.version "15" then
-                              assert lib.versionAtLeast version "1.70" /* not sure: 1.67 is too old. 1.74 is ok */; "vc142"
+                              "vc142"
                             else
                               throw "???"}");
 
