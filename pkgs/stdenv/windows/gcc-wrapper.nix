@@ -23,12 +23,13 @@ let
       '';
     };
 in
+  # do we really need this gcc-wrapper here, ot is it enough to set PATH to "${mingwPacman.gcc}/bin;${mingwPacman.make}/bin;${mingwPacman.grep}/bin;${mingwPacman.gawk}/bin;${mingwPacman.sed}/bin;${mingwPacman.patch}/bin"
   stdenvNoCC.mkDerivation {
     name = "gcc-wrapper-${stdenvNoCC.buildPlatform.parsed.cpu.name}+${stdenvNoCC.hostPlatform.parsed.cpu.name}+${stdenvNoCC.targetPlatform.parsed.cpu.name}";
     buildCommand = ''
       make_pathL("$ENV{out}/bin") or die "make_pathL: $!";
 
-      for my $name ('cc', 'gcc', 'c++', 'ld', 'cpp', 'nm', 'as', 'ar', 'make') {
+      for my $name ('cc', 'gcc', 'c++', 'g++', 'ld', 'cpp', 'nm', 'as', 'ar', 'windres', 'objdump', 'objcopy', 'ranlib', 'dlltool', 'make') {
         my $target;
         for my $path ('${mingwPacman.gcc }/mingw${if stdenvNoCC.is64bit then "64" else "32"}/bin',
                       '${mingwPacman.make}/mingw${if stdenvNoCC.is64bit then "64" else "32"}/bin') {
