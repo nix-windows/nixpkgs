@@ -2508,7 +2508,7 @@ let
     pname       = "patch";
     version     = "2.7.6";
     sources     = [{ filename = "patch-2.7.6-1-i686.pkg.tar.xz"; sha256 = "ab09df9a438856d1dd8991ef4fede80f7d028b4b5231186da1af07e131570478"; }];
-    buildInputs = [ msys2-runtime ];
+    buildInputs = [ msys2-runtime gcc-libs ];
   };
 
   "patchutils" = fetch {

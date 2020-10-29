@@ -1136,7 +1136,7 @@ let
     pname       = "curl";
     version     = "7.73.0";
     sources     = [{ filename = "mingw-w64-i686-curl-7.73.0-1-any.pkg.tar.zst"; sha256 = "6b425038767907cc0abaaa048b9398599e9d6de889af676d0fbaf06b9f524b69"; }];
-    buildInputs = [ gcc-libs c-ares brotli libidn2 libmetalink libpsl libssh2 zlib ca-certificates openssl nghttp2 ];
+    buildInputs = [ gcc-libs c-ares brotli libidn2 libmetalink libpsl libssh2 zlib ca-certificates openssl nghttp2 zstd ];
   };
 
   "cvode" = fetch {
