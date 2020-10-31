@@ -2,25 +2,6 @@
 , fetchpatch, autoreconfHook, help2man
 }:
 
-if stdenv.hostPlatform.isMicrosoft then
-
-# anyway flex binary is required to build flex, so let's stick with the MSYS binary for a while
-stdenv.mkDerivation rec {
-  name = "flex-2.6.4";
-  unpackPhase = "";
-# buildPhase = "";
-  installPhase = ''
-    make_pathL("$ENV{out}/bin");
-    copyL('C:/msys64/usr/bin/flex.exe',         "$ENV{out}/bin/flex.exe"        );
-    copyL('C:/msys64/usr/bin/msys-2.0.dll',     "$ENV{out}/bin/msys-2.0.dll"    );
-    copyL('C:/msys64/usr/bin/msys-intl-8.dll',  "$ENV{out}/bin/msys-intl-8.dll" );
-    copyL('C:/msys64/usr/bin/msys-iconv-2.dll', "$ENV{out}/bin/msys-iconv-2.dll");
-  '';
-}
-
-else
-
-
 stdenv.mkDerivation rec {
   name = "flex-${version}";
   version = "2.6.4";

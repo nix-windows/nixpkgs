@@ -208,7 +208,12 @@ rec {
 
   abis = setTypes types.openAbi {
     cygnus       = {};
-    msvc         = {};
+    msvc2005     = {}; # vcruntime80.dll
+    msvc2008     = {}; # vcruntime90.dll
+    msvc2012     = {}; #
+    msvc2015     = {}; #
+    msvc2017     = {}; # vcruntime140.dll
+    msvc2019     = {}; # vcruntime140_1.dll
     eabi         = {};
     elf         = {};
 
@@ -273,7 +278,9 @@ rec {
       if elemAt l 1 == "cygwin"
         then { cpu = elemAt l 0;                      kernel = "windows";  abi = "cygnus";   }
       else if elemAt l 1 == "windows"
-        then { cpu = elemAt l 0;                      kernel = "windows";  abi = "msvc";   }
+        # thus "x86_64-windows" and "i686-windows" default to "x86_64-windows-gcc" and "i686-windows-gcc" making it default stdenv for Windows
+#       then { cpu = elemAt l 0;                      kernel = "windows";  abi = "msvc2019";   }
+        then { cpu = elemAt l 0;                      kernel = "windows";  abi = "gnu";   }
       else if (elemAt l 1 == "eabi")
         then { cpu = elemAt l 0; vendor = "none"; kernel = "none"; abi = elemAt l 1; }
       else if (elemAt l 1 == "elf")

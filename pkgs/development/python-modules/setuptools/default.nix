@@ -17,12 +17,12 @@ stdenv.mkDerivation rec {
     sha256 = "1y085dnk574sxw9aymdng9gijvrsbw86hsv9hqnhv7y4d6nlsirv";
   };
 
-  nativeBuildInputs = stdenv.lib.optionals (!stdenv.hostPlatform.isMicrosoft) [ wrapPython unzip ];
+  nativeBuildInputs = stdenv.lib.optionals (!stdenv.hostPlatform.isWindows) [ wrapPython unzip ];
   buildInputs = [ python ];
   doCheck = false;  # requires pytest
       #chmod 0666, 'setuptools/msvc.py'          or die $!;
       #utime undef, undef, 'setuptools\msvc.py'  or die $!; # touch to make timestamp newer than 1980
-  installPhase = if stdenv.hostPlatform.isMicrosoft then ''
+  installPhase = if stdenv.hostPlatform.isWindows then ''
 
       # no need to read the registry, we know which compiler has been used to build python.exe
       my $content = readFile('${./msvc.py}');

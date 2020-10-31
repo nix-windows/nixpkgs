@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
     owner = "processing";
     repo = "processing";
     rev = "processing-0265-${version}";
-    sha256 = if stdenv.hostPlatform.isMicrosoft then
+    sha256 = if stdenv.hostPlatform.isWindows then
                "153bmg1arh27cf86bi57ha61nph18k1j3mpsvf6gizabjcmzxqvr"
              else
                "12wpxgn2wd5vbasx9584w5yb1s319smq1zh8m7dvp7gkqw9plwp4";

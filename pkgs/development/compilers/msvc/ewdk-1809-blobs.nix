@@ -1,8 +1,8 @@
 { stdenvNoCC }:
 
 let
-  host   = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenvNoCC.  hostPlatform.config};
-  target = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenvNoCC.targetPlatform.config};
+  host   = { "x86_64-pc-windows-msvc2017" = "x64"; "i686-pc-windows-msvc2017" = "x86"; }.${stdenvNoCC.  hostPlatform.config};
+  target = { "x86_64-pc-windows-msvc2017" = "x64"; "i686-pc-windows-msvc2017" = "x86"; }.${stdenvNoCC.targetPlatform.config};
 
   ewdk1809-iso = import <nix/fetchurl.nix> {
     name = "ewdk1809.iso";

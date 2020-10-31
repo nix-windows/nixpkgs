@@ -206,15 +206,16 @@ rec {
     platform = {};
   };
 
-  windows32 = {
-    config = "i686-pc-windows-msvc";
-    libc = "msvcrt";
-    platform = {};
-  };
-
-  windows64 = {
-    config = "x86_64-pc-windows-msvc";
-    libc = "msvcrt";
-    platform = {};
-  };
+# # to build 32-bit code using 64-bit compiler, not very useful
+# windows32 = {
+#   config = "i686-pc-windows-msvc";
+#   libc = "msvcrt";
+#   platform = {};
+# };
+#
+# windows64 = {
+#   config = "x86_64-pc-windows-msvc";
+#   libc = "msvcrt";
+#   platform = {};
+# };
 }

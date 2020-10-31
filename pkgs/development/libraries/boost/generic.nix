@@ -23,7 +23,7 @@
 }:
 
 
-if stdenv.hostPlatform.isMicrosoft then
+if stdenv.hostPlatform.isWindows then
 
 # or it will silently produce empty result
 assert staticRuntime -> static;

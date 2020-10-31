@@ -2,7 +2,10 @@
 , localSystem, crossSystem, config, overlays
 }:
 
-assert localSystem.config == "i686-pc-windows-msvc";
+if !(localSystem.config == "i686-pc-windows-msvc2015") then
+  throw "localSystem.config=${localSystem.config}"
+else
+
 assert crossSystem == null;
 
 [

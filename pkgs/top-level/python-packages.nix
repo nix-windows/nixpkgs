@@ -138,7 +138,7 @@ in {
 
   # helpers
 
-  wrapPython = if stdenv.hostPlatform.isMicrosoft then
+  wrapPython = if stdenv.hostPlatform.isWindows then
       throw "wrapPython??"
     else
       callPackage ../development/interpreters/python/wrap-python.nix {inherit python; inherit (pkgs) makeSetupHook makeWrapper; };

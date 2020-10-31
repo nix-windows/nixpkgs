@@ -43,7 +43,7 @@ let
 
   # Select the appropriate stages for the platform `system'.
 in
-/*  if localSystem.isMicrosoft then stagesWindows
+/*  if localSystem.isWindows then stagesWindows
   else if localSystem.isMinGW then stagesMinGW
   else*/ if crossSystem != null then stagesCross
   else if config ? replaceStdenv then stagesCustom
@@ -62,6 +62,13 @@ in
     "i686-cygwin" = stagesNative;
     "x86_64-cygwin" = stagesNative;
     "x86_64-freebsd" = stagesFreeBSD;
-    "x86_64-windows" = stagesWindowsMSVC2019; # stagesWindowsMSVC2019 | stagesWindowsMSVC2017                                                 | stagesWindowsMinGW
-    "i686-windows" = stagesWindowsMinGW;      # stagesWindowsMSVC2019 | stagesWindowsMSVC2017 | stagesWindowsMSVC2008 | stagesWindowsMSVC2005 | stagesWindowsMinGW
+    "x86_64-windows" = { "x86_64-pc-windows-gnu"      = stagesWindowsMinGW;    # for .pkgsMinGW
+                         "x86_64-pc-windows-msvc2019" = stagesWindowsMSVC2019; # for .pkgsMsvc2019
+                         "x86_64-pc-windows-msvc2017" = stagesWindowsMSVC2017; # for .pkgsMsvc2017
+                       }.${localSystem.config};
+    "i686-windows"   = { "i686-pc-windows-gnu"        = stagesWindowsMinGW;    # for .pkgsMinGW
+                         "i686-pc-windows-msvc2019"   = stagesWindowsMSVC2019; # for .pkgsMsvc2019
+                         "i686-pc-windows-msvc2017"   = stagesWindowsMSVC2017; # for .pkgsMsvc2017
+                         "i686-pc-windows-msvc2005"   = stagesWindowsMSVC2005; # for .pkgsMsvc2005
+                       }.${localSystem.config};
   }.${localSystem.system} or stagesNative

@@ -20,7 +20,7 @@ let
   };
 in
 
-if stdenv.hostPlatform.isMicrosoft then # files have no executable flag
+if stdenv.hostPlatform.isWindows then # files have no executable flag
 
 stdenv.mkDerivation rec {
   inherit name version meta;

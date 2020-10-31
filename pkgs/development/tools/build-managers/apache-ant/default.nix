@@ -1,6 +1,6 @@
 { fetchurl, stdenv, coreutils, makeWrapper }:
 
-if stdenv.hostPlatform.isMicrosoft then
+if stdenv.hostPlatform.isWindows then
 
 let version = "1.10.5"; in
 stdenv.mkDerivation {

@@ -8,7 +8,7 @@ let
     sha256 = "0lk8knip4xk6qzksdkn7085mmgm4ixfczdyyjw656c193y3rgnvc";
   };
 
-  self = if stdenv.hostPlatform.isMicrosoft then
+  self = if stdenv.hostPlatform.isWindows then
   stdenv.mkDerivation rec {
     inherit name src;
     #  $ENV{INSTALL_DIR} = $ENV{out};

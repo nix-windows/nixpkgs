@@ -7,8 +7,8 @@
 #, perlPackages, libsodium, brotli
 , boost
 #, bison, flex
-, storeDir ? (if stdenv.hostPlatform.isMicrosoft then "C:/nix/store" else "/nix/store")
-, stateDir ? (if stdenv.hostPlatform.isMicrosoft then "C:/nix/var"   else "/nix/var"  )
+, storeDir ? (if stdenv.hostPlatform.isWindows then "C:/nix/store" else "/nix/store")
+, stateDir ? (if stdenv.hostPlatform.isWindows then "C:/nix/var"   else "/nix/var"  )
 #, confDir ? "/etc"
 }:
 

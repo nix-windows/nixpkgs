@@ -1,8 +1,8 @@
 { stdenvNoCC }:
 
 let
-  host   = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenvNoCC.  hostPlatform.config};
-  target = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenvNoCC.targetPlatform.config};
+  host   = { "x86_64-pc-windows-msvc2019" = "x64"; "i686-pc-windows-msvc2019" = "x86"; }.${stdenvNoCC.  hostPlatform.config};
+  target = { "x86_64-pc-windows-msvc2019" = "x64"; "i686-pc-windows-msvc2019" = "x86"; }.${stdenvNoCC.targetPlatform.config};
 
   # EWDK for Windows 10, version 2004 with Visual Studio Build Tools 16.3
   ewdk2004-iso = import <nix/fetchurl.nix> {

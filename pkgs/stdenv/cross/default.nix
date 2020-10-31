@@ -50,8 +50,8 @@ in lib.init bootStages ++ [
              then buildPackages.darwin.iosSdkPkgs.clang
            else if crossSystem.useAndroidPrebuilt
              then buildPackages.androidenv."androidndkPkgs_${crossSystem.ndkVer}".gcc
-           else if crossSystem.isMicrosoft
-             then buildPackages.msvc
+           else if crossSystem.isWindows
+             then throw "???"
            else buildPackages.gcc;
 
       extraNativeBuildInputs = old.extraNativeBuildInputs

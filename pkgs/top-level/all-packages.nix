@@ -93,7 +93,7 @@ with pkgs;
     ../build-support/setup-hooks/auto-patchelf.sh;
 /*
   ensureNewerSourcesHook = { year }: makeSetupHook {}
-   (if stdenv.hostPlatform.isMicrosoft then
+   (if stdenv.hostPlatform.isWindows then
     (writeScript "ensure-newer-sources-hook.pl" ''
       print("TODO: I am ensure-newer-sources-hook.pl\n");
     '')
@@ -119,12 +119,12 @@ with pkgs;
     deps = [ innoextract file-rename ]; }
     ../build-support/setup-hooks/gog-unpack.sh;
 
-  buildEnv = if stdenv.hostPlatform.isMicrosoft then
+  buildEnv = if stdenv.hostPlatform.isWindows then
                throw "try to avoid using buildEnv"
              else
                callPackage ../build-support/buildenv { }; # not actually a package
 
-  buildFHSUserEnv = if stdenv.hostPlatform.isMicrosoft then
+  buildFHSUserEnv = if stdenv.hostPlatform.isWindows then
                       throw "try to avoid using buildFHSUserEnv"
                     else
                       callPackage ../build-support/build-fhs-userenv { };
@@ -359,7 +359,7 @@ with pkgs;
       inherit contents compressor prepend;
     };
 
-  makeWrapper = if stdenv.hostPlatform.isMicrosoft then
+  makeWrapper = if stdenv.hostPlatform.isWindows then
                   callPackage ../development/compilers/msvc/make-wrapper.nix { }
                 else
                   makeSetupHook { deps = [ dieHook ]; }
@@ -7024,7 +7024,7 @@ with pkgs;
   };
 
   go_1_11 =
-    if stdenv.hostPlatform.isMicrosoft then
+    if stdenv.hostPlatform.isWindows then
       callPackage ../development/compilers/go/windows-1.11.nix { }
     else
       callPackage ../development/compilers/go/1.11.nix {
@@ -7074,7 +7074,7 @@ with pkgs;
   bootjdk = callPackage ../development/compilers/openjdk/bootstrap.nix { version = "10"; };
 
   openjdk8 =
-    if stdenv.hostPlatform.isMicrosoft then
+    if stdenv.hostPlatform.isWindows then
       callPackage ../development/compilers/openjdk/windows/8.nix { }
     else if stdenv.isDarwin then
       callPackage ../development/compilers/openjdk/darwin/8.nix { }
@@ -7273,7 +7273,7 @@ with pkgs;
   });
 
   llvmPackages_7 =
-    if stdenv.hostPlatform.isMicrosoft then
+    if stdenv.hostPlatform.isWindows then
       callPackage ../development/compilers/llvm/7/windows.nix {}
     else
       callPackage ../development/compilers/llvm/7 ({
@@ -7285,13 +7285,13 @@ with pkgs;
       });
 
   llvmPackages_8 =
-    if stdenv.hostPlatform.isMicrosoft then
+    if stdenv.hostPlatform.isWindows then
       callPackage ../development/compilers/llvm/8/windows.nix {}
     else
       throw "llvm8";
 
   llvmPackages_11 =
-    if stdenv.hostPlatform.isMicrosoft then
+    if stdenv.hostPlatform.isWindows then
       callPackage ../development/compilers/llvm/11/windows.nix {}
     else
       throw "llvm11";
@@ -7430,7 +7430,7 @@ with pkgs;
 
   # For beta and nightly releases use the nixpkgs-mozilla overlay
   rust =
-    if stdenv.hostPlatform.isMicrosoft then
+    if stdenv.hostPlatform.isWindows then
       callPackage ../development/compilers/rust/windows.nix {}
     else
       callPackage ../development/compilers/rust ({
@@ -7892,7 +7892,7 @@ with pkgs;
   python2Packages = python2.pkgs;
   python3Packages = python3.pkgs;
 
-  python27 = if stdenv.hostPlatform.isMicrosoft then
+  python27 = if stdenv.hostPlatform.isWindows then
       callPackage ../development/interpreters/python/cpython/2.7/windows.nix {
         self = python27;
       }
@@ -8388,13 +8388,13 @@ with pkgs;
   cmake_2_8 = callPackage ../development/tools/build-managers/cmake/2.8.nix { };
 
   cmake-bin =
-    if stdenv.hostPlatform.isMicrosoft then
+    if stdenv.hostPlatform.isWindows then
       callPackage ../development/tools/build-managers/cmake/windows.nix { isBinaryDistribution = true; }
     else
       null;
 
   cmake =
-    if stdenv.hostPlatform.isMicrosoft then
+    if stdenv.hostPlatform.isWindows then
       callPackage ../development/tools/build-managers/cmake/windows.nix { }
     else
       libsForQt5.callPackage ../development/tools/build-managers/cmake { };
@@ -10246,7 +10246,7 @@ with pkgs;
     (stdenv.lib.optionalAttrs (stdenv.cc.isGNU && stdenv.hostPlatform.isi686) {
       stdenv = overrideCC stdenv gcc6; # with gcc-7: undefined reference to `__divmoddi4'
     }));
-  icu59 = if stdenv.hostPlatform.isMicrosoft then
+  icu59 = if stdenv.hostPlatform.isWindows then
       callPackage ../development/libraries/icu/59-windows.nix  {}
     else
       callPackage ../development/libraries/icu/59.nix ({
@@ -16145,7 +16145,7 @@ with pkgs;
   bookworm = callPackage ../applications/office/bookworm { };
 
   chromium =
-    if stdenv.hostPlatform.isMicrosoft then
+    if stdenv.hostPlatform.isWindows then
       callPackage ../applications/networking/browsers/chromium-git/windows.nix {}
     else
       callPackage ../applications/networking/browsers/chromium ({
@@ -18669,7 +18669,7 @@ with pkgs;
 
   processing = processing3;
   processing3 = callPackage ../applications/graphics/processing3 {
-    jdk = if stdenv.hostPlatform.isMicrosoft then openjdk8.override{withFX=true;} else oraclejdk8;
+    jdk = if stdenv.hostPlatform.isWindows then openjdk8.override{withFX=true;} else oraclejdk8;
   };
 
   # perhaps there are better apps for this task? It's how I had configured my preivous system.
@@ -22250,7 +22250,7 @@ with pkgs;
 
   mynewt-newt = callPackage ../tools/package-management/mynewt-newt { };
 
-  inherit (callPackages (if stdenv.hostPlatform.isMicrosoft then
+  inherit (callPackages (if stdenv.hostPlatform.isWindows then
                            ../tools/package-management/nix/windows.nix
                          else
                            ../tools/package-management/nix) ({

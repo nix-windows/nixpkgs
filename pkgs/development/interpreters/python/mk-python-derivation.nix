@@ -87,7 +87,7 @@ toPythonModule (python.stdenv.mkDerivation (builtins.removeAttrs attrs [
   doInstallCheck = doCheck;
   installCheckInputs = checkInputs;
 
-  postFixup = if python.stdenv.hostPlatform.isMicrosoft then ''
+  postFixup = if python.stdenv.hostPlatform.isWindows then ''
     print("TODO: I am mk-python-derivation postFixup; removeBinBytecode=${toString removeBinBytecode} catchConflicts=${toString catchConflicts}\n");
   '' else (lib.optionalString (!dontWrapPythonPrograms) ''
     wrapPythonPrograms

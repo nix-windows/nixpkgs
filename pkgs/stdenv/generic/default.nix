@@ -43,7 +43,7 @@ let lib = import ../../../lib; in lib.makeOverridable (
 
 let
   defaultNativeBuildInputs =
-    if hostPlatform.isMicrosoft then
+    if hostPlatform.isWindows && stdenv.isShellPerl then
       extraNativeBuildInputs ++ [cc]
     else
       extraNativeBuildInputs ++

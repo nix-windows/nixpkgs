@@ -2,7 +2,10 @@
 , localSystem, crossSystem, config, overlays
 }:
 
-assert localSystem.config == "x86_64-pc-windows-msvc" || localSystem.config == "i686-pc-windows-msvc";
+if !(localSystem.config == "x86_64-pc-windows-msvc2017" || localSystem.config == "i686-pc-windows-msvc2017") then
+  throw "localSystem.config=${localSystem.config}"
+else
+
 assert crossSystem == null;
 
 [
@@ -113,11 +116,12 @@ assert crossSystem == null;
       LIB     = "${(msblobs.msvc).LIB};${(msblobs.sdk).LIB}";
       PATH    = "${(msblobs.msvc).PATH};${(msblobs.sdk).PATH};${prevStage.p7zip-i686}/bin"; # initialPath does not work because it is set up in setup.pm which is not involved here
       PERL_USE_UNSAFE_INC = "1"; # env var needed to build Win32-LongPath-1.0
-      builder = lib.concatStringsSep " & " [ ''7z x %src%                         -so  |  7z x -aoa -si -ttar''
+      builder = lib.concatStringsSep " & " [ #''echo %LIB%''
+                                             ''7z x %src%                         -so  |  7z x -aoa -si -ttar''
                                              ''7z x ${cpan-Capture-Tiny}          -so  |  7z x -aoa -si -ttar -operl-${version}\cpan''
                                              ''7z x ${cpan-Data-Dump}             -so  |  7z x -aoa -si -ttar -operl-${version}\cpan''
                                              ''cd perl-${version}\win32''
-                                             ''${gnu-utils}\bin\sed.exe -i -e s/MD/MT/g -e s/vcruntime/libvcruntime/ Makefile config.vc''  # let it run without VCRUNTIME140.dll
+                                             ''${gnu-utils}\bin\sed.exe -i -e s/MD/MT/g -e s/vcruntime/libvcruntime/ -e s/msvcrt/libcmt/ -e s/ucrt/libucrt/ Makefile config.vc'' # let it run without VCRUNTIME140.dll
                                              ''nmake install INST_TOP=%out% CCTYPE=${assert lib.versionAtLeast msblobs.msvc.version "14.10" && lib.versionOlder msblobs.msvc.version "14.20"; "MSVC141"} ${if stdenv.is64bit then "WIN64=define PROCESSOR_ARCHITECTURE=AMD64" else "WIN64=undef PROCESSOR_ARCHITECTURE=X86"}''
                                              # it does not built being copied to \cpan or \ext
                                              ''7z x ${cpan-Win32-LongPath}        -so  |  7z x -aoa -si -ttar''

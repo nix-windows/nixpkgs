@@ -26,7 +26,7 @@ let
       priority = 10; # resolves collision with ‘man-pages’
     };
 
-  in if stdenv.hostPlatform.isMicrosoft then stdenv.mkDerivation rec {
+  in if stdenv.hostPlatform.isWindows then stdenv.mkDerivation rec {
     inherit name version src meta;
 
     patches = args.patches;

@@ -36,7 +36,7 @@ let
     platforms = lib.platforms.all;
     maintainers = [ lib.maintainers.eelco ];
   };
-in if stdenv.hostPlatform.isMicrosoft then
+in if stdenv.hostPlatform.isWindows then
 
 stdenv.mkDerivation {
   inherit name version src /*patches (fetchpatch does not work yet)*/ meta;

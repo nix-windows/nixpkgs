@@ -3,7 +3,7 @@
 
 let
   rev = "106b823805adcc043b2bfe5bc21d58f160a28a7b";
-  sha256 = if stdenv.hostPlatform.isMicrosoft then
+  sha256 = if stdenv.hostPlatform.isWindows then
              "1gscv6lpaj6xwvc4jhqk6nh4kxjsbmaj4d11bahnpf8zpifqr29c" /* without executable bit */
            else
              "1a5s6i07s8l4f1bakh3fyaym00xz7zgd49sp6awm10xb7yjh95ba";
@@ -34,7 +34,7 @@ stdenv.mkDerivation rec {
       --replace "NSArray<NSString*>*" "NSArray*"
   '';
 
-  nativeBuildInputs = [ ninja python2 ] ++ lib.optional (!stdenv.hostPlatform.isMicrosoft) git;
+  nativeBuildInputs = [ ninja python2 ] ++ lib.optional (!stdenv.hostPlatform.isWindows) git;
   buildInputs = lib.optionals stdenv.isDarwin (with darwin; with apple_sdk.frameworks; [
     libobjc
     cctools
@@ -46,7 +46,7 @@ stdenv.mkDerivation rec {
   ]);
 
   buildPhase =
-    if stdenv.hostPlatform.isMicrosoft then
+    if stdenv.hostPlatform.isWindows then
       lib.optionalString stdenv.hostPlatform.is32bit ''
         changeFile { s|MACHINE:x64|MACHINE:x86|gr } 'build/gen.py';
       '' + ''
@@ -61,7 +61,7 @@ stdenv.mkDerivation rec {
         ninja -j $NIX_BUILD_CORES -C out gn
       '';
 
-  installPhase = if stdenv.hostPlatform.isMicrosoft then ''
+  installPhase = if stdenv.hostPlatform.isWindows then ''
     make_pathL("$ENV{out}/bin") or die $!;
     copyL("out/gn.exe", "$ENV{out}/bin/gn.exe") or die $!;
   '' else ''

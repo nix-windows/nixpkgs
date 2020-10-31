@@ -15,7 +15,7 @@ let
 
 in
 
-if stdenv.hostPlatform.isMicrosoft then
+if stdenv.hostPlatform.isWindows then
 
 stdenv.mkDerivation rec {
   name = "nss-cacert-${nss.version}";

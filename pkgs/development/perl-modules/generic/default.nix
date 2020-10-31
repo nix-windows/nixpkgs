@@ -29,7 +29,7 @@ stdenv.mkDerivation (
 
           meta.homepage = "https://metacpan.org/release/${(builtins.parseDrvName name).name}";
         }
-        // (lib.optionalAttrs stdenv.hostPlatform.isMicrosoft {
+        // (lib.optionalAttrs stdenv.hostPlatform.isWindows && stdenv.cc.isMSVC {
               outputs = [ "out" ];
               # there are no hooks in stdenv/windows yet; makemaker needs at least LIB to locate kernel32.lib
             # INCLUDE = stdenv.cc.INCLUDE;

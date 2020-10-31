@@ -120,7 +120,7 @@ rec {
           (map (drv: drv.__spliced.buildBuild or drv) depsBuildBuild)
           (map (drv: drv.nativeDrv or drv) nativeBuildInputs
              ++ lib.optional separateDebugInfo ../../build-support/setup-hooks/separate-debug-info.sh
-             ++ lib.optional (stdenv.hostPlatform.isWindows && !stdenv.hostPlatform.isMicrosoft) ../../build-support/setup-hooks/win-dll-link.sh)
+             ++ lib.optional (stdenv.hostPlatform.isWindows && !stdenv.isShellPerl) ../../build-support/setup-hooks/win-dll-link.sh)
           (map (drv: drv.__spliced.buildTarget or drv) depsBuildTarget)
         ]
         [

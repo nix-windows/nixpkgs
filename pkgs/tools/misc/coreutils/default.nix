@@ -11,7 +11,7 @@
 }:
 
 
-if stdenv.hostPlatform.isMicrosoft then
+if stdenv.hostPlatform.isWindows then
 
   throw "coreutils??"
 

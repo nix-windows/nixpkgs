@@ -2,7 +2,11 @@
 , localSystem, crossSystem, config, overlays
 }:
 
-assert localSystem.config == "x86_64-pc-windows-msvc" || localSystem.config == "i686-pc-windows-msvc";
+
+if !(localSystem.config == "x86_64-pc-windows-gnu" || localSystem.config == "i686-pc-windows-gnu") then
+  throw "localSystem.config=${localSystem.config}"
+else
+
 assert crossSystem == null;
 
 [
@@ -79,10 +83,10 @@ assert crossSystem == null;
       PATH    = lib.concatStringsSep ";" [ "${prevStage.p7zip-i686}/bin"
                                            "${msysPacmanNoBin .patch}/usr/bin"
                                            "${msysPacmanNoBin .gawk }/usr/bin"
-                                           "${mingwPacmanNoBin.make }/mingw32/bin"
-                                           "${mingwPacmanNoBin.grep }/mingw32/bin"
-                                           "${mingwPacmanNoBin.sed  }/mingw32/bin"
-                                           "${mingwPacmanNoBin.gcc  }/mingw32/bin"
+                                           "${mingwPacmanNoBin.make }/mingw${if stdenv.is64bit then "64" else "32"}/bin"
+                                           "${mingwPacmanNoBin.grep }/mingw${if stdenv.is64bit then "64" else "32"}/bin"
+                                           "${mingwPacmanNoBin.sed  }/mingw${if stdenv.is64bit then "64" else "32"}/bin"
+                                           "${mingwPacmanNoBin.gcc  }/mingw${if stdenv.is64bit then "64" else "32"}/bin"
                                          ];
       PERL_USE_UNSAFE_INC = "1"; # env var needed to build Win32-LongPath-1.0
       builder = lib.concatStringsSep " & " [ ''echo %PATH%''

@@ -31,7 +31,7 @@ let
   };
 in
 
-if stdenv.hostPlatform.isMicrosoft then
+if stdenv.hostPlatform.isWindows then
 
 assert stdenv.hostPlatform == stdenv.buildPlatform; # not yet tested
 let

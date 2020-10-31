@@ -89,7 +89,7 @@ in {
       sed -i -e 's|"neko"|"${neko}/bin/neko"|g' extra/haxelib_src/src/tools/haxelib/Main.hx
     '';
   };
-  haxe_3_4 = if stdenv.hostPlatform.isMicrosoft then
+  haxe_3_4 = if stdenv.hostPlatform.isWindows then
     stdenv.mkDerivation rec {
       name = "haxe-3.4.7";
       src = fetchurl {

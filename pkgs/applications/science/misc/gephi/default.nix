@@ -7,7 +7,7 @@ let
     owner = "gephi";
     repo = "gephi";
     rev = "v${version}";
-    sha256 = if stdenv.hostPlatform.isMicrosoft then
+    sha256 = if stdenv.hostPlatform.isWindows then
                "1x01qikc968yql2mrl8cdqd51gsa7g7iwyc76bpn6iaasimv088z" # ignoring executable bit
              else
                "0kqp2nvnsb55j1axb6hk0mlw5alyaiyb70z0mdybhpqqxyw2da2r";

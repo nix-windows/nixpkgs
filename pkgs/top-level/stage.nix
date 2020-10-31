@@ -170,7 +170,6 @@ let
       };
     } else throw "i686 Windows package set can only be used with the x86 family.";
 
-    # MinGW packages in Windows Nix
     pkgsMinGW = if stdenv.hostPlatform.isWindows then nixpkgsFun {
       inherit overlays config;
       ${if stdenv.hostPlatform == stdenv.buildPlatform
@@ -181,16 +180,25 @@ let
       };
     } else throw "pkgsMinGW only supports Windows systems.";
 
-    # Native Windows packages in Nix/MinGW
-    pkgsMicrosoft = if stdenv.hostPlatform.isWindows then nixpkgsFun {
+    pkgsMsvc2017 = if stdenv.hostPlatform.isWindows then nixpkgsFun {
       inherit overlays config;
       ${if stdenv.hostPlatform == stdenv.buildPlatform
         then "localSystem" else "crossSystem"} = {
         parsed = stdenv.hostPlatform.parsed // {
-          abi = lib.systems.parse.abis.msvc;
+          abi = lib.systems.parse.abis.msvc2017;
         };
       };
-    } else throw "pkgsMicrosoft only supports Windows systems.";
+    } else throw "pkgsMsvc2017 only supports Windows systems.";
+
+    pkgsMsvc2019 = if stdenv.hostPlatform.isWindows then nixpkgsFun {
+      inherit overlays config;
+      ${if stdenv.hostPlatform == stdenv.buildPlatform
+        then "localSystem" else "crossSystem"} = {
+        parsed = stdenv.hostPlatform.parsed // {
+          abi = lib.systems.parse.abis.msvc2019;
+        };
+      };
+    } else throw "pkgsMsvc2019 only supports Windows systems.";
 
     # Extend the package set with zero or more overlays. This preserves
     # preexisting overlays. Prefer to initialize with the right overlays

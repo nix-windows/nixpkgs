@@ -111,8 +111,8 @@ stageFuns: let
     stdenv.cc =
       if buildPackages.stdenv.cc.isClang or false then
         buildPackages.clang
-      else if buildPackages.stdenv.hostPlatform.isMicrosoft or false then
-        buildPackages.msvc
+      else if buildPackages.stdenv.hostPlatform.isWindows or false then
+        throw "???" #buildPackages.msvc
       else
         buildPackages.gcc;
   };

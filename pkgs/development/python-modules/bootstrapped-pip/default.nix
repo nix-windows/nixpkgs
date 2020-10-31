@@ -1,6 +1,6 @@
 { stdenv, python, fetchPypi, makeWrapper, unzip, setuptools }:
 
-if stdenv.hostPlatform.isMicrosoft then
+if stdenv.hostPlatform.isWindows then
 
 stdenv.mkDerivation rec {
   pname = "pip";

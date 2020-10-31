@@ -35,10 +35,10 @@ let
   };
 in
 
-if stdenv.hostPlatform.isMicrosoft then
+if stdenv.hostPlatform.isWindows then
 
 let
-  platform      = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "Win32"; }.${stdenv.hostPlatform.config};
+  platform      = if stdenv.is64bit then "x64" else "Win32";
   configuration = if staticRuntime then "ReleaseMT" else "Release";
   toolset       = if stdenv.cc.isMSVC && stdenv.lib.versionAtLeast stdenv.cc.msvc.version "14.10" && stdenv.lib.versionOlder stdenv.cc.msvc.version "14.20" then
                     "vs2017"

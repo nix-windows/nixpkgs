@@ -19,7 +19,7 @@ let
         url = "mirror://cpan/src/5.0/${name}.tar.gz";
         inherit sha256;
       };
-    in if stdenv.hostPlatform.isMicrosoft && stdenv.cc.isMSVC then
+    in if stdenv.hostPlatform.isWindows && stdenv.cc.isMSVC then
       stdenv.mkDerivation rec {
         inherit name version src meta;
         disallowedReferences = [ stdenv.cc /*stdenv.cc.msvc*/ ]; # <- FIXME, the must not me reference to huge stdenv.cc.msvc (they are mostly in .pdb and .lib files)
@@ -47,7 +47,7 @@ let
         passthru.libPrefix = "lib";
 #       doCheck = false; # some tests fail, expensive
       }
-    else if stdenv.hostPlatform.isMicrosoft && stdenv.cc.isGNU then
+    else if stdenv.hostPlatform.isWindows && stdenv.cc.isGNU then
       stdenv.mkDerivation rec {
         inherit name version src meta;
         disallowedReferences = [ stdenv.cc stdenv.cc.cc ];

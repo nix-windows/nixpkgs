@@ -20,7 +20,7 @@
 assert sendEmailSupport -> perlSupport;
 assert svnSupport -> perlSupport;
 
-if stdenv.hostPlatform.isMicrosoft then
+if stdenv.hostPlatform.isWindows then
 # import ./windows-msvc.nix { inherit stdenv fetchurl perl curl openssl zlib; }
   import ./windows-gfw.nix { inherit stdenv fetchzip perl curl openssl zlib; }
 

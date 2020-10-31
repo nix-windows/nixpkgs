@@ -7785,7 +7785,7 @@ let
     };
     propagatedBuildInputs = [ MozillaCA NetSSLeay ];
     # Fix path to default certificate store.
-    postPatch = stdenv.lib.optionalString (!stdenv.hostPlatform.isMicrosoft) ''
+    postPatch = stdenv.lib.optionalString (!stdenv.hostPlatform.isWindows) ''
       substituteInPlace lib/IO/Socket/SSL.pm \
         --replace "\$openssldir/cert.pem" "/etc/ssl/certs/ca-certificates.crt"
     '';
@@ -8931,7 +8931,7 @@ let
     postPatch = stdenv.lib.optionalString (stdenv.buildPlatform != stdenv.hostPlatform) ''
       substituteInPlace Makefile.PL --replace 'if has_module' 'if 0; #'
     '';
-    postFixup = stdenv.lib.optionalString stdenv.hostPlatform.isMicrosoft ''
+    postFixup = stdenv.lib.optionalString stdenv.hostPlatform.isWindows ''
       changeFile { s|perl -x|${perl}/bin/perl.exe $ENV{perlFlags} -x|gr; } "$ENV{out}/bin/lwp-download.bat", "$ENV{out}/bin/lwp-dump.bat", "$ENV{out}/bin/lwp-mirror.bat", "$ENV{out}/bin/lwp-request.bat";
     '';
     meta = with stdenv.lib; {
@@ -11494,7 +11494,7 @@ let
     };
     buildInputs = [ pkgs.openssl ];
     doCheck = false; # Test performs network access.
-    preConfigure = if stdenv.hostPlatform.isMicrosoft then ''
+    preConfigure = if stdenv.hostPlatform.isWindows then ''
       $ENV{OPENSSL_PREFIX} = '${pkgs.openssl}';
     '' else ''
       mkdir openssl
@@ -11503,7 +11503,7 @@ let
       ln -s ${pkgs.openssl.dev}/include openssl
       export OPENSSL_PREFIX=$(realpath openssl)
     '';
-    postFixup = stdenv.lib.optionalString stdenv.hostPlatform.isMicrosoft ''
+    postFixup = stdenv.lib.optionalString stdenv.hostPlatform.isWindows ''
       uncsymlink("${pkgs.openssl}/bin/libeay32.dll" => "$ENV{out}/lib/auto/Net/SSLeay/LIBEAY32.dll") or die $!;
       uncsymlink("${pkgs.openssl}/bin/ssleay32.dll" => "$ENV{out}/lib/auto/Net/SSLeay/SSLEAY32.dll") or die $!;
     '';
@@ -17726,7 +17726,7 @@ let
     '' + stdenv.lib.optionalString stdenv.isCygwin ''
       sed -i"" -e "s@my \$compiler = File::Spec->catfile(\$path, \$cc\[0\]) \. \$Config{_exe};@my \$compiler = File::Spec->catfile(\$path, \$cc\[0\]) \. (\$^O eq 'cygwin' ? \"\" : \$Config{_exe});@" inc/Devel/CheckLib.pm
     '';
-    makeMakerFlags = if stdenv.hostPlatform.isMicrosoft then
+    makeMakerFlags = if stdenv.hostPlatform.isWindows then
                        let
                          expat = pkgs.expat.override{static=true;}; # use static expat to avoid expat.dll & Expat.dll name collision
                        in

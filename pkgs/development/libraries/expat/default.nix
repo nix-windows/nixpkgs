@@ -1,6 +1,6 @@
 { stdenv, fetchurl, cmake, fetchFromGitHub, static ? false }:
 
-if stdenv.hostPlatform.isMicrosoft then
+if stdenv.hostPlatform.isWindows then
 
 stdenv.mkDerivation rec {
   name = "expat-2.2.6";

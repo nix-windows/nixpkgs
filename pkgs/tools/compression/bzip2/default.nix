@@ -1,6 +1,6 @@
 { stdenv, fetchurl
 , staticRuntime ? false # false for /MD, true for /MT
-, static ? (stdenv.hostPlatform.system == "i686-cygwin" || stdenv.hostPlatform.isMicrosoft)
+, static ? (stdenv.hostPlatform.system == "i686-cygwin" || stdenv.hostPlatform.isWindows)
 }:
 
 let
@@ -28,7 +28,7 @@ let
   };
 in
 
-if stdenv.hostPlatform.isMicrosoft then
+if stdenv.hostPlatform.isWindows then
 
 assert static;
 stdenv.mkDerivation rec {

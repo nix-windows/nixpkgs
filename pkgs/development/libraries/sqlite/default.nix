@@ -19,10 +19,10 @@ let
   };
 in
 
-if stdenv.hostPlatform.isMicrosoft then
+if stdenv.hostPlatform.isWindows then
 
 let
-  platform = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenv.hostPlatform.config};
+  platform = if stdenv.is64bit then "x64" else "x86";
 in
 stdenv.mkDerivation rec {
   name = "sqlite-${if staticRuntime then "mt" else "md"}-${version}";

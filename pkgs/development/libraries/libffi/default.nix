@@ -6,7 +6,7 @@
 , doCheck ? !stdenv.isDarwin, dejagnu
 }:
 
-if stdenv.hostPlatform.isMicrosoft then
+if stdenv.hostPlatform.isWindows then
 
 # TODO? stdenvMsys.mkDerivation
 let
