@@ -5,12 +5,12 @@ let
 # exe = C:/work/nix-windows/7z/7z.exe;
 # dll = C:/work/nix-windows/7z/7z.dll;
   exe = stdenvNoCC.fetchurlBoot {
-    url    = "https://github.com/volth/nixpkgs/releases/download/windows-0.4/7z.exe"; # ${pkgs.pkgsi686Windows.p7zip.override{stdenv=stdenv2005;}}/bin/7z.exe
-    sha256 = "0iqrnfs4rs68v322hkg2sq4l8h1h84v9vy7p619ppb4c8q4y7asg";
+    url    = "https://github.com/volth/nixpkgs/releases/download/windows-0.5/7z.exe"; # "${pkgsMsvc2019.pkgsi686Windows.p7zip.override{supportWindowsXP=true;}}/bin/7z.exe"
+    sha256 = "11bbcz77yv0iy0p0ldf3jmglzqvs92qprcnsm6ba2mkifl8k42fk";
   };
   dll = stdenvNoCC.fetchurlBoot {
-    url    = "https://github.com/volth/nixpkgs/releases/download/windows-0.4/7z.dll"; # ${pkgs.pkgsi686Windows.p7zip.override{stdenv=stdenv2005;}}/bin/7z.dll
-    sha256 = "0xkfxk7hsyflc11islj498f3cy84s4aacap4almklflm44xkafd0";
+    url    = "https://github.com/volth/nixpkgs/releases/download/windows-0.5/7z.dll"; # "${pkgsMsvc2019.pkgsi686Windows.p7zip.override{supportWindowsXP=true;}}/bin/7z.dll"
+    sha256 = "1d7ni2i10xx2nrbc18ihr1a9yjg9ad98jz6bwaaj1lxkfrrn8828";
   };
 in if stdenvNoCC.isShellCmdExe then
   stdenvNoCC.mkDerivation {

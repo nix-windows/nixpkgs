@@ -1,33 +1,40 @@
-{ stdenv, fetchurl }:
+{ stdenv, fetchurl, fetchFromGitHub, msysPacman
+, supportWindowsXP ? false # Sacrifice multithread compression for Windows XP compatibility; for unpackers which have to run everywhere
+}:
 
-if stdenv.hostPlatform.isMicrosoft then
+if stdenv.hostPlatform.isWindows && stdenv.cc.isMSVC then
+  let
+    platform = if stdenv.is64bit then "x64" else "x86";
+  in stdenv.mkDerivation rec {
+    version = "19.00";
+    name = "p7zip-zstd-${version}";
+#   src = ../../../../../nix-windows/wqwq/7-Zip-zstd;
+    src = fetchurl {
+      url = https://github.com/mcmilk/7-Zip-zstd/archive/19.00-v1.4.5-R3.zip;
+      sha256 = "1rll0lv9c8yhaam0hsm1af950657ninivddd5zs8m9nymc20x32r";
+    };
 
-let
-  platform = { "x86_64-pc-windows-msvc" = "x64"; "i686-pc-windows-msvc" = "x86"; }.${stdenv.hostPlatform.config};
-in stdenv.mkDerivation rec {
-  version = "19.00";
-  name = "p7zip-zstd-${version}";
+    patchPhase = stdenv.lib.optionalString supportWindowsXP ''
+      changeFile { s/-DFL2_7ZIP_BUILD/-DFL2_7ZIP_BUILD -DFL2_SINGLETHREAD/gr } 'CPP/7zip/7zip.mak';
+    '';
 
-  src = fetchurl {
-    url = https://github.com/mcmilk/7-Zip-zstd/archive/19.00-v1.4.5-R3.zip;
-    sha256 = "1rll0lv9c8yhaam0hsm1af950657ninivddd5zs8m9nymc20x32r";
-  };
+    dontConfigure = true;
 
-  dontConfigure = true;
-  buildPhase = ''
-    $ENV{VC}='15.0'; # as for Visual Studio 2017
-    $ENV{SUBSYS}='6.00';
-    $ENV{PLATFORM}='${platform}';
-    chdir('CPP');
-    system("build-it.cmd") == 0 or die $!;
-  '';
-  installPhase = ''
-    dircopy('/bin-15.0-${platform}', "$ENV{out}/bin") or die $!;
-  '';
-}
+    buildPhase = ''
+      $ENV{VC}='16.0';
+      $ENV{SUBSYS}='${if stdenv.is64bit then "5.02" else "5.01"}';
+      $ENV{PLATFORM}='${platform}';
+      chdir('CPP');
+      system("build-it.cmd") == 0 or die $!;
+    '';
+    installPhase = ''
+      dircopy('/bin-16.0-${platform}', "$ENV{out}/bin") or die $!;
+    '';
+#   passthru.masm9 = masm9;
+  }
 
-else
-
+else throw "???"
+/*
 stdenv.mkDerivation rec {
   name = "p7zip-${version}";
   version = "16.02";
@@ -74,3 +81,4 @@ stdenv.mkDerivation rec {
     license = stdenv.lib.licenses.lgpl2Plus;
   };
 }
+*/
