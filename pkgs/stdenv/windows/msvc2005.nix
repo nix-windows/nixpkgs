@@ -2,7 +2,7 @@
 , localSystem, crossSystem, config, overlays
 }:
 
-if !(localSystem.config == "i686-pc-windows-msvc2015") then
+if !(localSystem.config == "i686-pc-windows-msvc2005") then
   throw "localSystem.config=${localSystem.config}"
 else
 

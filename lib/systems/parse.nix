@@ -278,7 +278,7 @@ rec {
       if elemAt l 1 == "cygwin"
         then { cpu = elemAt l 0;                      kernel = "windows";  abi = "cygnus";   }
       else if elemAt l 1 == "windows"
-        # thus "x86_64-windows" and "i686-windows" default to "x86_64-windows-gcc" and "i686-windows-gcc" making it default stdenv for Windows
+        # thus "x86_64-windows" and "i686-windows" default to "x86_64-windows-gnu" and "i686-windows-gnu" making it default stdenv for Windows
 #       then { cpu = elemAt l 0;                      kernel = "windows";  abi = "msvc2019";   }
         then { cpu = elemAt l 0;                      kernel = "windows";  abi = "gnu";   }
       else if (elemAt l 1 == "eabi")
