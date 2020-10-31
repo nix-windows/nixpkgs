@@ -3,7 +3,7 @@ let mirrors = import ./mirrors.nix; in
 { system }:
 
 { url ? builtins.head urls
-, urls ? []
+, urls ? [ url ]
 , sha256
 , name ? baseNameOf (toString url)
 }:
@@ -11,10 +11,15 @@ let mirrors = import ./mirrors.nix; in
 import <nix/fetchurl.nix> {
   inherit system sha256 name;
 
-  url =
-    # Handle mirror:// URIs. Since <nix/fetchurl.nix> currently
-    # supports only one URI, use the first listed mirror.
-    let m = builtins.match "mirror://([a-z]+)/(.*)" url; in
-    if m == null then url
-    else builtins.head (mirrors.${builtins.elemAt m 0}) + (builtins.elemAt m 1);
+  urls = builtins.concatMap (url:
+            # Handle mirror:// URIs.
+            let
+              m = builtins.match "mirror://([a-z]+)/(.*)" url;
+            in
+              if m != null then
+                map (mirror: mirror + (builtins.elemAt m 1)) mirrors.${builtins.elemAt m 0}
+              else
+                [url]
+         ) urls;
+# url = builtins.head urls;
 }
