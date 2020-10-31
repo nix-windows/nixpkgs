@@ -90,24 +90,24 @@ assert crossSystem == null;
     perl-for-stdenv-shell = let
       # useful libs not included by default
       cpan-Capture-Tiny = stdenv.fetchurlBoot {
-        url = "https://cpan.metacpan.org/authors/id/D/DA/DAGOLDEN/Capture-Tiny-0.48.tar.gz";
+        url = "mirror://cpan/authors/id/D/DA/DAGOLDEN/Capture-Tiny-0.48.tar.gz";
         sha256 = "069yrikrrb4vqzc3hrkkfj96apsh7q0hg8lhihq97lxshwz128vc";
       };
       cpan-Data-Dump = stdenv.fetchurlBoot {
-        url = "https://cpan.metacpan.org/authors/id/G/GA/GAAS/Data-Dump-1.23.tar.gz";
+        url = "mirror://cpan/authors/id/G/GA/GAAS/Data-Dump-1.23.tar.gz";
         sha256 = "0r9ba52b7p8nnn6nw0ygm06lygi8g68piri78jmlqyrqy5gb0lxg";
       };
 #     cpan-Win32-LongPath = c:/work/nix-windows/wqwq/Win32-LongPath;  <- bug, it does not do copy to nix store
       cpan-Win32-LongPath = ../../../../nix-windows/wqwq/Win32-LongPath;
 #     stdenv.fetchurlBoot {
-#       url = "https://cpan.metacpan.org/authors/id/R/RB/RBOISVERT/Win32-LongPath-1.0.tar.gz";
+#       url = "mirror://cpan/authors/id/R/RB/RBOISVERT/Win32-LongPath-1.0.tar.gz";
 #       sha256 = "1wnfy43i3h5c9xq4lw47qalgfi5jq5z01sv6sb6r3qcb75y3zflx";
 #     };
       version = "5.32.0";
     in stdenv.mkDerivation {
       name = "perl-for-stdenv-shell-${version}";
       src = stdenv.fetchurlBoot {
-        url = "https://www.cpan.org/src/5.0/perl-${version}.tar.gz";
+        url = "mirror://cpan/src/5.0/perl-${version}.tar.gz";
         sha256 = "1d6001cjnpxfv79000bx00vmv2nvdz7wrnyas451j908y7hirszg";
       };
       INCLUDE = "${(msblobs.msvc).INCLUDE};${(msblobs.sdk).INCLUDE}";
