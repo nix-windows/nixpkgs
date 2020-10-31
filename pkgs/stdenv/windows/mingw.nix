@@ -100,10 +100,12 @@ assert crossSystem == null;
                                              ''cd win32''
                                              ''mingw32-make.exe -j%NIX_BUILD_CORES% -f GNUmakefile install PLMAKE=mingw32-make.exe INST_TOP=%out% CCTYPE=GCC ${if stdenv.is64bit then "WIN64=define GCCTARGET=x86_64-w64-mingw32" else "WIN64=undef GCCTARGET=i686-w64-mingw32"}''
 
-                                             ''copy ${lib.replaceStrings ["/"] ["\\"] "${mingwPacmanNoBin.gcc}/mingw32/bin/libgcc_s_dw2*.dll" } %out%\bin\''     # TODO: hardlink
-                                             ''copy ${lib.replaceStrings ["/"] ["\\"] "${mingwPacmanNoBin.gcc}/mingw32/bin/libstdc*.dll"      } %out%\bin\''     # TODO: hardlink
-                                             ''copy ${lib.replaceStrings ["/"] ["\\"] "${mingwPacmanNoBin.gcc}/mingw32/bin/libwinpthread*.dll"} %out%\bin\''     # TODO: hardlink
-
+                                             (if stdenv.is64bit then
+                                                ''copy ${lib.replaceStrings ["/"] ["\\"] "${mingwPacmanNoBin.gcc}/mingw${if stdenv.is64bit then "64" else "32"}/bin/libgcc_s_seh*.dll" } %out%\bin\''   # TODO: hardlink
+                                              else
+                                                ''copy ${lib.replaceStrings ["/"] ["\\"] "${mingwPacmanNoBin.gcc}/mingw${if stdenv.is64bit then "64" else "32"}/bin/libgcc_s_dw2*.dll" } %out%\bin\'')  # TODO: hardlink
+                                              ''copy   ${lib.replaceStrings ["/"] ["\\"] "${mingwPacmanNoBin.gcc}/mingw${if stdenv.is64bit then "64" else "32"}/bin/libstdc*.dll"      } %out%\bin\''   # TODO: hardlink
+                                              ''copy   ${lib.replaceStrings ["/"] ["\\"] "${mingwPacmanNoBin.gcc}/mingw${if stdenv.is64bit then "64" else "32"}/bin/libwinpthread*.dll"} %out%\bin\''   # TODO: hardlink
 
                                            # ''nmake install INST_TOP=%out% CCTYPE=${assert lib.versionAtLeast msblobs.msvc.version "14.20" && lib.versionOlder msblobs.msvc.version "14.30"; "MSVC142"} ${if stdenv.is64bit then "WIN64=define PROCESSOR_ARCHITECTURE=AMD64" else "WIN64=undef PROCESSOR_ARCHITECTURE=X86"}''
                                            # # it does not built being copied to \cpan or \ext
