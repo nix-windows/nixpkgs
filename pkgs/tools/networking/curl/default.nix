@@ -12,6 +12,7 @@
 , c-aresSupport ? false, c-ares ? null
 , brotliSupport ? false, brotli ? null
 , mingwPacman
+, winver ? if stdenv.is64bit then "0x0502" else "0x0501"
 }:
 
 assert http2Support -> nghttp2 != null;
@@ -48,6 +49,7 @@ stdenv.mkDerivation rec {
 
   buildPhase = ''
     chdir("winbuild");
+    changeFile { s,/DWIN32,/DWIN32 /D_WIN32_WINNT=${winver} /DWINVER=${winver} /D_USING_V110_SDK71_,gr } 'MakefileBuild.vc';
     system("nmake /f Makefile.vc mode=${if static then "static" else "dll"}".
                                " VC=${if lib.versionAtLeast stdenv.cc.msvc.version "8" && lib.versionOlder stdenv.cc.msvc.version "9" then
                                         "8"

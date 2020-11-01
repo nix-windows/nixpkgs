@@ -27,6 +27,9 @@ let
       }
     else throw "???";
 in
+  # TODO: make buildPlatform is always i686
+  #            hostPlatform detected at runtime
+  #            targetPlatform is the only what matters
   stdenvNoCC.mkDerivation {
     name = "${ewdk.name}-${stdenvNoCC.buildPlatform.parsed.cpu.name}+${stdenvNoCC.hostPlatform.parsed.cpu.name}+${stdenvNoCC.targetPlatform.parsed.cpu.name}";
     buildInputs = [ ewdk ];
@@ -123,9 +126,9 @@ in
       isClang = false;
       isGNU   = false;
       inherit msvc redist sdk msbuild ewdk;
-      INCLUDE = "${msvc.INCLUDE};${sdk.INCLUDE}";  # TODO: a hook should set them
-      LIB     = "${msvc.LIB};${sdk.LIB}";
-      PATH    = "${msvc.PATH};${sdk.PATH}";
-      LIBPATH = "${msvc.LIBPATH};${sdk.LIBPATH}";
+#     INCLUDE = "${msvc.INCLUDE};${sdk.INCLUDE}";  # TODO: a hook should set them
+#     LIB     = "${msvc.LIB};${sdk.LIB}";
+#     PATH    = "${msvc.PATH};${sdk.PATH}";
+#     LIBPATH = "${msvc.LIBPATH};${sdk.LIBPATH}";
     };
   }

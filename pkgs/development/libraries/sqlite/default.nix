@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
   inherit version src;
   # TODO: add enablers from NIX_CFLAGS_COMPILE
   buildPhase = ''
-    system("nmake /f Makefile.msc core DYNAMIC_SHELL=1 PLATFORM=${platform} USE_CRT_DLL=${if staticRuntime then "0" else "1"}") == 0 or die $!;
+    system("nmake /f Makefile.msc core DYNAMIC_SHELL=1 FOR_WINRT=0 PLATFORM=${platform} USE_CRT_DLL=${if staticRuntime then "0" else "1"}") == 0 or die $!;
   '';
   installPhase = ''
     make_pathL("$ENV{out}/bin", "$ENV{out}/lib", "$ENV{out}/include");

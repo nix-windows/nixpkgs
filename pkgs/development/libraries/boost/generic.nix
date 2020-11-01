@@ -17,6 +17,8 @@
 , patches ? []
 , mpi ? null
 
+, winver ? if stdenv.is64bit then "0x0502" else "0x0501"
+
 # Attributes inherit from specific versions
 , version, src
 , ...
@@ -42,7 +44,7 @@ let
               "link=${if static then "static" else "shared"}"
               "runtime-link=${if staticRuntime then "static" else "shared"}"
               "toolset=${if stdenv.cc.isMSVC then "msvc" else if stdenv.cc.isMSVC then "gcc" else throw "???"}"
-              "define=_WIN32_WINNT=${if stdenv.is64bit then "0x0502" else "0x0501"}"
+              "define=_WIN32_WINNT=${winver}"
            ];
 in stdenv.mkDerivation {
   name = "boost-${if static then "lib" else "dll"}-${if staticRuntime then "mt" else "md"}-${version}";

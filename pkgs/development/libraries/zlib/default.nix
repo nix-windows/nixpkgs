@@ -2,6 +2,7 @@
 , fetchurl
 , staticRuntime ? false # false for /MD, true for /MT
 , static ? false
+, mingwPacman
 }:
 
 let
@@ -17,9 +18,9 @@ let
 
 in
 
-if stdenv.hostPlatform.isMicrosoft then
+if stdenv.hostPlatform.isWindows && stdenv.cc.isMSVC then
 
-stdenv.mkDerivation (rec {
+stdenv.mkDerivation rec {
   name = "zlib-${if static then "lib" else "dll"}-${if staticRuntime then "mt" else "md"}-${version}";
   inherit version src;
   dontConfigure = true;
@@ -42,8 +43,37 @@ stdenv.mkDerivation (rec {
   '';
   passthru.static        = static;
   passthru.staticRuntime = staticRuntime;
-})
+}
 
+else if stdenv.hostPlatform.isWindows && stdenv.cc.isGNU then
+
+mingwPacman.zlib
+/*
+stdenv.mkDerivation rec {
+  name = "zlib-${if static then "lib" else "dll"}-${if staticRuntime then "mt" else "md"}-${version}";
+  inherit version src;
+  dontConfigure = true;
+  buildPhase = stdenv.lib.optionalString staticRuntime ''
+  #  changeFile { s|MD|MT|gr; } 'win32/Makefile.msc';
+  #'' + ''
+  #  system('nmake -f win32/Makefile.msc') == 0 or die;
+  '';
+  installPhase = if static then ''
+    #make_pathL("$ENV{out}/include", "$ENV{out}/lib")                  or die $!;
+    #copyL('zlib.h',    "$ENV{out}/include/zlib.h" )                   or die $!;
+    #copyL('zconf.h',   "$ENV{out}/include/zconf.h")                   or die $!;
+    #copyL('zlib.lib',  "$ENV{out}/lib/zlib.lib"   )                   or die $!;
+  '' else ''
+    #make_pathL("$ENV{out}/bin", "$ENV{out}/include", "$ENV{out}/lib") or die $!;
+    #copyL('zlib1.dll', "$ENV{out}/bin/zlib1.dll"  )                   or die $!;
+    #copyL('zlib.h',    "$ENV{out}/include/zlib.h" )                   or die $!;
+    #copyL('zconf.h',   "$ENV{out}/include/zconf.h")                   or die $!;
+    #copyL('zdll.lib',  "$ENV{out}/lib/zdll.lib"   )                   or die $!;
+  '';
+  passthru.static        = static;
+  passthru.staticRuntime = staticRuntime;
+}
+*/
 else
  throw "xxx"
 /*

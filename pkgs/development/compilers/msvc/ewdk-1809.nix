@@ -123,9 +123,9 @@ in
       isClang = false;
       isGNU   = false;
       inherit msvc redist sdk msbuild ewdk;
-      INCLUDE = "${msvc.INCLUDE};${sdk.INCLUDE}";  # TODO: a hook should set them
-      LIB     = "${msvc.LIB};${sdk.LIB}";
-      PATH    = "${msvc.PATH};${sdk.PATH}";
-      LIBPATH = "${msvc.LIBPATH};${sdk.LIBPATH}";
+#     INCLUDE = "${msvc.INCLUDE};${sdk.INCLUDE}";  # TODO: a hook should set them
+#     LIB     = "${msvc.LIB};${sdk.LIB}";
+#     PATH    = "${msvc.PATH};${sdk.PATH}";
+#     LIBPATH = "${msvc.LIBPATH};${sdk.LIBPATH}";
     };
   }
