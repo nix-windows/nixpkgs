@@ -1,5 +1,5 @@
 { stdenv, fetchurl, fetchFromGitHub, msysPacman
-, supportWindowsXP ? false # Sacrifice multithread compression for Windows XP compatibility; for unpackers which have to run everywhere
+, winver ? if stdenv.is64bit then "0x0502" else "0x0501"
 }:
 
 if stdenv.hostPlatform.isWindows && stdenv.cc.isMSVC then
@@ -8,22 +8,32 @@ if stdenv.hostPlatform.isWindows && stdenv.cc.isMSVC then
   in stdenv.mkDerivation rec {
     version = "19.00";
     name = "p7zip-zstd-${version}";
-#   src = ../../../../../nix-windows/wqwq/7-Zip-zstd;
+
     src = fetchurl {
       url = https://github.com/mcmilk/7-Zip-zstd/archive/19.00-v1.4.5-R3.zip;
       sha256 = "1rll0lv9c8yhaam0hsm1af950657ninivddd5zs8m9nymc20x32r";
     };
 
-    patchPhase = stdenv.lib.optionalString supportWindowsXP ''
+    patchPhase = ''
+      changeFile { s,#\s*(define|undef)\s+(_WIN32_WINNT|WINVER).*$,,mgr } 'C/fast-lzma2/fl2_threading.h';
+      changeFile { s,#\s*(define|undef)\s+(_WIN32_WINNT|WINVER).*$,,mgr } 'C/fast-lzma2/atomic.h';
+      changeFile { s,#\s*(define|undef)\s+(_WIN32_WINNT|WINVER).*$,,mgr } 'C/zstd/threading.h';
+    '' + stdenv.lib.optionalString (winver < "0x0600") ''
+      # Sacrifice multithread compression for Windows XP compatibility; for unpackers which have to run everywhere
       changeFile { s/-DFL2_7ZIP_BUILD/-DFL2_7ZIP_BUILD -DFL2_SINGLETHREAD/gr } 'CPP/7zip/7zip.mak';
+      changeFile { s/-DZSTD_MULTITHREAD//gr                                  } 'CPP/7zip/Bundles/Alone/makefile';
+      changeFile { s/-DZSTD_MULTITHREAD//gr                                  } 'CPP/7zip/Bundles/Codec_zstd/makefile';
+      changeFile { s/-DZSTD_MULTITHREAD//gr                                  } 'CPP/7zip/Bundles/Format7z/makefile';
+      changeFile { s/-DZSTD_MULTITHREAD//gr                                  } 'CPP/7zip/Bundles/Format7zF/makefile';
     '';
 
     dontConfigure = true;
 
     buildPhase = ''
       $ENV{VC}='16.0';
-      $ENV{SUBSYS}='${if stdenv.is64bit then "5.02" else "5.01"}';
+      $ENV{SUBSYS}='5.01';
       $ENV{PLATFORM}='${platform}';
+      $ENV{CFLAGS}='-D_WIN32_WINNT=${winver} -DWINVER=${winver}';
       chdir('CPP');
       system("build-it.cmd") == 0 or die $!;
     '';
