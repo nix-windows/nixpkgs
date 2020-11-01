@@ -29,8 +29,8 @@ if stdenv.hostPlatform.isWindows then
 assert staticRuntime -> static;
 
 assert stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "14.20" && lib.versionOlder stdenv.cc.msvc.version "15" ->
-  lib.versionAtLeast version "1.71" && # "v142" is supported since boost-1.71 ; might older version be compiled by VS2019 using "v141"?
-  lib.versionOlder   version "1.73";   # 1.73 and 1.74 think that VS2019 supports long long
+  lib.versionAtLeast version "1.71";   # "v142" is supported since boost-1.71 ; might older version be compiled by VS2019 using "v141"?
+
 
 let
   b2Args = lib.concatStringsSep " " [
@@ -41,7 +41,8 @@ let
               "threading=multi"
               "link=${if static then "static" else "shared"}"
               "runtime-link=${if staticRuntime then "static" else "shared"}"
-              "toolset=${if stdenv.cc.isMSVC then "msvc" else throw "???"}"
+              "toolset=${if stdenv.cc.isMSVC then "msvc" else if stdenv.cc.isMSVC then "gcc" else throw "???"}"
+              "define=_WIN32_WINNT=${if stdenv.is64bit then "0x0502" else "0x0501"}"
            ];
 in stdenv.mkDerivation {
   name = "boost-${if static then "lib" else "dll"}-${if staticRuntime then "mt" else "md"}-${version}";
@@ -73,7 +74,6 @@ in stdenv.mkDerivation {
                               "vc142"
                             else
                               throw "???"}");
-
     writeFile("project-config.jam", qq[
     import option ;
     using msvc : ${if stdenv.cc.isMSVC && lib.versionAtLeast stdenv.cc.msvc.version "8" && lib.versionOlder stdenv.cc.msvc.version "9" then
