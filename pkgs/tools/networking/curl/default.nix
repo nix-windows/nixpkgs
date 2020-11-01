@@ -11,6 +11,7 @@
 , gssSupport ? !stdenv.hostPlatform.isWindows, libkrb5 ? null
 , c-aresSupport ? false, c-ares ? null
 , brotliSupport ? false, brotli ? null
+, mingwPacman
 }:
 
 assert http2Support -> nghttp2 != null;
@@ -26,16 +27,19 @@ assert brotliSupport -> brotli != null;
 assert gssSupport -> libkrb5 != null;
 
 let
-  version = if stdenv.is64bit then "7.73.0" else "7.62.0";
+  version = "7.73.0";
 
   src = fetchurl {
     urls = [
       "https://curl.haxx.se/download/curl-${version}.tar.bz2"
       "https://github.com/curl/curl/releases/download/curl-${lib.replaceStrings ["."] ["_"] version}/${version}.tar.bz2"
     ];
-    sha256 = if stdenv.is64bit then "0cfi8vhvx948knia9p24w38gcj7m5a5nx6j93b0g205q0w5zwd6g" else "084niy7cin13ba65p8x38w2xcyc54n3fgzbin40fa2shfr0ca0kq";
+    sha256 = {
+      "7.62.0" = "084niy7cin13ba65p8x38w2xcyc54n3fgzbin40fa2shfr0ca0kq";
+      "7.73.0" = "0cfi8vhvx948knia9p24w38gcj7m5a5nx6j93b0g205q0w5zwd6g";
+    }.${version};
   };
-in if stdenv.hostPlatform.isMicrosoft then
+in if stdenv.hostPlatform.isWindows && stdenv.cc.isMSVC then
 
 assert stdenv.hostPlatform == stdenv.buildPlatform; # not yet tested
 stdenv.mkDerivation rec {
@@ -45,7 +49,12 @@ stdenv.mkDerivation rec {
   buildPhase = ''
     chdir("winbuild");
     system("nmake /f Makefile.vc mode=${if static then "static" else "dll"}".
-                               " VC=${if stdenv.is64bit then "15" else "8"}".
+                               " VC=${if lib.versionAtLeast stdenv.cc.msvc.version "8" && lib.versionOlder stdenv.cc.msvc.version "9" then
+                                        "8"
+                                      else if lib.versionAtLeast stdenv.cc.msvc.version "14" && lib.versionOlder stdenv.cc.msvc.version "15" then
+                                        "14"
+                                      else
+                                        throw "???"}".
                                " MACHINE=${if stdenv.is64bit then "x64" else "x86"}".
                                " ENABLE_IDN=${if stdenv.is64bit then "yes" else "no" /* IdnToUnicode() requires Windows Vista */}".
                                " ENABLE_IPV6=yes".
@@ -60,7 +69,8 @@ stdenv.mkDerivation rec {
     for my $dir (glob('../builds/*')) {
       dircopy($dir, $ENV{out}) or die "dircopy($dir, $ENV{out}): $!" if -f "$dir/bin/curl.exe";
     }
-  '' + lib.optionalString (!openssl.static) ''
+  '';
+  fixupPhase = lib.optionalString (!openssl.static) ''
     copyL('${openssl}/bin/libeay32.dll', "$ENV{out}/bin/LIBEAY32.dll") or die $!;  # <- todo: hardlink
     copyL('${openssl}/bin/ssleay32.dll', "$ENV{out}/bin/SSLEAY32.dll") or die $!;  # <- todo: hardlink
   '' + lib.optionalString (!zlib.static) ''
@@ -70,6 +80,42 @@ stdenv.mkDerivation rec {
   passthru.staticRuntime = staticRuntime;
 }
 
+else if stdenv.hostPlatform.isWindows && stdenv.cc.isGNU then
+  mingwPacman.curl
+/*
+stdenv.mkDerivation rec {
+  name = "curl-${if static then "lib" else "dll"}-${if staticRuntime then "mt" else "md"}-${version}";
+  inherit src;
+
+  nativeBuildInputs = [ mingwPacman.cmake ]; # mingwPacman.cmake has no magic hook
+  buildPhase = ''
+    cmake .
+  '';
+  installPhase = ''
+  '';
+# buildPhase = ''
+#   chdir("winbuild");
+#   system("nmake /f Makefile.vc mode=${if static then "static" else "dll"}".
+#                              " VC=${if stdenv.is64bit then "15" else "8"}".
+#                              " MACHINE=${if stdenv.is64bit then "x64" else "x86"}".
+#                              " ENABLE_IDN=${if stdenv.is64bit then "yes" else "no" }".
+#                              " ENABLE_IPV6=yes".
+#                              " ENABLE_SSPI=no".
+#                              " WITH_SSL=${if openssl.static then "static" else "dll"}".
+#                              " SSL_PATH=${openssl}".
+#                              " WITH_ZLIB=${if zlib.static then "static" else "dll"}".
+#                              " ZLIB_PATH=${zlib}".
+#                              " RTLIBCFG=${if staticRuntime then "static" else "shared"}");
+# '';
+# installPhase = ''
+#   for my $dir (glob('../builds/*')) {
+#     dircopy($dir, $ENV{out}) or die "dircopy($dir, $ENV{out}): $!" if -f "$dir/bin/curl.exe";
+#   }
+# '';
+  passthru.static        = static;
+  passthru.staticRuntime = staticRuntime;
+}
+*/
 else
   throw "xxx"
 /*

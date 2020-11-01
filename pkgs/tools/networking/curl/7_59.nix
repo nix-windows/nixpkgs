@@ -34,7 +34,7 @@ let
     sha256 = "185mazhi4bc5mc6rvhrmnc67j8l3sg7f0w2hp5gmi5ccdbyhz4mm";
   };
 
-in if stdenv.hostPlatform.isMicrosoft then
+in if stdenv.hostPlatform.isWindows then
 stdenv.mkDerivation rec {
   inherit name src;
 
