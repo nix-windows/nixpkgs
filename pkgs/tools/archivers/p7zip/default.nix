@@ -18,6 +18,10 @@ if stdenv.hostPlatform.isWindows && stdenv.cc.isMSVC then
       changeFile { s,#\s*(define|undef)\s+(_WIN32_WINNT|WINVER).*$,,mgr } 'C/fast-lzma2/fl2_threading.h';
       changeFile { s,#\s*(define|undef)\s+(_WIN32_WINNT|WINVER).*$,,mgr } 'C/fast-lzma2/atomic.h';
       changeFile { s,#\s*(define|undef)\s+(_WIN32_WINNT|WINVER).*$,,mgr } 'C/zstd/threading.h';
+      changeFile { s,#\s*(define|undef)\s+(_WIN32_WINNT|WINVER).*$,,mgr } 'CPP/7zip/Bundles/Fm/StdAfx.h';
+      changeFile { s,#\s*(define|undef)\s+(_WIN32_WINNT|WINVER).*$,,mgr } 'CPP/7zip/UI/Explorer/StdAfx.h';
+      changeFile { s,#\s*(define|undef)\s+(_WIN32_WINNT|WINVER).*$,,mgr } 'CPP/7zip/UI/FileManager/StdAfx.h';
+      changeFile { s,#\s*(define|undef)\s+(_WIN32_WINNT|WINVER).*$,,mgr } 'CPP/7zip/UI/GUI/StdAfx.h';
     '' + stdenv.lib.optionalString (winver < "0x0600") ''
       # Sacrifice multithread compression for Windows XP compatibility; for unpackers which have to run everywhere
       changeFile { s/-DFL2_7ZIP_BUILD/-DFL2_7ZIP_BUILD -DFL2_SINGLETHREAD/gr } 'CPP/7zip/7zip.mak';
